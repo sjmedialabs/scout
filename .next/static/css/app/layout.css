@@ -677,6 +677,9 @@
   .mt-8 {
     margin-top: calc(var(--spacing) * 8);
   }
+  .mt-60 {
+    margin-top: calc(var(--spacing) * 60);
+  }
   .mt-auto {
     margin-top: auto;
   }
@@ -1395,6 +1398,13 @@
       --tw-space-y-reverse: 0;
       margin-block-start: calc(calc(var(--spacing) * 8) * var(--tw-space-y-reverse));
       margin-block-end: calc(calc(var(--spacing) * 8) * calc(1 - var(--tw-space-y-reverse)));
+    }
+  }
+  .space-y-10 {
+    :where(& > :not(:last-child)) {
+      --tw-space-y-reverse: 0;
+      margin-block-start: calc(calc(var(--spacing) * 10) * var(--tw-space-y-reverse));
+      margin-block-end: calc(calc(var(--spacing) * 10) * calc(1 - var(--tw-space-y-reverse)));
     }
   }
   .space-x-2 {
@@ -2200,6 +2210,15 @@
   }
   .pt-16 {
     padding-top: calc(var(--spacing) * 16);
+  }
+  .pt-36 {
+    padding-top: calc(var(--spacing) * 36);
+  }
+  .pt-40 {
+    padding-top: calc(var(--spacing) * 40);
+  }
+  .pt-60 {
+    padding-top: calc(var(--spacing) * 60);
   }
   .pr-1 {
     padding-right: calc(var(--spacing) * 1);
@@ -3688,6 +3707,11 @@
   .focus\:bg-slate-500 {
     &:focus {
       background-color: var(--color-slate-500);
+    }
+  }
+  .focus\:bg-transparent {
+    &:focus {
+      background-color: transparent;
     }
   }
   .focus\:text-accent-foreground {

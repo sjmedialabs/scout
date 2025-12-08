@@ -25,7 +25,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       {!hideUI && <Navigation />}
 
       {/* PAGE CONTENT */}
-      <div className="min-h-screen flex flex-col">
+      <div className={`min-h-screen flex flex-col${!hideUI ? " pt-36" : ""}`}>
         <Suspense fallback={null}>{children}</Suspense>
       </div>
 

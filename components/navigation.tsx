@@ -70,9 +70,9 @@ export function Navigation() {
   }
 
   return (
-    <div className="bg-background">
+    <div className="bg-background fixed top-0 z-50 w-full">
       <div className="bg-blueBackground text-gray-500">
-        <div className={`max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 ${isAgencyDashboard ? "ml-80" : ""}`}>
+        <div className={`max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 ${isAgencyDashboard ? "ml-80" : ""}`}>
           <div className="flex justify-between items-center h-12">
             <div>
               <Link href="/" className="flex items-center space-x-2">
@@ -89,7 +89,7 @@ export function Navigation() {
                   placeholder="Search for agency name/service name"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-transparent border-slate-300 rounded-full placeholder:text-gray-200 py-0 placeholder:text-xs focus:bg-slate-500"
+                  className="pl-10 bg-transparent border-slate-300 rounded-full placeholder:text-gray-200 py-0 placeholder:text-xs focus:bg-transparent"
                 />
               </form>
             </div>
