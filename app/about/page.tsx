@@ -1,15 +1,110 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, Target, Award, Globe } from "lucide-react"
+import aboutBanner from "../../public/aboutBanner.png";
 import Link from "next/link"
+import { title } from "process";
+import { Description } from "@radix-ui/react-toast";
 
 export default function AboutPage() {
   const stats = [
-    { label: "Active Users", value: "50,000+", icon: Users },
-    { label: "Projects Completed", value: "25,000+", icon: Target },
-    { label: "Success Rate", value: "98%", icon: Award },
-    { label: "Countries", value: "120+", icon: Globe },
+    { label: "Active Users", value: "50,000+", imageUrl:"/stat1.png" },
+    { label: "Projects Completed", value: "25,000+",  imageUrl:"/stat2.png" },
+    { label: "Success Rate", value: "98%",  imageUrl:"/stat3.png" },
+    { label: "Countries", value: "120+",  imageUrl:"/stat4.png" },
   ]
+  const aboutPageData={
+    heroSection:{
+      heroImage:'/aboutBanner.png',
+      heroTitle:"About Spark",
+      description:"We're building the future of B2B service connections, making it easier for businesses to find and work with qualified agencies."
+    },
+    sectionOne:{
+      descriptionOne:"Spark was founded in 2020 when our team experienced firsthand the challenge of finding reliable agencies for business services. We created a platform to connect clients with verified agencies, creating a transparent marketplace where quality work meets fair pricing.",
+      descriptionTwo:"Our goal is to make B2B service connections simple by providing qualified agencies and clients with the tools they need to succeed:",
+      points:[
+        {
+          _id:"1",
+          description:"Connect with pros collabator better succeed faster",
+        },
+        {
+          _id:"2",
+          description:"Connect with pros collabator better succeed faster",
+        },
+         {
+          _id:"3",
+          description:"Connect with pros collabator better succeed faster",
+        }
+      ],
+      imageUrl:"/aboutSectionOne.png"
+    },
+    sectionTwo:{
+      ourVision:{
+        imageUrl:"/ourVission.png",
+        title:"Our Vission",
+        description:" At Spark, we believe that every business deserves access to high-quality services that help them grow and succeed. Our platform connects clients with verified agencies, creating a transparent marketplace where quality work meets fair pricing."
+      },
+      ourMission:{
+        imageUrl:"/ourMission.png",
+        title:"Our Misssion",
+        description:" At Spark, we believe that every business deserves access to high-quality services that help them grow and succeed. Our platform connects clients with verified agencies, creating a transparent marketplace where quality work meets fair pricing."
+      }
+    },
+    sectionThree:{
+       title:"Our Proffessional Team",
+       description:"Meet the team behind the agency success",
+       teamMembers:[
+        {
+          _id:1,
+          name:"Rahul",
+          role:"CEO & Founder",
+          imageUrl:"/team1.png"
+        },
+        {
+          _id:2,
+          name:"Rahul",
+          role:"CEO & Founder",
+          imageUrl:"/team2.png"
+        },
+        {
+          _id:3,
+          name:"Rahul",
+          role:"CEO & Founder",
+          imageUrl:"/team3.png"
+        },
+       ]
+    },
+    valuesSection:{
+      title:"Our Values",
+      description:"Collabrate and Succeed",
+      values:[
+        {
+          _id:"1",
+          imageUrl:"/value1.png",
+          title:"Trancpearncy",
+          description:"Clear pricing, detailed proposal and honest reviews to create the trust between all parties"
+        },
+        {
+          _id:"2",
+          imageUrl:"/value2.png",
+          title:"Trancpearncy",
+          description:"Clear pricing, detailed proposal and honest reviews to create the trust between all parties"
+        },
+        {
+          _id:"3",
+          imageUrl:"/value3.png",
+          title:"Trancpearncy",
+          description:"Clear pricing, detailed proposal and honest reviews to create the trust between all parties"
+        },
+        {
+          _id:"4",
+          imageUrl:"/value4.png",
+          title:"Trancpearncy",
+          description:"Clear pricing, detailed proposal and honest reviews to create the trust between all parties"
+        },
+      ]
+    }
+  }
 
   const team = [
     {
@@ -31,133 +126,196 @@ export default function AboutPage() {
 
   return (
     <div className="bg-background">
-      <div className="py-8 px-4">
-        <div className="max-w-4xl mx-auto">
-          {/* Hero Section */}
-          <div className="text-center mb-16">
-            <h1 className="text-4xl font-bold mb-6">About Spark</h1>
-            <p className="text-xl text-muted-foreground text-balance">
-              We're building the future of B2B service connections, making it easier for businesses to find and work
-              with qualified agencies.
-            </p>
-          </div>
+       {/* Hero Section */}
+        <div className="flex flex-col justify-center items-center"
+            style={{
+              backgroundImage: `url(${aboutPageData.heroSection.heroImage})`,
+              height: "400px",
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+              width: "100%",
+            }}
+          >
 
-          {/* Mission */}
-          <Card className="mb-12">
-            <CardHeader>
-              <CardTitle className="text-2xl">Our Mission</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                At Spark, we believe that every business deserves access to high-quality services that help them grow
-                and succeed. Our platform connects clients with verified agencies, creating a transparent marketplace
-                where quality work meets fair pricing.
-              </p>
-            </CardContent>
-          </Card>
 
-          {/* Stats */}
-          <div className="grid md:grid-cols-4 gap-6 mb-12">
-            {stats.map((stat) => (
-              <Card key={stat.label} className="text-center">
-                <CardContent className="pt-6">
-                  <stat.icon className="h-8 w-8 mx-auto mb-4 text-primary" />
-                  <div className="text-2xl font-bold mb-2">{stat.value}</div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Story */}
-          <Card className="mb-12">
-            <CardHeader>
-              <CardTitle className="text-2xl">Our Story</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-muted-foreground leading-relaxed">
-                Spark was founded in 2023 when our team experienced firsthand the challenges of finding reliable
-                agencies for business needs. Traditional methods were time-consuming, lacked transparency, and often
-                resulted in mismatched expectations.
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                We set out to create a platform that would solve these problems by providing detailed requirements
-                posting, transparent proposal processes, and comprehensive review systems. Today, Spark serves thousands
-                of businesses worldwide.
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Team */}
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold text-center mb-8">Meet Our Team</h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              {team.map((member) => (
-                <Card key={member.name}>
-                  <CardHeader>
-                    <CardTitle>{member.name}</CardTitle>
-                    <CardDescription>{member.role}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">{member.bio}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-
-          {/* Values */}
-          <Card className="mb-12">
-            <CardHeader>
-              <CardTitle className="text-2xl">Our Values</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="font-semibold mb-2">Transparency</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Clear pricing, detailed proposals, and honest reviews create trust between all parties.
-                  </p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Quality</h3>
-                  <p className="text-sm text-muted-foreground">
-                    We verify agencies and maintain high standards to ensure excellent service delivery.
-                  </p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Innovation</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Continuously improving our platform with new features and better user experiences.
-                  </p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Community</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Building a supportive ecosystem where businesses and agencies can thrive together.
-                  </p>
-                </div>
+        <div className="text-center mb-16">
+          <h1 className="text-2xl md:text-4xl font-bold mb-6 text-[#F54A0C] font-sans">About Spark</h1>
+          <p className="text-sm md:text-xl font-light  text-balance text-[#c3bfbf] font-sans md:max-w-2xl">
+            We're building the future of B2B service connections, making it easier for businesses to find and work
+            with qualified agencies.
+          </p>
+        </div>
+        </div>
+         
+        <div className="py-10 px-8 lg:px-30">
+          <div className="max-w-7xl mx-auto">
+              {/*section One*/}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+              <div className=" lg:mt-20">
+                  <p className="text-[16px] font-normal text-gray-500 font-sans mb-5">{aboutPageData.sectionOne.descriptionOne}</p>
+                  <p className="text-[16px] font-normal text-gray-500 font-sans mb-5">{aboutPageData.sectionOne.descriptionTwo}</p>
+                  {
+                  aboutPageData.sectionOne.points.map((eachItem:any)=>(
+                    <div className="flex justify-start items-center gap-1" key={eachItem._id}>
+                      <svg width="18" height="18" viewBox="0 0 15 15" fill=" #F54A0C" xmlns="http://www.w3.org/2000/svg"><path d="M11.4669 3.72684C11.7558 3.91574 11.8369 4.30308 11.648 4.59198L7.39799 11.092C7.29783 11.2452 7.13556 11.3467 6.95402 11.3699C6.77247 11.3931 6.58989 11.3355 6.45446 11.2124L3.70446 8.71241C3.44905 8.48022 3.43023 8.08494 3.66242 7.82953C3.89461 7.57412 4.28989 7.55529 4.5453 7.78749L6.75292 9.79441L10.6018 3.90792C10.7907 3.61902 11.178 3.53795 11.4669 3.72684Z" fill=" #F54A0C" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                      <p className="text-[12px] font-normal font-sans text-gray-500">{eachItem.description}</p>
+                    </div>
+                  ))
+                  }
               </div>
-            </CardContent>
-          </Card>
-
-          {/* CTA */}
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4">Ready to Join Spark?</h2>
-            <p className="text-muted-foreground mb-6">
-              Whether you're looking for services or offering them, we'd love to have you in our community.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" asChild>
-                <Link href="/register">Get Started Today</Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/contact">Contact Us</Link>
-              </Button>
+              <div className="text-center">
+                <img src={aboutPageData.sectionOne.imageUrl} alt="right-side-image" className="max-w-full"/>
+              </div>
+              <div>
+                
+              </div>
+            </div>
+            
+            {/*section two */}
+            <div className="grid lg:grid-cols-2 gap-10 mt-12 mb-12">
+              <Card className="mb-3" style={{backgroundColor:"#fff"}}>
+              <CardContent className="px-3 md:px-6">
+                <img src={aboutPageData.sectionTwo.ourVision.imageUrl} alt="Our Vission image" className="h-[50px] w-[50px] ml-[20px] mb-3"/>
+                <h1 className="text-md font-sans md:text-lg font-normal text-[#F54A0C]">{aboutPageData.sectionTwo.ourVision.title}</h1>
+                <p className="text-[12px] font-sans md:text-sm font-normal text-gray-500 mb-5 leading-relaxed">
+                  {aboutPageData.sectionTwo.ourVision.description}
+                </p>
+              </CardContent>
+              </Card>
+              <Card className="mb-3" style={{backgroundColor:"#fff"}}>
+              <CardContent className="px-3 md:px-6">
+                <img src={aboutPageData.sectionTwo.ourMission.imageUrl} alt="Our Vission image" className="h-[50px] w-[50px] ml-[20px] mb-3"/>
+                <h1 className="text-md font-sans md:text-lg font-normal text-[#F54A0C]">{aboutPageData.sectionTwo.ourMission.title}</h1>
+                <p className="text-[14px] font-sans  md:text-sm font-normal text-gray-500 mb-5 leading-relaxed">
+                  {aboutPageData.sectionTwo.ourMission.description}
+                </p>
+              </CardContent>
+              </Card>
             </div>
           </div>
         </div>
-      </div>
+
+       {/*Stats -section */}
+         
+        <div className="py-16 px-6 lg:px-20" style={{ backgroundColor: "#F54A0C" }}>
+          <div className="grid grid-cols-1 md:grid-cols-4 text-center divide-y md:divide-y-0 md:divide-x divide-[#ffffff33]">
+            
+            {stats.map((stat, index) => (
+              <div key={index} className="flex flex-col items-center py-6">
+                
+                <img
+                  src={stat.imageUrl}
+                  className="h-15 w-15 mb-4"
+                  alt={stat.label}
+                />
+
+                <div className="text-3xl font-sans font-bold text-white mb-1">
+                  {stat.value}
+                </div>
+
+                <div className="text-white font-sans text-lg font-light">
+                  {stat.label}
+                </div>
+
+              </div>
+            ))}
+
+          </div>
+        </div>
+
+        {/*Team section */}
+        <div className="py-10 px-8 lg:px-30">
+           <h5 className="text-md font-normal text-[#F54A0C] text-center">{aboutPageData.sectionThree.title}</h5>
+           <h5 className="text-2xl font-normal text-[#000] text-center max-w-[300px] mx-auto">
+  {aboutPageData.sectionThree.description}
+</h5>
+
+          <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center items-start mx-auto mt-[30px]">
+            {aboutPageData.sectionThree.teamMembers.map((eachItem) => (
+            <div
+              key={eachItem._id}
+              className="relative flex flex-col justify-end h-[400px] w-full max-w-[300px] min-w-[250px] mx-auto overflow-hidden"
+              style={{
+                backgroundImage: `url(${eachItem.imageUrl})`,
+                backgroundSize: "cover",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+              }}
+            >
+              {/* Background grayscale */}
+              <div className="absolute inset-0 bg-black/0 backdrop-grayscale"></div>
+
+              {/* Colored box */}
+              <div className="relative z-10 w-[80%] bg-[#F54A0C] pl-[30px] py-[20px] mb-5">
+                <h5 className="text-md font-bold text-white">{eachItem.name}</h5>
+                <p className="text-[12px] font-normal text-white">{eachItem.role}</p>
+              </div>
+            </div>
+            ))}
+          </div>
+
+
+        </div>
+
+        {/* team values sections */}
+        
+         <div className="bg-[#f7f7f7] py-16 px-4 mt-12">
+          {/* Title Section */}
+          <div className="text-center mb-12">
+            <h4 className="text-[#F54A0C] text-lg font-medium">
+              {aboutPageData.valuesSection.title}
+            </h4>
+            <h2 className="text-3xl md:text-4xl font-normal text-gray-800">
+              {aboutPageData.valuesSection.description}
+            </h2>
+          </div>
+
+          {/* Values Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 max-w-6xl mx-auto text-center">
+            {aboutPageData.valuesSection.values.map((item) => (
+              <div key={item._id} className="flex flex-col items-center">
+                
+                {/* Icon */}
+                <img 
+                  src={item.imageUrl} 
+                  alt={item.title} 
+                  className="h-12 w-10 mb-4"
+                />
+
+                {/* Title */}
+                <h3 className="text-lg font-semibold text-[#F54A0C] mb-2">
+                  {item.title}
+                </h3>
+
+                {/* Description */}
+                <p className=" text-[12px] font-semibold text-[#b2b2b2] leading-relaxed max-w-[220px]">
+                  {item.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+
+        <div className="py-10 px-8 lg:px-30">
+          
+        {/* CTA */}
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold mb-4">Ready to Join Spark?</h2>
+          <p className="text-[#b2b2b2] text-sm mb-6">
+            Whether you're looking for services or offering them, we'd love to have you in our community.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg"  style={{borderRadius:"26px",fontSize:"14px",backgroundColor:" #F54A0C"}} asChild>
+              <Link href="/register">Get Started Today</Link>
+            </Button>
+            <Button size="lg"  style={{borderRadius:"26px",fontSize:"14px",backgroundColor:" #000"}} asChild>
+              <Link href="/contact">Contact Us</Link>
+            </Button>
+          </div>
+        </div>
+        </div>
     </div>
   )
 }
