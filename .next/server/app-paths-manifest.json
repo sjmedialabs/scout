@@ -1,11 +1,9 @@
 {
-  "/contact/page": "app/contact/page.js",
-  "/browse/page": "app/browse/page.js",
-  "/providers/page": "app/providers/page.js",
-  "/register/page": "app/register/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
   "/page": "app/page.js",
-  "/api/cms/hero/route": "app/api/cms/hero/route.js",
   "/api/cms/categories/route": "app/api/cms/categories/route.js",
-  "/api/providers/route": "app/api/providers/route.js",
-  "/api/projects/route": "app/api/projects/route.js"
+  "/api/auth/me/route": "app/api/auth/me/route.js",
+  "/api/projects/route": "app/api/projects/route.js",
+  "/api/cms/hero/route": "app/api/cms/hero/route.js",
+  "/api/providers/route": "app/api/providers/route.js"
 }
