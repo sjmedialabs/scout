@@ -21,7 +21,9 @@ import {
   Megaphone,
   Briefcase,
   Shield,
+  Divide,
 } from "lucide-react"
+import { match } from "assert"
 
 // CMS Content Types
 interface HeroContent {
@@ -70,6 +72,7 @@ export default function HomePage() {
   const [providers, setProviders] = useState<any[]>([])
   const [projects, setProjects] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [activeButton, setActiveButton] = useState<"match" | "browse" | null>(null);
 
   // Fetch CMS content
   useEffect(() => {
@@ -142,50 +145,91 @@ export default function HomePage() {
   return (
     <div className="bg-background">
       {/* Hero Section */}
-      <section className="py-16 px-4 bg-gray-50">
+      <section className="py-16 px-4 bg-gray-50"
+      style={{ 
+        backgroundImage: "url('/Banner.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat"
+        }}>
         <div className="max-w-7xl mx-auto">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
               {heroContent?.headline || "Connect with trusted companies for your next project."}
             </h1>
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 mb-8 justify-center">
+              <div className="relative flex flex-col items-center">
               <Button
                 size="lg"
-                className="bg-slate-800 hover:bg-slate-900 text-white flex items-center gap-2"
-                onClick={handleLetUsMatch}
+                className={`flex items-center gap-2 rounded-full transitation-all
+                ${
+                activeButton === "match"
+                ? "bg-[#F54A0C] text-white boder-[#F54A0C] shadow-lg"
+                : "bg-[#F54A0C] hover:bg-[#d93f0b] text-white"
+              } `}
+                onClick={() => {
+                  setActiveButton("match")
+                  handleLetUsMatch()
+              }}
               >
-                <Sparkles className="h-5 w-5" />
                 {heroContent?.ctaPrimary.text || "Let us match you"}
               </Button>
+              {activeButton === "match" && (
+                <div 
+                className="absolute -bottom-2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-[#F54A0C]"
+                       />
+              )}
+              </div>
+              <div className="relative flex flex-col items-center">
               <Button
                 size="lg"
                 variant="outline"
-                className="border-slate-300 text-slate-700 hover:bg-slate-50 bg-transparent"
-                onClick={handleBrowseOwn}
+                className={`flex items-center gap-2 rounded-full px-6 py-3 border transition-all focus-visible:ring-0 focus-visible:ring-offset-0 active:scale-95
+                ${
+                activeButton === "browse"
+                ? "bg-white text-[#F54A0C] shadow-lg"
+                : "bg-white hover:bg-white/90 hover:text-[#F54A0C] text-[#F54A0C]"
+            }`}
+                onClick={()=> {
+                  setActiveButton("browse")
+                handleBrowseOwn()
+                }}
               >
                 {heroContent?.ctaSecondary.text || "Browse on your own"}
               </Button>
+              {activeButton === "browse" && (
+                <div
+                className = "absolute -bottom-2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white"
+                />
+              )}
+              </div>
             </div>
+              
 
             {/* Search Section */}
-            <div className="space-y-4 max-w-2xl mx-auto">
-              <div className="flex gap-2">
+            <div className="space-y-4 max-w-2xl mx-auto bg-white-50">
+              <div className="relative flex gap-2">
                 <Input
-                  placeholder={heroContent?.searchPlaceholder || "What do you need help with?"}
-                  className="flex-1 h-12 text-base border-slate-300"
+                  placeholder={heroContent?.searchPlaceholder || "Search for Agency Name / Service Name?"}
+                  className="flex-1 h-12  text-white placeholder:text-white border-slate-300 bg-white/20 backdrop-blur-md shadow-inner rounded-full"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  
                 />
-                <Button className="bg-red-600 hover:bg-red-700 text-white h-12 px-6" onClick={handleGetMatched}>
-                  Get Matched
+                <Button 
+                onClick={handleGetMatched}
+                className="absolute top-1/2 right-2 -translate-y-1/2 
+               flex items-center justify-center 
+               h-10 w-10 rounded-full bg-[#F54A0C] hover:bg-[#d93f0b] 
+               shadow-md transition-all rotate-90">
+                <Search className="h-5 w-5 text-white" />
                 </Button>
               </div>
 
               {/* Popular Searches */}
               <div className="space-y-2">
-                <p className="text-sm font-medium text-slate-600 uppercase tracking-wide">POPULAR SEARCHES</p>
                 <div className="flex flex-wrap gap-2 justify-center">
                   {(
                     heroContent?.popularSearches || [
@@ -198,10 +242,10 @@ export default function HomePage() {
                       key={index}
                       variant="outline"
                       size="sm"
-                      className="text-slate-600 border-slate-300 hover:bg-slate-50 bg-transparent"
+                      className="text-white border-slate-300 hover:bg-white/30 bg-transparentr rounded-full"
                       onClick={() => handlePopularSearch(search)}
                     >
-                      <Search className="h-3 w-3 mr-2" />
+                  
                       {search}
                     </Button>
                   ))}
