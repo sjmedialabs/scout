@@ -6,8 +6,8 @@
 @layer theme, base, components, utilities;
 @layer theme {
   :root, :host {
-    --font-sans: var(--font-geist-sans);
-    --font-mono: var(--font-geist-mono);
+    --font-sans: "CabinetGrotesk2", sans-serif;
+    --font-mono: "CabinetGrotesk2", sans-serif;
     --color-red-50: oklch(97.1% 0.013 17.38);
     --color-red-100: oklch(93.6% 0.032 17.717);
     --color-red-200: oklch(88.5% 0.062 18.334);
@@ -139,8 +139,8 @@
     --aspect-video: 16 / 9;
     --default-transition-duration: 150ms;
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    --default-font-family: var(--font-geist-sans);
-    --default-mono-font-family: var(--font-geist-mono);
+    --default-font-family: "CabinetGrotesk2", sans-serif;
+    --default-mono-font-family: "CabinetGrotesk2", sans-serif;
     --color-border: var(--border);
   }
 }
@@ -2055,10 +2055,10 @@
     vertical-align: middle;
   }
   .font-mono {
-    font-family: var(--font-geist-mono);
+    font-family: "CabinetGrotesk2", sans-serif;
   }
   .font-sans {
-    font-family: var(--font-geist-sans);
+    font-family: "CabinetGrotesk2", sans-serif;
   }
   .text-2xl {
     font-size: var(--text-2xl);
@@ -6516,6 +6516,7 @@
     }
   }
 }
+
 
 /*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[2].use[1]!./node_modules/next/dist/build/webpack/loaders/next-font-loader/index.js??ruleSet[1].rules[14].oneOf[2].use[2]!./node_modules/next/font/google/target.css?{"path":"app\\layout.tsx","import":"Inter","arguments":[{"subsets":["latin"],"variable":"--font-sans"}],"variableName":"inter"} ***!

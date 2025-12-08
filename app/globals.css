@@ -79,8 +79,8 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: "CabinetGrotesk2", sans-serif;
+  --font-mono: "CabinetGrotesk2", sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -234,3 +234,4 @@
 .font-cabinet-thin {
   font-family: "CabinetGrotesk8", sans-serif;
 }
+
