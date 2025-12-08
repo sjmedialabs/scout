@@ -40,14 +40,15 @@ export function Footer() {
   return (
     <footer className="bg-muted/30 border-t">
       <div className={`max-w-6xl mx-auto px-4 py-12 ${isAgencyDashboard ? "ml-80" : ""}`}>
-        <div className="grid md:grid-cols-4 gap-8">
-          {/* Brand */}
-          <div>
-            <h3 className="font-bold text-lg mb-4">Spark</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Connecting businesses with verified agencies for successful project outcomes.
-            </p>
-            <form onSubmit={handleSubscribe} className="flex gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-4 md:gap-12 justify-center">
+          <Link href={"/"}>
+          <img src="/images/footer-logo.png" alt="" className="col-span-1 py-2 h-24"/></Link>
+          <div className="md:items-center md:col-span-3 flex md:flex-row flex-col md:gap-4 md:border-l border-gray-300 lg:mr-36">
+            <div className="basis-1/3 flex md:justify-end">
+            <h3 className="text-white font-semibold text-2xl">Subscribe</h3>
+            </div>
+            <div className="basis-2/3">
+          <form onSubmit={handleSubscribe} className="flex gap-2 relative rounded-full items-center px-1 w-full h-full">
               <Input
                 placeholder="Enter your email"
                 className="text-sm"
@@ -150,12 +151,20 @@ export function Footer() {
           <p>&copy; 2024 Spark. All rights reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0">
             <Link
+              href="https://facebook.com/sparkplatform"
+              className="hover:text-foreground"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+            <img src="/images/Facebook.png" alt="" className="h-8"/>
+            </Link>
+            <Link
               href="https://twitter.com/sparkplatform"
               className="hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Twitter
+            <img src="/images/twitter.png" alt="" className="h-8"/>
             </Link>
             <Link
               href="https://linkedin.com/company/sparkplatform"
@@ -163,15 +172,15 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              LinkedIn
+            <img src="/images/Linkedin.png" alt="" className="h-8"/>
             </Link>
             <Link
-              href="https://facebook.com/sparkplatform"
+              href="https://youtube.com/sparkplatform"
               className="hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Facebook
+            <img src="/images/youtube.png" alt="" className="h-8"/>
             </Link>
           </div>
         </div>
