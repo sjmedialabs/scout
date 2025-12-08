@@ -42,7 +42,8 @@ export function Footer() {
     <footer className="bg-[url('/images/background-footer.jpg')] bg-cover bg-no-repeat bg-center] dark">
       <div className={`max-w-6xl mx-auto px-4 py-12 ${isAgencyDashboard ? "ml-80" : ""}`}>
         <div className="grid grid-cols-1 md:grid-cols-4 md:gap-12 justify-center">
-          <img src="/images/footer-logo.png" alt="" className="col-span-1 py-2 h-24"/>
+          <Link href={"/"}>
+          <img src="/images/footer-logo.png" alt="" className="col-span-1 py-2 h-24"/></Link>
           <div className="md:items-center md:col-span-3 flex md:flex-row flex-col md:gap-4 md:border-l border-gray-300 lg:mr-36">
             <div className="basis-1/3 flex md:justify-end">
             <h3 className="text-white font-semibold text-2xl">Subscribe</h3>
@@ -181,12 +182,20 @@ export function Footer() {
         <div className="flex flex-col gap-1 justify-between items-center text-lg text-white font-medium">
           <div className="flex flex-wrap gap-6 mt-4 md:mt-0">
             <Link
+              href="https://facebook.com/sparkplatform"
+              className="hover:text-foreground"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+            <img src="/images/Facebook.png" alt="" className="h-8"/>
+            </Link>
+            <Link
               href="https://twitter.com/sparkplatform"
               className="hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"
             >
-            <div className="bg-white rounded-full p-2"><Twitter className="fill h-6"/></div>
+            <img src="/images/twitter.png" alt="" className="h-8"/>
             </Link>
             <Link
               href="https://linkedin.com/company/sparkplatform"
@@ -194,31 +203,15 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              LinkedIn
+            <img src="/images/Linkedin.png" alt="" className="h-8"/>
             </Link>
             <Link
-              href="https://facebook.com/sparkplatform"
+              href="https://youtube.com/sparkplatform"
               className="hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Facebook
-            </Link>
-            <Link
-              href="https://facebook.com/sparkplatform"
-              className="hover:text-foreground"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Facebook
-            </Link>
-                        <Link
-              href="https://facebook.com/sparkplatform"
-              className="hover:text-foreground"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Facebook
+            <img src="/images/youtube.png" alt="" className="h-8"/>
             </Link>
           </div>
           <p>&copy; 2025 Spark. All rights reserved.</p>
