@@ -44,7 +44,6 @@
     --color-teal-500: oklch(70.4% 0.14 182.503);
     --color-teal-600: oklch(60% 0.118 184.704);
     --color-teal-700: oklch(51.1% 0.096 186.391);
-    --color-sky-50: oklch(97.7% 0.013 236.62);
     --color-blue-50: oklch(97% 0.014 254.604);
     --color-blue-100: oklch(93.2% 0.032 255.585);
     --color-blue-200: oklch(88.2% 0.059 254.128);
@@ -369,17 +368,8 @@
   .top-\[1px\] {
     top: 1px;
   }
-  .top-\[10\%\] {
-    top: 10%;
-  }
-  .top-\[20\%\] {
-    top: 20%;
-  }
   .top-\[25\%\] {
     top: 25%;
-  }
-  .top-\[40\%\] {
-    top: 40%;
   }
   .top-\[45\%\] {
     top: 45%;
@@ -411,17 +401,11 @@
   .right-4 {
     right: calc(var(--spacing) * 4);
   }
-  .right-8 {
-    right: calc(var(--spacing) * 8);
-  }
   .right-10 {
     right: calc(var(--spacing) * 10);
   }
   .right-12 {
     right: calc(var(--spacing) * 12);
-  }
-  .right-16 {
-    right: calc(var(--spacing) * 16);
   }
   .-bottom-12 {
     bottom: calc(var(--spacing) * -12);
@@ -1082,15 +1066,6 @@
   .rotate-90 {
     rotate: 90deg;
   }
-  .rotate-180 {
-    rotate: 180deg;
-  }
-  .rotate-270 {
-    rotate: 270deg;
-  }
-  .rotate-360 {
-    rotate: 360deg;
-  }
   .transform {
     transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
   }
@@ -1177,9 +1152,6 @@
   }
   .items-stretch {
     align-items: stretch;
-  }
-  .justify-around {
-    justify-content: space-around;
   }
   .justify-between {
     justify-content: space-between;
@@ -1435,9 +1407,6 @@
   .border-\(--color-border\) {
     border-color: var(--color-border);
   }
-  .border-\[\#F54A0C\] {
-    border-color: #F54A0C;
-  }
   .border-blue-100 {
     border-color: var(--color-blue-100);
   }
@@ -1513,9 +1482,6 @@
   .border-slate-300 {
     border-color: var(--color-slate-300);
   }
-  .border-slate-500 {
-    border-color: var(--color-slate-500);
-  }
   .border-transparent {
     border-color: transparent;
   }
@@ -1548,9 +1514,6 @@
   }
   .bg-\(--color-bg\) {
     background-color: var(--color-bg);
-  }
-  .bg-\[\#F54A0C\] {
-    background-color: #F54A0C;
   }
   .bg-accent {
     background-color: var(--accent);
@@ -1587,9 +1550,6 @@
     @supports (color: color-mix(in lab, red, red)) {
       background-color: color-mix(in oklab, var(--color-blue-500) 5%, transparent);
     }
-  }
-  .bg-blue-600 {
-    background-color: var(--color-blue-600);
   }
   .bg-border {
     background-color: var(--border);
@@ -1710,15 +1670,6 @@
   }
   .bg-sidebar-border {
     background-color: var(--sidebar-border);
-  }
-  .bg-sky-50 {
-    background-color: var(--color-sky-50);
-  }
-  .bg-slate-600 {
-    background-color: var(--color-slate-600);
-  }
-  .bg-slate-700 {
-    background-color: var(--color-slate-700);
   }
   .bg-slate-800 {
     background-color: var(--color-slate-800);
@@ -2201,12 +2152,6 @@
   }
   .whitespace-pre-wrap {
     white-space: pre-wrap;
-  }
-  .text-\[\#F54A0C\] {
-    color: #F54A0C;
-  }
-  .text-\[13\] {
-    color: 13;
   }
   .text-accent-foreground {
     color: var(--accent-foreground);
@@ -3000,11 +2945,6 @@
       color: var(--color-gray-200);
     }
   }
-  .placeholder\:text-gray-300 {
-    &::placeholder {
-      color: var(--color-gray-300);
-    }
-  }
   .placeholder\:text-muted-foreground {
     &::placeholder {
       color: var(--muted-foreground);
@@ -3173,13 +3113,6 @@
       }
     }
   }
-  .hover\:bg-\[\#F54A0C\] {
-    &:hover {
-      @media (hover: hover) {
-        background-color: #F54A0C;
-      }
-    }
-  }
   .hover\:bg-\[\#f54607\] {
     &:hover {
       @media (hover: hover) {
@@ -3191,13 +3124,6 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--accent);
-      }
-    }
-  }
-  .hover\:bg-blue-700 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-blue-700);
       }
     }
   }
@@ -5892,6 +5818,9 @@
 }
 :root {
   --background: oklch(1 0 0);
+  --blueBackground: #E7F0F8;
+  --blueButton: #F54A0C;
+  --orangeButton: #F54A0C;
   --foreground: oklch(0.205 0 0);
   --card: oklch(0.985 0 0);
   --card-foreground: oklch(0.205 0 0);
@@ -6063,6 +5992,80 @@
       margin-block-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-y-reverse)));
     }
   }
+}
+.bg-blueBackground {
+  background-color: var(--blueBackground);
+}
+.bg-blueButton {
+  background-color: var(--blueButton);
+}
+.bg-orangeButton {
+  background-color: var(--orangeButton);
+}
+.text-blueButton {
+  color: var(--blueButton);
+}
+.text-orangeButton {
+  color: var(--orangeButton);
+}
+.border-orangeButton {
+  border-color: var(--orangeButton);
+}
+@font-face {
+  font-family: "CabinetGrotesk";
+  src: url("/fonts/CabinetGrotesk-Bold.otf") format("opentype");
+}
+@font-face {
+  font-family: "CabinetGrotesk2";
+  src: url("/fonts/CabinetGrotesk-Regular.otf") format("opentype");
+}
+@font-face {
+  font-family: "CabinetGrotesk3";
+  src: url("/fonts/CabinetGrotesk-BLack.otf") format("opentype");
+}
+@font-face {
+  font-family: "CabinetGrotesk4";
+  src: url("/fonts/CabinetGrotesk-Extrabold.otf") format("opentype");
+}
+@font-face {
+  font-family: "CabinetGrotesk5";
+  src: url("/fonts/CabinetGrotesk-Extralight.otf") format("opentype");
+}
+@font-face {
+  font-family: "CabinetGrotesk6";
+  src: url("/fonts/CabinetGrotesk-Light.otf") format("opentype");
+}
+@font-face {
+  font-family: "CabinetGrotesk7";
+  src: url("/fonts/CabinetGrotesk-Medium.otf") format("opentype");
+}
+@font-face {
+  font-family: "CabinetGrotesk8";
+  src: url("/fonts/CabinetGrotesk-Thin.otf") format("opentype");
+}
+.font-cabinet-bold {
+  font-family: "CabinetGrotesk", sans-serif;
+}
+.font-cabinet {
+  font-family: "CabinetGrotesk2", sans-serif;
+}
+.font-cabinet-black {
+  font-family: "CabinetGrotesk3", sans-serif;
+}
+.font-cabinet-extrabold {
+  font-family: "CabinetGrotesk4", sans-serif;
+}
+.font-cabinet-extralight {
+  font-family: "CabinetGrotesk5", sans-serif;
+}
+.font-cabinet-light {
+  font-family: "CabinetGrotesk6", sans-serif;
+}
+.font-cabinet-medium {
+  font-family: "CabinetGrotesk7", sans-serif;
+}
+.font-cabinet-thin {
+  font-family: "CabinetGrotesk8", sans-serif;
 }
 @property --tw-translate-x {
   syntax: "*";

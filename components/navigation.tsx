@@ -71,7 +71,7 @@ export function Navigation() {
 
   return (
     <div className="bg-background">
-      <div className="bg-sky-50 text-gray-500">
+      <div className="bg-blueBackground text-gray-500">
         <div className={`max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 ${isAgencyDashboard ? "ml-80" : ""}`}>
           <div className="flex justify-between items-center h-12">
             <div>
@@ -84,7 +84,7 @@ export function Navigation() {
               <form onSubmit={handleSearch} className="relative w-full">
                 <div className="absolute right-4 top-[25%] flex items-center justify-center pr-3 gap-2">
                   <Search className=" rotate-90 h-5 w-5 text-gray-400" />
-                  <Button className="text-[#F54A0C] text-[13px] right-12 top-[45%] p-0 h-0">Search</Button></div>
+                  <Button className="text-orangeButton text-[13px] right-12 top-[45%] p-0 h-0">Search</Button></div>
                 <Input
                   placeholder="Search for agency name/service name"
                   value={searchQuery}
@@ -100,7 +100,7 @@ export function Navigation() {
                 For Agencies
               </Link>
               <div className="">
-                <Button variant="ghost" className="hover:bg-slate-600 h-8 px-4 py-0 bg-transparent border border-[#F54A0C] rounded-full text-[#F54A0C]" asChild>
+                <Button variant="ghost" className="hover:bg-slate-600 h-8 px-4 py-0 bg-transparent border border-orangeButton rounded-full text-orangeButton" asChild>
                   <Link href="/login" className="text-sm">
                     Signin
                   </Link>
@@ -118,7 +118,7 @@ export function Navigation() {
               <form onSubmit={handleSearch} className="relative w-full">
                 <div className="absolute right-4 top-[25%] flex items-center justify-center pr-3 gap-2">
                   <Search className=" rotate-90 h-5 w-5 text-gray-400" />
-                  <Button className="text-[#F54A0C] text-[13px] right-12 top-[45%] p-0 h-0">Search</Button></div>
+                  <Button className="text-orangeButton text-[13px] right-12 top-[45%] p-0 h-0">Search</Button></div>
                 <Input
                   placeholder="Search for agency name/service name"
                   value={searchQuery}
@@ -160,7 +160,7 @@ export function Navigation() {
 
             {/* Post a Project Button */}
             <div className="hidden lg:block rounded-full">
-              <Button className="bg-[#F54A0C] hover:bg-[#f54607] text-white rounded-full" asChild>
+              <Button className="bg-orangeButton hover:bg-[#f54607] text-white rounded-full" asChild>
                 <Link href={user ? "/client/dashboard?section=projects" : "/register"}>Post A Project</Link>
               </Button>
             </div>
@@ -226,7 +226,7 @@ export function Navigation() {
                   Resources
                 </Link>
                 <div className="pt-4 border-t border-border">
-                  <Button className="w-full bg-[#F54A0C] hover:bg-[#f54607] rounded-full text-white" asChild>
+                  <Button className="w-full bg-orangeButton hover:bg-[#f54607] rounded-full text-white" asChild>
                     <Link
                       href={user ? "/client/dashboard?section=projects" : "/register"}
                       onClick={() => setMobileMenuOpen(false)}
