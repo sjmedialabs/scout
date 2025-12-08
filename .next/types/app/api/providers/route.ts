@@ -1,4 +1,4 @@
-// File: C:\Users\lovel\Desktop\Spark\wireFrame\app\api\providers\route.ts
+// File: C:\Users\RAJ KUMAR GUBBALA\OneDrive\Desktop\Spark\scout\app\api\providers\route.ts
 import * as entry from '../../../../../app/api/providers/route.js'
 import type { NextRequest } from 'next/server.js'
 

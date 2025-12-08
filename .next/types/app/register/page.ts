@@ -1,4 +1,4 @@
-// File: C:\Users\lovel\Desktop\Spark\wireFrame\app\register\page.tsx
+// File: C:\Users\RAJ KUMAR GUBBALA\OneDrive\Desktop\Spark\scout\app\register\page.tsx
 import * as entry from '../../../../app/register/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
