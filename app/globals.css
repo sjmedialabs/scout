@@ -6,6 +6,9 @@
 :root {
   /* Updated design tokens to match wireframe aesthetic */
   --background: oklch(1 0 0); /* #ffffff */
+  --blueBackground: #E7F0F8; /*sky blue background color */
+  --blueButton: #F54A0C;
+  --orangeButton: #F54A0C;
   --foreground: oklch(0.205 0 0); /* #1f2937 */
   --card: oklch(0.985 0 0); /* #f8fafc */
   --card-foreground: oklch(0.205 0 0); /* #1f2937 */
@@ -153,4 +156,81 @@
   .spark-form-group {
     @apply space-y-2 w-full;
   }
+  
+}
+.bg-blueBackground {
+  background-color: var(--blueBackground);
+}
+
+.bg-blueButton {
+  background-color: var(--blueButton);
+}
+.bg-orangeButton {
+  background-color: var(--orangeButton);
+}
+.text-blueButton {
+  color: var(--blueButton);
+}
+.text-orangeButton {
+  color: var(--orangeButton);
+}
+.border-orangeButton {
+  border-color: var(--orangeButton);
+}
+@font-face {
+  font-family: "CabinetGrotesk";
+  src: url("/fonts/CabinetGrotesk-Bold.otf") format("opentype");
+}
+@font-face {
+  font-family: "CabinetGrotesk2";
+  src: url("/fonts/CabinetGrotesk-Regular.otf") format("opentype");
+}
+@font-face {
+  font-family: "CabinetGrotesk3";
+  src: url("/fonts/CabinetGrotesk-BLack.otf") format("opentype");
+
+}
+@font-face {
+  font-family: "CabinetGrotesk4";
+  src: url("/fonts/CabinetGrotesk-Extrabold.otf") format("opentype");
+}
+@font-face {
+  font-family: "CabinetGrotesk5";
+  src: url("/fonts/CabinetGrotesk-Extralight.otf") format("opentype");
+}
+@font-face {
+  font-family: "CabinetGrotesk6";
+  src: url("/fonts/CabinetGrotesk-Light.otf") format("opentype");
+}
+@font-face {
+  font-family: "CabinetGrotesk7";
+  src: url("/fonts/CabinetGrotesk-Medium.otf") format("opentype");
+}
+@font-face {
+  font-family: "CabinetGrotesk8";
+  src: url("/fonts/CabinetGrotesk-Thin.otf") format("opentype");
+}
+.font-cabinet-bold {
+  font-family: "CabinetGrotesk", sans-serif;
+}
+.font-cabinet {
+  font-family: "CabinetGrotesk2", sans-serif;
+}
+.font-cabinet-black {
+  font-family: "CabinetGrotesk3", sans-serif;
+}
+.font-cabinet-extrabold {
+  font-family: "CabinetGrotesk4", sans-serif;
+}
+.font-cabinet-extralight {
+  font-family: "CabinetGrotesk5", sans-serif;
+}
+.font-cabinet-light {
+  font-family: "CabinetGrotesk6", sans-serif;
+}
+.font-cabinet-medium {
+  font-family: "CabinetGrotesk7", sans-serif;
+}
+.font-cabinet-thin {
+  font-family: "CabinetGrotesk8", sans-serif;
 }
