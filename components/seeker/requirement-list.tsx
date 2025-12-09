@@ -60,7 +60,7 @@ export function RequirementList({ requirements, onViewProposals, onViewDetails }
                 <Calendar className="h-4 w-4" />
                 {requirement.timeline}
               </div>
-              <div className="text-sm text-muted-foreground">Posted {requirement.createdAt.toLocaleDateString()}</div>
+              <div className="text-sm text-muted-foreground">Posted {requirement.createdAt ? new Date(requirement.createdAt).toLocaleDateString() : "Today"}</div>
             </div>
 
             <div className="flex gap-2">
