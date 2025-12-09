@@ -28,15 +28,22 @@ export function PostRequirementForm({ onSubmit, onCancel }: PostRequirementFormP
   })
   const [attachments, setAttachments] = useState<File[]>([])
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit({
-      ...formData,
-      budgetMin: Number.parseInt(formData.budgetMin),
-      budgetMax: Number.parseInt(formData.budgetMax),
-      attachments: attachments.map((f) => f.name),
-    })
+const handleSubmit = (e: React.FormEvent) => {
+  e.preventDefault()
+
+  // Build correct payload for API
+  const payload = {
+    title: formData.title.trim(),
+    category: formData.category,
+    description: formData.description.trim(),
+    budgetMin: Number(formData.budgetMin),
+    budgetMax: Number(formData.budgetMax),
+    timeline: formData.timeline.trim(),
   }
+
+  onSubmit(payload)
+}
+
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {

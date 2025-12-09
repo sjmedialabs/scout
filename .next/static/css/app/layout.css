@@ -1,3 +1,134 @@
+/*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[2].use[1]!./node_modules/next/dist/build/webpack/loaders/next-font-loader/index.js??ruleSet[1].rules[14].oneOf[2].use[2]!./node_modules/next/font/google/target.css?{"path":"app\\layout.tsx","import":"Inter","arguments":[{"subsets":["latin"],"variable":"--font-sans"}],"variableName":"inter"} ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/* cyrillic-ext */
+@font-face {
+  font-family: '__Inter_f367f3';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(/_next/static/media/ba9851c3c22cd980-s.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: '__Inter_f367f3';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(/_next/static/media/21350d82a1f187e9-s.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: '__Inter_f367f3';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(/_next/static/media/c5fe6dc8356a8c31-s.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: '__Inter_f367f3';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(/_next/static/media/19cfc7226ec3afaa-s.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: '__Inter_f367f3';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(/_next/static/media/df0a9ae256c0569c-s.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: '__Inter_f367f3';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(/_next/static/media/8e9860b6e62d6359-s.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: '__Inter_f367f3';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(/_next/static/media/e4af272ccee01ff0-s.p.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}@font-face {font-family: '__Inter_Fallback_f367f3';src: local("Arial");ascent-override: 90.49%;descent-override: 22.56%;line-gap-override: 0.00%;size-adjust: 107.06%
+}.__className_f367f3 {font-family: '__Inter_f367f3', '__Inter_Fallback_f367f3';font-style: normal
+}.__variable_f367f3 {--font-sans: '__Inter_f367f3', '__Inter_Fallback_f367f3'
+}
+
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[2].use[1]!./node_modules/next/dist/build/webpack/loaders/next-font-loader/index.js??ruleSet[1].rules[14].oneOf[2].use[2]!./node_modules/next/font/google/target.css?{"path":"app\\layout.tsx","import":"JetBrains_Mono","arguments":[{"subsets":["latin"],"variable":"--font-mono"}],"variableName":"jetbrainsMono"} ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/* cyrillic-ext */
+@font-face {
+  font-family: '__JetBrains_Mono_3c557b';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url(/_next/static/media/886030b0b59bc5a7-s.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: '__JetBrains_Mono_3c557b';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url(/_next/static/media/0aa834ed78bf6d07-s.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek */
+@font-face {
+  font-family: '__JetBrains_Mono_3c557b';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url(/_next/static/media/67957d42bae0796d-s.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: '__JetBrains_Mono_3c557b';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url(/_next/static/media/f911b923c6adde36-s.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: '__JetBrains_Mono_3c557b';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url(/_next/static/media/939c4f875ee75fbb-s.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: '__JetBrains_Mono_3c557b';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url(/_next/static/media/bb3ef058b751a6ad-s.p.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}@font-face {font-family: '__JetBrains_Mono_Fallback_3c557b';src: local("Arial");ascent-override: 75.79%;descent-override: 22.29%;line-gap-override: 0.00%;size-adjust: 134.59%
+}.__className_3c557b {font-family: '__JetBrains_Mono_3c557b', '__JetBrains_Mono_Fallback_3c557b';font-style: normal
+}.__variable_3c557b {--font-mono: '__JetBrains_Mono_3c557b', '__JetBrains_Mono_Fallback_3c557b'
+}
+
 /*!*************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[12].use[3]!./app/globals.css ***!
   \*************************************************************************************************************************************************************************************************************************************************************/
@@ -100,6 +231,7 @@
     --container-2xl: 42rem;
     --container-3xl: 48rem;
     --container-4xl: 56rem;
+    --container-5xl: 64rem;
     --container-6xl: 72rem;
     --container-7xl: 80rem;
     --text-xs: 0.75rem;
@@ -131,6 +263,7 @@
     --leading-relaxed: 1.625;
     --radius-xs: 0.125rem;
     --radius-2xl: 1rem;
+    --radius-3xl: 1.5rem;
     --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
     --animate-spin: spin 1s linear infinite;
     --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -465,17 +598,8 @@
   .z-\[100\] {
     z-index: 100;
   }
-  .col-auto {
-    grid-column: auto;
-  }
   .col-span-1 {
     grid-column: span 1 / span 1;
-  }
-  .col-span-2 {
-    grid-column: span 2 / span 2;
-  }
-  .col-span-3 {
-    grid-column: span 3 / span 3;
   }
   .col-start-2 {
     grid-column-start: 2;
@@ -531,6 +655,9 @@
   .-mt-4 {
     margin-top: calc(var(--spacing) * -4);
   }
+  .-mt-10 {
+    margin-top: calc(var(--spacing) * -10);
+  }
   .mt-0\.5 {
     margin-top: calc(var(--spacing) * 0.5);
   }
@@ -555,6 +682,9 @@
   .mt-8 {
     margin-top: calc(var(--spacing) * 8);
   }
+  .mt-10 {
+    margin-top: calc(var(--spacing) * 10);
+  }
   .mt-auto {
     margin-top: auto;
   }
@@ -563,24 +693,6 @@
   }
   .mr-2 {
     margin-right: calc(var(--spacing) * 2);
-  }
-  .mr-4 {
-    margin-right: calc(var(--spacing) * 4);
-  }
-  .mr-18 {
-    margin-right: calc(var(--spacing) * 18);
-  }
-  .mr-24 {
-    margin-right: calc(var(--spacing) * 24);
-  }
-  .mr-32 {
-    margin-right: calc(var(--spacing) * 32);
-  }
-  .mr-36 {
-    margin-right: calc(var(--spacing) * 36);
-  }
-  .mr-40 {
-    margin-right: calc(var(--spacing) * 40);
   }
   .mb-1 {
     margin-bottom: calc(var(--spacing) * 1);
@@ -623,6 +735,9 @@
   }
   .ml-80 {
     margin-left: calc(var(--spacing) * 80);
+  }
+  .ml-\[30px\] {
+    margin-left: 30px;
   }
   .ml-auto {
     margin-left: auto;
@@ -801,6 +916,18 @@
   .h-\[1\.15rem\] {
     height: 1.15rem;
   }
+  .h-\[40px\] {
+    height: 40px;
+  }
+  .h-\[55vh\] {
+    height: 55vh;
+  }
+  .h-\[65vh\] {
+    height: 65vh;
+  }
+  .h-\[260px\] {
+    height: 260px;
+  }
   .h-\[500px\] {
     height: 500px;
   }
@@ -948,6 +1075,12 @@
   .w-\[100px\] {
     width: 100px;
   }
+  .w-\[120px\] {
+    width: 120px;
+  }
+  .w-\[150px\] {
+    width: 150px;
+  }
   .w-auto {
     width: auto;
   }
@@ -974,6 +1107,9 @@
   }
   .max-w-4xl {
     max-width: var(--container-4xl);
+  }
+  .max-w-5xl {
+    max-width: var(--container-5xl);
   }
   .max-w-6xl {
     max-width: var(--container-6xl);
@@ -1014,23 +1150,8 @@
   .min-w-10 {
     min-width: calc(var(--spacing) * 10);
   }
-  .min-w-20 {
-    min-width: calc(var(--spacing) * 20);
-  }
-  .min-w-70 {
-    min-width: calc(var(--spacing) * 70);
-  }
   .min-w-72 {
     min-width: calc(var(--spacing) * 72);
-  }
-  .min-w-76 {
-    min-width: calc(var(--spacing) * 76);
-  }
-  .min-w-80 {
-    min-width: calc(var(--spacing) * 80);
-  }
-  .min-w-100 {
-    min-width: calc(var(--spacing) * 100);
   }
   .min-w-\[8rem\] {
     min-width: 8rem;
@@ -1181,9 +1302,6 @@
   .grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  .grid-cols-4 {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
   .grid-cols-5 {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
@@ -1219,9 +1337,6 @@
   }
   .items-stretch {
     align-items: stretch;
-  }
-  .justify-around {
-    justify-content: space-around;
   }
   .justify-between {
     justify-content: space-between;
@@ -1261,9 +1376,6 @@
   }
   .gap-8 {
     gap: calc(var(--spacing) * 8);
-  }
-  .gap-10 {
-    gap: calc(var(--spacing) * 10);
   }
   .gap-12 {
     gap: calc(var(--spacing) * 12);
@@ -1315,6 +1427,13 @@
       --tw-space-y-reverse: 0;
       margin-block-start: calc(calc(var(--spacing) * 8) * var(--tw-space-y-reverse));
       margin-block-end: calc(calc(var(--spacing) * 8) * calc(1 - var(--tw-space-y-reverse)));
+    }
+  }
+  .space-y-10 {
+    :where(& > :not(:last-child)) {
+      --tw-space-y-reverse: 0;
+      margin-block-start: calc(calc(var(--spacing) * 10) * var(--tw-space-y-reverse));
+      margin-block-end: calc(calc(var(--spacing) * 10) * calc(1 - var(--tw-space-y-reverse)));
     }
   }
   .space-x-2 {
@@ -1386,6 +1505,9 @@
   }
   .rounded-2xl {
     border-radius: var(--radius-2xl);
+  }
+  .rounded-3xl {
+    border-radius: var(--radius-3xl);
   }
   .rounded-\[2px\] {
     border-radius: 2px;
@@ -1487,10 +1609,6 @@
   .border-l-8 {
     border-left-style: var(--tw-border-style);
     border-left-width: 8px;
-  }
-  .border-l-\[1px\] {
-    border-left-style: var(--tw-border-style);
-    border-left-width: 1px;
   }
   .border-dashed {
     --tw-border-style: dashed;
@@ -1607,6 +1725,9 @@
   .border-r-transparent {
     border-right-color: transparent;
   }
+  .border-b-\[\#b2b2b2\] {
+    border-bottom-color: #b2b2b2;
+  }
   .border-l-blue-500 {
     border-left-color: var(--color-blue-500);
   }
@@ -1630,6 +1751,9 @@
   }
   .bg-background {
     background-color: var(--background);
+  }
+  .bg-black {
+    background-color: var(--color-black);
   }
   .bg-black\/50 {
     background-color: color-mix(in srgb, #000 50%, transparent);
@@ -1675,6 +1799,9 @@
   }
   .bg-gray-100 {
     background-color: var(--color-gray-100);
+  }
+  .bg-gray-200 {
+    background-color: var(--color-gray-200);
   }
   .bg-gray-300 {
     background-color: var(--color-gray-300);
@@ -1762,9 +1889,6 @@
   }
   .bg-red-500 {
     background-color: var(--color-red-500);
-  }
-  .bg-red-600 {
-    background-color: var(--color-red-600);
   }
   .bg-secondary {
     background-color: var(--secondary);
@@ -1996,6 +2120,9 @@
   .bg-no-repeat {
     background-repeat: no-repeat;
   }
+  .fill-\[\#F54A0C\] {
+    fill: #F54A0C;
+  }
   .fill-current {
     fill: currentcolor;
   }
@@ -2016,6 +2143,9 @@
   }
   .p-0 {
     padding: calc(var(--spacing) * 0);
+  }
+  .p-0\.5 {
+    padding: calc(var(--spacing) * 0.5);
   }
   .p-1 {
     padding: calc(var(--spacing) * 1);
@@ -2047,6 +2177,9 @@
   .px-\(--cell-size\) {
     padding-inline: var(--cell-size);
   }
+  .px-0 {
+    padding-inline: calc(var(--spacing) * 0);
+  }
   .px-1 {
     padding-inline: calc(var(--spacing) * 1);
   }
@@ -2070,9 +2203,6 @@
   }
   .px-8 {
     padding-inline: calc(var(--spacing) * 8);
-  }
-  .px-12 {
-    padding-inline: calc(var(--spacing) * 12);
   }
   .py-0 {
     padding-block: calc(var(--spacing) * 0);
@@ -2104,6 +2234,9 @@
   .py-8 {
     padding-block: calc(var(--spacing) * 8);
   }
+  .py-10 {
+    padding-block: calc(var(--spacing) * 10);
+  }
   .py-12 {
     padding-block: calc(var(--spacing) * 12);
   }
@@ -2112,9 +2245,6 @@
   }
   .py-20 {
     padding-block: calc(var(--spacing) * 20);
-  }
-  .py-\[2px\] {
-    padding-block: 2px;
   }
   .pt-0 {
     padding-top: calc(var(--spacing) * 0);
@@ -2131,11 +2261,14 @@
   .pt-6 {
     padding-top: calc(var(--spacing) * 6);
   }
+  .pt-12 {
+    padding-top: calc(var(--spacing) * 12);
+  }
   .pt-16 {
     padding-top: calc(var(--spacing) * 16);
   }
-  .pt-20 {
-    padding-top: calc(var(--spacing) * 20);
+  .pt-36 {
+    padding-top: calc(var(--spacing) * 36);
   }
   .pr-1 {
     padding-right: calc(var(--spacing) * 1);
@@ -2161,6 +2294,9 @@
   .pb-4 {
     padding-bottom: calc(var(--spacing) * 4);
   }
+  .pb-6 {
+    padding-bottom: calc(var(--spacing) * 6);
+  }
   .pl-2 {
     padding-left: calc(var(--spacing) * 2);
   }
@@ -2170,11 +2306,11 @@
   .pl-8 {
     padding-left: calc(var(--spacing) * 8);
   }
+  .pl-9 {
+    padding-left: calc(var(--spacing) * 9);
+  }
   .pl-10 {
     padding-left: calc(var(--spacing) * 10);
-  }
-  .pl-12 {
-    padding-left: calc(var(--spacing) * 12);
   }
   .text-center {
     text-align: center;
@@ -2290,8 +2426,14 @@
   .text-\[\#F54A0C\] {
     color: #F54A0C;
   }
+  .text-\[\#b2b2b2\] {
+    color: #b2b2b2;
+  }
   .text-accent-foreground {
     color: var(--accent-foreground);
+  }
+  .text-black {
+    color: var(--color-black);
   }
   .text-blue-500 {
     color: var(--color-blue-500);
@@ -2328,6 +2470,12 @@
     @supports (color: color-mix(in lab, red, red)) {
       color: color-mix(in oklab, var(--foreground) 50%, transparent);
     }
+  }
+  .text-gray-100 {
+    color: var(--color-gray-100);
+  }
+  .text-gray-200 {
+    color: var(--color-gray-200);
   }
   .text-gray-300 {
     color: var(--color-gray-300);
@@ -3086,6 +3234,11 @@
       line-height: var(--tw-leading, var(--text-xs--line-height));
     }
   }
+  .placeholder\:text-\[\#b2b2b2\] {
+    &::placeholder {
+      color: #b2b2b2;
+    }
+  }
   .placeholder\:text-gray-200 {
     &::placeholder {
       color: var(--color-gray-200);
@@ -3329,13 +3482,6 @@
       }
     }
   }
-  .hover\:bg-red-700 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-red-700);
-      }
-    }
-  }
   .hover\:bg-secondary {
     &:hover {
       @media (hover: hover) {
@@ -3371,13 +3517,6 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-slate-600);
-      }
-    }
-  }
-  .hover\:bg-slate-900 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-slate-900);
       }
     }
   }
@@ -3643,6 +3782,11 @@
       background-color: var(--color-slate-500);
     }
   }
+  .focus\:bg-transparent {
+    &:focus {
+      background-color: transparent;
+    }
+  }
   .focus\:text-accent-foreground {
     &:focus {
       color: var(--accent-foreground);
@@ -3651,6 +3795,12 @@
   .focus\:opacity-100 {
     &:focus {
       opacity: 100%;
+    }
+  }
+  .focus\:ring-0 {
+    &:focus {
+      --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
+      box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
     }
   }
   .focus\:ring-2 {
@@ -3667,6 +3817,12 @@
   .focus\:ring-ring {
     &:focus {
       --tw-ring-color: var(--ring);
+    }
+  }
+  .focus\:ring-offset-0 {
+    &:focus {
+      --tw-ring-offset-width: 0px;
+      --tw-ring-offset-shadow: var(--tw-ring-inset,) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
     }
   }
   .focus\:ring-offset-2 {
@@ -5067,11 +5223,6 @@
       margin-top: calc(var(--spacing) * 0);
     }
   }
-  .md\:mr-36 {
-    @media (width >= 48rem) {
-      margin-right: calc(var(--spacing) * 36);
-    }
-  }
   .md\:block {
     @media (width >= 48rem) {
       display: block;
@@ -5080,6 +5231,11 @@
   .md\:flex {
     @media (width >= 48rem) {
       display: flex;
+    }
+  }
+  .md\:h-\[55vh\] {
+    @media (width >= 48rem) {
+      height: 55vh;
     }
   }
   .md\:w-\[var\(--radix-navigation-menu-viewport-width\)\] {
@@ -5095,16 +5251,6 @@
   .md\:max-w-\[420px\] {
     @media (width >= 48rem) {
       max-width: 420px;
-    }
-  }
-  .md\:basis-1\/3 {
-    @media (width >= 48rem) {
-      flex-basis: calc(1/3 * 100%);
-    }
-  }
-  .md\:basis-2\/3 {
-    @media (width >= 48rem) {
-      flex-basis: calc(2/3 * 100%);
     }
   }
   .md\:grid-cols-2 {
@@ -5130,6 +5276,11 @@
   .md\:flex-row {
     @media (width >= 48rem) {
       flex-direction: row;
+    }
+  }
+  .md\:flex-nowrap {
+    @media (width >= 48rem) {
+      flex-wrap: nowrap;
     }
   }
   .md\:items-center {
@@ -5166,6 +5317,16 @@
     @media (width >= 48rem) {
       border-left-style: var(--tw-border-style);
       border-left-width: 1px;
+    }
+  }
+  .md\:py-8 {
+    @media (width >= 48rem) {
+      padding-block: calc(var(--spacing) * 8);
+    }
+  }
+  .md\:pt-12 {
+    @media (width >= 48rem) {
+      padding-top: calc(var(--spacing) * 12);
     }
   }
   .md\:pt-20 {
@@ -5320,6 +5481,11 @@
   .lg\:px-8 {
     @media (width >= 64rem) {
       padding-inline: calc(var(--spacing) * 8);
+    }
+  }
+  .lg\:px-30 {
+    @media (width >= 64rem) {
+      padding-inline: calc(var(--spacing) * 30);
     }
   }
   .lg\:pl-12 {
@@ -6069,7 +6235,7 @@
 :root {
   --background: oklch(1 0 0);
   --blueBackground: #E7F0F8;
-  --blueButton: #F54A0C;
+  --blueButton: #2C34A1;
   --orangeButton: #F54A0C;
   --foreground: oklch(0.205 0 0);
   --card: oklch(0.985 0 0);
@@ -6767,135 +6933,4 @@
   }
 }
 
-
-/*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[2].use[1]!./node_modules/next/dist/build/webpack/loaders/next-font-loader/index.js??ruleSet[1].rules[14].oneOf[2].use[2]!./node_modules/next/font/google/target.css?{"path":"app\\layout.tsx","import":"Inter","arguments":[{"subsets":["latin"],"variable":"--font-sans"}],"variableName":"inter"} ***!
-  \******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/* cyrillic-ext */
-@font-face {
-  font-family: '__Inter_f367f3';
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url(/_next/static/media/ba9851c3c22cd980-s.woff2) format('woff2');
-  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-}
-/* cyrillic */
-@font-face {
-  font-family: '__Inter_f367f3';
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url(/_next/static/media/21350d82a1f187e9-s.woff2) format('woff2');
-  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
-}
-/* greek-ext */
-@font-face {
-  font-family: '__Inter_f367f3';
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url(/_next/static/media/c5fe6dc8356a8c31-s.woff2) format('woff2');
-  unicode-range: U+1F00-1FFF;
-}
-/* greek */
-@font-face {
-  font-family: '__Inter_f367f3';
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url(/_next/static/media/19cfc7226ec3afaa-s.woff2) format('woff2');
-  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
-}
-/* vietnamese */
-@font-face {
-  font-family: '__Inter_f367f3';
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url(/_next/static/media/df0a9ae256c0569c-s.woff2) format('woff2');
-  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
-}
-/* latin-ext */
-@font-face {
-  font-family: '__Inter_f367f3';
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url(/_next/static/media/8e9860b6e62d6359-s.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: '__Inter_f367f3';
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url(/_next/static/media/e4af272ccee01ff0-s.p.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}@font-face {font-family: '__Inter_Fallback_f367f3';src: local("Arial");ascent-override: 90.49%;descent-override: 22.56%;line-gap-override: 0.00%;size-adjust: 107.06%
-}.__className_f367f3 {font-family: '__Inter_f367f3', '__Inter_Fallback_f367f3';font-style: normal
-}.__variable_f367f3 {--font-sans: '__Inter_f367f3', '__Inter_Fallback_f367f3'
-}
-
-/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[2].use[1]!./node_modules/next/dist/build/webpack/loaders/next-font-loader/index.js??ruleSet[1].rules[14].oneOf[2].use[2]!./node_modules/next/font/google/target.css?{"path":"app\\layout.tsx","import":"JetBrains_Mono","arguments":[{"subsets":["latin"],"variable":"--font-mono"}],"variableName":"jetbrainsMono"} ***!
-  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/* cyrillic-ext */
-@font-face {
-  font-family: '__JetBrains_Mono_3c557b';
-  font-style: normal;
-  font-weight: 100 800;
-  font-display: swap;
-  src: url(/_next/static/media/886030b0b59bc5a7-s.woff2) format('woff2');
-  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-}
-/* cyrillic */
-@font-face {
-  font-family: '__JetBrains_Mono_3c557b';
-  font-style: normal;
-  font-weight: 100 800;
-  font-display: swap;
-  src: url(/_next/static/media/0aa834ed78bf6d07-s.woff2) format('woff2');
-  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
-}
-/* greek */
-@font-face {
-  font-family: '__JetBrains_Mono_3c557b';
-  font-style: normal;
-  font-weight: 100 800;
-  font-display: swap;
-  src: url(/_next/static/media/67957d42bae0796d-s.woff2) format('woff2');
-  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
-}
-/* vietnamese */
-@font-face {
-  font-family: '__JetBrains_Mono_3c557b';
-  font-style: normal;
-  font-weight: 100 800;
-  font-display: swap;
-  src: url(/_next/static/media/f911b923c6adde36-s.woff2) format('woff2');
-  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
-}
-/* latin-ext */
-@font-face {
-  font-family: '__JetBrains_Mono_3c557b';
-  font-style: normal;
-  font-weight: 100 800;
-  font-display: swap;
-  src: url(/_next/static/media/939c4f875ee75fbb-s.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: '__JetBrains_Mono_3c557b';
-  font-style: normal;
-  font-weight: 100 800;
-  font-display: swap;
-  src: url(/_next/static/media/bb3ef058b751a6ad-s.p.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}@font-face {font-family: '__JetBrains_Mono_Fallback_3c557b';src: local("Arial");ascent-override: 75.79%;descent-override: 22.29%;line-gap-override: 0.00%;size-adjust: 134.59%
-}.__className_3c557b {font-family: '__JetBrains_Mono_3c557b', '__JetBrains_Mono_Fallback_3c557b';font-style: normal
-}.__variable_3c557b {--font-mono: '__JetBrains_Mono_3c557b', '__JetBrains_Mono_Fallback_3c557b'
-}
 
