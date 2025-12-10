@@ -7,13 +7,14 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { usePathname } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Twitter } from "lucide-react"
 
 export function Footer() {
   const pathname = usePathname()
   const isAgencyDashboard = pathname?.startsWith("/agency/dashboard")
   const [email, setEmail] = useState("")
+  const [cms, setCms] = useState<any>(null);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,6 +38,18 @@ export function Footer() {
       alert("Failed to subscribe. Please try again.")
     }
   }
+useEffect(() => {
+  const fetchCMS = async () => {
+    try {
+      const res = await fetch("/api/cms");
+      const data = await res.json();
+      if (data?.success) setCms(data.data); // assuming { success, data }
+    } catch (err) {
+      console.error("CMS fetch error:", err);
+    }
+  };
+  fetchCMS();
+}, []);
 
   return (
     <footer className="bg-[url('/images/background-footer.jpg')] bg-cover bg-no-repeat bg-center] dark">
@@ -155,21 +168,21 @@ export function Footer() {
               <li>
                 <Link href="/browse" className=" hover:text-foreground">
                   <span className="flex flex-col font-semibold">
-                  Address <span className="font-normal">123 Business Ave San Fancisco, CA 94105</span>
+                  Address <span className="font-normal">{cms?.contact?.address || "—"}</span>
                   </span>
                 </Link>
               </li>
               <li>
                 <Link href="/providers" className=" hover:text-foreground">
                   <span className="flex flex-col font-semibold">
-                  Phone <span className="font-normal">+1 (123) 456-7890</span>
+                  Phone <span className="font-normal">{cms?.contact?.phone || "—"}</span>
                   </span>
                 </Link>
               </li>
               <li>
                 <Link href="/register" className=" hover:text-foreground">
                   <span className="flex flex-col font-semibold">
-                  Email <span className="font-normal">hello@spark.com</span>
+                  Email <span className="font-normal">{cms?.contact?.email || "—"}</span>
                   </span>
                 </Link>
               </li>
@@ -182,7 +195,7 @@ export function Footer() {
         <div className="flex flex-col gap-1 justify-between items-center text-lg text-white font-medium">
           <div className="flex flex-wrap gap-6 mt-4 md:mt-0">
             <Link
-              href="https://facebook.com/sparkplatform"
+              href={cms?.contact?.facebookUrl || "#"}
               className="hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"
@@ -190,7 +203,7 @@ export function Footer() {
             <img src="/images/Facebook.png" alt="" className="h-8"/>
             </Link>
             <Link
-              href="https://twitter.com/sparkplatform"
+              href={cms?.contact?.twitterUrl || "#"}
               className="hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"
@@ -198,7 +211,7 @@ export function Footer() {
             <img src="/images/twitter.png" alt="" className="h-8"/>
             </Link>
             <Link
-              href="https://linkedin.com/company/sparkplatform"
+              href={cms?.contact?.linkedinUrl || "#"}
               className="hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"
@@ -206,7 +219,7 @@ export function Footer() {
             <img src="/images/Linkedin.png" alt="" className="h-8"/>
             </Link>
             <Link
-              href="https://youtube.com/sparkplatform"
+              href={cms?.contact?.youtubeUrl || "#"}
               className="hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"

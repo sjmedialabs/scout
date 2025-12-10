@@ -1,7 +1,8 @@
 {
-  "/login/page": "app/login/page.js",
-  "/admin/revenue-dashboard/page": "app/admin/revenue-dashboard/page.js",
-  "/admin/subscription-plans/page": "app/admin/subscription-plans/page.js",
-  "/admin/subscribers/page": "app/admin/subscribers/page.js",
-  "/admin/dashboard/page": "app/admin/dashboard/page.js"
+  "/about/page": "app/about/page.js",
+  "/browse/page": "app/browse/page.js",
+  "/providers/page": "app/providers/page.js",
+  "/pricing/page": "app/pricing/page.js",
+  "/api/cms/route": "app/api/cms/route.js",
+  "/api/auth/me/route": "app/api/auth/me/route.js"
 }
