@@ -1,11 +1,7 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/contact/page": "app/contact/page.js",
-  "/browse/page": "app/browse/page.js",
-  "/providers/page": "app/providers/page.js",
-  "/services/development/page": "app/services/development/page.js",
-  "/services/it/page": "app/services/it/page.js",
-  "/services/marketing/page": "app/services/marketing/page.js",
-  "/admin/dashboard/page": "app/admin/dashboard/page.js",
-  "/api/auth/me/route": "app/api/auth/me/route.js"
+  "/login/page": "app/login/page.js",
+  "/admin/revenue-dashboard/page": "app/admin/revenue-dashboard/page.js",
+  "/admin/subscription-plans/page": "app/admin/subscription-plans/page.js",
+  "/admin/subscribers/page": "app/admin/subscribers/page.js",
+  "/admin/dashboard/page": "app/admin/dashboard/page.js"
 }
