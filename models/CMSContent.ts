@@ -17,17 +17,17 @@ export interface ICMSContent extends Document {
   aboutBannerSubtitle?: string;
   aboutDescription1?: string;
   aboutDescription2?: string;
-
+  aboutSideImage: String,
   aboutPoints: string[];
   aboutVisionCard: { icon: string; title: string; description: string }[];
-  aboutStats: { value: string; text: string }[];
+  aboutStats: { value: string; text: string, imageUrl: string }[];
 
   aboutTeamTitle: string;
   aboutTeamSubtitle?: string;
   aboutTeam: { image: string; name: string; role: string }[];
 
   aboutValuesTitle: string;
-  aboutValues: { title: string; description: string }[];
+  aboutValues: { title: string; description: string, imageUrl: string }[];
 
   commonBgImage: string;
 
@@ -66,7 +66,7 @@ const CMSSchema = new Schema<ICMSContent>(
     aboutBannerSubtitle: String,
     aboutDescription1: String,
     aboutDescription2: String,
-
+    aboutSideImage: String,
     aboutPoints: [String],
 
     aboutVisionCard: [
@@ -74,7 +74,7 @@ const CMSSchema = new Schema<ICMSContent>(
     ],
 
     aboutStats: [
-      { value: String, text: String }
+      { value: String, text: String, imageUrl: String }
     ],
 
     aboutTeamTitle: String,
@@ -86,7 +86,7 @@ const CMSSchema = new Schema<ICMSContent>(
 
     aboutValuesTitle: String,
     aboutValues: [
-      { title: String, description: String }
+      { title: String, description: String, imageUrl: String }
     ],
 
     commonBgImage: String,

@@ -75,18 +75,19 @@ export async function PUT(req: NextRequest) {
     const body = await req.json();
 
     // Find existing CMS doc
-    let cms = await CMSContent.findOne();
+const updated = await CMSContent.findOneAndUpdate(
+  {}, 
+  body,
+  {
+    new: true,
+    upsert: true,
+    runValidators: true,
+    setDefaultsOnInsert: true,
+  }
+);
 
-    if (!cms) {
-      cms = new CMSContent();
-    }
 
-    // Update any fields dynamically
-    Object.assign(cms, body);
-
-    await cms.save();
-
-    return NextResponse.json({ success: true, data: cms });
+  return NextResponse.json({ success: true, data: updated });
 
   } catch (error) {
     console.error("CMS PUT Error:", error);
