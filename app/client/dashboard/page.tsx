@@ -507,6 +507,7 @@ const handlePostRequirement = async (newRequirement: any) => {
     // Prepare payload for API
     const payload = {
       title: newRequirement.title,
+      image: newRequirement.image,
       category: newRequirement.category,
       budgetMin: newRequirement.budgetMin,
       budgetMax: newRequirement.budgetMax,
@@ -514,7 +515,7 @@ const handlePostRequirement = async (newRequirement: any) => {
       description: newRequirement.description,
       createdBy: user.id, // depends on your auth context
     }
-
+    console.log("Requirement payload on main parent:", payload)
     // API CALL
     const res = await fetch("/api/requirements", {
       method: "POST",
@@ -523,7 +524,7 @@ const handlePostRequirement = async (newRequirement: any) => {
     })
 
     const data = await res.json()
-
+    console.log("Requirement created on main parent:", data)
     if (!res.ok) {
       console.error(data.error)
       alert(data.error || "Failed to create requirement")
@@ -534,6 +535,7 @@ const handlePostRequirement = async (newRequirement: any) => {
     const created = {
       id: data.requirement._id,
       title: data.requirement.title,
+      image: data.requirement.image,
       category: data.requirement.category,
       budgetMin: data.requirement.budgetMin,
       budgetMax: data.requirement.budgetMax,

@@ -28,6 +28,7 @@ export async function GET(req: NextRequest) {
     const formatted = requirements.map((r: any) => ({
       id: r._id,
       title: r.title,
+      image: r.image,
       category: r.category,
       budget: `$${r.budgetMin} - $${r.budgetMax}`,
       timeline: r.timeline,
@@ -69,9 +70,10 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-
+    console.log("body",body)
     const newReq = await Requirement.create({
       title: body.title,
+      image: body.image,
       category: body.category,
       budgetMin: body.budgetMin,
       budgetMax: body.budgetMax,
@@ -79,7 +81,7 @@ export async function POST(req: NextRequest) {
       description: body.description,
       createdBy: user.userId, // 👈 IMPORTANT: logged-in client
     })
-
+    console.log("newReq",newReq)
     return NextResponse.json({ success: true,   requirement: {
     ...newReq.toObject(),
     createdAt: newReq.createdAt,

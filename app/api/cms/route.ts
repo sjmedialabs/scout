@@ -1,40 +1,28 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import CMSContent from "@/models/CMSContent";
 import { getCurrentUser } from "@/lib/auth/jwt";
 
-// ------------------------------
-// GET – Fetch ALL or Single Content
-// ------------------------------
-export async function GET(req: NextRequest) {
+// --------- GET CMS (Fetch the only document) ----------
+export async function GET() {
   try {
     await connectToDatabase();
 
-    const searchParams = req.nextUrl.searchParams;
-    const key = searchParams.get("key");
-    const type = searchParams.get("type");
+    let cms = await CMSContent.findOne().lean();
 
-    let query: any = {};
+    // Auto-create CMS if empty
+    if (!cms) {
+      cms = await CMSContent.create({});
+    }
 
-    if (key) query.key = key;
-    if (type) query.type = type;
+    return NextResponse.json({ success: true, data: cms });
 
-    const data = await CMSContent.find(query).sort({ order: 1 }).lean();
-
-    return NextResponse.json({
-      success: true,
-      count: data.length,
-      items: data,
-    });
   } catch (error) {
     console.error("CMS GET Error:", error);
-    return NextResponse.json({ success: false, error: "Failed to fetch content" }, { status: 500 });
+    return NextResponse.json({ success: false, error: "Failed to fetch CMS" }, { status: 500 });
   }
 }
-
-// ------------------------------
-// POST – Create New CMS Content
-// ------------------------------
+// --------- POST CMS (Create Initial CMS Only Once) ----------
 export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser();
@@ -44,114 +32,64 @@ export async function POST(req: NextRequest) {
 
     await connectToDatabase();
 
-    const body = await req.json();
-
-    const exists = await CMSContent.findOne({ key: body.key });
+    // CMS should only be created once
+    const exists = await CMSContent.findOne();
     if (exists) {
       return NextResponse.json(
-        { success: false, error: "Content with this key already exists" },
+        { success: false, error: "CMS already exists. Use PUT to update." },
         { status: 400 }
       );
     }
 
-    const newContent = await CMSContent.create({
-      key: body.key,
-      type: body.type,
-      title: body.title,
-      subtitle: body.subtitle,
-      description: body.description,
-      image: body.image,
-      icon: body.icon,
-      link: body.link,
-      content: body.content || {},
-      metadata: body.metadata || {},
-      order: body.order || (await CMSContent.countDocuments({ type: body.type })) + 1,
-      isActive: body.isActive ?? true,
+    const body = await req.json();
+
+    const cms = await CMSContent.create(body);
+
+    return NextResponse.json({
+      success: true,
+      message: "CMS initialized successfully",
+      data: cms
     });
 
-    return NextResponse.json({ success: true, item: newContent });
   } catch (error) {
     console.error("CMS POST Error:", error);
-    return NextResponse.json({ success: false, error: "Failed to create content" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Failed to initialize CMS" },
+      { status: 500 }
+    );
   }
 }
 
-// ------------------------------
-// PUT – Update Content By Key
-// ------------------------------
+
+// --------- UPDATE CMS (Admin only) ----------
 export async function PUT(req: NextRequest) {
   try {
     const user = await getCurrentUser();
+
     if (!user || user.role !== "admin") {
       return NextResponse.json({ error: "Admin access required" }, { status: 403 });
     }
 
     await connectToDatabase();
+
     const body = await req.json();
 
-    if (!body.key) {
-      return NextResponse.json({ success: false, error: "Key is required" }, { status: 400 });
+    // Find existing CMS doc
+    let cms = await CMSContent.findOne();
+
+    if (!cms) {
+      cms = new CMSContent();
     }
 
-    const updated = await CMSContent.findOneAndUpdate(
-      { key: body.key },
-      {
-        title: body.title,
-        subtitle: body.subtitle,
-        description: body.description,
-        image: body.image,
-        icon: body.icon,
-        link: body.link,
-        content: body.content || {},
-        metadata: body.metadata || {},
-        order: body.order,
-        isActive: body.isActive,
-      },
-      { new: true }
-    );
+    // Update any fields dynamically
+    Object.assign(cms, body);
 
-    if (!updated) {
-      return NextResponse.json({ success: false, error: "Content not found" }, { status: 404 });
-    }
+    await cms.save();
 
-    return NextResponse.json({ success: true, item: updated });
+    return NextResponse.json({ success: true, data: cms });
+
   } catch (error) {
     console.error("CMS PUT Error:", error);
-    return NextResponse.json({ success: false, error: "Failed to update content" }, { status: 500 });
-  }
-}
-
-// ------------------------------
-// DELETE – Remove content by key
-// ------------------------------
-export async function DELETE(req: NextRequest) {
-  try {
-    const user = await getCurrentUser();
-    if (!user || user.role !== "admin") {
-      return NextResponse.json({ error: "Admin access required" }, { status: 403 });
-    }
-
-    await connectToDatabase();
-
-    const searchParams = req.nextUrl.searchParams;
-    const key = searchParams.get("key");
-
-    if (!key) {
-      return NextResponse.json(
-        { success: false, error: "Key is required for deletion" },
-        { status: 400 }
-      );
-    }
-
-    const deleted = await CMSContent.findOneAndDelete({ key });
-
-    if (!deleted) {
-      return NextResponse.json({ success: false, error: "Content not found" }, { status: 404 });
-    }
-
-    return NextResponse.json({ success: true, deleted });
-  } catch (error) {
-    console.error("CMS DELETE Error:", error);
-    return NextResponse.json({ success: false, error: "Failed to delete content" }, { status: 500 });
+    return NextResponse.json({ success: false, error: "Failed to update CMS" }, { status: 500 });
   }
 }

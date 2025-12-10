@@ -210,6 +210,17 @@
   font-family: "CabinetGrotesk8";
   src: url("/fonts/CabinetGrotesk-Thin.otf") format("opentype");
 }
+@font-face {
+  font-family: "MyCustomFont";
+  src: url("/fonts/heading.TTF") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.custom-heading {
+  font-family: "MyCustomFont", sans-serif;
+}
+
 .font-cabinet-bold {
   font-family: "CabinetGrotesk", sans-serif;
 }
