@@ -2,6 +2,7 @@ import mongoose, { Schema, Document, Model } from "mongoose"
 
 export interface IRequirement extends Document {
   title: string
+  image: string
   category: string
   budgetMin: number
   budgetMax: number
@@ -11,11 +12,14 @@ export interface IRequirement extends Document {
   proposals: number
   status: "Open" | "Closed"
   createdBy: mongoose.Types.ObjectId // always client ID
+  createdAt: Date
+  updatedAt: Date
 }
 
 const RequirementSchema = new Schema<IRequirement>(
   {
     title: { type: String, required: true },
+    image: { type: String, required: true },
     category: { type: String, required: true },
     budgetMin: { type: Number, required: true },
     budgetMax: { type: Number, required: true },
@@ -31,6 +35,5 @@ const RequirementSchema = new Schema<IRequirement>(
   },
   { timestamps: true },
 )
-
-export default mongoose.models.Requirement ||
-  mongoose.model<IRequirement>("Requirement", RequirementSchema)
+delete mongoose.models.Requirement;
+export default mongoose.model<IRequirement>("Requirement", RequirementSchema)

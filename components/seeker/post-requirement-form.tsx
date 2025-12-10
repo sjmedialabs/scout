@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Upload, X } from "lucide-react"
 import { categories } from "@/lib/mock-data"
+import FileUpload from "../file-upload"
 
 interface PostRequirementFormProps {
   onSubmit: (requirement: any) => void
@@ -20,6 +21,7 @@ interface PostRequirementFormProps {
 export function PostRequirementForm({ onSubmit, onCancel }: PostRequirementFormProps) {
   const [formData, setFormData] = useState({
     title: "",
+    image: "",
     description: "",
     category: "",
     budgetMin: "",
@@ -28,21 +30,23 @@ export function PostRequirementForm({ onSubmit, onCancel }: PostRequirementFormP
   })
   const [attachments, setAttachments] = useState<File[]>([])
 
-const handleSubmit = (e: React.FormEvent) => {
-  e.preventDefault()
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
 
-  // Build correct payload for API
-  const payload = {
-    title: formData.title.trim(),
-    category: formData.category,
-    description: formData.description.trim(),
-    budgetMin: Number(formData.budgetMin),
-    budgetMax: Number(formData.budgetMax),
-    timeline: formData.timeline.trim(),
+    // Build correct payload for API
+    const payload = {
+      title: formData.title.trim(),
+      image: formData.image,
+      category: formData.category,
+      description: formData.description.trim(),
+      budgetMin: Number(formData.budgetMin),
+      budgetMax: Number(formData.budgetMax),
+      timeline: formData.timeline.trim(),
+    }
+
+    onSubmit(payload)
+    console.log("Requirement submitted:", payload)
   }
-
-  onSubmit(payload)
-}
 
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -140,40 +144,14 @@ const handleSubmit = (e: React.FormEvent) => {
               required
             />
           </div>
+          <FileUpload
+            value={formData.image}
+            onChange={(url) =>
+              setFormData((prev) => ({ ...prev, image: url }))
+            }
+            accept="image/*"
+          />
 
-          <div className="space-y-2">
-            <Label>Project Attachments (Optional)</Label>
-            <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-              <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground mb-2">
-                Upload project briefs, wireframes, or reference materials
-              </p>
-              <input
-                type="file"
-                multiple
-                onChange={handleFileUpload}
-                className="hidden"
-                id="file-upload"
-                accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
-              />
-              <Button type="button" variant="outline" onClick={() => document.getElementById("file-upload")?.click()}>
-                Choose Files
-              </Button>
-            </div>
-
-            {attachments.length > 0 && (
-              <div className="space-y-2">
-                {attachments.map((file, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 bg-muted rounded">
-                    <span className="text-sm">{file.name}</span>
-                    <Button type="button" variant="ghost" size="sm" onClick={() => removeAttachment(index)}>
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
 
           <div className="flex gap-4 pt-4">
             <Button type="submit" className="flex-1">
