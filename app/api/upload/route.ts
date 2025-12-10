@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import path from "path"
 import { writeFile } from "fs/promises"
 import { randomUUID } from "crypto"
+import fs from "fs"   // ← ADD THIS
 
 export async function POST(req: Request) {
   try {
@@ -12,20 +13,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 })
     }
 
-    // Read the uploaded file buffer
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
-    // Save locally (in /public/uploads)
     const uploadDir = path.join(process.cwd(), "public", "uploads")
+
+    // ✅ Create folder if not exists
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true })
+    }
+
     const fileName = `${randomUUID()}-${file.name}`
     const filePath = path.join(uploadDir, fileName)
 
     await writeFile(filePath, buffer)
 
-    const fileUrl = `/uploads/${fileName}` // public URL
+    const fileUrl = `/uploads/${fileName}`
 
-    // ✅ Always return a valid JSON object
     return NextResponse.json({ url: fileUrl })
   } catch (err) {
     console.error("Upload error:", err)
