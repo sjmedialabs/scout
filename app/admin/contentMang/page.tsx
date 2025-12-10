@@ -50,15 +50,16 @@ export default function ContentManagementPage() {
   const handleSave = async () => {
     setLoading(true);
     setMessage("");
-
+    console.log("Saving CMS data:", cms);
     const res = await fetch("/api/cms", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ key: "home", ...cms }),
+      body: JSON.stringify(cms),
     });
 
     const data = await res.json();
     setMessage(data.success ? "Saved Successfully!" : data.error);
+    console.log("CMS save response:", data);
     setLoading(false);
   };
 
@@ -265,6 +266,163 @@ export default function ContentManagementPage() {
                   variant="destructive"
                   onClick={() => handleRemove("aboutPoints", index)}
                 >
+                  Remove
+                </Button>
+              </div>
+            ))}
+          </section>
+          {/* ABOUT SIDE IMAGE */}
+          <section className="border p-4 rounded space-y-4">
+            <h2 className="text-xl font-semibold">About Side Image</h2>
+
+            <FileUpload
+              value={cms.aboutSideImage}
+              onChange={(url) => updateField("aboutSideImage", url)}
+            />
+          </section>
+          {/* ABOUT VISION / MISSION */}
+          <section className="border p-4 rounded space-y-4">
+            <div className="flex justify-between">
+              <h2 className="text-xl font-semibold">Vision & Mission Cards</h2>
+              <Button onClick={() => handleAdd("aboutVisionCard", { icon: "", title: "", description: "" })}>
+                + Add Card
+              </Button>
+            </div>
+
+            {cms.aboutVisionCard?.map((item: any, index: number) => (
+              <div key={index} className="border p-3 rounded space-y-3">
+
+                <FileUpload
+                  value={item.icon}
+                  onChange={(url) => {
+                    const updated = [...cms.aboutVisionCard];
+                    updated[index].icon = url;
+                    updateField("aboutVisionCard", updated);
+                  }}
+                />
+
+                <Input
+                  placeholder="Title"
+                  value={item.title}
+                  onChange={(e) => {
+                    const updated = [...cms.aboutVisionCard];
+                    updated[index].title = e.target.value;
+                    updateField("aboutVisionCard", updated);
+                  }}
+                />
+
+                <Textarea
+                  placeholder="Description"
+                  value={item.description}
+                  onChange={(e) => {
+                    const updated = [...cms.aboutVisionCard];
+                    updated[index].description = e.target.value;
+                    updateField("aboutVisionCard", updated);
+                  }}
+                />
+
+                <Button variant="destructive" onClick={() => handleRemove("aboutVisionCard", index)}>
+                  Remove
+                </Button>
+              </div>
+            ))}
+          </section>
+          {/* ABOUT STATS */}
+          <section className="border p-4 rounded space-y-4">
+            <div className="flex justify-between">
+              <h2 className="text-xl font-semibold">About Stats</h2>
+              <Button onClick={() => handleAdd("aboutStats", { value: "", text: "" })}>
+                + Add Stat
+              </Button>
+            </div>
+
+            {cms.aboutStats?.map((stat: any, index: number) => (
+              <div key={index} className="border p-3 rounded space-y-3">
+
+                <Input
+                  placeholder="Value (ex: 50,000+)"
+                  value={stat.value}
+                  onChange={(e) => {
+                    const updated = [...cms.aboutStats];
+                    updated[index].value = e.target.value;
+                    updateField("aboutStats", updated);
+                  }}
+                />
+
+                <Input
+                  placeholder="Label (ex: Active Users)"
+                  value={stat.text}
+                  onChange={(e) => {
+                    const updated = [...cms.aboutStats];
+                    updated[index].text = e.target.value;
+                    updateField("aboutStats", updated);
+                  }}
+                />
+            <FileUpload
+              value={stat.imageUrl}
+              onChange={(url) => {
+                const updated = [...cms.aboutStats];
+                updated[index].imageUrl = url;
+                updateField("aboutStats", updated);
+              }}
+            />
+                <Button variant="destructive" onClick={() => handleRemove("aboutStats", index)}>
+                  Remove
+                </Button>
+
+              </div>
+            ))}
+          </section>
+          {/* VALUES SECTION TITLE */}
+          <section className="border p-4 rounded space-y-4">
+            <h2 className="text-xl font-semibold">Values Section Title</h2>
+
+            <Input
+              placeholder="Values Title"
+              value={cms.aboutValuesTitle}
+              onChange={(e) => updateField("aboutValuesTitle", e.target.value)}
+            />
+          </section>
+          {/* ABOUT VALUES */}
+          <section className="border p-4 rounded space-y-4">
+            <div className="flex justify-between">
+              <h2 className="text-xl font-semibold">About Values</h2>
+              <Button onClick={() => handleAdd("aboutValues", { title: "", description: "" })}>
+                + Add Value
+              </Button>
+            </div>
+
+            {cms.aboutValues?.map((value: any, index: number) => (
+              <div key={index} className="border p-3 rounded space-y-3">
+
+                <Input
+                  placeholder="Title"
+                  value={value.title}
+                  onChange={(e) => {
+                    const updated = [...cms.aboutValues];
+                    updated[index].title = e.target.value;
+                    updateField("aboutValues", updated);
+                  }}
+                />
+
+                <Textarea
+                  placeholder="Description"
+                  value={value.description}
+                  onChange={(e) => {
+                    const updated = [...cms.aboutValues];
+                    updated[index].description = e.target.value;
+                    updateField("aboutValues", updated);
+                  }}
+                />
+            <FileUpload
+              value={value.imageUrl}
+              onChange={(url) => {
+                const updated = [...cms.aboutValues];
+                updated[index].imageUrl = url;
+                updateField("aboutValues", updated);
+              }}
+            />
+                <Button variant="destructive" onClick={() => handleRemove("aboutValues", index)}>
                   Remove
                 </Button>
               </div>
