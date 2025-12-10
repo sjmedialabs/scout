@@ -7,6 +7,7 @@ import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { Suspense } from "react"
 import "./globals.css"
+import ClientLayout from "./client-layout"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -32,16 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="font-sans antialiased">
-        <Suspense fallback={null}>
-          <AuthProvider>
-            <div className="min-h-screen flex flex-col">
-              <Navigation />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
-          </AuthProvider>
-        </Suspense>
-        <Analytics />
+<ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   )

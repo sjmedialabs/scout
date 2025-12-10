@@ -497,20 +497,69 @@ export default function ClientDashboard() {
     }
   }
 
-  const handlePostRequirement = (newRequirement: any) => {
-    const requirement: Requirement = {
-      id: Date.now().toString(),
-      ...newRequirement,
-      status: "open" as const,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      seekerId: user.id,
+const handlePostRequirement = async (newRequirement: any) => {
+  try {
+    if (!user || user.role !== "client") {
+      alert("Only clients can post requirements.")
+      return
     }
-    setRequirements((prev) => [requirement, ...prev])
-    setFilteredRequirements((prev) => [requirement, ...prev])
+
+    // Prepare payload for API
+    const payload = {
+      title: newRequirement.title,
+      image: newRequirement.image,
+      category: newRequirement.category,
+      budgetMin: newRequirement.budgetMin,
+      budgetMax: newRequirement.budgetMax,
+      timeline: newRequirement.timeline,
+      description: newRequirement.description,
+      createdBy: user.id, // depends on your auth context
+    }
+    console.log("Requirement payload on main parent:", payload)
+    // API CALL
+    const res = await fetch("/api/requirements", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+
+    const data = await res.json()
+    console.log("Requirement created on main parent:", data)
+    if (!res.ok) {
+      console.error(data.error)
+      alert(data.error || "Failed to create requirement")
+      return
+    }
+
+    // Use the requirement returned from API
+    const created = {
+      id: data.requirement._id,
+      title: data.requirement.title,
+      image: data.requirement.image,
+      category: data.requirement.category,
+      budgetMin: data.requirement.budgetMin,
+      budgetMax: data.requirement.budgetMax,
+      timeline: data.requirement.timeline,
+      description: data.requirement.description,
+      status: data.requirement.status,
+      postedDate: "Today",
+      proposals: data.requirement.proposals || 0,
+    }
+
+    // Update UI lists
+    setRequirements((prev) => [created, ...prev])
+    setFilteredRequirements((prev) => [created, ...prev])
+
+    // Close the form
     setShowPostForm(false)
     setActiveSection("requirements")
+
+  } catch (error) {
+    console.error("Error posting requirement:", error)
+    alert("Something went wrong!")
   }
+}
+
 
   const handleViewProposals = (requirementId: string) => {
     setSelectedRequirement(requirementId)
