@@ -33,10 +33,10 @@ const RatingStars: React.FC<RatingStarsProps> = ({ rating, reviews }) => {
       ))}
 
       {/* RATING TEXT */}
-      <span className="ml-1 text-sm text-gray-700">{value.toFixed(1)}</span>
+      {/* <span className="ml-1 text-sm text-gray-700">{value.toFixed(1)}</span>
       {reviews !== undefined && (
         <span className="text-sm text-gray-500"> ({reviews})</span>
-      )}
+      )} */}
     </div>
   );
 };

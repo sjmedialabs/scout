@@ -9,7 +9,7 @@ import Link from "next/link"
 import RatingStars from "@/components/rating-star";
 import { FaLocationDot } from "react-icons/fa6";
 import { FaArrowRightLong } from "react-icons/fa6";
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function ProvidersPage() {
   const providers = [
@@ -114,8 +114,32 @@ export default function ProvidersPage() {
   const[serviceFilter,setServiceFilter]=useState("");
   const[locationFilter,setLocationFilter]=useState("");
   const[ratingFilter,setRatingFilter]=useState("");
-  const[filteredData,setFilteredData]=useState(providers);
-  const[providersData,setProvidersData]=useState(providers)
+  const[filteredData,setFilteredData]=useState([]);
+  const[providersData,setProvidersData]=useState([])
+  const[loading,setLoading]=useState(true)
+  const[Failed,setFailed]=useState(false)
+  useEffect(()=>{
+    loadData();
+  },[])
+  console.log("Providers Datat::::::::::",providersData)
+  const loadData=async()=>{
+    setLoading(true)
+    setFailed(false)
+     try{
+         const response=await fetch("/api/providers");
+         const data=await response.json();
+         console.log("Fetched  Data:::",data)
+         setProvidersData(data.providers)
+         setFilteredData(data.providers)
+         setFailed(false)
+     }catch(error){
+      console.log("Failded To retrive the data:::",error)
+      setFailed(true);
+     }
+     finally{
+      setLoading(false)
+     }
+  }
 
   const searchHandle=()=>{
     console.log("Search Filter:::",searchFilter);
@@ -171,9 +195,8 @@ export default function ProvidersPage() {
   return (
     <div className="bg-background">
        {/*Hero section */}
-        <div className="px-4 lg:px-30" style={{
+        <div className="px-4 lg:px-30 h-[100%] py-10 lg:h-[400px]" style={{
           backgroundImage:`url(${bannerData.backgroundImageUrl})`,
-          height:"400px",
           backgroundRepeat:"no-repeat",
           backgroundSize:"cover",
           backgroundPosition:"center"
@@ -296,22 +319,35 @@ export default function ProvidersPage() {
 
 
           {/* Providers Grid */}
+           {
+              Failed && (
+                <div className="flex flex-col justify-center items-center text-center">
+                  <h1 className="text-center font-semibold">Failed  to Retrive the data</h1>
+                  <Button onClick={loadData} className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]">Reload</Button>
+                </div>
+              )
+            }
+            {loading && (
+              <div className="min-h-screen flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            )}
           <div className="grid md:grid-cols-2 gap-6">
-            {filteredData.length!=0?(filteredData.map((provider) => (
+            {(filteredData.length!=0 && !loading && !Failed)?(filteredData.map((provider) => (
               <Card key={provider.id} className="hover:shadow-md transition-shadow pt-0">
                 <CardHeader className="px-0 mb-0">
-                  <img src={provider.image} alt={provider.name} className="h-[300px] w-full mb-6"/>
+                  <img src={provider.coverImage} alt={provider.name} className="h-[300px] w-full mb-6"/>
                   <div className="flex justify-between items-start px-6"> 
                     <div className="flex gap-2">
-                      {provider.verified && <Badge variant="secondary" className="bg-[#2C34A1] h-[30px] w-[80px] rounded-2xl">Verified</Badge>}
-                      {provider.featured && <Badge className="bg-[#F54A0C] h-[30px] w-[80px] rounded-2xl">Featured</Badge>}
+                      {provider.isVerified && <Badge variant="secondary" className="bg-[#2C34A1] h-[30px] w-[80px] rounded-2xl">Verified</Badge>}
+                      {provider.isFeatured && <Badge className="bg-[#F54A0C] h-[30px] w-[80px] rounded-2xl">Featured</Badge>}
                     </div>
                     <div className="flex items-center gap-1">
                       
                       <RatingStars rating={provider.rating} />
-
+                      <span className="text-sm font-semibold">{provider.rating}</span>
                      
-                      <span className="text-sm text-muted-foreground">({provider.reviews})</span>
+                      <span className="text-sm text-muted-foreground">({provider.reviewCount})</span>
                     </div>
                   </div>
                   <CardTitle className="text-2xl px-6 mt-1">{provider.name}</CardTitle>
@@ -329,22 +365,22 @@ export default function ProvidersPage() {
                   <div className="grid grid-cols-3 gap-4 mb-4 text-sm">
                     <div className="flex items-center gap-2">
                       <img src="/location-filled.jpg" className="h-5 w-4 text-[#F54A0C]" />
-                      <span className="text-[#808080] font-semibold text-sm">{provider.location}</span>
+                      <span className="text-[#808080] font-semibold text-sm">{provider?.location || 'N/A'}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <img src="/briefcase.jpg" className="h-5 w-5" />
-                      <span  className="text-[#808080] font-semibold text-sm">{provider.completedProjects} projects</span>
+                      <span  className="text-[#808080] font-semibold text-sm">{provider.projectsCompleted} projects</span>
                     </div>
                      <div className="flex items-center gap-2">
                       <img src="/chat-operational.jpg" className="h-5 w-5" />
-                      <span  className="text-[#808080] font-semibold text-sm">Response: {provider.responseTime}</span>
+                      <span  className="text-[#808080] font-semibold text-sm">Response: {provider?.responseTime || '2 hrs'}</span>
                     </div>
                     
                   </div>
-                   <p className="text-[#808080] text-md font-semibold">From: ${provider.startingPrice}/hour</p>
+                   <p className="text-[#808080] text-md font-semibold">From: {provider.hourlyRate}/hour</p>
                   <div className="flex gap-2 mt-3">
                     <Link href={`/provider/${provider.id}`} className="flex justify-start">
-                      <Button className="w-[140px] bg-[#2C34A1] rounded-3xl text-[#fff]">
+                      <Button className="w-[140px] bg-[#2C34A1] hover:bg-[#2C34A1] active:bg-[#2C34A1] rounded-3xl text-[#fff]">
                         
                         View Profile
                         <FaArrowRightLong  height={4} width={5} color="#fff"/>
@@ -355,7 +391,7 @@ export default function ProvidersPage() {
                 </CardContent>
               </Card>
             ))):(<div className="text-center ml-[80px]">
-              <p className="text-lg">No Providers Found</p>
+              <p className="text-lg"></p>
             </div>)}
           </div>
 
