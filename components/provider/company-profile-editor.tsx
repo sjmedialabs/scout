@@ -833,30 +833,46 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
 
           <div className="grid md:grid-cols-2 gap-4">
             {(formData.portfolio || []).map((item) => (
-              <Card key={item.id}>
-                <CardContent className="pt-6">
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="font-medium">{item.title}</h4>
-                    <Button variant="ghost" size="sm" onClick={() => removePortfolioItem(item.id)}>
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <Badge variant="outline" className="mb-2">
-                    {item.category}
-                  </Badge>
-                  <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
-                  {item.projectUrl && (
-                    <a
-                      href={item.projectUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-primary hover:underline flex items-center gap-1"
+              <div
+                      key={item.id}
+                      className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300"
                     >
-                      View Project <ExternalLink className="h-3 w-3" />
-                    </a>
-                  )}
-                </CardContent>
-              </Card>
+                      <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100">
+                        <img
+                          src={
+                            item.imageUrl ||
+                            `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(item.title) || "/placeholder.svg"}`
+                          }
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <Badge variant="outline" className="mb-2 bg-[#ebecee] rounded-2xl text-[12px] text-[#000]">
+                          {item.category}
+                        </Badge>
+                        <h4 className="font-semibold text-md mb-1">{item.title}</h4>
+                        <p className="text-sm text-[#b2b2b2] line-clamp-2 mb-3">{item.description}</p>
+                        <div className="flex flex-wrap gap-1 mb-3">
+                          {item.technologies.slice(0, 3).map((tech, idx) => (
+                            <Badge key={idx} variant="secondary" className="text-xs bg-[#d9e4f6] text-[#000] rounded-2xl">
+                              {tech}
+                            </Badge>
+                          ))}
+                        </div>
+                        {/* {item.projectUrl && (
+                          <a
+                            href={item.projectUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+                          >
+                            View Project <ExternalLink className="h-3 w-3" />
+                          </a>
+                        )} */}
+                      </div>
+                    </div>
+             
             ))}
           </div>
         </CardContent>
