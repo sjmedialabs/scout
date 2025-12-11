@@ -8,7 +8,6 @@
   "/api/cms/route": "app/api/cms/route.js",
   "/api/auth/me/route": "app/api/auth/me/route.js",
   "/admin/dashboard/page": "app/admin/dashboard/page.js",
-  "/page": "app/page.js",
   "/login/page": "app/login/page.js",
   "/services/page": "app/services/page.js",
   "/client/dashboard/page": "app/client/dashboard/page.js"
