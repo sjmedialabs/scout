@@ -29,22 +29,22 @@
     "/browse/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/browse/page.js"
+      "static/chunks/app/login/page.js"
     ],
-    "/browse/loading": [
+    "/admin/dashboard/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/browse/loading.js"
+      "static/chunks/app/admin/dashboard/page.js"
     ],
-    "/providers/page": [
+    "/admin/dashboard/loading": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/providers/page.js"
+      "static/chunks/app/admin/dashboard/loading.js"
     ],
-    "/providers/loading": [
+    "/admin/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/providers/loading.js"
+      "static/chunks/app/admin/layout.js"
     ],
     "/services/development/page": [
       "static/chunks/webpack.js",
