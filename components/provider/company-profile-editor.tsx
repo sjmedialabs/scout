@@ -64,15 +64,18 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
  
   const [formData, setFormData] = useState({
     ...provider,
-    companyName: provider.companyName || "",
+    companyName: provider.companyName || provider.name || "",
     logo:provider.logo || "",
     coverImage:provider.coverImage || "",
+    location:provider.location || "",
+    projectsCompleted:provider.projectsCompleted || "",
+    hourlyRate:provider.hourlyRate || "",
     website: provider.website || "",
     salesEmail: provider.salesEmail || "",
     schedulingLink: provider.schedulingLink || "",
     adminContactPhone: provider.adminContactPhone || "",
     foundedYear: provider.foundedYear || new Date().getFullYear(),
-    totalEmployees: provider.totalEmployees || "",
+    totalEmployees: provider.teamSize || "",
     tagline: provider.tagline || "",
     companyVideoLink: provider.companyVideoLink || "",
     languagesSpoken: provider.languagesSpoken || [],
@@ -98,7 +101,7 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
   const handleSave = () => {
     const newErrors: Record<string, string> = {}
 
-    console.log("Form Data ::::",formData);
+    // console.log("Form Data ::::",formData);
 
     // Required field validations
     if (!formData.companyName?.trim()) {
@@ -150,10 +153,46 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
       newErrors.companyVideoLink = "Please enter a valid URL"
     }
 
+
     setErrors(newErrors)
 
+
+
     if (Object.keys(newErrors).length === 0) {
-      onSave(formData)
+      console.log("Calling save Profile:::")
+      const payload = {
+  name: formData.companyName,          // schema: name
+  tagline: formData.tagline,
+  description: formData.description,
+  logo: formData.logo,
+  coverImage: formData.coverImage,
+  location: formData.location,
+  website: formData.website,
+  email: formData.email,
+  salesEmail: formData.salesEmail,
+  phone: formData.phone,
+  adminContactPhone: formData.adminContactPhone,
+
+  services: formData.services || [],
+  technologies: formData.technologies || [],
+  industries: formData.industries || [],
+
+  foundedYear: formData.foundedYear,
+  teamSize: formData.totalEmployees,   // OR map to teamSize if needed
+  portfolio: formData.portfolio || [],
+  
+  certifications: formData.certification || [],
+  awards: formData.awards || [],
+
+  socialLinks: {
+    linkedin: formData.linkedin || "",
+    twitter: formData.twitter || "",
+    facebook: formData.facebook || "",
+    instagram: formData.instagram || "",
+  },
+}
+
+      onSave(payload)
     }
   }
 
@@ -512,6 +551,57 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
                 placeholder="Company Video Link"
               />
               {errors.companyVideoLink && <p className="text-sm text-red-500">{errors.companyVideoLink}</p>}
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="projects">
+                Projects Completed 
+              </Label>
+              <div className="relative">
+                <Input
+                  id="projects"
+                  type="number"
+                  min={1}
+                  value={formData.projectsCompleted}
+                  onChange={(e) => setFormData((prev)=>({...prev,projectsCompleted:e.target.value}))}
+                  className={`${errors.tagline ? "border-red-500" : ""} placeholder:text-[#b2b2b2]`}
+                  placeholder="Enter number of projects completed"
+        
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="location">
+                Location 
+              </Label>
+              <div className="relative">
+                <Input
+                  id="location"
+                  value={formData.location}
+                  onChange={(e) => setFormData((prev)=>({...prev,location:e.target.value}))}
+                  className={`${errors.tagline ? "border-red-500" : ""} placeholder:text-[#b2b2b2]`}
+                  placeholder="Enter your company location"
+        
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="rate">
+                Hourly Rate  
+              </Label>
+              <div className="relative">
+                <Input
+                  id="rate"
+                  type="number"
+                  min={1}
+                  value={formData.hourlyRate}
+                  onChange={(e) => setFormData((prev)=>({...prev,hourlyRate:e.target.value}))}
+                  className={`${errors.tagline ? "border-red-500" : ""} placeholder:text-[#b2b2b2]`}
+                  placeholder="Enter starting proice per hour"
+        
+                />
+              </div>
             </div>
           </div>
 

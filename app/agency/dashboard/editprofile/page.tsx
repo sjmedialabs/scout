@@ -59,8 +59,21 @@ const EditProfile = () => {
     }, [user, loading]);
 
 
-    const handleSaveProfile = () => {
-        console.log("Save Profile is called::::");
+    const handleSaveProfile = async(recievedData:any) => {
+        console.log("Recieved Form Data to handle save profile:::",recievedData)
+        
+        try{
+            const response= await fetch(`/api/providers/${userDetails.userId}`,{
+                method:"PUT",
+                body:JSON.stringify(recievedData)
+            })
+            const data=await response.json();
+            console.log("Update api response::::",data);
+
+
+        }catch(error){
+            console.log("Failed to save the data please try again:::",error)
+        }
     };
 
     if(responseLoading){

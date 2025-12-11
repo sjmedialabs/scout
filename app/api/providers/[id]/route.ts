@@ -120,7 +120,15 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: "Invalid provider ID" }, { status: 400 })
     }
 
-    const provider = await Provider.findById(id)
+     // ---------------------------------------------
+    // 🔥 NEW LOGIC: Find provider by _id OR userId
+    // ---------------------------------------------
+    const provider = await Provider.findOne({
+      $or: [
+        { _id: id },         // match provider's _id
+        { userId: id },      // match provider's userId
+      ],
+    }).lean()
 
     if (!provider) {
       return NextResponse.json({ error: "Provider not found" }, { status: 404 })
@@ -171,7 +179,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       if (body.isActive !== undefined) updates.isActive = body.isActive
     }
 
-    const updated = await Provider.findByIdAndUpdate(id, updates, { new: true })
+    const updated = await Provider.findOneAndUpdate({ userId: id }, updates, { new: true })
 
     return NextResponse.json({
       success: true,
