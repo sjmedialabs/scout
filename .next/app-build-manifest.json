@@ -1,9 +1,9 @@
 {
   "pages": {
-    "/page": [
+    "/admin/contentMang/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
+      "static/chunks/app/admin/contentMang/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
@@ -16,7 +16,17 @@
       "static/chunks/main-app.js",
       "static/chunks/app/loading.js"
     ],
-    "/login/page": [
+    "/about/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/about/page.js"
+    ],
+    "/contact/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/contact/page.js"
+    ],
+    "/browse/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/login/page.js"
@@ -46,110 +56,55 @@
       "static/chunks/main-app.js",
       "static/chunks/app/services/it/page.js"
     ],
-    "/admin/subscribers/page": [
+    "/services/marketing/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/subscribers/page.js"
+      "static/chunks/app/services/marketing/page.js"
     ],
-    "/admin/subscription-plans/page": [
+    "/admin/dashboard/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/subscription-plans/page.js"
+      "static/chunks/app/admin/dashboard/page.js"
     ],
-    "/admin/billing/page": [
+    "/admin/dashboard/loading": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/billing/page.js"
+      "static/chunks/app/admin/dashboard/loading.js"
     ],
-    "/admin/payment-methods/page": [
+    "/login/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/payment-methods/page.js"
+      "static/chunks/app/login/page.js"
     ],
-    "/admin/revenue-dashboard/page": [
+    "/client/dashboard/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/revenue-dashboard/page.js"
+      "static/chunks/app/client/dashboard/page.js"
     ],
-    "/admin/financial-reports/page": [
+    "/client/dashboard/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/financial-reports/page.js"
+      "static/chunks/app/client/dashboard/layout.js"
     ],
-    "/admin/growth-metrics/page": [
+    "/agency/dashboard/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/growth-metrics/page.js"
+      "static/chunks/app/agency/dashboard/page.js"
     ],
-    "/admin/performance-insights/page": [
+    "/agency/dashboard/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/performance-insights/page.js"
+      "static/chunks/app/agency/dashboard/layout.js"
     ],
-    "/admin/contentMang/page": [
+    "/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/contentMang/page.js"
+      "static/chunks/app/page.js"
     ],
-    "/admin/moderation/page": [
+    "/services/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/moderation/page.js"
-    ],
-    "/admin/reported-content/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/reported-content/page.js"
-    ],
-    "/admin/settings/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/settings/page.js"
-    ],
-    "/admin/categories/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/categories/page.js"
-    ],
-    "/admin/notifications/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/notifications/page.js"
-    ],
-    "/admin/maintenance/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/maintenance/page.js"
-    ],
-    "/admin/announcements/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/announcements/page.js"
-    ],
-    "/admin/support-tickets/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/support-tickets/page.js"
-    ],
-    "/admin/email-campaigns/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/email-campaigns/page.js"
-    ],
-    "/register/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/subscribers/page.js"
-    ],
-    "/admin/subscription-plans/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/subscription-plans/page.js"
-    ],
-    "/admin/revenue-dashboard/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/revenue-dashboard/page.js"
+      "static/chunks/app/services/page.js"
     ]
   }
 }
