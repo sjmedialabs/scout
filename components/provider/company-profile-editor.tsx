@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, X, ExternalLink, Lock } from "lucide-react"
 import type { Provider, PortfolioItem } from "@/lib/types"
 import { categories } from "@/lib/mock-data"
+import { ImageUpload } from "../ui/image-upload"
 
 interface CompanyProfileEditorProps {
   provider: Provider
@@ -60,9 +61,12 @@ const languages = [
 ]
 
 export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorProps) {
+ 
   const [formData, setFormData] = useState({
     ...provider,
-    companyName: provider.name || provider.companyName || "",
+    companyName: provider.companyName || "",
+    logo:provider.logo || "",
+    coverImage:provider.coverImage || "",
     website: provider.website || "",
     salesEmail: provider.salesEmail || "",
     schedulingLink: provider.schedulingLink || "",
@@ -73,6 +77,10 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
     companyVideoLink: provider.companyVideoLink || "",
     languagesSpoken: provider.languagesSpoken || [],
     services: provider.services || [],
+    technologies:provider.technologies || [],
+    awards:provider.awards || [],
+    certification:provider.certifications || [],
+    industries:provider.industries || [],
     portfolio: provider.portfolio || [],
   })
 
@@ -82,9 +90,15 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
 
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [taglineCount, setTaglineCount] = useState(formData.tagline?.length || 0)
+  const[newTechnology,setNewTechnology]=useState("");
+  const[newIndustry,setNewIndustry]=useState("");
+  const[newAward,setNewAward]=useState("");
+  const[portfolioTechnology,setPortfolioTechnology]=useState("");
 
   const handleSave = () => {
     const newErrors: Record<string, string> = {}
+
+    console.log("Form Data ::::",formData);
 
     // Required field validations
     if (!formData.companyName?.trim()) {
@@ -159,6 +173,58 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
       services: (prev.services || []).filter((s) => s !== service),
     }))
   }
+ 
+  const addTech=()=>{
+    if (newTechnology.trim() && !(formData.technologies || []).includes(newTechnology)) {
+      setFormData((prev) => ({
+        ...prev,
+        technologies: [...(prev.technologies || []), newTechnology],
+      }))
+      setNewTechnology("")
+    }
+  }
+
+  const removeTech = (tech: string) => {
+  console.log("Removing:", tech, formData.technologies);
+  setFormData(prev => ({
+    ...prev,
+    technologies: prev.technologies.filter((item: string) => item !== tech),
+  }));
+};
+
+ const addPorfolioTech=()=>{
+  if(portfolioTechnology.trim() && !(portfolioForm.technologies || []).includes(portfolioTechnology)){
+    setPortfolioForm((prev)=>({
+      ...prev,
+      technologies:[...(prev.technologies || []),portfolioTechnology]
+    }))
+    setPortfolioTechnology("");
+  }
+ }
+
+ const removePortfolioTech=(tech:string)=>{
+  setPortfolioForm((prev)=>({
+    ...prev,
+    technologies:(prev.technologies || []).filter((item)=>(item !==tech))
+  }))
+ }
+
+ const addIndustry=()=>{
+   if(newIndustry.trim() &&  !(formData.industries || []).includes(newIndustry)){
+    setFormData((prev)=>({
+      ...prev,
+      industries:[...(prev.industries || []),newIndustry]
+    }))
+    setNewIndustry("")
+   }
+ }
+
+ const removeIndustry=(industry:string)=>{
+    setFormData(prev => ({
+    ...prev,
+    industries: prev.industries.filter((item: string) => item !== industry),
+  }));
+ }
 
   const addLanguage = (language: string) => {
     if (language && !(formData.languagesSpoken || []).includes(language)) {
@@ -174,6 +240,19 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
       ...prev,
       languagesSpoken: (prev.languagesSpoken || []).filter((l) => l !== language),
     }))
+  }
+
+  const addAward=()=>{
+    if(newAward.trim() && !(formData.awards || []).includes(newAward)){
+      setFormData((prev)=>({
+        ...prev,
+        awards:[...(prev.awards || []),newAward]
+      }))
+      setNewAward("")
+    }
+  }
+  const removeAward=(award:string)=>{
+    setFormData((prev)=>({...prev,awards:(prev.awards || []).filter((a:string)=>a!==award)}))
   }
 
   const handleTaglineChange = (value: string) => {
@@ -225,6 +304,35 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
           <CardDescription>Update your company details and description</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+
+          {/*comapny loago and coverimage */}
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 ">
+            {/*logo  */}
+            <div className="space-y-2">
+              <ImageUpload
+              label="Company Logo"
+              value={formData.logo}
+              onChange={(value) => setFormData({ ...formData, logo: value })}
+              description="Upload your company logo (PNG, JPG) or provide a URL"
+              previewClassName="w-24 h-24"
+              />
+            </div>
+ 
+            {/*cover image */}
+
+            <div className="space-y-2">
+              <ImageUpload
+              label="Company Cover Image"
+              value={formData.coverImage}
+              onChange={(value) => setFormData({ ...formData, coverImage: value })}
+              description="Upload your company ccover image (PNG, JPG) or provide a URL"
+              previewClassName="w-24 h-24"
+              />
+            </div>
+
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="companyName">Company Name</Label>
@@ -235,11 +343,13 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
                   setFormData((prev) => ({ ...prev, companyName: e.target.value }))
                   if (errors.companyName) setErrors((prev) => ({ ...prev, companyName: "" }))
                 }}
-                className={errors.companyName ? "border-red-500" : ""}
+                className={`${errors.companyName ? "border-red-500" : ""} placeholder:text-[#b2b2b2]`}
                 placeholder="digiDZN"
               />
               {errors.companyName && <p className="text-sm text-red-500">{errors.companyName}</p>}
             </div>
+
+            
 
             <div className="space-y-2">
               <Label htmlFor="website">
@@ -252,7 +362,7 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
                   setFormData((prev) => ({ ...prev, website: e.target.value }))
                   if (errors.website) setErrors((prev) => ({ ...prev, website: "" }))
                 }}
-                className={errors.website ? "border-red-500" : ""}
+                className={`${errors.website ? "border-red-500" : ""} placeholder:text-[#b2b2b2]`}
                 placeholder="https://digidzn.com/"
               />
               {errors.website && <p className="text-sm text-red-500">{errors.website}</p>}
@@ -270,7 +380,7 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
                   setFormData((prev) => ({ ...prev, salesEmail: e.target.value }))
                   if (errors.salesEmail) setErrors((prev) => ({ ...prev, salesEmail: "" }))
                 }}
-                className={errors.salesEmail ? "border-red-500" : ""}
+                className={`${errors.salesEmail ? "border-red-500" : ""} placeholder:text-[#b2b2b2]`}
                 placeholder="value@digidzn.com"
               />
               {errors.salesEmail && <p className="text-sm text-red-500">{errors.salesEmail}</p>}
@@ -290,7 +400,7 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
                   setFormData((prev) => ({ ...prev, schedulingLink: e.target.value }))
                   if (errors.schedulingLink) setErrors((prev) => ({ ...prev, schedulingLink: "" }))
                 }}
-                className={errors.schedulingLink ? "border-red-500" : ""}
+                className={`${errors.schedulingLink ? "border-red-500" : ""} placeholder:text-[#b2b2b2]`}
                 placeholder="Scheduling Link"
               />
               {errors.schedulingLink && <p className="text-sm text-red-500">{errors.schedulingLink}</p>}
@@ -309,7 +419,7 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
                   setFormData((prev) => ({ ...prev, adminContactPhone: e.target.value }))
                   if (errors.adminContactPhone) setErrors((prev) => ({ ...prev, adminContactPhone: "" }))
                 }}
-                className={errors.adminContactPhone ? "border-red-500" : ""}
+                className={`${errors.adminContactPhone ? "border-red-500" : ""} placeholder:text-[#b2b2b2]`}
                 placeholder="Admin Contact Phone"
               />
               {errors.adminContactPhone && <p className="text-sm text-red-500">{errors.adminContactPhone}</p>}
@@ -324,7 +434,7 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
                   if (errors.foundedYear) setErrors((prev) => ({ ...prev, foundedYear: "" }))
                 }}
               >
-                <SelectTrigger className={errors.foundedYear ? "border-red-500" : ""}>
+                <SelectTrigger className={`${errors.foundedYear ? "border-red-500" : ""} placeholder:text-[#b2b2b2]`}>
                   <SelectValue placeholder="2022" />
                 </SelectTrigger>
                 <SelectContent>
@@ -374,7 +484,7 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
                   id="tagline"
                   value={formData.tagline}
                   onChange={(e) => handleTaglineChange(e.target.value)}
-                  className={errors.tagline ? "border-red-500" : ""}
+                  className={`${errors.tagline ? "border-red-500" : ""} placeholder:text-[#b2b2b2]`}
                   placeholder="We value your Needs"
                   maxLength={50}
                 />
@@ -398,7 +508,7 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
                   setFormData((prev) => ({ ...prev, companyVideoLink: e.target.value }))
                   if (errors.companyVideoLink) setErrors((prev) => ({ ...prev, companyVideoLink: "" }))
                 }}
-                className={errors.companyVideoLink ? "border-red-500" : ""}
+                className={`${errors.companyVideoLink ? "border-red-500" : ""} placeholder:text-[#b2b2b2]`}
                 placeholder="Company Video Link"
               />
               {errors.companyVideoLink && <p className="text-sm text-red-500">{errors.companyVideoLink}</p>}
@@ -441,8 +551,8 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
                 if (errors.description) setErrors((prev) => ({ ...prev, description: "" }))
               }}
               rows={6}
-              className={errors.description ? "border-red-500" : ""}
-              placeholder="We provide impressive tailor-made digital services, branding & creative graphic designing for Indian & International businesses. We are a team of best digital marketing professionals that thrive on creating impactful outcomes. DIGIDZN help you to build, create, manage, and promote the brand at the worldwide level which helps to meet your requirements and expectations. Through a combination of research, engagement & creativity, we develop visual aesthetics for your business creating a lasting impression. We work thoroughly to understand your goals & help achieve success for you. We love to grow with you as we work for the long-term relationship. As a leading digital marketing agency, we maintain your valuable brands. We also have created brand experiences for our clients worldwide. With the team of best digital marketing experts, we offer all services of digital marketing that contribute to the online business promotion. As all know, web promotion is one of the effective forms of marketing. By utilizing the advantages of web world we try to..."
+              className={`${errors.description ? "border-red-500" : ""} placeholder:text-[#b2b2b2]`}
+              placeholder="about company"
             />
             {errors.description && <p className="text-sm text-red-500">{errors.description}</p>}
           </div>
@@ -460,14 +570,16 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
             {(formData.services || []).map((service) => (
               <Badge key={service} variant="secondary" className="flex items-center gap-2">
                 {service}
-                <X className="h-3 w-3 cursor-pointer" onClick={() => removeService(service)} />
+                <div onClick={() => removeService(service)}>
+                   <X className="h-3 w-3 cursor-pointer"  />
+                </div>
               </Badge>
             ))}
           </div>
 
           <div className="flex gap-2">
             <Select value={newService} onValueChange={setNewService}>
-              <SelectTrigger className="flex-1">
+              <SelectTrigger className="flex-1 placeholder:text-[#b2b2b2]">
                 <SelectValue placeholder="Select a service to add" />
               </SelectTrigger>
               <SelectContent>
@@ -481,6 +593,107 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
               </SelectContent>
             </Select>
             <Button onClick={addService} disabled={!newService}>
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/*Technologies offered */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Technologies Offered</CardTitle>
+          <CardDescription>Manage the Technologies you provide</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            {(formData.technologies || []).map((tech) => (
+              <Badge key={tech} variant="secondary" className="flex items-center gap-2">
+                {tech}
+                <div onClick={() => removeTech(tech)}>
+                   <X className="h-3 w-3 cursor-pointer" />
+                </div>
+              </Badge>
+            ))}
+          </div>
+
+          <div className="flex gap-2">
+           <Input type="text"
+           value={newTechnology}
+            onChange={(e)=>setNewTechnology(e.target.value)}
+            placeholder="Datsience..."
+            className=" placeholder:text-[#b2b2b2] "
+            />
+            
+            <Button onClick={addTech} disabled={!newTechnology}>
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/*Industries working */}
+
+       <Card>
+        <CardHeader>
+          <CardTitle>Industries Working</CardTitle>
+          <CardDescription>Manage the Industries you working</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            {(formData.industries || []).map((ind) => (
+              <Badge key={ind} variant="secondary" className="flex items-center gap-2">
+                {ind}
+                <div onClick={() => removeIndustry(ind)}>
+                   <X className="h-3 w-3 cursor-pointer" />
+                </div>
+              </Badge>
+            ))}
+          </div>
+
+          <div className="flex gap-2">
+           <Input type="text"
+           value={newIndustry}
+            onChange={(e)=>setNewIndustry(e.target.value)}
+            placeholder="Consulting..."
+            className=" placeholder:text-[#b2b2b2] "
+            />
+            
+            <Button onClick={addIndustry} disabled={!newIndustry}>
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/*Awards added */}
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Awards Recieved</CardTitle>
+          <CardDescription>Manage the Awards you recieved</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            {(formData.awards || []).map((item) => (
+              <Badge key={item} variant="secondary" className="flex items-center gap-2">
+                {item}
+                <div onClick={() => removeAward(item)}>
+                   <X className="h-3 w-3 cursor-pointer" />
+                </div>
+              </Badge>
+            ))}
+          </div>
+
+          <div className="flex gap-2">
+           <Input type="text"
+           value={newAward}
+            onChange={(e)=>setNewAward(e.target.value)}
+            placeholder="Best Company of the Year..."
+            className=" placeholder:text-[#b2b2b2] "
+            />
+            
+            <Button onClick={addAward} disabled={!newAward}>
               <Plus className="h-4 w-4" />
             </Button>
           </div>
@@ -505,6 +718,16 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
           {showPortfolioForm && (
             <Card className="border-dashed">
               <CardContent className="pt-6 space-y-4">
+                {/*project image */}
+                <div className="space-y-2">
+                    <ImageUpload
+                    label="Project Image"
+                    value={portfolioForm.imageUrl}
+                    onChange={(value) => setPortfolioForm({ ...portfolioForm, imageUrl: value })}
+                    description="Upload your company ccover image (PNG, JPG) or provide a URL"
+                    previewClassName="w-24 h-24"
+                    />
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Project Title</Label>
@@ -512,6 +735,7 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
                       value={portfolioForm.title || ""}
                       onChange={(e) => setPortfolioForm((prev) => ({ ...prev, title: e.target.value }))}
                       placeholder="Project name"
+                      className=" placeholder:text-[#b2b2b2]"
                     />
                   </div>
                   <div className="space-y-2">
@@ -521,7 +745,7 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
                       onValueChange={(value) => setPortfolioForm((prev) => ({ ...prev, category: value }))}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select category" />
+                        <SelectValue placeholder="Select category" className=" placeholder:text-[#b2b2b2]" />
                       </SelectTrigger>
                       <SelectContent>
                         {categories.map((category) => (
@@ -541,6 +765,7 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
                     onChange={(e) => setPortfolioForm((prev) => ({ ...prev, description: e.target.value }))}
                     placeholder="Describe the project and your role..."
                     rows={3}
+                    className=" placeholder:text-[#b2b2b2]"
                   />
                 </div>
 
@@ -551,6 +776,7 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
                       value={portfolioForm.projectUrl || ""}
                       onChange={(e) => setPortfolioForm((prev) => ({ ...prev, projectUrl: e.target.value }))}
                       placeholder="https://project-url.com"
+                      className=" placeholder:text-[#b2b2b2]"
                     />
                   </div>
                   <div className="space-y-2">
@@ -563,12 +789,44 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
                   </div>
                 </div>
 
+                 {/*Technologies used in this project */} 
+                  <div className="space-y-5 mt-3">
+                    <Label>Technologies Used</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {(portfolioForm.technologies || []).map((tech) => (
+                        <Badge key={tech} variant="secondary" className="flex items-center gap-2">
+                          {tech}
+                          <div onClick={() => removePortfolioTech(tech)}>
+                            <X className="h-3 w-3 cursor-pointer" />
+                          </div>
+                        </Badge>
+                      ))}
+                    </div>
+
+                    <div className="flex gap-2">
+                    <Input type="text"
+                    value={portfolioTechnology}
+                      onChange={(e)=>setPortfolioTechnology(e.target.value)}
+                      placeholder="Datsience..."
+                      className=" placeholder:text-[#b2b2b2] "
+                      />
+                      
+                      <Button onClick={addPorfolioTech} disabled={!portfolioTechnology}>
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+
                 <div className="flex gap-2">
                   <Button onClick={addPortfolioItem}>Add Project</Button>
                   <Button variant="outline" onClick={() => setShowPortfolioForm(false)}>
                     Cancel
                   </Button>
                 </div>
+
+               
+                
+
               </CardContent>
             </Card>
           )}

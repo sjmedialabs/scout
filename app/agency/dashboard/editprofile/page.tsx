@@ -3,6 +3,7 @@
 import { CompanyProfileEditor } from "@/components/provider/company-profile-editor";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 const EditProfile = () => {
 
@@ -28,17 +29,27 @@ const EditProfile = () => {
         hourlyRate: { min: 25, max: 150 },
     });
     const[userDetails,setUserDetails]=useState({});
+    const[providerDetails,setProviderDetails]=useState({});
+    const[responseLoading,setResponseLoading]=useState(true);
+    const[failed,setFailed]=useState(false)
 
     const loadData=async()=>{
+        setResponseLoading(true);
+        setFailed(false)
         try{
           const response=await fetch(`/api/providers/${userDetails.userId}`)
           const data=await response.json();
-          console.log("Profile Data:::::",data);
+         
+          setProviderDetails(data.provider)
         }catch(error){
             console.log("Failed to get the data::",error)
+            setFailed(true)
+        }
+        finally{
+            setResponseLoading(false)
         }
     }
-
+    console.log("Provider Details::::",providerDetails);
     useEffect(() => {
         if (!loading && user) {
             console.log("Logged in user payload::::", user);
@@ -52,6 +63,22 @@ const EditProfile = () => {
         console.log("Save Profile is called::::");
     };
 
+    if(responseLoading){
+        return(
+             <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+        )
+    }
+    if(failed){
+        return(
+              <div className="flex flex-col justify-center items-center text-center">
+                  <h1 className="text-center font-semibold">Failed  to Retrive the data</h1>
+                  <Button onClick={loadData} className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]">Reload</Button>
+                </div>
+        )
+    }
+
     return (
         <div className="space-y-6">
             <div>
@@ -59,7 +86,7 @@ const EditProfile = () => {
                 <p className="text-muted-foreground">Manage your company information and profile details</p>
             </div>
 
-            <CompanyProfileEditor provider={provider} onSave={handleSaveProfile} />
+             {providerDetails && (<CompanyProfileEditor provider={providerDetails} onSave={handleSaveProfile} />)}
         </div>
     );
 }
