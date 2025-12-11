@@ -3,8 +3,7 @@
   "/services/development/page": "app/services/development/page.js",
   "/about/page": "app/about/page.js",
   "/browse/page": "app/browse/page.js",
-  "/providers/page": "app/providers/page.js",
-  "/pricing/page": "app/pricing/page.js",
+  "/register/page": "app/register/page.js",
   "/api/cms/route": "app/api/cms/route.js",
   "/api/auth/me/route": "app/api/auth/me/route.js"
 }
