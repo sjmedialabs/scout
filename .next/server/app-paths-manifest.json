@@ -1,13 +1,13 @@
 {
-<<<<<<< HEAD
-  "/page": "app/page.js",
-  "/services/development/page": "app/services/development/page.js"
-=======
+  "/_not-found/page": "app/_not-found/page.js",
+  "/services/development/page": "app/services/development/page.js",
+  "/pricing/page": "app/pricing/page.js",
   "/about/page": "app/about/page.js",
   "/browse/page": "app/browse/page.js",
-  "/providers/page": "app/providers/page.js",
-  "/pricing/page": "app/pricing/page.js",
+  "/register/page": "app/register/page.js",
   "/api/cms/route": "app/api/cms/route.js",
-  "/api/auth/me/route": "app/api/auth/me/route.js"
->>>>>>> d93091aa902ad385278a57529be099f233281b9f
+  "/api/auth/me/route": "app/api/auth/me/route.js",
+  "/api/providers/route": "app/api/providers/route.js",
+  "/api/requirements/route": "app/api/requirements/route.js",
+  "/page": "app/page.js"
 }

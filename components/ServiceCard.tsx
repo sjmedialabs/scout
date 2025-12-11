@@ -1,6 +1,7 @@
 import React from "react"
 import { Star } from "lucide-react"
 import {Provider} from "./types/service"
+import Link from "next/link"
 
 
 export default function ServiceCard({ provider }: { provider: Provider }) {
@@ -138,10 +139,11 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
                 <div className="flex items-center justify-between pt-3">
                     <div className="flex items-center gap-3">
                     <button className="rounded-full bg-[#2c34a1] px-4 py-3 text-sm font-bold text-white hover:bg-[#3f437e]">
-                          View Profile  →
+                         <Link href="/register">View Profile  →</Link>
+                    
                     </button>
                     <button className="rounded-full bg-[#4d4d4d] px-4 py-3 text-sm font-bold text-white hover:bg-slate-800">
-                          Contact Provider  →
+                          <Link href="/contact">Contact Provider  →</Link>
                     </button>
                     </div>
                 </div>
