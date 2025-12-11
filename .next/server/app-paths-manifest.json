@@ -1,7 +1,8 @@
 {
-  "/services/it/page": "app/services/it/page.js",
-  "/login/page": "app/login/page.js",
-  "/page": "app/page.js",
-  "/register/page": "app/register/page.js",
-  "/admin/subscribers/page": "app/admin/subscribers/page.js"
+  "/about/page": "app/about/page.js",
+  "/browse/page": "app/browse/page.js",
+  "/providers/page": "app/providers/page.js",
+  "/pricing/page": "app/pricing/page.js",
+  "/api/cms/route": "app/api/cms/route.js",
+  "/api/auth/me/route": "app/api/auth/me/route.js"
 }

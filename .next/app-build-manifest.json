@@ -139,7 +139,17 @@
     "/register/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/register/page.js"
+      "static/chunks/app/admin/subscribers/page.js"
+    ],
+    "/admin/subscription-plans/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/subscription-plans/page.js"
+    ],
+    "/admin/revenue-dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/revenue-dashboard/page.js"
     ]
   }
 }
