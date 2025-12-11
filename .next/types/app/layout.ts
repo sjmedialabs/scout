@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // File: C:\Users\RAJ KUMAR GUBBALA\OneDrive\Desktop\Spark\scout\app\layout.tsx
+=======
+// File: C:\Users\lovel\Desktop\Projects\Spark\scout\app\layout.tsx
+>>>>>>> d93091aa902ad385278a57529be099f233281b9f
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
