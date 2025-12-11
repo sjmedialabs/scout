@@ -212,7 +212,7 @@ export default function AdminDashboard() {
               <div className="group bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/50 hover:border-blue-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                 <div className="flex items-center justify-between space-y-0 pb-2">
                   <h3 className="text-sm font-medium text-slate-600">Total Users</h3>
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <div className="w-12 h-12 bg-linear-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
                     <Users className="h-6 w-6 text-blue-600" />
                   </div>
                 </div>
@@ -223,7 +223,7 @@ export default function AdminDashboard() {
               <div className="group bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/50 hover:border-green-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                 <div className="flex items-center justify-between space-y-0 pb-2">
                   <h3 className="text-sm font-medium text-slate-600">Active Projects</h3>
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <div className="w-12 h-12 bg-linear-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
                     <FileText className="h-6 w-6 text-green-600" />
                   </div>
                 </div>
@@ -234,7 +234,7 @@ export default function AdminDashboard() {
               <div className="group bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/50 hover:border-orange-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                 <div className="flex items-center justify-between space-y-0 pb-2">
                   <h3 className="text-sm font-medium text-slate-600">Pending Reports</h3>
-                  <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <div className="w-12 h-12 bg-linear-to-br from-orange-100 to-orange-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
                     <AlertTriangle className="h-6 w-6 text-orange-600" />
                   </div>
                 </div>
@@ -245,7 +245,7 @@ export default function AdminDashboard() {
               <div className="group bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-slate-200/50 hover:border-purple-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                 <div className="flex items-center justify-between space-y-0 pb-2">
                   <h3 className="text-sm font-medium text-slate-600">Monthly Revenue</h3>
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <div className="w-12 h-12 bg-linear-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
                     <BarChart3 className="h-6 w-6 text-purple-600" />
                   </div>
                 </div>
@@ -365,7 +365,7 @@ export default function AdminDashboard() {
                   />
                   <Button
                     onClick={handleAddCategory}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 hover:scale-105"
+                    className="bg-linear-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 hover:scale-105"
                   >
                     Add Category
                   </Button>
@@ -460,8 +460,8 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 relative overflow-hidden">
-      <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10"></div>
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50 relative overflow-hidden">
+      <div className="absolute inset-0 bg-grid-slate-100 mask-[linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10"></div>
       <div className="absolute top-10 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
       <div className="absolute bottom-10 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
 
