@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
+  MessageSquareMore,
+  Building,
   Star,
   MapPin,
   Calendar,
@@ -18,16 +20,121 @@ import {
   Mail,
   Phone,
   Briefcase,
+  CircleUser,
+  Share2
 } from "lucide-react"
-import { mockProviders } from "@/lib/mock-data"
 
-export default async function ProviderProfilePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { mockProviders } from "@/lib/mock-data"
+import RatingStars from "@/components/rating-star"
+import { useEffect, useState } from "react"
+
+export default function ProviderProfilePage({ params }: { params: { id: string } }) {
+  const { id } =  params
 
   // Find provider by ID
   const provider = mockProviders.find((p) => p.id === id)
+  const[serviceFilter,setServiceFilter]=useState("");
+  const[sortByFilter,setSortByFilter]=useState("");
+  const[providerDetails,setProviderDetails]=useState({});
+  const[reviews,setReviews]=useState([]);
+  const[loading,setLoading]=useState(true);
+  const[failed,setFailed]=useState(false);
+  useEffect(()=>{
+    loadData();
+  },[])
+  const loadData=async()=>{
+    setLoading(true);
+    setFailed(false)
+    try{
+       const response=await fetch(`/api/providers/${id}`)
+       const data=await response.json();
+       setProviderDetails(data.provider);
+       setReviews(data.reviews)
+       setFailed(false)
+    }catch(error){
+      console.log("Failed to get the data error:::",error);
+      setFailed(true)
+    }finally{
+      setLoading(false);
+    }
+  }
+  const mockReviews = [
+  {
+    id: 1,
+    project: {
+      title: "The Project",
+      type: "UX/UI Design Web Design Web Development",
+      timeline: "July 2024 - Oct. 2025",
+      budget: "$50,000 to $199,999",
+      summary:
+        "Goji Labs has been hired by an investment firm to build their website. The team has been tasked with creating solutions for the client’s unique requests."
+    },
+    review: {
+      quote:
+        "They are fantastic in almost every aspect and my experience so far has been great.",
+      date: "May 31, 2025",
+      summary:
+        "Goji Labs has successfully built the website and helped the client solve real-world problems through digital means. The team has been transparent and communicative throughout the collaboration. Overall, their strategic planning and problem-solving skills have pleased the client."
+    },
+    rating: {
+      overall: 4.5,
+      totalReviews: 357,
+      quality: 5.0,
+      cost: 4.5,
+      schedule: 4.2,
+      refer: 5.0
+    },
+    reviewer: {
+      name: "Sudheer uppuluri",
+      role: "Founder, Investment Firm",
+      industry: "Advertising & marketing",
+      location: "New Delhi",
+      employees: "1-10 Employees",
+      reviewType: "Online Review",
+      verified: true
+    }
+  },
+   {
+    id: 2,
+    project: {
+      title: "The Project",
+      type: "UX/UI Design Web Design Web Development",
+      timeline: "July 2024 - Oct. 2025",
+      budget: "$50,000 to $199,999",
+      summary:
+        "Goji Labs has been hired by an investment firm to build their website. The team has been tasked with creating solutions for the client’s unique requests."
+    },
+    review: {
+      quote:
+        "They are fantastic in almost every aspect and my experience so far has been great.",
+      date: "May 31, 2025",
+      summary:
+        "Goji Labs has successfully built the website and helped the client solve real-world problems through digital means. The team has been transparent and communicative throughout the collaboration. Overall, their strategic planning and problem-solving skills have pleased the client."
+    },
+    rating: {
+      overall: 4.5,
+      totalReviews: 357,
+      quality: 5.0,
+      cost: 4.5,
+      schedule: 4.2,
+      refer: 5.0
+    },
+    reviewer: {
+      name: "Sudheer uppuluri",
+      role: "Founder, Investment Firm",
+      industry: "Advertising & marketing",
+      location: "New Delhi",
+      employees: "1-10 Employees",
+      reviewType: "Online Review",
+      verified: true
+    }
+  }
+];
 
-  if (!provider) {
+console.log("Providers Details are :::",providerDetails);
+
+  if (!providerDetails) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -40,10 +147,10 @@ export default async function ProviderProfilePage({ params }: { params: Promise<
 
   // Mock additional data
   const companyStats = {
-    founded: provider.foundedYear || 2018,
-    teamSize: "50-100",
-    projectsCompleted: 234,
-    clientRating: provider.rating,
+    founded: providerDetails.foundedYear || 2018,
+    teamSize: providerDetails.teamSize,
+    projectsCompleted: providerDetails.projectsCompleted,
+    clientRating: providerDetails.rating,
     responseTime: "< 2 hours",
     successRate: "98%",
   }
@@ -92,113 +199,167 @@ export default async function ProviderProfilePage({ params }: { params: Promise<
     "Tailwind CSS",
     "Kubernetes",
   ]
+  const stats = [
+    { label: "Year founded", value: providerDetails.foundedYear },
+    { label: "Team Size", value: providerDetails.teamSize },
+    { label: "Projects", value: providerDetails.projectsCompleted },
+    { label: "Response Time", value: "45 min" },
+    { label: "Hourly rate", value: providerDetails.hourlyRate },
+    { label: "Success Rate", value: "98%" },
+  ];
+ 
+  if(loading){
+    return(
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+  if(failed){
+    return(
+      <div className="min-h-screen flex flex-col items-center justify-center">
+       <h1 className="text-lg mb-2 font-medium">Failed to get the data</h1>
+       <Button className="h-[30px] w-[80px] bg-[#2C34A1] hover:bg-[#2C34A1] active:bg-[#2C34A1]" onClick={loadData} >Reload</Button>
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-[#fff]">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4">
+      <div className="text-white py-16" style={{
+        backgroundImage:`url(/ProviderDetailBanner.jpg)`,
+        backgroundSize:"cover",
+        backgroundPosition:"center",
+        backgroundRepeat:"no-repeat",
+        height:"400px"
+      }}>
+        <div className="max-w-7xl mx-auto px-8 py-12 lg:px-30">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-            <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30">
-              <Award className="h-12 w-12 text-white" />
+            <div>
+              <img src={providerDetails.logo || "/provider4.jpg"} className="h-45 w-48  rounded-2xl" />
             </div>
             <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-4xl font-bold">{provider.companyName}</h1>
-                {provider.verified && (
-                  <Badge className="bg-white/20 backdrop-blur-sm border-white/30">
-                    <CheckCircle2 className="h-3 w-3 mr-1" />
+              <div className="mb-0">
+                {providerDetails.isVerified && (
+                  <Badge className="bg-[#2C34A1] backdrop-blur-sm rounded-2xl mr-3">
+                    <CheckCircle2 className="h-3 w-3 mr-0.2" />
                     Verified
                   </Badge>
                 )}
-                {provider.featured && (
-                  <Badge className="bg-yellow-400/90 text-yellow-900 border-yellow-500/30">
-                    <Star className="h-3 w-3 mr-1 fill-yellow-900" />
+                {providerDetails.isFeatured && (
+                  <Badge className="bg-[#e84816]  backdrop-blur-sm rounded-2xl">
+                    <Star className="h-3 w-3 mr-1 fill-white" />
                     Featured
                   </Badge>
                 )}
+                <h1 className="text-4xl font-extrabold mt-1 tracking-widest">{providerDetails.name.toUpperCase()}</h1>
+                
               </div>
-              <p className="text-lg text-white/90 mb-4">{provider.tagline || "Professional service provider"}</p>
+              <p className="text-lg text-white/90 mb-4">{providerDetails.tagline || "Professional service provider"}</p>
+               <div className="grid grid-cols-3 gap-4 mb-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <img src="/ProviderDetailPageBannerIconLoactionFilled.png" className="h-5 w-4"/>
+        
+                      <span className="text-[#fff] font-semibold text-sm">{providerDetails.location}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <img src="/ProviderDetailPageBannerIconBriefCase.png" className="h-5 w-5" />
+                      <span  className="text-[#fff] font-semibold text-sm">{providerDetails.projectsCompleted} projects</span>
+                    </div>
+                     <div className="flex items-center gap-2">
+                      <img src="/ProviderDetailPageBannerIconChatOperational.png" className="h-5 w-5" />
+                      <span  className="text-[#fff] font-semibold text-sm">Response: {providerDetails?.responseTime || "2 hrs"}</span>
+                    </div>
+                    
+                  </div>
               <div className="flex flex-wrap items-center gap-4 text-sm">
                 <div className="flex items-center gap-2">
-                  <Star className="h-5 w-5 fill-yellow-300 text-yellow-300" />
-                  <span className="font-semibold text-lg">{provider.rating}</span>
-                  <span className="text-white/80">({provider.reviewCount} reviews)</span>
+                  <RatingStars rating={providerDetails.rating}/>
+                  <span className="font-semibold text-lg">{providerDetails.rating}</span>
+                  <span className="text-white/80">({providerDetails.reviewCount} reviews)</span>
                 </div>
-                <div className="flex items-center gap-2 text-white/90">
-                  <MapPin className="h-4 w-4" />
-                  <span>{provider.location}</span>
-                </div>
-                <div className="flex items-center gap-2 text-white/90">
-                  <Calendar className="h-4 w-4" />
-                  <span>Founded {provider.foundedYear}</span>
-                </div>
-                <Badge className="bg-white/20 backdrop-blur-sm border-white/30 capitalize">
-                  {provider.subscriptionTier} Plan
+                
+                <Badge className="bg-[#fff] text-[#000] rounded-2xl backdrop-blur-sm border-white/30 capitalize">
+                  {providerDetails.subscriptionTier || "Basic"} Plan
                 </Badge>
               </div>
             </div>
-            <div className="flex flex-col gap-3">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-white/90">
-                <MessageCircle className="h-4 w-4 mr-2" />
+            <div className="flex flex-col gap-1">
+              <a href={`mailto:${providerDetails.email}`}>
+              <Button size="lg" className="bg-white text-[#2C34A1] hover:bg-white/90 text-sm font-semibold  active:bg-white  rounded-3xl">
+                <img src="/providerDetailPageBannerButton.jpg" className="h-4 w-4 mr-0.5" />
                 Contact Provider
               </Button>
+              </a>
+              <a href={`${providerDetails.website}`} target="_blank">
               <Button
                 size="lg"
                 variant="outline"
-                className="border-white/30 text-white hover:bg-white/10 bg-transparent"
+                className="border-white rounded-3xl mt-2 font-semibold text-white hover:bg-white/10 bg-transparent  active:bg-transparent"
               >
-                <ExternalLink className="h-4 w-4 mr-2" />
+                  <ExternalLink className="mr-0.5"  height={16} width={16}/>
                 View Website
               </Button>
+              </a>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="max-w-7xl mx-auto px-8 lg:px-30 py-12">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Left Column - Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* About Section */}
-            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-2xl">About the Company</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground leading-relaxed">{provider.description}</p>
-              </CardContent>
-            </Card>
+             <div>
+              <h1 className="text-xl font-bold">Over View</h1>
+              <p className="text-sm text-[#b2b2b2] mt-0.5">{providerDetails.description}</p>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+                {stats.map((item, index) => (
+                  <div
+                    key={index}
+                    className="
+                      border border-gray-300 
+                      rounded-2xl 
+                      px-6 py-4 
+                      flex flex-col 
+                      text-center
+                      justify-center 
+                      bg-white
+                    "
+                  >
+                    <span className="text-md text-[#000] font-medium">{item.label}</span>
+                    <span className="text-sm text-[#b2b2b2] font-normal mt-1">{item.value}</span>
+                  </div>
+                ))}
+              </div>
+             </div>
 
             {/* Services Section */}
-            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-2xl">Services Offered</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  {provider.services.map((service, index) => (
+            
+                <h1 className="text-2xl font-bold mb-1">Services Offered</h1>
+              
+            
+                <div className="flex flex-row flex-wrap gap-3">
+                  {providerDetails.services.map((service, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-2 p-3 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100"
+                      className="p-3 text-center rounded-xl bg-[#d9e4f6]"
                     >
-                      <CheckCircle2 className="h-5 w-5 text-blue-600 shrink-0" />
                       <span className="font-medium text-sm">{service}</span>
                     </div>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
+            
 
             {/* Portfolio Section */}
-            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-2xl">Portfolio</CardTitle>
-              </CardHeader>
-              <CardContent>
+            
+                <h1 className="text-2xl font-bold">Portfolio & Awards</h1>
+              
                 <div className="grid sm:grid-cols-2 gap-6">
-                  {provider.portfolio.map((item) => (
+                  {providerDetails.portfolio.map((item) => (
                     <div
                       key={item.id}
                       className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300"
@@ -206,7 +367,7 @@ export default async function ProviderProfilePage({ params }: { params: Promise<
                       <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100">
                         <img
                           src={
-                            item.imageUrl ||
+                            item.image ||
                             `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(item.title) || "/placeholder.svg"}`
                           }
                           alt={item.title}
@@ -214,19 +375,19 @@ export default async function ProviderProfilePage({ params }: { params: Promise<
                         />
                       </div>
                       <div className="p-4">
-                        <Badge variant="outline" className="mb-2">
+                        <Badge variant="outline" className="mb-2 bg-[#ebecee] rounded-2xl text-[12px] text-[#000]">
                           {item.category}
                         </Badge>
-                        <h4 className="font-semibold text-lg mb-2">{item.title}</h4>
-                        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{item.description}</p>
+                        <h4 className="font-semibold text-md mb-1">{item.title}</h4>
+                        <p className="text-sm text-[#b2b2b2] line-clamp-2 mb-3">{item.description}</p>
                         <div className="flex flex-wrap gap-1 mb-3">
                           {item.technologies.slice(0, 3).map((tech, idx) => (
-                            <Badge key={idx} variant="secondary" className="text-xs">
+                            <Badge key={idx} variant="secondary" className="text-xs bg-[#d9e4f6] text-[#000] rounded-2xl">
                               {tech}
                             </Badge>
                           ))}
                         </div>
-                        {item.projectUrl && (
+                        {/* {item.projectUrl && (
                           <a
                             href={item.projectUrl}
                             target="_blank"
@@ -235,16 +396,15 @@ export default async function ProviderProfilePage({ params }: { params: Promise<
                           >
                             View Project <ExternalLink className="h-3 w-3" />
                           </a>
-                        )}
+                        )} */}
                       </div>
                     </div>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
+             
 
             {/* Client Testimonials */}
-            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+            {/* <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="text-2xl">Client Testimonials</CardTitle>
               </CardHeader>
@@ -270,13 +430,13 @@ export default async function ProviderProfilePage({ params }: { params: Promise<
                   </div>
                 ))}
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
 
           {/* Right Column - Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-6 sticky">
             {/* Company Stats */}
-            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+            {/* <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle>Company Stats</CardTitle>
               </CardHeader>
@@ -324,20 +484,21 @@ export default async function ProviderProfilePage({ params }: { params: Promise<
                   <span className="font-semibold text-green-600">{companyStats.successRate}</span>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
 
             {/* Technologies */}
-            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle>Technologies</CardTitle>
+            <Card className="border-2 shadow-none bg-white backdrop-blur-sm">
+              <CardHeader className="text-center px-0">
+                <CardTitle className="mb-3">Technologies</CardTitle>
+                <hr className="border-[1px] w-full"/>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  {technologies.map((tech, index) => (
+                  {providerDetails.technologies.map((tech, index) => (
                     <Badge
                       key={index}
                       variant="secondary"
-                      className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200"
+                      className="bg-[#ebecee] text-black h-[30px] min-w-[80px] rounded-xl "
                     >
                       {tech}
                     </Badge>
@@ -347,7 +508,7 @@ export default async function ProviderProfilePage({ params }: { params: Promise<
             </Card>
 
             {/* Contact Info */}
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white">
+            {/* <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white">
               <CardHeader>
                 <CardTitle>Contact Information</CardTitle>
               </CardHeader>
@@ -390,10 +551,10 @@ export default async function ProviderProfilePage({ params }: { params: Promise<
                   Send Message
                 </Button>
               </CardContent>
-            </Card>
+            </Card> */}
 
             {/* Pricing */}
-            {provider.hourlyRate && (
+            {/* {providerDetails.hourlyRate && (
               <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle>Pricing</CardTitle>
@@ -402,16 +563,228 @@ export default async function ProviderProfilePage({ params }: { params: Promise<
                   <div className="text-center py-4">
                     <div className="flex items-baseline justify-center gap-2 mb-2">
                       <DollarSign className="h-6 w-6 text-muted-foreground" />
-                      <span className="text-4xl font-bold text-blue-600">{provider.hourlyRate}</span>
+                      <span className="text-4xl font-bold text-blue-600">{providerDetails.hourlyRate}</span>
                       <span className="text-muted-foreground">/hour</span>
                     </div>
                     <p className="text-sm text-muted-foreground">Starting rate</p>
                   </div>
                 </CardContent>
               </Card>
-            )}
+            )} */}
           </div>
         </div>
+
+        {/*Filter s header */}
+         <div className="flex flex-col lg:flex-row justify-between my-8">
+          <h1 className="text-3xl text-[#000] mb-4 lg:mb-0">Creative Design Studios Reviews</h1>
+          <div className="flex gap-2 items-center mb-4 lg:mb-0">
+             <span className="text-md font-semibold">Services:</span>
+          <Select onValueChange={(value)=>setServiceFilter(value)}>
+           
+            <SelectTrigger
+              className="
+                bg-[#f5f5f5]
+                h-14
+                w-[160px]
+                rounded-full
+                shadow-none
+                border border-[#e5e5e5]
+                text-[#555]
+                px-4
+                focus:outline-none
+                focus:ring-0
+                focus:ring-offset-0
+                focus:border-[#e5e5e5]
+              "
+            >
+              
+              <SelectValue placeholder="Select Services" />
+            </SelectTrigger>
+
+            <SelectContent>
+              <SelectItem value="all">All Services</SelectItem>
+              <SelectItem value="development">Development</SelectItem>
+              <SelectItem value="design">Design</SelectItem>
+              <SelectItem value="marketing">Marketing</SelectItem>
+              <SelectItem value="consulting">Consulting</SelectItem>
+            </SelectContent>
+          </Select>
+          </div>
+           <div className="flex gap-2 items-center">
+             <span className="text-md font-semibold">Sortby:</span>
+             <Select onValueChange={(value)=>setSortByFilter(value)}>
+           
+            <SelectTrigger
+              className="
+                bg-[#f5f5f5]
+                h-14
+                w-[160px]
+                rounded-full
+                shadow-none
+                border border-[#e5e5e5]
+                text-[#555]
+                px-4
+                focus:outline-none
+                focus:ring-0
+                focus:ring-offset-0
+                focus:border-[#e5e5e5]
+              "
+            >
+              
+              <SelectValue placeholder="Rating" />
+            </SelectTrigger>
+
+            <SelectContent>
+             
+              <SelectItem value="low-to-high">Low to high</SelectItem>
+              <SelectItem value="high-to-low">High to low</SelectItem>
+             
+            </SelectContent>
+          </Select>
+          </div>
+        </div>
+        {/*Reviews contenet */}
+         {
+          mockReviews.map((review)=>(
+            <div className="border border-gray-300 rounded-2xl  bg-white max-w-6xl mx-auto mb-5">
+              
+              {/* ===================== TOP SECTION ===================== */}
+              <div
+                className="
+                  grid 
+                  grid-cols-1 
+                  lg:grid-cols-3 
+                  gap-6 
+                  border-b 
+                
+                "
+              >
+                {/* LEFT COLUMN — PROJECT DETAILS */}
+                <div className="lg:border-r-2  pl-6 pr-6 pt-6 pb-6">
+                  <h2 className="text-xl font-bold text-[#000] mb-0">{review.project.title}</h2>
+
+                  <p className="text-[14px] font-medium text-[#afacab]">{review.project.type}</p>
+
+                  <p className="text-[14px] font-medium text-[#afacab]">{review.project.timeline}</p>
+                  <p className="text-[14px] font-medium text-[#afacab]">{review.project.budget}</p>
+
+                  <h4 className="text-sm font-semibold mt-4">Project summary:</h4>
+                  <p className="text-[14px] font-medium text-[#afacab] leading-relaxed">
+                    {review.project.summary}
+                  </p>
+                </div>
+
+                {/* RIGHT SECTION — REVIEW CONTENT */}
+                <div className="md:col-span-2 relative pl-6 pr-6 pt-6 pb-0">
+                  <button className="absolute right-0 top-0 text-gray-400 hover:text-gray-600 mr-6 mt-6">
+                    <Share2 className="h-5 w-5" />
+                  </button>
+
+                  <h2 className="text-xl font-bold">The Review</h2>
+
+                  <p className="text-[14px] font-medium text-[#afacab] leading-relaxed">
+                    "{review.review.quote}"
+                  </p>
+
+                  <p className="text-sm text-gray-400 mt-2">{review.review.date}</p>
+
+                  <h4 className="text-sm font-semibold mt-4">Feed back summary</h4>
+
+                  <p className="text-[14px] font-medium text-[#afacab] leading-relaxed">
+                    {review.review.summary}
+                  </p>
+                </div>
+              </div>
+
+              {/* ===================== BOTTOM SECTION ===================== */}
+              <div
+                className="
+                  grid 
+                  grid-cols-1 
+                  lg:grid-cols-3 
+                  gap-6 
+                  pt-0
+                "
+              >
+                {/* RATING BLOCK */}
+                <div className="flex flex-row items-center justify-start gap-3 pl-6 text-center md:border-r md:pr-6">
+                  
+                  <div className="pt-6 pb-6">
+                    <span className="text-5xl font-bold text-[#898383]">{review.rating.overall}</span>
+                  <RatingStars rating={review.rating.overall}/>
+                  <div className="flex text-yellow-500 mt-1">
+                  
+                  </div>
+
+                  <span className="text-[#000] text-sm font-semibold mr-0.5">{review.rating.overall}</span>
+                  <span className="text-[#898383]">({review.rating.totalReviews})</span>
+                    
+                  
+                  </div>
+
+                  <div className="mt-4 text-sm text-[#000] font-bold space-y-1 text-center">
+                    <p>Quality: {review.rating.quality}</p>
+                    <p>Cost: {review.rating.cost}</p>
+                    <p>Schedule: {review.rating.schedule}</p>
+                    <p>Willing to Refer: {review.rating.refer}</p>
+                  </div>
+                </div>
+
+                {/* REVIEWER DETAILS */}
+                <div className="md:col-span-2 flex flex-col justify-center pl-6 pt-6 pb-6 gap-3">
+                  <h3 className="text-md font-bold mb-0">The Reviewer</h3>
+
+                  <p className="text-[14px] text-[#b2b2b2] -mt-3">{review.reviewer.role}</p>
+                  <div className="flex flex-row flex-start gap-1 items-center text-[#cbc8c8]">
+                    <CircleUser className="w-4 h-4"/>
+                    <p className="text-sm font-medium">{review.reviewer.name}</p>
+                  </div>
+                
+
+                  <div
+                    className="
+                      flex 
+                      flex-wrap 
+                      gap-3 
+                      text-sm 
+                      text-gray-600 
+                      mt-2
+                    "
+                  >
+                    
+                  
+                    <div className="flex items-center gap-1">
+                        <Building className="h-4 w-4"  />
+                      {review.reviewer.industry}
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <MapPin className="h-4 w-4" />
+                      {review.reviewer.location}
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <Users className="h-4 w-4" />
+                      {review.reviewer.employees}
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <MessageSquareMore  className="h-4 w-4" />
+                      {review.reviewer.reviewType}
+                    </div>
+
+                    {review.reviewer.verified && (
+                      <div className="flex items-center gap-1 text-green-600">
+                        <CheckCircle2 className="h-4 w-4" />
+                        Verified
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+                  </div>
+              ))
+         }
       </div>
     </div>
   )

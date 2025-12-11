@@ -84,3 +84,26 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Failed to fetch providers" }, { status: 500 })
   }
 }
+export async function POST(req: Request) {
+  try {
+    await connectToDatabase()
+
+    const body = await req.json()
+
+    // Create a new provider
+    const provider = await Provider.create(body)
+
+    return NextResponse.json(
+      { success: true, data: provider },
+      { status: 201 }
+    )
+
+  } catch (error: any) {
+    console.error("Provider POST Error:", error)
+
+    return NextResponse.json(
+      { success: false, message: error.message || "Server Error" },
+      { status: 500 }
+    )
+  }
+}

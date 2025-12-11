@@ -5,6 +5,7 @@ export interface IPortfolioItem {
   description: string
   image: string
   technologies: string[]
+  category?:String
   completedDate: string
   clientName?: string
   projectUrl?: string
