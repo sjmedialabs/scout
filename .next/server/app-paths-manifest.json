@@ -1,7 +1,13 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
+  "/services/it/page": "app/services/it/page.js",
+  "/page": "app/page.js",
+  "/api/cms/route": "app/api/cms/route.js",
+  "/api/providers/route": "app/api/providers/route.js",
+  "/api/requirements/route": "app/api/requirements/route.js",
+  "/register/page": "app/register/page.js",
   "/login/page": "app/login/page.js",
-  "/admin/revenue-dashboard/page": "app/admin/revenue-dashboard/page.js",
-  "/admin/subscription-plans/page": "app/admin/subscription-plans/page.js",
-  "/admin/subscribers/page": "app/admin/subscribers/page.js",
-  "/admin/dashboard/page": "app/admin/dashboard/page.js"
+  "/admin/email-campaigns/page": "app/admin/email-campaigns/page.js",
+  "/admin/dashboard/page": "app/admin/dashboard/page.js",
+  "/admin/subscribers/page": "app/admin/subscribers/page.js"
 }
