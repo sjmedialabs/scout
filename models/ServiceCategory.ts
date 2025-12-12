@@ -4,7 +4,7 @@ const ServiceCategorySchema = new mongoose.Schema(
   {
     title: { type: String, required: true }, 
     slug: { type: String, required: true, unique: true },
-
+    icon: { type: String, default: "" },
     // Shown directly on the navigation bar
     parent: { type: mongoose.Schema.Types.ObjectId, ref: "ServiceCategory", default: null },
 
