@@ -8,17 +8,17 @@ interface Start {
 export default function StatsGrid({ stats }: { stats: Start[] }) {
   return (
     <section className="bg-white">
-      <div className="mx-auto max-w-[1200px] px-6 md:px-10 py-20">
+      <div className="mx-auto w-full max-w-[1200px] px-6 sm:px-6 md:px-10 py-20">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((s) => (
             <div
               key={s.label}
-              className="flex flex-col items-center justify-center rounded-[28px]
+              className="flex flex-col sm:h-40  items-center justify-center rounded-[28px]
                          border border-[#d8dce2] bg-[#f0f3fa] shadow-[0_1px_0_rgba(0,0,0,0.02)]
                          h-[150px] md:h-[170px] text-center"
             >
               <div
-                className="text-[36px] md:text-[40px] font-semibold leading-none text-[#F15927]"
+                className="text-[36px] sm:text-[34px] md:text-[40px] font-semibold leading-none text-[#F15927]"
                 style={{ fontFamily: "CabinetGrotesk2" }}
               >
                 {s.value}

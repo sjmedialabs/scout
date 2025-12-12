@@ -7,20 +7,20 @@ import Link from "next/link"
 export default function ServiceCard({ provider }: { provider: Provider }) {
     const p = provider
     return (
-        <div className="overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:shadow-md">
+        <div className="overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:shadow-md flex flex-col h-full">
             <div className="aspect-16/10 w-full overflow-hidden">
                 <img src={p.cover} alt={p.name} className="h-full w-full object-cover"/>
             </div>
-            <div className="space-y-4m p-5">
-                <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+            <div className="flex flex-col flex-1 sm:p-6 p-5 justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-wrap items-center gap-3">
                     {p.verified && (
-                       <span className="inline-flex items-center rounded-full border bg-[#32359a] px-4 py-1 text-xs font-medium text-white text-bold">
+                       <span className="inline-flex items-center rounded-full border bg-[#32359a] px-4 py-1 sm:text-xs font-medium text-white text-bold">
                             Verified
                         </span>
                     )}
                     {p.featured && (
-                        <span className="inline-flex items-center rounded-full border bg-[#e84816] px-4 py-1 text-xs font-medium text-white text-bold">
+                        <span className="inline-flex items-center rounded-full border bg-[#e84816] px-4 py-1 sm:text-xs font-medium text-white text-bold">
                             Featured
                         </span>
                     )}
@@ -46,7 +46,8 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
                          WebkitMaskRepeat: "no-repeat",
                         background: `linear-gradient(90deg, #FFB400 ${fillValue * 100}%, #E2E2E2 ${fillValue * 100}%)`,
                     }}
-                ></div>
+                >
+                </div>
              );
             }
 
@@ -62,11 +63,11 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
          </div>
 
          {/* Rating value and review count */}
-         <span className="text-[14px] font-semibold text-[#0E0E0E]">
+         <span className="text-[14px] sm:text-[14px] font-semibold text-[#0E0E0E]">
          {p.rating.toFixed(1)}
         </span>
          {p.reviews && (
-         <span className="text-[14px] text-[#7C7C7C]">({p.reviews})</span>
+         <span className="text-[14px] sm:text-[15px] text-[#7C7C7C]">({p.reviews})</span>
          )}
         </div>
         </div>
@@ -75,7 +76,7 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
                  {/* Title + Description */}
                 <div className="flex items-start justify-between py-3">
                     <div>
-                        <h3 className="text-3xl font-extrabold text-[][#0E0E0E] leading-none"
+                        <h3 className="text-3xl sm:text-3xl font-extrabold text-[][#0E0E0E] leading-none"
                         style={{fontFamily: "CabinetGrotesk2"}}
                         >
                             {p.name} 
@@ -93,19 +94,20 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
                     {p.tags.map((tag) => (
                         <span 
                         key={tag} 
-                        className="inline-flex items-center rounded-full bg-[#f2f2f2] border px-5 py-0.5 text-ts font-bold text-slate-700">
+                        className="inline-flex items-center rounded-full
+                         bg-[#f2f2f2] border px-5 py-0.5 text-ts sm:text-[14px] font-bold text-slate-700">
                             {tag}
                         </span>
                     ))}
                 </div>
 
                 {/* Location / Projects / Response */}
-                <div className=" flex flex-wrap items-center gap-12 text-sm font-bold text-[#616161] py-5">
+                <div className=" flex flex-wrap items-center gap-6 text-sm sm:text-sm font-bold text-[#616161] py-5">
                     <span className="inline-flex items-center gap-2">
                         <img
                         src="/Location_Icon.jpg"
                         alt="Location"
-                        className="h-5 w-5 object-contain"
+                        className="h-5 w-5 sm:h-6 sm:w-6 object-contain"
                         />
                         {p.location}
                     </span>
@@ -113,7 +115,7 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
                         <img
                         src="/Projects_Icon.jpg"
                         alt="Projects"
-                        className="h-5 w-5 object-contain"
+                        className="h-5 w-5 sm:h-6 sm:w-6 object-contain"
                         />
                         {p.projects} projects
                         </span>
@@ -121,24 +123,24 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
                          <img
                         src="/Response_Icon.jpg"
                         alt="Time"
-                        className="h-5 w-5 object-contain"
+                        className="h-5 w-5 sm:h-6 sm:w-6 object-contain"
                         />
                         Response: {p.response}
                         </span>
                 </div>
                     
                 {/* Rate */}    
-                <div className="flex items-center justify-between pt-1 py-3">
-                    <div className="text-xl text-[#616161] font-bold">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-1 py-3">
+                    <div className="text-xl  text-[#616161] font-bold">
                         From 
                         <span className="font-bold"> {p.rate}</span>
                     </div>
                 </div>
 
                 {/*Buttons*/}
-                <div className="flex items-center justify-between pt-3">
-                    <div className="flex items-center gap-3">
-                    <button className="rounded-full bg-[#2c34a1] px-4 py-3 text-sm font-bold text-white hover:bg-[#3f437e]">
+                <div className="flex sm:flex-row sm:items-center sm:justify-between pt-3">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                    <button className="mt-auto rounded-full bg-[#2c34a1] px-4 py-3 text-sm font-bold text-white hover:bg-[#3f437e]">
                          <Link href="/register">View Profile  →</Link>
                     
                     </button>
