@@ -4,6 +4,7 @@ import { CompanyProfileEditor } from "@/components/provider/company-profile-edit
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/lib/toast"
 
 const EditProfile = () => {
 
@@ -68,11 +69,15 @@ const EditProfile = () => {
                 body:JSON.stringify(recievedData)
             })
             const data=await response.json();
+            if(response.ok){
+                toast.success("Successfully updated the profile details")
+            }
             console.log("Update api response::::",data);
 
 
         }catch(error){
             console.log("Failed to save the data please try again:::",error)
+            toast.error("Failed to update the details")
         }
     };
 
