@@ -71,6 +71,7 @@ const PortfolioItemSchema = new Schema({
   technologies: [{ type: String }],
   completedDate: { type: String },
   clientName: { type: String },
+  category:{type:String},
   projectUrl: { type: String },
 })
 
