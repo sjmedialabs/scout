@@ -1,3 +1,5 @@
+
+
 "use client"
 
 import type React from "react"
@@ -750,24 +752,7 @@ const handlePostRequirement = async (newRequirement: any) => {
     setActiveSection("proposals")
   }
 
-  const handleProfileUpdate = (field: string, value: string) => {
-    setProfileData((prev) => ({
-      ...prev,
-      [field]: value,
-    }))
-  }
-
-  const handleSaveProfile = () => {
-    // In a real app, this would make an API call to update the profile
-    console.log("Saving profile:", profileData)
-    setIsEditingProfile(false)
-    // Show success message or toast
-  }
-
-  const handleCancelEdit = () => {
-    // Reset to original data if needed
-    setIsEditingProfile(false)
-  }
+ 
 
   const filteredProviders = mockProviders.filter((provider) => {
     const matchesLocation = !locationFilter || provider.location.toLowerCase().includes(locationFilter.toLowerCase())
@@ -806,67 +791,7 @@ const handlePostRequirement = async (newRequirement: any) => {
   return (
     <div className="flex h-full">
       {/* Left Sidebar */}
-      <div className="w-80 bg-card border-r border-border flex flex-col shrink-0">
-        <div className="p-6 border-b border-border">
-          <h2 className="text-xl font-bold">Client Dashboard</h2>
-          <p className="text-sm text-muted-foreground">Welcome back, {user.name}</p>
-          <div className="flex items-center gap-2 mt-3">
-            <Badge className="bg-green-100 text-green-800">Active Client</Badge>
-            <Badge variant="secondary">Verified</Badge>
-          </div>
-        </div>
-
-        {/* Navigation Menu */}
-        <div className="flex-1 overflow-y-auto p-4">
-          <nav className="space-y-2">
-            {menuItems.map((section) => (
-              <div key={section.id}>
-                <button
-                  onClick={() => toggleSection(section.id)}
-                  className="w-full flex items-center justify-between p-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <section.icon className="h-4 w-4" />
-                    {section.label}
-                  </div>
-                  {section.children &&
-                    (expandedSections.includes(section.id) ? (
-                      <ChevronDown className="h-4 w-4" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4" />
-                    ))}
-                </button>
-
-                {section.children && expandedSections.includes(section.id) && (
-                  <div className="ml-4 mt-2 space-y-1">
-                    {section.children.map((item) => (
-                      <button
-                        key={item.id}
-                        onClick={() => handleMenuClick(item.id, section.id)}
-                        className={`w-full flex items-center gap-3 p-2 text-sm rounded-lg transition-colors ${
-                          activeSection === item.id
-                            ? "bg-primary text-primary-foreground"
-                            : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                        }`}
-                      >
-                        <item.icon className="h-4 w-4" />
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </nav>
-        </div>
-
-        <div className="p-4 border-t border-border">
-          <Button onClick={() => setShowPostForm(true)} className="w-full">
-            <Plus className="h-4 w-4 mr-2" />
-            Post New Requirement
-          </Button>
-        </div>
-      </div>
+      
 
       {/* Main Content */}
       <div className="flex-1 p-6 overflow-y-auto">
@@ -1101,31 +1026,7 @@ const handlePostRequirement = async (newRequirement: any) => {
         )}
 
         {/* My Requirements */}
-        {activeSection === "requirements" && (
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold">My Requirements</h1>
-              <p className="text-muted-foreground">Manage all your posted requirements</p>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              <div className="lg:col-span-1">
-                <FiltersPanel onFiltersChange={handleFiltersChange} />
-              </div>
-              <div className="lg:col-span-3">
-                <Card>
-                  <CardContent className="max-h-[600px] overflow-y-auto p-6">
-                    <RequirementList
-                      requirements={filteredRequirements}
-                      onViewProposals={handleViewProposals}
-                      onViewDetails={handleViewDetails}
-                    />
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </div>
-        )}
-
+        
         {/* Proposals */}
         {activeSection === "proposals" && !selectedProjectId && (
           <div className="space-y-6">
@@ -2767,5 +2668,6 @@ const handlePostRequirement = async (newRequirement: any) => {
         onSelectProvider={handleSelectProviderFromComparison}
       />
     </div>
+
   )
 }
