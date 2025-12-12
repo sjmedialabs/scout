@@ -9,9 +9,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus, X, ExternalLink, Lock } from "lucide-react"
-import type { Provider, PortfolioItem } from "@/lib/types"
+import type { Provider, PortfolioItem,TestimonialItem } from "@/lib/types"
 import { categories } from "@/lib/mock-data"
 import { ImageUpload } from "../ui/image-upload"
+
 
 interface CompanyProfileEditorProps {
   provider: Provider
@@ -82,9 +83,16 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
     services: provider.services || [],
     technologies:provider.technologies || [],
     awards:provider.awards || [],
-    certification:provider.certifications || [],
+    certifications:provider.certifications || [],
     industries:provider.industries || [],
-    portfolio: provider.portfolio || [],
+    portfolio: provider.portfolio.map((item)=>({...item,id:item._id})) || [],
+    testimonials:provider.testimonials || [],
+   socialLinks: {
+    linkedin: provider.socialLinks.linkedin || "",
+    twitter:  provider.socialLinks.twitter || "",
+    facebook:  provider.socialLinks.facebook || "",
+    instagram:  provider.socialLinks.instagram || "",
+  },
   })
 
   const [newService, setNewService] = useState("")
@@ -96,7 +104,13 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
   const[newTechnology,setNewTechnology]=useState("");
   const[newIndustry,setNewIndustry]=useState("");
   const[newAward,setNewAward]=useState("");
+  const[newCertificate,setNewCertificate]=useState("");
   const[portfolioTechnology,setPortfolioTechnology]=useState("");
+  const[editPortfolioId,setEditPortfolioId]=useState();
+ const [testimonialForm, setTestimonialForm] = useState<Partial<TestimonialItem>>({});
+const [showTestimonialForm, setShowTestimonialForm] = useState(false);
+const [editTestimonialId, setEditTestimonialId] = useState<string | null>(null);
+  
 
   const handleSave = () => {
     const newErrors: Record<string, string> = {}
@@ -181,14 +195,20 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
   teamSize: formData.totalEmployees,   // OR map to teamSize if needed
   portfolio: formData.portfolio || [],
   
-  certifications: formData.certification || [],
+  certifications: formData.certifications|| [],
   awards: formData.awards || [],
 
+  
+  projectsCompleted:parseInt(formData.projectsCompleted),
+  hourlyRate:formData.hourlyRate,
+
+  testimonials:formData.testimonials,
+
   socialLinks: {
-    linkedin: formData.linkedin || "",
-    twitter: formData.twitter || "",
-    facebook: formData.facebook || "",
-    instagram: formData.instagram || "",
+    linkedin: formData.socialLinks.linkedin || "",
+    twitter: formData.socialLinks.twitter || "",
+    facebook: formData.socialLinks.facebook || "",
+    instagram: formData.socialLinks.instagram || "",
   },
 }
 
@@ -294,6 +314,20 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
     setFormData((prev)=>({...prev,awards:(prev.awards || []).filter((a:string)=>a!==award)}))
   }
 
+  const addCertificate=()=>{
+    if(newCertificate.trim() && !(formData.certifications || []).includes(newCertificate)){
+      setFormData((prev)=>({...prev,certifications:[...prev.certifications,newCertificate]}))
+    }
+    setNewCertificate("")
+  }
+ 
+  const removeCertification=(certificate:string)=>{
+      setFormData((prev)=>({
+        ...prev,
+        certifications:(prev.certifications || []).filter((c:any)=>c!==certificate)
+      }))
+  }
+
   const handleTaglineChange = (value: string) => {
     if (value.length <= 50) {
       setFormData((prev) => ({ ...prev, tagline: value }))
@@ -305,13 +339,13 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
   }
 
   const addPortfolioItem = () => {
-    if (portfolioForm.title && portfolioForm.description && portfolioForm.category) {
+    if (!editPortfolioId && portfolioForm.title && portfolioForm.description && portfolioForm.category) {
       const newItem: PortfolioItem = {
         id: Date.now().toString(),
         title: portfolioForm.title,
         description: portfolioForm.description,
         category: portfolioForm.category,
-        imageUrl: portfolioForm.imageUrl,
+        image: portfolioForm.image,
         projectUrl: portfolioForm.projectUrl,
         completedAt: portfolioForm.completedAt || new Date(),
         technologies: portfolioForm.technologies || [],
@@ -325,14 +359,98 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
       setPortfolioForm({})
       setShowPortfolioForm(false)
     }
+    else{
+      const updated = formData.portfolio.map(item => {
+        if (item.id !== editPortfolioId) {
+          return item
+        }
+
+        return {
+          ...item,          // keeps required fields (id, completedAt, technologies)
+          ...portfolioForm, // overrides only edited fields
+        }
+      })
+      setFormData((prev)=>({...prev,portfolio:[...updated]}))
+      setShowPortfolioForm(false);
+      setPortfolioForm({})
+    }
+  }
+  const editPortfolioItem=(id)=>{
+    const edititem=formData.portfolio.filter((item)=>item.id===id)
+    setPortfolioForm({...(edititem[0])})
+    setEditPortfolioId(id);
+    setShowPortfolioForm(true)
   }
 
   const removePortfolioItem = (id: string) => {
+    console.log("recied id to delete",id);
     setFormData((prev) => ({
       ...prev,
       portfolio: (prev.portfolio || []).filter((item) => item.id !== id),
     }))
   }
+  const addOrUpdateTestimonial = () => {
+  // ADD new testimonial
+  if (!editTestimonialId) {
+    if (
+      testimonialForm.clientName &&
+      testimonialForm.text &&
+      testimonialForm.company &&
+      testimonialForm.rating
+    ) {
+      const newItem: TestimonialItem = {
+        id: Date.now().toString(),
+        clientName: testimonialForm.clientName,
+        text: testimonialForm.text,
+        company: testimonialForm.company,
+        rating: testimonialForm.rating,
+        date: testimonialForm.date || new Date().toISOString().split("T")[0],
+        avatar: testimonialForm.avatar || "",
+      };
+
+      setFormData(prev => ({
+        ...prev,
+        testimonials: [...(prev.testimonials || []), newItem],
+      }));
+
+      setTestimonialForm({});
+      setShowTestimonialForm(false);
+    }
+  }
+
+  // UPDATE existing testimonial
+  else {
+    const updated = formData.testimonials.map(item =>
+      item.id === editTestimonialId
+        ? { ...item, ...testimonialForm }
+        : item
+    );
+
+    setFormData(prev => ({
+      ...prev,
+      testimonials: updated,
+    }));
+
+    setEditTestimonialId(null);
+    setTestimonialForm({});
+    setShowTestimonialForm(false);
+  }
+};
+const editTestimonialItem = (id: string) => {
+  const item = formData.testimonials.find(t => t.id === id);
+  if (item) {
+    setTestimonialForm({ ...item });
+    setEditTestimonialId(id);
+    setShowTestimonialForm(true);
+  }
+};
+const removeTestimonialItem = (id: string) => {
+  setFormData(prev => ({
+    ...prev,
+    testimonials: prev.testimonials.filter(item => item.id !== id),
+  }));
+};
+
 
   return (
     <div className="space-y-6">
@@ -553,6 +671,7 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
               {errors.companyVideoLink && <p className="text-sm text-red-500">{errors.companyVideoLink}</p>}
             </div>
           </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="projects">
@@ -599,6 +718,71 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
                   onChange={(e) => setFormData((prev)=>({...prev,hourlyRate:e.target.value}))}
                   className={`${errors.tagline ? "border-red-500" : ""} placeholder:text-[#b2b2b2]`}
                   placeholder="Enter starting proice per hour"
+        
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="insta">
+                Instagram Link
+              </Label>
+              <div className="relative">
+                <Input
+                  id="insta"
+                  value={formData.socialLinks.instagram}
+                  onChange={(e) => setFormData((prev)=>({...prev,socialLinks:{...prev.socialLinks,instagram:e.target.value}}))}
+                  className={`${errors.tagline ? "border-red-500" : ""} placeholder:text-[#b2b2b2]`}
+                  placeholder="https://instagram.com/yourcompany"
+        
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="facebook">
+                Facebook link
+              </Label>
+              <div className="relative">
+                <Input
+                  id="facebook"
+                  value={formData.socialLinks.facebook}
+                  onChange={(e) => setFormData((prev)=>({...prev,socialLinks:{...prev.socialLinks,facebook:e.target.value}}))}
+                  className={`${errors.tagline ? "border-red-500" : ""} placeholder:text-[#b2b2b2]`}
+                  placeholder="https://facebook.com/yourcompany"
+        
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="linkdin">
+                Linkdin Link 
+              </Label>
+              <div className="relative">
+                <Input
+                  id="linkdin"
+                 
+                  value={formData.socialLinks.linkedin}
+                  onChange={(e) => setFormData((prev)=>({...prev,socialLinks:{...prev.socialLinks,linkedin:e.target.value}}))}
+                  className={`${errors.tagline ? "border-red-500" : ""} placeholder:text-[#b2b2b2]`}
+                  placeholder="https://linkedin.com/company/yourcompany"
+        
+                />
+              </div>
+            </div>
+             <div className="space-y-2">
+              <Label htmlFor="twiter">
+                Twitter Link 
+              </Label>
+              <div className="relative">
+                <Input
+                  id="twiter"
+                 
+                  value={formData.socialLinks.twitter}
+                  onChange={(e) => setFormData((prev)=>({...prev,socialLinks:{...prev.socialLinks,twitter:e.target.value}}))}
+                  className={`${errors.tagline ? "border-red-500" : ""} placeholder:text-[#b2b2b2]`}
+                  placeholder="https://twitter.com/yourcompany"
         
                 />
               </div>
@@ -790,6 +974,39 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
         </CardContent>
       </Card>
 
+      {/*Certifications added */}
+       <Card>
+        <CardHeader>
+          <CardTitle>Certification Recieved</CardTitle>
+          <CardDescription>Manage the Certification you recieved</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            {(formData.certifications || []).map((item) => (
+              <Badge key={item} variant="secondary" className="flex items-center gap-2">
+                {item}
+                <div onClick={() => removeCertification(item)}>
+                   <X className="h-3 w-3 cursor-pointer" />
+                </div>
+              </Badge>
+            ))}
+          </div>
+
+          <div className="flex gap-2">
+           <Input type="text"
+           value={newCertificate}
+            onChange={(e)=>setNewCertificate(e.target.value)}
+            placeholder="ISO..."
+            className=" placeholder:text-[#b2b2b2] "
+            />
+            
+            <Button onClick={addCertificate} disabled={!newCertificate}>
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Portfolio */}
       <Card>
         <CardHeader>
@@ -812,8 +1029,8 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
                 <div className="space-y-2">
                     <ImageUpload
                     label="Project Image"
-                    value={portfolioForm.imageUrl}
-                    onChange={(value) => setPortfolioForm({ ...portfolioForm, imageUrl: value })}
+                    value={portfolioForm.image}
+                    onChange={(value) => setPortfolioForm((prev)=>({...prev,image:value}))}
                     description="Upload your company ccover image (PNG, JPG) or provide a URL"
                     previewClassName="w-24 h-24"
                     />
@@ -908,7 +1125,7 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
                   </div>
 
                 <div className="flex gap-2">
-                  <Button onClick={addPortfolioItem}>Add Project</Button>
+                  <Button onClick={addPortfolioItem}>{editPortfolioId?"Update":"Add Project"}</Button>
                   <Button variant="outline" onClick={() => setShowPortfolioForm(false)}>
                     Cancel
                   </Button>
@@ -924,13 +1141,13 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
           <div className="grid md:grid-cols-2 gap-4">
             {(formData.portfolio || []).map((item) => (
               <div
-                      key={item.id}
+                      key={item.id || item._id}
                       className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300"
                     >
                       <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100">
                         <img
                           src={
-                            item.imageUrl ||
+                            item.image ||
                             `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(item.title) || "/placeholder.svg"}`
                           }
                           alt={item.title}
@@ -960,6 +1177,14 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
                             View Project <ExternalLink className="h-3 w-3" />
                           </a>
                         )} */}
+                        <div className="flex justify-between">
+                          <Button className="bg-red-500 h-[30px] w-[80px] rounded-xl" onClick={()=>removePortfolioItem(item.id)}>
+                            Delete
+                          </Button>
+                          <Button className="bg-green-500 h-[30px] w-[80px] rounded-xl" onClick={()=>editPortfolioItem(item.id)}>
+                            Edit
+                          </Button>
+                        </div>
                       </div>
                     </div>
              
@@ -967,6 +1192,203 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
           </div>
         </CardContent>
       </Card>
+
+      {/*Testimonials */}
+       
+       <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle>Testimonials</CardTitle>
+              <CardDescription>What your clients say about your work</CardDescription>
+            </div>
+            <Button onClick={() => setShowTestimonialForm(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Testimonial
+            </Button>
+          </div>
+        </CardHeader>
+
+        <CardContent className="space-y-4">
+          {showTestimonialForm && (
+            <Card className="border-dashed">
+              <CardContent className="pt-6 space-y-4">
+
+                {/* Avatar Image */}
+                <div className="space-y-2">
+                  <ImageUpload
+                    label="Client Avatar"
+                    value={testimonialForm.avatar}
+                    onChange={(value) =>
+                      setTestimonialForm((prev) => ({ ...prev, avatar: value }))
+                    }
+                    description="Upload the client's avatar (PNG, JPG) or provide a URL"
+                    previewClassName="w-24 h-24"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Client Name */}
+                  <div className="space-y-2">
+                    <Label>Client Name</Label>
+                    <Input
+                      value={testimonialForm.clientName || ""}
+                      onChange={(e) =>
+                        setTestimonialForm((prev) => ({
+                          ...prev,
+                          clientName: e.target.value,
+                        }))
+                      }
+                      placeholder="John Doe"
+                      className="placeholder:text-[#b2b2b2]"
+                    />
+                  </div>
+
+                  {/* Company */}
+                  <div className="space-y-2">
+                    <Label>Company</Label>
+                    <Input
+                      value={testimonialForm.company || ""}
+                      onChange={(e) =>
+                        setTestimonialForm((prev) => ({
+                          ...prev,
+                          company: e.target.value,
+                        }))
+                      }
+                      placeholder="ABC Pvt Ltd"
+                      className="placeholder:text-[#b2b2b2]"
+                    />
+                  </div>
+                </div>
+
+                {/* Testimonial Text */}
+                <div className="space-y-2">
+                  <Label>Feedback</Label>
+                  <Textarea
+                    value={testimonialForm.text || ""}
+                    onChange={(e) =>
+                      setTestimonialForm((prev) => ({
+                        ...prev,
+                        text: e.target.value,
+                      }))
+                    }
+                    placeholder="Share client's experience..."
+                    rows={3}
+                    className="placeholder:text-[#b2b2b2]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Rating */}
+                  <div className="space-y-2">
+                    <Label>Rating</Label>
+                    <Select
+                      value={testimonialForm.rating || ""}
+                      onValueChange={(value) =>
+                        setTestimonialForm((prev) => ({
+                          ...prev,
+                          rating: value,
+                        }))
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Rating" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">1</SelectItem>
+                        <SelectItem value="2">2</SelectItem>
+                        <SelectItem value="3">3</SelectItem>
+                        <SelectItem value="4">4</SelectItem>
+                        <SelectItem value="5">5</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Date */}
+                  <div className="space-y-2">
+                    <Label>Date</Label>
+                    <Input
+                      type="date"
+                      value={testimonialForm.date || ""}
+                      onChange={(e) =>
+                        setTestimonialForm((prev) => ({
+                          ...prev,
+                          date: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+
+                {/* Buttons */}
+                <div className="flex gap-2">
+                  <Button onClick={addOrUpdateTestimonial}>
+                    {editTestimonialId ? "Update" : "Add Testimonial"}
+                  </Button>
+                  <Button variant="outline" onClick={() => setShowTestimonialForm(false)}>
+                    Cancel
+                  </Button>
+                </div>
+
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Testimonials List */}
+          <div className="grid md:grid-cols-2 gap-4">
+            {(formData.testimonials || []).map((item) => (
+              <div
+                key={item.id}
+                className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300"
+              >
+                <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100 flex justify-center items-center">
+                  <img
+                    src={
+                      item.avatar ||
+                      `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(
+                        item.clientName
+                      )}`
+                    }
+                    alt={item.clientName}
+                    className="w-24 h-24 rounded-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+
+                <div className="p-4">
+                  <Badge
+                    variant="outline"
+                    className="mb-2 bg-[#ebecee] rounded-2xl text-[12px] text-[#000]"
+                  >
+                    ⭐ {item.rating}/5
+                  </Badge>
+
+                  <h4 className="font-semibold text-md mb-1">{item.clientName}</h4>
+                  <p className="text-sm text-[#b2b2b2]">{item.company}</p>
+
+                  <p className="text-sm text-[#b2b2b2] line-clamp-2 my-3">{item.text}</p>
+
+                  <div className="flex justify-between">
+                    <Button
+                      className="bg-red-500 h-[30px] w-[80px] rounded-xl"
+                      onClick={() => removeTestimonialItem(item.id)}
+                    >
+                      Delete
+                    </Button>
+                    <Button
+                      className="bg-green-500 h-[30px] w-[80px] rounded-xl"
+                      onClick={() => editTestimonialItem(item.id)}
+                    >
+                      Edit
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+
 
       <div className="flex justify-end">
         <Button onClick={handleSave}>Save Changes</Button>

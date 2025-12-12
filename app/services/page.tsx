@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { ChevronRight, ChevronDown, Code, Shield, PenTool, Layers, Briefcase, Package, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 // --------------------------------------
 // STATIC DATA (Replace with API in future)
@@ -90,22 +91,26 @@ const STATIC_CATEGORIES = [
 ];
 
 export default function ServicesPage() {
-  const [categories, setCategories] = useState(STATIC_CATEGORIES);
+  const [categories, setCategories] = useState<any[]>([]);
   const [openId, setOpenId] = useState<number | null>(null);
     const [cms, setCms] = useState<any>(null);
   // --------------------------------------
   // FUTURE API SUPPORT: Just uncomment this
   // --------------------------------------
-  /*
+
   useEffect(() => {
     async function fetchCategories() {
-      const res = await fetch("/api/categories");
+      const res = await fetch("/api/service-categories");
       const data = await res.json();
-      setCategories(data);
+      if (data.success){
+                const mainCats = data.data.filter((c: any) => c.parent === null);
+        setCategories(mainCats);
+        console.log("Categories response data from api", mainCats);
+      }
     }
     fetchCategories();
   }, []);
-  */
+
  
       useEffect(() => {
     async function fetchCategories() {
@@ -133,16 +138,16 @@ export default function ServicesPage() {
       {/* ---------- Services List ---------- */}
       <div className="max-w-6xl mx-auto mt-10 space-y-1 px-4 py-12">
         {categories.map((cat) => {
-          const isOpen = openId === cat.id;
+          const isOpen = openId === cat._id;
 
           return (
             <div
-              key={cat.id}
+              key={cat._id}
               className="border border-gray-400 rounded-xl px-5 py-4 bg-white transition-all"
             >
               {/* Category Header */}
               <div
-                onClick={() => (cat.subcategories.length ? setOpenId(isOpen ? null : cat.id) : null)}
+                onClick={() => setOpenId(isOpen ? null : cat._id)}
                 className="flex justify-between items-center cursor-pointer px-4 py-4"
               >
                 <div className="flex items-center gap-3">
@@ -150,7 +155,7 @@ export default function ServicesPage() {
                   <span className="font-bold text-2xl text-blueButton">{cat.title}</span>
                 </div>
 
-                {cat.subcategories.length > 0 ? (
+                {cat.children.length > 0 ? (
                   isOpen ? (
                     <ChevronDown className="w-7 h-7" />
                   ) : (
@@ -162,11 +167,24 @@ export default function ServicesPage() {
               </div>
 
               {/* Subcategories - Dropdown */}
-              {isOpen && cat.subcategories.length > 0 && (
+              {isOpen && cat.children.length > 0 && (
                 <div className="mt-3 pl-10 space-y-2 transition-all flex flex-wrap gap-12 font-semibold">
-                  {cat.subcategories.map((sub, i) => (
+                  {cat.children.map((sub: any, i: number) => (
                     <div key={i} className="text-gray-500 hover:text-black cursor-pointer">
-                      → {sub}
+                     <span> → {sub.title}</span>
+                                           {/* Inner items */}
+                      {sub.items?.length > 0 && (
+                        <div className="ml-6 mt-1 flex flex-col gap-1">
+                          {sub.items.map((item: any, idx: number) => (
+                            <div
+                              key={idx}
+                              className="text-gray-500 hover:text-black cursor-pointer"
+                            ><Link href={`/services/${item.slug}`}>
+                              • {item.title}</Link>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -178,7 +196,7 @@ export default function ServicesPage() {
         {/* Load More Button */}
         <div className="flex justify-center mt-6">
           <Button variant="default" size="lg" className="px-5 border font-medium bg-gray-100 rounded-2xl text-black hover:bg-gray-100">
-            Load More Providers
+            Load More Services
           </Button>
         </div>
       </div>

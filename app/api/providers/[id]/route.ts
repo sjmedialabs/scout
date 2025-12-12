@@ -150,6 +150,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       "email",
       "salesEmail",
       "phone",
+      "projectsCompleted",
       "adminContactPhone",
       "services",
       "technologies",
@@ -171,6 +172,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         updates[key] = body[key]
       }
     }
+    console.log("----------------updated portfolio items:::::::;",updates.portfolio)
 
     // Admin-only updates
     if (user.role === "admin") {
