@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { ChevronRight, ChevronDown, Code, Shield, PenTool, Layers, Briefcase, Package, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 // --------------------------------------
 // STATIC DATA (Replace with API in future)
@@ -178,8 +179,8 @@ export default function ServicesPage() {
                             <div
                               key={idx}
                               className="text-gray-500 hover:text-black cursor-pointer"
-                            >
-                              • {item.title}
+                            ><Link href={`/services/${item.slug}`}>
+                              • {item.title}</Link>
                             </div>
                           ))}
                         </div>
@@ -195,7 +196,7 @@ export default function ServicesPage() {
         {/* Load More Button */}
         <div className="flex justify-center mt-6">
           <Button variant="default" size="lg" className="px-5 border font-medium bg-gray-100 rounded-2xl text-black hover:bg-gray-100">
-            Load More Providers
+            Load More Services
           </Button>
         </div>
       </div>
