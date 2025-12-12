@@ -1,7 +1,3 @@
-
-
-
-
 "use client"
 
 import type React from "react"
@@ -15,7 +11,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
+import { useCurrentUser } from "@/hooks/useCurrentUser"
+import { toast } from "@/lib/toast"
 import {
   Plus,
   FileText,
@@ -53,40 +50,102 @@ import {
 } from "lucide-react"
  const ClientProfilePage=()=>{
     const [isEditingProfile, setIsEditingProfile] = useState(false)
-      const [profileData, setProfileData] = useState({
-        name: "John Smith",
-        email: "john.smith@example.com",
-        phone: "+1 (555) 123-4567",
-        company: "Tech Innovations Inc.",
-        position: "Chief Technology Officer",
-        industry: "Technology",
-        location: "San Francisco, CA",
-        website: "https://techinnovations.com",
-        bio: "Experienced technology leader with over 10 years in software development and digital transformation. Passionate about leveraging cutting-edge solutions to drive business growth.",
-        timezone: "America/Los_Angeles",
-        preferredCommunication: "email",
-        projectBudgetRange: "$10,000 - $50,000",
-        companySize: "51-200 employees",
-        joinedDate: "January 2024",
-      })
-       const handleProfileUpdate = (field: string, value: string) => {
-    setProfileData((prev) => ({
-      ...prev,
-      [field]: value,
-    }))
-  }
+    const[userDetails,setUserDetails]=useState()
+    const[responseLoading,setResponseLoading]=useState(true);
+    const[failed,setFailed]=useState(false);
+    const{user,loading}=useCurrentUser();
+    const[profileData,setProfileData]=useState({});
+    const loadData=async()=>{
+      setResponseLoading(true);
+      setFailed(false);
+      try{
+        const response=await fetch(`/api/seeker/${userDetails.userId}`)
+        const data=await response.json();
+        setProfileData(data.data);
+        setFailed(false)
+        console.log("Client Profile Details:::::",data);
+      }catch(error){
+        console.log("Failed to get the details",error)
+        setFailed(true)
+      }finally{
+        setResponseLoading(false);
+      }
+    }
+    useEffect(() => {
+        if (!loading && user) {
+            console.log("Logged in user payload::::", user);
+            setUserDetails(user);
+            loadData();
+        }
+    }, [user, loading]);
 
-  const handleSaveProfile = () => {
-    // In a real app, this would make an API call to update the profile
-    console.log("Saving profile:", profileData)
-    setIsEditingProfile(false)
-    // Show success message or toast
-  }
+    // const [profileData, setProfileData] = useState({
+    //   name: "John Smith",
+    //   email: "john.smith@example.com",
+    //   phone: "+1 (555) 123-4567",
+    //   company: "Tech Innovations Inc.",
+    //   position: "Chief Technology Officer",
+    //   industry: "Technology",
+    //   location: "San Francisco, CA",
+    //   website: "https://techinnovations.com",
+    //   bio: "Experienced technology leader with over 10 years in software development and digital transformation. Passionate about leveraging cutting-edge solutions to drive business growth.",
+    //   timezone: "America/Los_Angeles",
+    //   preferredCommunication: "email",
+    //   projectBudgetRange: "$10,000 - $50,000",
+    //   companySize: "51-200 employees",
+    //   joinedDate: "January 2024",
+    // })
+    const handleProfileUpdate = (field: string, value: string) => {
+      setProfileData((prev) => ({
+        ...prev,
+        [field]: value,
+      }))
+    }
 
-  const handleCancelEdit = () => {
-    // Reset to original data if needed
-    setIsEditingProfile(false)
-  }
+    const handleSaveProfile = async() => {
+      // In a real app, this would make an API call to update the profile
+      console.log("Saving profile:", profileData)
+      try{
+        const response=await fetch(`/api/seeker/${userDetails.userId}`,{
+          method:"PUT",
+          body:JSON.stringify(profileData)
+        })
+        console.log(await response.json())
+        if(response.ok){
+          toast.success("User details updated successfully");
+          setIsEditingProfile(false);
+        }
+      }catch(error){
+        console.log("failed to save::",error)
+        toast.error("failed to update try again")
+
+      }
+      // Show success message or toast
+    }
+
+    const handleCancelEdit = () => {
+      // Reset to original data if needed
+      setIsEditingProfile(false)
+    }
+
+    if(responseLoading){
+      return(  
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      )
+      
+    }
+    if(failed){
+        return(
+          <div className="flex flex-col justify-center items-center text-center">
+            <h1 className="text-center font-semibold">Failed  to Retrive the data</h1>
+            <Button onClick={loadData} className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]">Reload</Button>
+          </div>
+        )
+    }
+
+
     return(
          <div className="space-y-6">
             <div className="flex justify-between items-center">
@@ -128,7 +187,7 @@ import {
                     </div>
                     <h3 className="text-lg font-semibold">{profileData.name}</h3>
                     <p className="text-sm text-muted-foreground">{profileData.position}</p>
-                    <p className="text-sm text-muted-foreground">{profileData.company}</p>
+                    <p className="text-sm text-muted-foreground">{profileData.companyName}</p>
                     <div className="flex gap-2 mt-3">
                       <Badge className="bg-green-100 text-green-800">Active Client</Badge>
                       <Badge variant="secondary">Verified</Badge>
@@ -197,13 +256,13 @@ import {
                       {isEditingProfile ? (
                         <Input
                           id="phone"
-                          value={profileData.phone}
-                          onChange={(e) => handleProfileUpdate("phone", e.target.value)}
+                          value={profileData.phoneNumber}
+                          onChange={(e) => handleProfileUpdate("phoneNumber", e.target.value)}
                         />
                       ) : (
                         <div className="flex items-center gap-2 text-sm py-2">
                           <Phone className="h-4 w-4 text-muted-foreground" />
-                          {profileData.phone}
+                          {profileData.phoneNumber}
                         </div>
                       )}
                     </div>
@@ -213,11 +272,11 @@ import {
                       {isEditingProfile ? (
                         <Input
                           id="company"
-                          value={profileData.company}
-                          onChange={(e) => handleProfileUpdate("company", e.target.value)}
+                          value={profileData.companyName}
+                          onChange={(e) => handleProfileUpdate("companyName", e.target.value)}
                         />
                       ) : (
-                        <p className="text-sm py-2">{profileData.company}</p>
+                        <p className="text-sm py-2">{profileData.companyName}</p>
                       )}
                     </div>
 
@@ -316,8 +375,8 @@ import {
                       <Label htmlFor="timezone">Timezone</Label>
                       {isEditingProfile ? (
                         <Select
-                          value={profileData.timezone}
-                          onValueChange={(value) => handleProfileUpdate("timezone", value)}
+                          value={profileData.timeZone}
+                          onValueChange={(value) => handleProfileUpdate("timeZone", value)}
                         >
                           <SelectTrigger>
                             <SelectValue />
@@ -333,7 +392,7 @@ import {
                           </SelectContent>
                         </Select>
                       ) : (
-                        <p className="text-sm py-2">{profileData.timezone.replace("_", " ")}</p>
+                        <p className="text-sm py-2">{profileData.timeZone}</p>
                       )}
                     </div>
 
@@ -363,8 +422,8 @@ import {
                       <Label htmlFor="budget">Typical Project Budget</Label>
                       {isEditingProfile ? (
                         <Select
-                          value={profileData.projectBudgetRange}
-                          onValueChange={(value) => handleProfileUpdate("projectBudgetRange", value)}
+                          value={profileData.typicalProjectBudget}
+                          onValueChange={(value) => handleProfileUpdate("typicalProjectBudget", value)}
                         >
                           <SelectTrigger>
                             <SelectValue />
@@ -378,7 +437,7 @@ import {
                           </SelectContent>
                         </Select>
                       ) : (
-                        <p className="text-sm py-2">{profileData.projectBudgetRange}</p>
+                        <p className="text-sm py-2">{profileData.typicalProjectBudget}</p>
                       )}
                     </div>
 
