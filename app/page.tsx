@@ -35,14 +35,22 @@ interface HeroContent {
   popularSearches: string[]
 }
 
-interface ServiceCategory {
-  id: string
-  name: string
-  icon: string
-  color: string
-  services: string[]
-  order: number
+interface ServiceChild {
+  _id: string;
+  title: string;
+  slug?: string;
 }
+
+export interface ServiceCategory {
+  _id: string;
+  title: string;
+  slug?: string;
+  icon: string | null;
+  color: string;
+  order: number;
+  children: ServiceChild[];
+}
+
 
 // Icon mapping
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -77,12 +85,13 @@ export default function HomePage() {
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const [cmsRes, providersRes, projectsRes] = await Promise.all([
+        const [cmsRes, providersRes, projectsRes, categoriesRes] = await Promise.all([
           fetch("/api/cms"),
           fetch("/api/providers?featured=true"),
           fetch("/api/requirements"),
+          fetch("/api/service-categories"),
         ])
-
+        console.log("Categories response data from api", categoriesRes)
         if (cmsRes.ok) {
           const data = await cmsRes.json()
           setcms(data.data)
@@ -98,6 +107,12 @@ export default function HomePage() {
           const projectsData = await projectsRes.json()
           setProjects(projectsData.requirements?.slice(0, 3) || [])
           console.log("Requirements response data from api", projectsData.requirements)
+        }
+
+        if (categoriesRes.ok) {
+          const categoriesData = await categoriesRes.json()
+          setCategories(categoriesData.data || [])
+          console.log("Categories response data from api", categoriesData.data)
         }
 
       } catch (error) {
@@ -295,42 +310,44 @@ export default function HomePage() {
             {(categories && categories.length > 0
               ? categories
               : [
-                // 🔥 fallback demo data
-                { id: "1", name: "Web Development", image: "/images/icon-1.png", icon: "Code", color: "blue", services: ["Frontend", "Backend", "Full-Stack", "Frontend", "Backend", "Full-Stack"] },
-                { id: "2", name: "Graphic Design", image: "/images/icon-2.png", icon: "Palette", color: "purple", services: ["Logo", "Branding", "UI Design", "Frontend", "Backend", "Full-Stack"] },
-                { id: "3", name: "Marketing", image: "/images/icon-3.png", icon: "TrendingUp", color: "green", services: ["SEO", "Ads", "Strategy", "Frontend", "Backend", "Full-Stack"] },
-                { id: "4", name: "Web Development", image: "/images/icon-4.png", icon: "Code", color: "blue", services: ["Frontend", "Backend", "Full-Stack", "Frontend", "Backend", "Full-Stack"] },
-                { id: "5", name: "Graphic Design", image: "/images/icon-5.png", icon: "Palette", color: "purple", services: ["Logo", "Branding", "UI Design", "Frontend", "Backend", "Full-Stack"] },
-                { id: "6", name: "Marketing", image: "/images/icon-6.png", icon: "TrendingUp", color: "green", services: ["SEO", "Ads", "Strategy", "Frontend", "Backend", "Full-Stack"] },
+                // // 🔥 fallback demo data
+                // { id: "1", name: "Web Development", image: "/images/icon-1.png", icon: "Code", color: "blue", services: ["Frontend", "Backend", "Full-Stack", "Frontend", "Backend", "Full-Stack"] },
+                // { id: "2", name: "Graphic Design", image: "/images/icon-2.png", icon: "Palette", color: "purple", services: ["Logo", "Branding", "UI Design", "Frontend", "Backend", "Full-Stack"] },
+                // { id: "3", name: "Marketing", image: "/images/icon-3.png", icon: "TrendingUp", color: "green", services: ["SEO", "Ads", "Strategy", "Frontend", "Backend", "Full-Stack"] },
+                // { id: "4", name: "Web Development", image: "/images/icon-4.png", icon: "Code", color: "blue", services: ["Frontend", "Backend", "Full-Stack", "Frontend", "Backend", "Full-Stack"] },
+                // { id: "5", name: "Graphic Design", image: "/images/icon-5.png", icon: "Palette", color: "purple", services: ["Logo", "Branding", "UI Design", "Frontend", "Backend", "Full-Stack"] },
+                // { id: "6", name: "Marketing", image: "/images/icon-6.png", icon: "TrendingUp", color: "green", services: ["SEO", "Ads", "Strategy", "Frontend", "Backend", "Full-Stack"] },
               ]
             ).map((category) => {
               const colors = colorMap[category.color] || colorMap.blue;
-              const serviceLink = `/services/${category.id}`;
+              const serviceLink = `/services/${category._id}`;
 
               return (
                 <div
-                  key={category.id}
+                  key={category._id}
                   className={`group bg-white/70 backdrop-blur-sm rounded-4xl px-6 py-6 border pl-12 ${colors.hover} hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
                 >
                   <div className="flex items-center gap-2 mb-4">
-                    <img src={category.image} alt="" className="h-10" />
+                    <img src={category?.icon || "/images/icon-1.png"} alt="" className="h-10" />
                     <h3 className={`text-2xl font-bold text-slate-800 group-hover:${colors.text} transition-colors`}>
-                      {category.name}
+                      {category.title}
                     </h3>
                   </div>
 
-                  {/* Services */}
+                  {/* Subcategories */}
                   <div className="space-y-3">
-                    {(category.services || []).slice(0, 6).map((service, index) => (
-                      <Link
-                        key={index}
-                        href={serviceLink}
-                        className={`block text-slate-500 text-sm hover:${colors.text} hover:translate-x-2 transition-all duration-200 font-medium`}
-                      >
-                        → {service}
-                      </Link>
+                    {(category.children.slice(0, 6)|| []).map((sub, index) => (
+                      <p key={index} className={`block text-slate-500 text-sm hover:${colors.text} hover:translate-x-2 transition-all duration-200 font-medium`}>
+                        {/* <Link
+      key={index}
+      href={`/services/${category.slug}/${sub.slug}`}  // or your serviceLink
+    > */}
+                        → {sub.title}
+                        {/* </Link> */}
+                      </p>
                     ))}
                   </div>
+
                 </div>
               );
             })}
