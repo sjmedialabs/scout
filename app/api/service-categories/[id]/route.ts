@@ -9,11 +9,20 @@ export async function PUT(request: Request, { params }: any) {
     const body = await request.json();
     const { id } = params;
 
-    const updated = await ServiceCategory.findByIdAndUpdate(
-      id,
-      body,
-      { new: true }
-    );
+    // Whitelist fields allowed to update
+    const allowedFields = ["title", "slug", "icon", "children", "parent", "isMainCategory"];
+    const updateData: Record<string, any> = {};
+
+    for (const key in body) {
+      if (allowedFields.includes(key)) {
+        updateData[key] = body[key];
+      }
+    }
+
+    const updated = await ServiceCategory.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!updated) {
       return NextResponse.json(
@@ -25,7 +34,7 @@ export async function PUT(request: Request, { params }: any) {
     return NextResponse.json({
       success: true,
       message: "Category updated successfully",
-      data: updated
+      data: updated,
     });
   } catch (error) {
     console.error("PUT Category Error:", error);
