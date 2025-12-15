@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { ChevronDown, ChevronRight, Plus } from "lucide-react"
+import { ChevronDown, ChevronRight, Link, Plus } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "../ui/button"
 import { cn } from "@/lib/utils"
@@ -153,10 +153,12 @@ export default function ClientSidebar({ user, setShowPostForm }: any) {
       </div>
 
       <div className="p-4 border-t border-border">
-        <Button onClick={() => setShowPostForm(true)} className="w-full">
+     
+        <Button onClick={() => router.push("/client/dashboard/post-requirement")} className="w-full">
           <Plus className="h-4 w-4 mr-2" />
           Post New Requirement
         </Button>
+       
       </div>
     </div>
   )
