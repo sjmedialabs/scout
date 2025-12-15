@@ -71,7 +71,7 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getCurrentUser()
@@ -80,10 +80,11 @@ export async function PUT(
         }
     await connectToDatabase()
 
-    const { userId } = params
+    const { id } = await params
+    console.log("---UserId to update the data::",id);
     const updates = await req.json()
 
-    if (!userId) {
+    if (!id) {
       return NextResponse.json(
         { success: false, message: "userId is required" },
         { status: 400 }
@@ -92,7 +93,7 @@ export async function PUT(
 
     // Find and update based on userId
     const updatedSeeker = await Seeker.findOneAndUpdate(
-      { userId },          // filter
+      { userId:id },          // filter
       { $set: updates },   // values to update
       { new: true }        // return updated document
     ).lean()

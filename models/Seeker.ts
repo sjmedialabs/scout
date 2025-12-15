@@ -3,9 +3,10 @@ import mongoose, { Schema, models, model } from "mongoose";
 const SeekerSchema = new Schema(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    
     name: { type: String },
-    email: { type: String, required: true, unique: true },
-    phoneNumber: { type: String, required: true, unique: true },
+    email: { type: String},
+    phoneNumber: { type: String},
     companyName: { type: String },
     position: { type: String },
     industry: { type: String },
