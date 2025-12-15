@@ -23,7 +23,7 @@ export default function DevelopmentPage() {
         id: "1",
         verified: true,
         featured: true,
-        name: "Creative Design Studio",
+        name: "CreativeDesign Studio",
         cover: "/Creative_Design_Studio.jpg",
         rating: 4.8,
         desc: "Looking for a modern e-commerce platform with payment integration.",

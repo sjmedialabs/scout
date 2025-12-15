@@ -216,7 +216,14 @@
   font-weight: normal;
   font-style: normal;
 }
+.my-custom-class {
+  font-family: 'Plus Jakarta Sans', sans-serif; /* Fallback to sans-serif */
+}
 
+/* If you used the 'variable' option in Step 2, you can use CSS vars for more flexibility */
+.font-plus-jakarta {
+  font-family: var(--font-plus-jakarta), sans-serif;
+}
 .custom-heading {
   font-family: "MyCustomFont", sans-serif;
 }
