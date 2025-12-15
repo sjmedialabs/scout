@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server"
 import { connectToDatabase } from "@/lib/mongodb"
 import User from "@/models/User"
 import Provider from "@/models/Provider"
+import Seeker from "@/models/Seeker"
 import { generateToken, setAuthCookie, hashPassword } from "@/lib/auth/jwt"
 
 export async function POST(request: NextRequest) {
@@ -78,6 +79,29 @@ export async function POST(request: NextRequest) {
         websiteClicks: 0,
       })
     }
+    
+    //Create Seeker Profile details for the client dashboatrd
+    if(role==="client"){
+      await Seeker.create({
+        userId:user._id,
+        name:user.name,
+    email:user.email,
+    phoneNumber: "",
+    companyName: user.company || "",
+    position: "",
+    industry: "Technology",
+    location: "",
+    website: "",
+    bio: "",
+    timeZone:"Asia/Kolkata",
+    preferredCommunication: "email", // FIXED TYPO
+    typicalProjectBudget: "$1,000 - $5,000", // FIXED TYPO
+    companySize: "1-10",
+    
+    image: "",
+      })
+    }
+
 
     // Generate JWT token
     const token = await generateToken(user)
