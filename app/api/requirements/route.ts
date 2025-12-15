@@ -33,6 +33,7 @@ export async function GET(req: NextRequest) {
       budget: `$${r.budgetMin} - $${r.budgetMax}`,
       timeline: r.timeline,
       description: r.description,
+      documentUrl:r.documentUrl,
       postedDate: formatPostedDate(r.postedDate),
       proposals: r.proposals,
       status: r.status,
@@ -79,7 +80,8 @@ export async function POST(req: NextRequest) {
       budgetMax: body.budgetMax,
       timeline: body.timeline,
       description: body.description,
-      createdBy: user.userId, // 👈 IMPORTANT: logged-in client
+      documentUrl:body.documentUrl,
+      clientId: user.userId, // 👈 IMPORTANT: logged-in client
     })
     console.log("newReq",newReq)
     return NextResponse.json({ success: true,   requirement: {
