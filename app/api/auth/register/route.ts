@@ -74,6 +74,12 @@ export async function POST(request: NextRequest) {
         isFeatured: false,
         isVerified: false,
         isActive: true,
+        socialLinks: {
+          linkedin:"",
+          twitter:"",
+          facebook:"",
+          instagram:"",
+        },
         profileViews: 0,
         impressions: 0,
         websiteClicks: 0,
