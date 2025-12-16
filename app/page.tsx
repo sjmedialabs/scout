@@ -35,14 +35,22 @@ interface HeroContent {
   popularSearches: string[]
 }
 
-interface ServiceCategory {
-  id: string
-  name: string
-  icon: string
-  color: string
-  services: string[]
-  order: number
+interface ServiceChild {
+  _id: string;
+  title: string;
+  slug?: string;
 }
+
+export interface ServiceCategory {
+  _id: string;
+  title: string;
+  slug?: string;
+  icon: string | null;
+  color: string;
+  order: number;
+  children: ServiceChild[];
+}
+
 
 // Icon mapping
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -67,32 +75,27 @@ const colorMap: Record<string, { bg: string; hover: string; text: string }> = {
 export default function HomePage() {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
-  const [heroContent, setHeroContent] = useState<HeroContent | null>(null)
   const [categories, setCategories] = useState<ServiceCategory[]>([])
   const [providers, setProviders] = useState<any[]>([])
   const [projects, setProjects] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [activeButton, setActiveButton] = useState<"match" | "browse" | null>(null);
-
+  const [cms, setcms] = useState<any>(null)
   // Fetch CMS content
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const [heroRes, categoriesRes, providersRes, projectsRes] = await Promise.all([
-          fetch("/api/cms/hero"),
-          fetch("/api/cms/categories"),
+        const [cmsRes, providersRes, projectsRes, categoriesRes] = await Promise.all([
+          fetch("/api/cms"),
           fetch("/api/providers?featured=true"),
-          fetch("/api/projects?status=open"),
+          fetch("/api/requirements"),
+          fetch("/api/service-categories"),
         ])
-
-        if (heroRes.ok) {
-          const heroData = await heroRes.json()
-          setHeroContent(heroData.content)
-        }
-
-        if (categoriesRes.ok) {
-          const categoriesData = await categoriesRes.json()
-          setCategories(categoriesData.categories)
+        console.log("Categories response data from api", categoriesRes)
+        if (cmsRes.ok) {
+          const data = await cmsRes.json()
+          setcms(data.data)
+          console.log("CMS response data from api", data)
         }
 
         if (providersRes.ok) {
@@ -102,8 +105,16 @@ export default function HomePage() {
 
         if (projectsRes.ok) {
           const projectsData = await projectsRes.json()
-          setProjects(projectsData.projects?.slice(0, 3) || [])
+          setProjects(projectsData.requirements?.slice(0, 3) || [])
+          console.log("Requirements response data from api", projectsData.requirements)
         }
+
+        if (categoriesRes.ok) {
+          const categoriesData = await categoriesRes.json()
+          setCategories(categoriesData.data || [])
+          console.log("Categories response data from api", categoriesData.data)
+        }
+
       } catch (error) {
         console.error("Failed to fetch CMS content:", error)
       } finally {
@@ -123,11 +134,11 @@ export default function HomePage() {
   }
 
   const handleLetUsMatch = () => {
-    router.push(heroContent?.ctaPrimary.link || "/register?type=match")
+    router.push("/register?type=match")
   }
 
   const handleBrowseOwn = () => {
-    router.push(heroContent?.ctaSecondary.link || "/browse")
+    router.push("/browse")
   }
 
   const handlePopularSearch = (query: string) => {
@@ -145,94 +156,97 @@ export default function HomePage() {
   return (
     <div className="bg-background">
       {/* Hero Section */}
-      <section className="py-16 px-4 bg-gray-50"
-      style={{ 
-        backgroundImage: "url('/Banner.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat"
+      <section className="py-12 sm:py-12 px-4 sm:px-6 md:px-10 bg-gray-50
+       min-h-[80vh] flex flex-col items-center justify-center"
+        style={{
+          backgroundImage: `url(${cms?.homeBannerImg || "/Banner.jpg"})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat"
         }}>
-        <div className="max-w-7xl mx-auto">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
-              {heroContent?.headline || "Connect with trusted companies for your next project."}
+        <div className="w-full max-w-7xl mx-auto">
+          <div className="w-full max-w-5xl mx-auto text-center px-2 sm:px-4 md:px-8">
+            <h1 className="custom-heading text-3xl sm:text-4xl md:text-5xl font-normal text-white mb-6 leading-tight">
+              {cms?.homeBannerTitle || "Connect with trusted companies for your next project."}
             </h1>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-8 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-6 mb-8 justify-center items-center w-full">
               <div className="relative flex flex-col items-center">
-              <Button
-                size="lg"
-                className={`flex items-center gap-2 rounded-full transitation-all
-                ${
-                activeButton === "match"
-                ? "bg-[#F54A0C] text-white boder-[#F54A0C] shadow-lg"
-                : "bg-[#F54A0C] hover:bg-[#d93f0b] text-white"
-              } `}
-                onClick={() => {
-                  setActiveButton("match")
-                  handleLetUsMatch()
-              }}
-              >
-                {heroContent?.ctaPrimary.text || "Let us match you"}
-              </Button>
-              {activeButton === "match" && (
-                <div 
-                className="absolute -bottom-2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-[#F54A0C]"
-                       />
-              )}
+                <Button
+                  size="lg"
+                  className={`flex items-center justify-center gap-2 rounded-full transitation-all
+                    text-sm sm:text-base px-6 sm:px-8 md:px-10 py-3
+                ${activeButton === "match"
+                      ? "bg-[#F54A0C] text-white boder-[#F54A0C] shadow-lg"
+                      : "bg-[#F54A0C] hover:bg-[#d93f0b] text-white"
+                    } `}
+                  onClick={() => {
+                    setActiveButton("match")
+                    handleLetUsMatch()
+                  }}
+                >
+                  Let us match you
+                </Button>
+                {activeButton === "match" && (
+                  <div
+                    className="absolute -bottom-2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-[#F54A0C]"
+                  />
+                )}
               </div>
               <div className="relative flex flex-col items-center">
-              <Button
-                size="lg"
-                variant="outline"
-                className={`flex items-center gap-2 rounded-full px-6 py-3 border transition-all focus-visible:ring-0 focus-visible:ring-offset-0 active:scale-95
-                ${
-                activeButton === "browse"
-                ? "bg-white text-[#F54A0C] shadow-lg"
-                : "bg-white hover:bg-white/90 hover:text-[#F54A0C] text-[#F54A0C]"
-            }`}
-                onClick={()=> {
-                  setActiveButton("browse")
-                handleBrowseOwn()
-                }}
-              >
-                {heroContent?.ctaSecondary.text || "Browse on your own"}
-              </Button>
-              {activeButton === "browse" && (
-                <div
-                className = "absolute -bottom-2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white"
-                />
-              )}
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className={`flex items-center justify-center gap-2 rounded-full px-6sm:px-8 md:px-10 py-3 
+                    border text-sm transition-all focus-visible:ring-0 focus-visible:ring-offset-0 active:scale-95
+                ${activeButton === "browse"
+                      ? "bg-white text-[#F54A0C] shadow-lg"
+                      : "bg-white hover:bg-white/90 hover:text-[#F54A0C] text-[#F54A0C]"
+                    }`}
+                  onClick={() => {
+                    setActiveButton("browse")
+                    handleBrowseOwn()
+                  }}
+                >
+                  Browse on your own
+                </Button>
+                {activeButton === "browse" && (
+                  <div
+                    className="absolute -bottom-2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white"
+                  />
+                )}
               </div>
             </div>
-              
+
 
             {/* Search Section */}
-            <div className="space-y-4 max-w-2xl mx-auto bg-white-50">
-              <div className="relative flex gap-2">
+            <div className="space-y-4 w-full max-w-md sm:max-w-xl md:max-w-2xl mx-auto bg-white-50">
+              <div className="relative flex items-center w-full gap-2">
                 <Input
-                  placeholder={heroContent?.searchPlaceholder || "Search for Agency Name / Service Name?"}
-                  className="flex-1 h-12  text-white placeholder:text-white border-slate-300 bg-white/20 backdrop-blur-md shadow-inner rounded-full"
+                  placeholder="Search for Agency Name / Service Name?"
+                  className="flex-1 h-12 sm:h-14 text-white placeholder:text-white
+                   border-slate-300 bg-white/20 backdrop-blur-md 
+                   shadow-inner rounded-full px-4 sm:px-6 text-sm sm:text-base"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  
+
                 />
-                <Button 
-                onClick={handleGetMatched}
-                className="absolute top-1/2 right-2 -translate-y-1/2 
+                <Button
+                  onClick={handleGetMatched}
+                  className="absolute top-1/2 right-2 -translate-y-1/2 
                flex items-center justify-center 
-               h-10 w-10 rounded-full bg-[#F54A0C] hover:bg-[#d93f0b] 
+               h-10 sm:h-12 w-10 sm:w-12 rounded-full bg-[#F54A0C] hover:bg-[#d93f0b] 
                shadow-md transition-all rotate-90">
-                <Search className="h-5 w-5 text-white" />
+                  <Search className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                 </Button>
               </div>
 
               {/* Popular Searches */}
-              <div className="space-y-2">
-                <div className="flex flex-wrap gap-2 justify-center">
+              <div className="space-y-3 sm:space-y-2">
+                <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
                   {(
-                    heroContent?.popularSearches || [
+                    [
                       "Get more qualified leads",
                       "Improve my SEO rankings",
                       "Develop a content strategy",
@@ -242,10 +256,11 @@ export default function HomePage() {
                       key={index}
                       variant="outline"
                       size="sm"
-                      className="text-white border-slate-300 hover:bg-white/30 bg-transparentr rounded-full"
+                      className="text-white border-slate-300 hover:bg-white/30 bg-transparentr rounded-full
+                      px-3 sm:px-4 text-xs sm:text-sm"
                       onClick={() => handlePopularSearch(search)}
                     >
-                  
+
                       {search}
                     </Button>
                   ))}
@@ -257,108 +272,98 @@ export default function HomePage() {
       </section>
 
       {/* Features */}
-      <section className="py-16 px-4">
+      <section className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">How Spark Works</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card>
-              <CardHeader className="text-center">
-                <Search className="h-12 w-12 mx-auto mb-4 text-primary" />
-                <CardTitle>Post Requirements</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-center">
-                  Describe your project needs, budget, and timeline. Our platform matches you with relevant providers.
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="text-center">
-                <Users className="h-12 w-12 mx-auto mb-4 text-primary" />
-                <CardTitle>Receive Proposals</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-center">
-                  Get detailed proposals from verified providers. Compare costs, timelines, and approaches.
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="text-center">
-                <Zap className="h-12 w-12 mx-auto mb-4 text-primary" />
-                <CardTitle>Get Work Done</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-center">
-                  Choose the best provider, manage your project, and leave reviews to help the community.
-                </CardDescription>
-              </CardContent>
-            </Card>
+          <h2 className="text-4xl font-bold text-center mb-4">How Spark Works</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {cms?.homeWorkSection?.map((section: any, index: number) => (
+              <div className="flex flex-col gap-4 items-center text-center">
+                <img src={section.image} alt="" />
+                <div className="">
+                  <h3 className="text-2xl font-bold">{section.title}</h3>
+                  <p className="text-gray-500">{section.description}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Service Categories - CMS Driven */}
-      <section className="py-20 px-4 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10"></div>
-        <div className="absolute top-10 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute bottom-10 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-
-        <div className="max-w-7xl mx-auto relative z-10">
+      <section className="py-20 px-4"
+        style={{
+          backgroundImage: "url('/images/category-background.png')"
+        }}
+      >
+        <div className="max-w-6xl mx-auto flex justify-center flex-col">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200 mb-6">
-              <Sparkles className="h-4 w-4 text-blue-600" />
-              <span className="text-sm font-medium text-slate-600 uppercase tracking-wide">Service Categories</span>
+            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-1 rounded-full border border-orangeButton mb-2">
+              <span className="text-xs font-medium text-slate-600 capitalize">Service Categories</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6 leading-tight">
+            <h2 className="stext-mediun uppercase font-extrabold text-black ">
               The perfect partner for{" "}
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-blueButton">
                 any project
               </span>
             </h2>
-            <p className="text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
               Whatever your business challenge, browse our most in-demand service categories to find top-ranked
               companies in over <span className="font-semibold text-blue-600">2,000 specialized service lines</span>.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {categories.map((category) => {
-              const IconComponent = iconMap[category.icon] || Code
-              const colors = colorMap[category.color] || colorMap.blue
-              const serviceLink = `/services/${category.id}`
+            {(categories && categories.length > 0
+              ? categories
+              : [
+                // // 🔥 fallback demo data
+                // { id: "1", name: "Web Development", image: "/images/icon-1.png", icon: "Code", color: "blue", services: ["Frontend", "Backend", "Full-Stack", "Frontend", "Backend", "Full-Stack"] },
+                // { id: "2", name: "Graphic Design", image: "/images/icon-2.png", icon: "Palette", color: "purple", services: ["Logo", "Branding", "UI Design", "Frontend", "Backend", "Full-Stack"] },
+                // { id: "3", name: "Marketing", image: "/images/icon-3.png", icon: "TrendingUp", color: "green", services: ["SEO", "Ads", "Strategy", "Frontend", "Backend", "Full-Stack"] },
+                // { id: "4", name: "Web Development", image: "/images/icon-4.png", icon: "Code", color: "blue", services: ["Frontend", "Backend", "Full-Stack", "Frontend", "Backend", "Full-Stack"] },
+                // { id: "5", name: "Graphic Design", image: "/images/icon-5.png", icon: "Palette", color: "purple", services: ["Logo", "Branding", "UI Design", "Frontend", "Backend", "Full-Stack"] },
+                // { id: "6", name: "Marketing", image: "/images/icon-6.png", icon: "TrendingUp", color: "green", services: ["SEO", "Ads", "Strategy", "Frontend", "Backend", "Full-Stack"] },
+              ]
+            ).map((category) => {
+              const colors = colorMap[category.color] || colorMap.blue;
+              const serviceLink = `/services/${category._id}`;
 
               return (
                 <div
-                  key={category.id}
-                  className={`group bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/50 ${colors.hover} hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
+                  key={category._id}
+                  className={`group bg-white/70 backdrop-blur-sm rounded-4xl px-6 py-6 border pl-12 ${colors.hover} hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
                 >
-                  <div className="flex items-center gap-4 mb-6">
-                    <div
-                      className={`w-16 h-16 bg-gradient-to-br ${colors.bg} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg`}
-                    >
-                      <IconComponent className={`h-8 w-8 ${colors.text}`} />
-                    </div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <img src={category?.icon || "/images/icon-1.png"} alt="" className="h-10" />
                     <h3 className={`text-2xl font-bold text-slate-800 group-hover:${colors.text} transition-colors`}>
-                      {category.name}
+                      {category.title}
                     </h3>
                   </div>
+
+                  {/* Subcategories */}
                   <div className="space-y-3">
-                    {(category.services || []).slice(0, 6).map((service, index) => (
-                      <Link
-                        key={index}
-                        href={serviceLink}
-                        className={`block text-slate-600 hover:${colors.text} hover:translate-x-2 transition-all duration-200 font-medium`}
-                      >
-                        → {service}
-                      </Link>
+                    {(category.children.slice(0, 6)|| []).map((sub, index) => (
+                      <p key={index} className={`block text-slate-500 text-sm hover:${colors.text} hover:translate-x-2 transition-all duration-200 font-medium`}>
+                        {/* <Link
+      key={index}
+      href={`/services/${category.slug}/${sub.slug}`}  // or your serviceLink
+    > */}
+                        → {sub.title}
+                        {/* </Link> */}
+                      </p>
                     ))}
                   </div>
+
                 </div>
-              )
+              );
             })}
+
+          </div>
+          <div className="flex justify-center items-center">
+            <Link href="/services">
+              <Button className="rounded-full py-2 text-lg font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1]" size={"lg"}>
+                Browse all services →
+              </Button></Link>
           </div>
         </div>
       </section>
@@ -367,28 +372,47 @@ export default function HomePage() {
       {projects.length > 0 && (
         <section className="py-16 px-4">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-12">Recent Project Opportunities</h2>
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-1 rounded-full border border-orangeButton mb-2">
+                <span className="text-xs font-medium text-slate-600 capitalize">Newly added</span>
+              </div>
+              <h2 className="stext-mediun uppercase font-extrabold text-black ">
+                Recent Requirements
+              </h2>
+              <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
+                Discover opportunities from businesses lookking for your services
+              </p>
+            </div>
             <div className="grid md:grid-cols-3 gap-6">
               {projects.map((project: any) => (
-                <Card key={project.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-center justify-between mb-2">
-                      <Badge variant="outline">{project.category}</Badge>
-                      <span className="text-sm text-muted-foreground">{project.timeline}</span>
+                <div key={project.id} className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300">
+                  <div className="">
+                    <div className="text-lg"><img src={project.image} alt="" className="rounded-t-3xl" /></div>
+                    <div className="flex items-center justify-between mb-2 px-8 mt-4">
+                      <Badge variant="outline" className="rounded-full px-2 bg-gray-100 font-semibold text-[10px]">{project.category}</Badge>
+                      <span className="text-sm text-muted-foreground text-orangeButton font-semibold">{project.timeline}</span>
                     </div>
-                    <CardTitle className="text-lg">{project.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{project.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-primary">{project.budget}</span>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link href="/login">View Details</Link>
-                      </Button>
+                    <h3 className="text-lg px-8 capitalize">{project.title}</h3>
+                  </div>
+                  <div className="pb-10 px-8">
+                    <p className="text-sm text-gray-500 mb-4 line-clamp-2">{project.description}</p>
+                    <div className="flex flex-col gap-4">
+                      <span className="font-bold text-lg text-blueButton">{project.budget}</span>
+                      <div>
+                        <Button variant="outline" size="sm" asChild className="bg-black text-white rounded-full text-xs">
+                          <Link href="/login">View Details →</Link>
+                        </Button>
+                      </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               ))}
+            </div>
+            <div className="flex justify-center items-center">
+              <Link href="/browse">
+                <Button className="rounded-full py-2 mt-8 text-lg font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1]" size={"lg"}>
+                  Browse all requirements →
+                </Button></Link>
             </div>
           </div>
         </section>
@@ -396,49 +420,108 @@ export default function HomePage() {
 
       {/* Top Providers - From API */}
       {providers.length > 0 && (
-        <section className="py-16 px-4 bg-muted/30">
+        <section className="py-16 px-4 bg-blueBackground">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-12">Featured Agencies</h2>
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-1 rounded-full border border-orangeButton mb-2">
+                <span className="text-xs font-medium text-slate-600 capitalize">Top Agency</span>
+              </div>
+              <h2 className="stext-mediun uppercase font-extrabold text-black ">
+                Top Providers
+              </h2>
+              <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
+                Discover opportunities from businesses lookking for your services
+              </p>
+            </div>
             <div className="grid md:grid-cols-3 gap-6">
               {providers.map((provider: any) => (
-                <Card key={provider.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-center justify-between mb-2">
-                      {provider.featured && <Badge className="bg-yellow-500">Featured</Badge>}
-                      {provider.verified && (
-                        <Badge variant="outline" className="text-green-600 border-green-600">
-                          Verified
-                        </Badge>
-                      )}
-                    </div>
-                    <CardTitle className="text-lg">{provider.name}</CardTitle>
-                    <CardDescription>{provider.tagline || provider.location}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {provider.services?.slice(0, 3).map((service: string, idx: number) => (
-                        <Badge key={idx} variant="secondary" className="text-xs">
-                          {service}
-                        </Badge>
-                      ))}
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span className="font-semibold">{provider.rating?.toFixed(1) || "New"}</span>
-                        <span className="text-sm text-muted-foreground">({provider.reviewCount || 0} reviews)</span>
+                <div key={provider.id} className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300 bg-white">
+                  <div className="">
+                    <div className="text-lg"><img src={provider.coverImage} alt="" className="rounded-t-3xl" /></div>
+                    <div className="flex items-center justify-between mb-2 px-8 mt-4">
+
+                      {/* FEATURED & VERIFIED BADGES */}
+                      <div className="flex items-center gap-2">
+                        {provider.isVerified && (
+                          <Badge
+                            variant="outline"
+                            className="bg-blueButton text-white rounded-full px-3 py-0.5 text-[10px] font-semibold"
+                          >
+                            Verified
+                          </Badge>
+                        )}
+                        {provider.isFeatured && (
+                          <Badge className="bg-orangeButton text-white rounded-full px-3 py-0.5 text-[10px] font-semibold">
+                            Featured
+                          </Badge>
+                        )}
                       </div>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link href={`/provider/${provider.id}`}>View Profile</Link>
-                      </Button>
+
+                      {/* ⭐ RATING STARS */}
+                      <div className="flex items-center justify-center gap-0.2">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <svg
+                            key={i}
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill={i < provider.rating ? "#F59E0B" : "#D1D5DB"} // yellow or gray
+                            className="w-4 h-4"
+                          >
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 
+        0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 
+        1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 
+        1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                          </svg>
+                        ))}
+
+                        <span className="text-xs font-semibold text-gray-700 ml-1">
+                          {provider.rating?.toFixed(1) || "0.0"}
+                        </span>
+                      </div>
                     </div>
-                  </CardContent>
-                </Card>
+
+                    <h3 className="text-lg px-8 font-bold capitalize">{provider.name}</h3>
+                  </div>
+                  <div className="pb-10 px-8">
+                    <p className="text-sm text-gray-500 mb-4 line-clamp-2">{provider.description}</p>
+                    <div className="flex flex-col gap-4">
+
+                      {/* SERVICES BADGES */}
+                      <div className="flex flex-wrap gap-2">
+                        {provider.services?.length > 0 ? (
+                          provider.services.slice(0, 4).map((service: string, idx: number) => (
+                            <span
+                              key={idx}
+                              className="bg-gray-100 text-black px-2 py-1 rounded-full text-xs font-semibold"
+                            >
+                              {service}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-xs text-gray-400 italic">No services listed</span>
+                        )}
+                      </div>
+
+                      {/* VIEW DETAILS BUTTON */}
+                      <div>
+                        <Button
+                          variant="outline"
+                          size="default"
+                          asChild
+                          className="bg-blueButton text-white rounded-full text-xs"
+                        >
+                          <Link href={`/provider/${provider.id || provider._id}`}>View Details →</Link>
+                        </Button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
               ))}
             </div>
             <div className="text-center mt-8">
-              <Button variant="outline" size="lg" asChild>
-                <Link href="/providers">View All Agencies</Link>
+              <Button variant="outline" className="rounded-full py-2 mt-8 text-lg font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] text-white" size={"lg"} asChild>
+                <Link href="/providers">View All Providers</Link>
               </Button>
             </div>
           </div>
@@ -446,23 +529,23 @@ export default function HomePage() {
       )}
 
       {/* CTA Section */}
-      <section className="py-20 px-4 bg-slate-800 text-white">
+      <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to find your perfect partner?</h2>
-          <p className="text-xl text-slate-300 mb-8">
-            Join thousands of businesses who have found their ideal service providers on Spark.
+          <h3 className="text-2xl md:text-4xl font-extralight">{cms?.getStartedTitle}</h3>
+          <p className="text-base max-w-sm mx-auto text-slate-500">
+            {cms?.getStartedSubtitle}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-slate-800 hover:bg-gray-100" asChild>
-              <Link href="/register">Get Started Free</Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
+            <Button size="lg" className="bg-orangeButton font-semibold text-sm text-white rounded-full hover:bg-gray-100" asChild>
+              <Link href="/register">Post a requirement</Link>
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="border-white text-white hover:bg-white/10 bg-transparent"
+              className="bg-blueButton font-semibold text-sm text-white rounded-full hover:bg-gray-100"
               asChild
             >
-              <Link href="/providers">Browse Agencies</Link>
+              <Link href="/providers">Become a provider</Link>
             </Button>
           </div>
         </div>
