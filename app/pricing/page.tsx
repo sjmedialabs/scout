@@ -31,7 +31,7 @@ export default function PricingPage() {
 
          {/* Monthly and Annually Toggle*/} 
         <div
-        className="mt-2 mb-10 flex items-center justify-center gap-4">
+        className="mt-2 mb-10 flex items-center justify-center gap-3 sm:flex-row sm:gap-4">
            <span
               className={`text-lg font-bold transition-colors  ${
                 isAnnual ? "text-slate-500" : "text-slate-900"
@@ -43,10 +43,14 @@ export default function PricingPage() {
 
           <button
           onClick={() => setIsAnnual(!isAnnual)}
-          className="relative inline-flex h-10 w-20 items-center rounded-full bg-slate-700 shadow-inner transition-colors focus:outline-none">
+          className="relative inline-flex h-10 w-20 items-center 
+          rounded-full bg-slate-700 shadow-inner transition-colors 
+          focus:outline-none shrink-0">
 
             <div
-                className={`absolute left-1 top-1 h-8 w-8 rounded-full bg-white shadow transition-transform duration-300 ease-in-out ${
+                className={`absolute left-1 top-1 h-8 w-8 rounded-full
+                   bg-white shadow transition-transform duration-300 
+                   ease-in-out ${
                   isAnnual ? "translate-x-10" : "translate-x-0"
                 }`}
               />
