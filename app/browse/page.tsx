@@ -85,8 +85,6 @@ export default function BrowsePage() {
 
   return (
     <div className="bg-background">
-      {/* Navigation component rendering removed */}
-
       <div className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
