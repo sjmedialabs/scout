@@ -231,8 +231,8 @@ export default function ProvidersPage() {
                           <SelectTrigger
                             className="
                               mt-1
-                              border-0 
-                              border-b-2 
+                              border-0
+                              border-b-2
                               border-b-[#b2b2b2]
                               rounded-none
                               shadow-none
