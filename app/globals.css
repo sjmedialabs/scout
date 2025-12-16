@@ -7,7 +7,7 @@
   /* Updated design tokens to match wireframe aesthetic */
   --background: oklch(1 0 0); /* #ffffff */
   --blueBackground: #E7F0F8; /*sky blue background color */
-  --blueButton: #F54A0C;
+  --blueButton: #2C34A1;
   --orangeButton: #F54A0C;
   --foreground: oklch(0.205 0 0); /* #1f2937 */
   --card: oklch(0.985 0 0); /* #f8fafc */
@@ -210,6 +210,24 @@
   font-family: "CabinetGrotesk8";
   src: url("/fonts/CabinetGrotesk-Thin.otf") format("opentype");
 }
+@font-face {
+  font-family: "MyCustomFont";
+  src: url("/fonts/heading.TTF") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+.my-custom-class {
+  font-family: 'Plus Jakarta Sans', sans-serif; /* Fallback to sans-serif */
+}
+
+/* If you used the 'variable' option in Step 2, you can use CSS vars for more flexibility */
+.font-plus-jakarta {
+  font-family: var(--font-plus-jakarta), sans-serif;
+}
+.custom-heading {
+  font-family: "MyCustomFont", sans-serif;
+}
+
 .font-cabinet-bold {
   font-family: "CabinetGrotesk", sans-serif;
 }

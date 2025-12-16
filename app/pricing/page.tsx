@@ -128,8 +128,8 @@ export default function PricingPage() {
                     <ul className="space-y-4 mb-8">
                       {plan.features.map((feature, index) => (
                         <li key={index} className="flex items-start gap-3">
-                           <span className="grid place-items-center h-7 w-7 rounded-full bg-blue-100 flex-shrink-0">
-                             <span className="text-orange-500 text-[16px] font-extrabold leading-none translate-y-[1px]">
+                           <span className="grid place-items-center h-7 w-7 rounded-full bg-blue-100 shrink-0">
+                             <span className="text-orange-500 text-[16px] font-extrabold leading-none translate-y-1px">
                                 🗸
                              </span>
                            </span>

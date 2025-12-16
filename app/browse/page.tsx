@@ -1,188 +1,197 @@
+"use client"
+
+import { Search } from "lucide-react"
+import { Filter } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, Filter, Clock, DollarSign } from "lucide-react"
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select"
+
+import { ProposalsHeader } from "@/components/requirements/ProposalsHeader"
+import { ProposalCard } from "@/components/requirements/ProposalCard"
+
+const bannerData={
+    title:"Service Providers",
+    description:"Find verified professionals for your next project",
+    backgroundImageUrl:"/serviceProviderBanner.jpg"
+  }
 
 export default function BrowsePage() {
-  const requirements = [
+  const proposals = [
     {
       id: "1",
-      title: "E-commerce Website Development",
-      category: "Web Development",
-      budget: "$5,000 - $10,000",
-      timeline: "3 months",
+      category: "Website design",
+      title: "E-commerce Website Design and development",
       description:
         "Looking for a modern e-commerce platform with payment integration, inventory management, and responsive design. Must support multiple payment gateways and have admin dashboard.",
-      postedDate: "2 days ago",
-      proposals: 12,
-      status: "Open",
+      budget: "$5,000 - $10,000",
+      timeline: "3 months",
+      proposalsCount: 12,
+      postedAgo: "2 days ago",
     },
     {
       id: "2",
-      title: "Mobile App UI/UX Design",
-      category: "Design",
-      budget: "$2,000 - $5,000",
-      timeline: "6 weeks",
+      category: "Web application",
+      title: "Web application Development",
       description:
-        "Need a complete UI/UX design for a fitness tracking mobile app. Should include wireframes, prototypes, and final designs for both iOS and Android platforms.",
-      postedDate: "1 week ago",
-      proposals: 8,
-      status: "Open",
+        "Need a scalable web application with secure authentication, role-based access, and modern UI. Experience with React and backend APIs required.",
+      budget: "$3,000 - $8,000",
+      timeline: "2 months",
+      proposalsCount: 8,
+      postedAgo: "4 days ago",
     },
     {
       id: "3",
-      title: "Digital Marketing Campaign",
-      category: "Marketing",
-      budget: "$1,000 - $3,000",
-      timeline: "2 months",
-      description:
-        "Comprehensive digital marketing strategy for B2B SaaS product launch. Includes social media, content marketing, and paid advertising campaigns.",
-      postedDate: "3 days ago",
-      proposals: 15,
-      status: "Open",
-    },
-    {
-      id: "4",
-      title: "Data Analytics Dashboard",
-      category: "Development",
-      budget: "$8,000 - $15,000",
-      timeline: "4 months",
-      description:
-        "Build a comprehensive analytics dashboard with real-time data visualization, custom reports, and integration with multiple data sources.",
-      postedDate: "5 days ago",
-      proposals: 6,
-      status: "Open",
-    },
-    {
-      id: "5",
-      title: "Brand Identity Design",
       category: "Design",
-      budget: "$3,000 - $7,000",
-      timeline: "8 weeks",
+      title: "Brochure Design & Packaging design",
       description:
-        "Complete brand identity package including logo design, color palette, typography, and brand guidelines for a tech startup.",
-      postedDate: "1 day ago",
-      proposals: 4,
-      status: "Open",
-    },
-    {
-      id: "6",
-      title: "SEO Optimization Service",
-      category: "Marketing",
-      budget: "$2,500 - $5,000",
-      timeline: "3 months",
-      description:
-        "Comprehensive SEO audit and optimization for an existing website. Includes technical SEO, content optimization, and link building strategy.",
-      postedDate: "4 days ago",
-      proposals: 11,
-      status: "Open",
+        "Creative brochure and packaging design needed for a retail brand. Deliverables include print-ready files and design guidelines.",
+      budget: "$1,500 - $3,000",
+      timeline: "1 month",
+      proposalsCount: 5,
+      postedAgo: "1 day ago",
     },
   ]
 
-  const categories = ["All Categories", "Web Development", "Design", "Marketing", "Development", "Consulting"]
-
   return (
     <div className="bg-background">
-      {/* Navigation component rendering removed */}
 
-      <div className="py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Browse Requirements</h1>
-            <p className="text-muted-foreground">Discover opportunities from businesses looking for your services</p>
+      {/*  HERO SECTION  */}
+      <section
+  className="relative w-full overflow-hidden"
+  style={{
+    backgroundImage: `url(${bannerData.backgroundImageUrl})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+  }}
+>
+  <div className="absolute inset-0 bg-white/35" />
+
+  <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-16 sm:py-20">
+    
+    {/* TITLE */}
+    <div className="text-center mb-10">
+      <h1 className="text-[26px] sm:text-[32px] md:text-[40px] font-bold text-[#F54A0C]">
+        Browse Requirements
+      </h1>
+      <p className="mt-[-10] text-sm sm:text-base text-[#9b9b9b] leading-tight">
+        Discover opportunities from businesses looking for your services
+      </p>
+    </div>
+
+    {/* FILTER BAR */}
+    <div className="flex justify-center">
+      <div
+        className="w-full max-w-5xl bg-white rounded-[28px]
+                   shadow-[0_20px_40px_rgba(0,0,0,0.08)]
+                   px-6 py-5 border"
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_auto] gap-6 items-center">
+
+          {/* Search */}
+          <div className="flex items-center gap-2 border-b border-[#dcdcdc] pb-2">
+            
+            <Input
+              placeholder="Search Requirement"
+              className="border-0 p-0 h-auto text-[15px] placeholder:text-[#9b9b9b]
+                         focus-visible:ring-0 focus-visible:ring-offset-0"
+            />
           </div>
 
-          {/* Filters */}
-          <Card className="mb-8">
-            <CardContent className="pt-6">
-              <div className="grid md:grid-cols-4 gap-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="Search requirements..." className="pl-10" />
-                </div>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((category) => (
-                      <SelectItem key={category} value={category.toLowerCase()}>
-                        {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Budget Range" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="under-1k">Under $1,000</SelectItem>
-                    <SelectItem value="1k-5k">$1,000 - $5,000</SelectItem>
-                    <SelectItem value="5k-10k">$5,000 - $10,000</SelectItem>
-                    <SelectItem value="10k-plus">$10,000+</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button className="w-full">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Apply Filters
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Category */}
+          <Select>
+            <SelectTrigger
+            className="
+                border-0 border-b border-[#dcdcdc] rounded-none px-0 pb-2
+                text-[15px] font-normal
+                focus-visible:ring-0 focus-visible:ring-offset-0
 
-          {/* Requirements Grid */}
-          <div className="grid gap-6">
-            {requirements.map((req) => (
-              <Card key={req.id} className="hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div className="flex gap-2">
-                      <Badge variant="secondary">{req.category}</Badge>
-                      <Badge variant="outline">{req.status}</Badge>
-                    </div>
-                    <div className="text-sm text-muted-foreground flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {req.postedDate}
-                    </div>
-                  </div>
-                  <CardTitle className="text-xl">{req.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="mb-4 text-base">{req.description}</CardDescription>
+                [&_span]:text-[#9b9b9b]
+                [&_span]:text-[15px]
+                [&_span]:font-normal
+            "
+            >
+            <SelectValue placeholder="Select Category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="web">Web Development</SelectItem>
+              <SelectItem value="design">Design</SelectItem>
+              <SelectItem value="marketing">Marketing</SelectItem>
+            </SelectContent>
+          </Select>
 
-                  <div className="grid md:grid-cols-3 gap-4 mb-4">
-                    <div className="flex items-center gap-2">
-                      <DollarSign className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-semibold">{req.budget}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span>{req.timeline}</span>
-                    </div>
-                    <div className="text-sm text-muted-foreground">{req.proposals} proposals received</div>
-                  </div>
+          {/* Budget */}
+          <Select>
+            <SelectTrigger
+            className="
+                border-0 border-b border-[#dcdcdc] rounded-none px-0 pb-2
+                text-[15px] font-normal
+                focus-visible:ring-0 focus-visible:ring-offset-0
 
-                  <div className="flex justify-between items-center">
-                    <Button variant="outline">View Details</Button>
-                    <Button>Submit Proposal</Button>
-                  </div>
-                </CardContent>
-              </Card>
+                [&_span]:text-[#9b9b9b]
+                [&_span]:text-[15px]
+                [&_span]:font-normal
+            "
+            >
+            <SelectValue placeholder="Budget Range" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1k">Under $1k</SelectItem>
+              <SelectItem value="5k">$1k – $5k</SelectItem>
+              <SelectItem value="10k">$5k – $10k</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* APPLY FILTER */}
+          <Button
+            className="h-10 px-6 rounded-full bg-[#F54A0C] hover:bg-[#d93f0b]
+                       text-white text-[14px] font-medium whitespace-nowrap"
+          >
+            <Filter className="h-4 w-4" />
+            Apply Filter
+          </Button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+      <div className="px-4 py-10">
+        <div className="max-w-6xl mx-auto">
+
+          {/* Header */}
+          <ProposalsHeader
+            onSortChange={(value) => console.log("Sort:", value)}
+          />
+
+          {/* Cards */}
+          <div className="space-y-8">
+            {proposals.map((item) => (
+              <ProposalCard
+                key={item.id}
+                category={item.category}
+                title={item.title}
+                description={item.description}
+                budget={item.budget}
+                timeline={item.timeline}
+                proposalsCount={item.proposalsCount}
+                postedAgo={item.postedAgo}
+                onView={() => console.log("View", item.id)}
+                onSubmit={() => console.log("Submit", item.id)}
+              />
             ))}
           </div>
 
-          {/* Load More */}
-          <div className="text-center mt-8">
-            <Button variant="outline" size="lg">
-              Load More Requirements
-            </Button>
-          </div>
         </div>
       </div>
+
     </div>
   )
 }

@@ -5,6 +5,7 @@ export interface IPortfolioItem {
   description: string
   image: string
   technologies: string[]
+  category?:String
   completedDate: string
   clientName?: string
   projectUrl?: string
@@ -70,6 +71,7 @@ const PortfolioItemSchema = new Schema({
   technologies: [{ type: String }],
   completedDate: { type: String },
   clientName: { type: String },
+  category:{type:String},
   projectUrl: { type: String },
 })
 
