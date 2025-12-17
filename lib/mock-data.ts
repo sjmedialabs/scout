@@ -252,7 +252,7 @@ export const mockProviderReviews: Review[] = [
     projectId: "1",
     seekerId: "1",
     providerId: "p1",
-    rating: 5,
+    rating: 4.5,
     qualityRating: 5,
     costRating: 4,
     timelinessRating: 5,

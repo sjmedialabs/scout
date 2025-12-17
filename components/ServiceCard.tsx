@@ -46,8 +46,8 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
                          WebkitMaskRepeat: "no-repeat",
                         background: `linear-gradient(90deg, #FFB400 ${fillValue * 100}%, #E2E2E2 ${fillValue * 100}%)`,
                     }}
-                >
-                </div>
+                 >
+                 </div>
              );
             }
 
