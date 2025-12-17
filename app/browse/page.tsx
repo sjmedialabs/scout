@@ -92,7 +92,7 @@ export default function BrowsePage() {
                    shadow-[0_20px_40px_rgba(0,0,0,0.08)]
                    px-6 py-5 border"
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_auto] gap-6 items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[1.5fr_1fr_1fr_auto] gap-6 items-center">
 
           {/* Search */}
           <div className="flex items-center gap-2 border-b border-[#dcdcdc] pb-2">
