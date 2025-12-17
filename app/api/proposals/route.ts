@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
       userId: { $in: agencyUserIds },
     })
       .select(
-        "userId name logo location rating reviewCount services technologies"
+        "userId name logo location rating reviewCount services technologies coverImage"
       )
       .lean()
 
@@ -86,6 +86,7 @@ export async function GET(request: NextRequest) {
       },
 
       agency: agencyMap.get(p.agencyId.toString()) || null,
+      agencyId:p.agencyId,
 
       coverLetter: p.coverLetter,
       proposedBudget: p.proposedBudget,
@@ -132,7 +133,7 @@ export async function POST(request: NextRequest) {
     await connectToDatabase()
 
     const body = await request.json()
-     const { requirementId, clientId, proposedBudget, proposedTimeline, coverLetter, milestones } = body
+     const { requirementId, proposalDescription, clientId, proposedBudget, proposedTimeline, coverLetter, milestones } = body
 
     // if (!projectId || !proposedBudget || !coverLetter) {
     //   return NextResponse.json(
@@ -160,7 +161,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 })
     }
 
-    if (project.status.toLocaleLowerCase() !== "open") {
+    if (project.status.toLocaleLowerCase() === "closed") {
       return NextResponse.json({ error: "Project is not accepting proposals" }, { status: 400 })
     }
 
@@ -181,6 +182,7 @@ export async function POST(request: NextRequest) {
       agencyId: user.userId,
       coverLetter,
       proposedBudget,
+      proposalDescription,
       proposedTimeline: proposedTimeline || "As discussed",
       milestones: milestones || [],
       status: "pending",

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -28,7 +28,7 @@ export function ProposalList({
   onReject,
   onRequestRevision,
 }: ProposalListProps) {
-  const [visibleProposals, setVisibleProposals] = useState(proposals.slice(0, maxVisible))
+  const [visibleProposals, setVisibleProposals] = useState(proposals.filter((item:any)=>(item.status!=="rejected")))
   const [rejectedCount, setRejectedCount] = useState(0)
   const [revisionDialog, setRevisionDialog] = useState<{ open: boolean; proposalId: string }>({
     open: false,
@@ -39,6 +39,9 @@ export function ProposalList({
     open: false,
     proposalId: "",
   })
+  useEffect(()=>{
+
+  },[])
 
   const handleReject = (proposalId: string) => {
     onReject(proposalId)
@@ -70,10 +73,10 @@ export function ProposalList({
         <h3 className="text-lg font-semibold my-custom-class tracking-tight">Proposals Received</h3>
         <div className="text-sm text-muted-foreground">
           Showing {visibleProposals.length} of {proposals.length} proposals
-          {rejectedCount > 0 && ` (${rejectedCount} rejected)`}
+          {(proposals.length-visibleProposals.length) > 0 && ` (${proposals.length-visibleProposals.length} rejected)`}
         </div>
       </div>
-
+ 
       {visibleProposals.map((proposal) => (
        <Card
           key={proposal.id}
@@ -82,8 +85,8 @@ export function ProposalList({
           {/* Left Image */}
           <div className="lg:max-h-[300px] lg:max-w-[300px] rounded-[18px] overflow-hidden shrink-0">
             <img
-              src={proposal.coverImage || "/proposal.jpg"}
-              alt={proposal.providerCompany}
+              src={proposal.agency.coverImage || "/proposal.jpg"}
+              alt={proposal.agency.name}
               className="h-full w-full"
             />
           </div>
@@ -91,38 +94,38 @@ export function ProposalList({
           {/* Right Content */}
           <div className="flex-1 flex flex-col justify-between">
             {/* Header */}
-            <div className="flex justify-between items-start">
+            <div className="flex flex-col lg:flex-row justify-between items-start">
               <div>
                 <h3 className="text-xl font-bold ">
-                  {proposal.providerCompany}
+                  {proposal.agency.name}
                 </h3>
                 <p className="text-sm text-[#939191] font-normal">
-                  {proposal.providerName}
+                  {proposal.agency.name}
                 </p>
 
                 {/* Price & Timeline */}
                 <div className="flex items-center gap-4 mt-2 text-sm">
                   <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
                     <HiCurrencyDollar color="#F54A0C" className="h-6 w-6"/>
-                    <span className="text-[14px] font-bold text-[#616161]">$ {proposal.proposedCost}/hour</span>
+                    <span className="text-[14px] font-bold text-[#616161]">$ {proposal.proposedBudget}</span>
                   </div>
                   <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
                     <HiCurrencyDollar color="#F54A0C" className="h-6 w-6"/>
-                    <span className="text-[14px] font-bold text-[#616161]">$ {proposal.timeline}</span>
+                    <span className="text-[14px] font-bold text-[#616161]">$ {proposal.proposedTimeline}</span>
                   </div>
                 </div>
               </div>
 
               {/* Rating */}
               <div className="flex items-center gap-1 text-sm font-medium">
-                <RatingStars rating={proposal.rating} reviews={0}/>
-                <span className="text-sm font-bold text-[#000] mt-1">{`${proposal.rating} (${proposal.reviewCount || 0})`} </span>
+                <RatingStars rating={proposal.agency.rating} reviews={proposal.agency.reviewCount}/>
+                <span className="text-sm font-bold text-[#000] mt-1">{`${proposal.agency.rating || 0} (${proposal.agency.reviewCount || 0})`} </span>
               </div>
             </div>
 
             {/* Work Approach */}
             <p className="text-sm text-[#939191] font-normal mt-3">
-              {proposal.workApproach}
+              {proposal?.proposalDescription|| "we will complete your project in a specific way"}
             </p>
 
             {/* Milestones */}
@@ -134,7 +137,7 @@ export function ProposalList({
                     key={index}
                     className="px-4 py-1.5 items-center border-2  rounded-full bg-[#EDEDED] h-[30px] border-[#DEDEDE] text-xs text-[#000] "
                   >
-                    {milestone}
+                    {milestone?.title || milestone}
                   </span>
                 ))}
               </div>
@@ -142,15 +145,20 @@ export function ProposalList({
 
             {/* Actions */}
             <div className="flex flex-wrap gap-3 mt-4">
-              <Button
+               
+               {
+                (proposal.status!=="shortlisted" && proposal.status!=="negotation") && (<Button
                 size="sm"
                 className="rounded-full bg-[#2C34A1] hover:bg-[#2C34A1] text-sm"
                 onClick={() => onShortlist(proposal.id)}
               >
                 Shortlist →
-              </Button>
+              </Button>)
+               }
 
-              <Button
+              {
+                (proposal.status!=="accepted" && proposal.status!=="rejected") && (
+                  <Button
                 size="sm"
                 className="rounded-full bg-[#39A935] hover:bg-[#39A935] text-sm"
                 onClick={() => handleAccept(proposal.id)}
@@ -158,7 +166,11 @@ export function ProposalList({
                 Accept
               </Button>
 
-              <Button
+                )
+              }
+              {
+                (proposal.status!=="negotation") && (
+                   <Button
                 size="sm"
                 className="rounded-full bg-[#F5A30C] hover:bg-[#F5A30C] text-sm"
                 onClick={() =>
@@ -167,14 +179,18 @@ export function ProposalList({
               >
                 Request Revision
               </Button>
+                )
+              }
 
-              <Button
+              {(proposal.status!=="rejected") && (
+                <Button
                 size="sm"
                 className="rounded-full bg-[#FF0000] hover:bg-[#FF0000]"
                 onClick={() => handleReject(proposal.id)}
               >
                 Reject
               </Button>
+              )}
             </div>
           </div>
         </Card>
