@@ -223,117 +223,45 @@ const mockProjectProposals: ProjectProposal[] = [
 
 
 const RequirementsPage=()=>{
-     const { user, loading } = useAuth()
+  const { user, loading } = useAuth()
   const router = useRouter()
-  const [activeSection, setActiveSection] = useState("dashboard") // Set initial state to "dashboard" so content shows by default
-  const [expandedSections, setExpandedSections] = useState<string[]>(["overview"])
-  const [showPostForm, setShowPostForm] = useState(false)
   const [requirements, setRequirements] = useState<Requirement[]>(mockRequirements)
-  const [proposals, setProposals] = useState<Proposal[]>(mockProposals)
-  const [selectedRequirement, setSelectedRequirement] = useState<string | null>(null)
-  const [selectedRequirementForDetails, setSelectedRequirementForDetails] = useState<Requirement | null>(null)
-  const [showDetailsModal, setShowDetailsModal] = useState(false)
-  const [showNegotiationChat, setShowNegotiationChat] = useState(false)
-  const [negotiationProposal, setNegotiationProposal] = useState<string | null>(null)
   const [filteredRequirements, setFilteredRequirements] = useState<Requirement[]>(mockRequirements)
-  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null)
-  const [showProviderProfile, setShowProviderProfile] = useState(false)
-  const [showProjectSubmission, setShowProjectSubmission] = useState(false)
-  const [showReviewSubmission, setShowReviewSubmission] = useState(false)
-  const [showProviderComparison, setShowProviderComparison] = useState(false)
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
-  const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null)
-  const [comparisonProviders, setComparisonProviders] = useState<Provider[]>([])
-
-  // Adding project proposal state
-  const [projectProposals, setProjectProposals] = useState<ProjectProposal[]>(mockProjectProposals)
-
-  const [isEditingProfile, setIsEditingProfile] = useState(false)
-  const [profileData, setProfileData] = useState({
-    name: user?.name || "John Smith",
-    email: user?.email || "john.smith@example.com",
-    phone: "+1 (555) 123-4567",
-    company: "Tech Innovations Inc.",
-    position: "Chief Technology Officer",
-    industry: "Technology",
-    location: "San Francisco, CA",
-    website: "https://techinnovations.com",
-    bio: "Experienced technology leader with over 10 years in software development and digital transformation. Passionate about leveraging cutting-edge solutions to drive business growth.",
-    timezone: "America/Los_Angeles",
-    preferredCommunication: "email",
-    projectBudgetRange: "$10,000 - $50,000",
-    companySize: "51-200 employees",
-    joinedDate: "January 2024",
-  })
-
+  const[responseLoading,setResponseLoading]=useState(false);
+  const[failed,setFailed]=useState(false)
  
+ console.log("user Details::::",user);
 
-  const [projects, setProjects] = useState([
-    {
-      id: "1",
-      title: "E-commerce Website Development",
-      description: "Modern responsive e-commerce platform with payment integration",
-      budget: "$15,000 - $25,000",
-      status: "In Progress",
-      createdAt: "2024-01-15",
-      proposalsCount: 12,
-      category: "Web Development",
-    },
-    {
-      id: "2",
-      title: "Mobile App UI/UX Design",
-      description: "Complete mobile app design for iOS and Android platforms",
-      budget: "$8,000 - $12,000",
-      status: "Planning",
-      createdAt: "2024-01-20",
-      proposalsCount: 8,
-      category: "Design",
-    },
-    {
-      id: "3",
-      title: "Digital Marketing Campaign",
-      description: "Comprehensive digital marketing strategy and execution",
-      budget: "$5,000 - $10,000",
-      status: "Completed",
-      createdAt: "2024-01-10",
-      proposalsCount: 15,
-      category: "Marketing",
-    },
-  ])
-
-  
-  const [newProject, setNewProject] = useState({
-    title: "",
-    description: "",
-    budget: "",
-    category: "",
-  })
-
- 
-
-  
+  const loadData=async(userId:string)=>{
+    setResponseLoading(true)
+      try{
+        const response= await fetch(`/api/requirements/${userId}`)
+        const data=await response.json();
+        setRequirements(data.requirements)
+        setFilteredRequirements(data.requirements)
+        setFailed(false)
+        
+      }catch(error){
+        setFailed(true)
+        console.log("Failed to fetch the  data")
+      }
+      finally{
+        setResponseLoading(false)
+      }
+  }
 
   useEffect(() => {
     if (!loading && (!user || user.role !== "client")) {
       router.push("/login")
     }
+    if(!loading && user){
+      loadData(user.id)
+    }
+  
   }, [user, loading, router])
 
  
-
-
-  const handleViewProposals = (requirementId: string) => {
-    setSelectedRequirement(requirementId)
-    setActiveSection("proposals")
-  }
-
-  const handleViewDetails = (requirementId: string) => {
-    const requirement = requirements.find((r) => r.id === requirementId)
-    if (requirement) {
-      setSelectedRequirementForDetails(requirement)
-      setShowDetailsModal(true)
-    }
-  }
+console.log("Fetched Requirements::::",requirements);
 
   
 
@@ -357,24 +285,51 @@ const RequirementsPage=()=>{
     setFilteredRequirements(filtered)
   }
 
+  const handleViewDetails=()=>{
+
+  }
+  const handleViewProposals=()=>{
+    
+  }
+
+  if (loading || responseLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+   if(failed){
+          return(
+            <div className="flex flex-col justify-center items-center text-center min-h-100">
+              <h1 className="text-center font-semibold">Failed  to Retrive the data</h1>
+              <Button onClick={loadData} className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]">Reload</Button>
+            </div>
+          )
+      }
     return(
        <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold">My Requirements</h1>
-              <p className="text-muted-foreground">Manage all your posted requirements</p>
+            <div className="my-custom-class">
+              <h1 className="text-3xl font-bold text-[#F4561C] tracking-tight">My Requirements</h1>
+              <p className="text-[#656565] text-xl font-light ">Manage all your posted requirements</p>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               <div className="lg:col-span-1">
                 <FiltersPanel onFiltersChange={handleFiltersChange} />
               </div>
               <div className="lg:col-span-3">
-                <Card>
+                <Card className="bg-[#fff] rounded-[16px] py-1 px-0 p-0 min-h-100">
                   <CardContent className="max-h-[600px] overflow-y-auto p-6">
-                    <RequirementList
+                    {filteredRequirements && (<RequirementList
                       requirements={filteredRequirements}
                       onViewProposals={handleViewProposals}
                       onViewDetails={handleViewDetails}
-                    />
+                    />)}
+                    {filteredRequirements.length===0 && (
+                      <div className="flex justify-center items-center">
+                        <p className="text-xl font-light text-[#000]">No Requirements with these applied filters</p>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </div>

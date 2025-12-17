@@ -233,48 +233,8 @@ const mockProjectProposals: ProjectProposal[] = [
   },
 ]
 
-interface MenuItem {
-  id: string
-  label: string
-  icon: React.ComponentType<{ className?: string }>
-  children?: MenuItem[]
-}
 
-const menuItems: MenuItem[] = [
-  {
-    id: "overview",
-    label: "OVERVIEW",
-    icon: Home,
-    children: [
-      { id: "dashboard", label: "Dashboard", icon: Home },
-      { id: "profile", label: "Profile", icon: User },
-      { id: "requirements", label: "My Requirements", icon: FileText },
-      { id: "proposals", label: "Proposals", icon: MessageSquare },
-      { id: "projects", label: "Projects", icon: Briefcase },
-      { id: "providers", label: "Find Agencies", icon: Users },
-    ],
-  },
-  {
-    id: "performance",
-    label: "PERFORMANCE",
-    icon: BarChart3,
-    children: [
-      { id: "analytics", label: "Project Analytics", icon: TrendingUp },
-      { id: "spending", label: "Spending Insights", icon: Eye },
-      { id: "provider-comparison", label: "Provider Comparison", icon: GitCompare },
-    ],
-  },
-  {
-    id: "account-settings",
-    label: "ACCOUNT & SETTINGS",
-    icon: Settings,
-    children: [
-      { id: "billing", label: "Billing & Payments", icon: CreditCard },
-      { id: "notifications", label: "Notifications", icon: Bell },
-      { id: "account-settings", label: "Account Settings", icon: Shield },
-    ],
-  },
-]
+
 
 const ProposalPage=()=>{
     const { user, loading } = useAuth()
@@ -285,6 +245,8 @@ const ProposalPage=()=>{
       const [requirements, setRequirements] = useState<Requirement[]>(mockRequirements)
       const [proposals, setProposals] = useState<Proposal[]>(mockProposals)
       const [selectedRequirement, setSelectedRequirement] = useState<string | null>(null)
+      const[responseLoading,setResponseLoaading]=useState(false);
+      const[failed,setFailed]=useState(false)
       const [selectedRequirementForDetails, setSelectedRequirementForDetails] = useState<Requirement | null>(null)
       const [showDetailsModal, setShowDetailsModal] = useState(false)
       const [showNegotiationChat, setShowNegotiationChat] = useState(false)
@@ -406,6 +368,15 @@ const ProposalPage=()=>{
         },
       ])
     
+
+      const LoadData=async()=>{
+        try{
+
+        }catch(error){
+
+        }
+      }
+
       useEffect(() => {
         if (!loading && (!user || user.role !== "client")) {
           router.push("/login")
@@ -504,8 +475,8 @@ const ProposalPage=()=>{
                  </button>
                </div>
    
-               <Card>
-                 <CardContent className="max-h-[600px] overflow-y-auto p-6">
+               <Card className="bg-[#fff] py-0 rounded-[22px]">
+                 <CardContent className="max-h-[600px] overflow-y-auto p-4">
                    {selectedRequirement ? (
                      <ProposalList
                        proposals={getProposalsForRequirement(selectedRequirement)}
