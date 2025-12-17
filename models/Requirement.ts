@@ -11,7 +11,7 @@ export interface IRequirement extends Document {
   postedDate: Date
   documentUrl:string
   proposals: number
-  status: "Open" | "Closed"
+  status: "Open" | "Closed" | "shortlisted" | "negotation"
   clientId: mongoose.Types.ObjectId // always client ID
   createdAt: Date
   updatedAt: Date
@@ -32,11 +32,11 @@ const RequirementSchema = new Schema<IRequirement>(
 
     documentUrl:{type:String},
 
-    status: { type: String, enum: ["Open", "Closed"], default: "Open" },
+    status: { type: String, enum: ["Open", "Closed","shortlisted","negotation"], default: "Open" },
 
     clientId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     
-  },
+  }, 
   { timestamps: true },
 )
 delete mongoose.models.Requirement;

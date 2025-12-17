@@ -8,6 +8,7 @@ export interface IProposal extends Document {
   coverLetter: string
   proposedBudget: number
   proposedTimeline: string
+  proposalDescription?:string
   milestones?: {
     title: string
     description: string
@@ -45,6 +46,7 @@ const ProposalSchema = new Schema<IProposal>(
     requirementId: { type: Schema.Types.ObjectId, ref: "Requirement", required: true },
     coverLetter: { type: String, required: true },
     proposedBudget: { type: Number, required: true },
+    proposalDescription:{type:String},
     proposedTimeline: { type: String, required: true },
     milestones: [MilestoneSchema],
     attachments: [{ type: String }],
