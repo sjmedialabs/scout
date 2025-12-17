@@ -29,27 +29,29 @@ export function ProposalCard({
     <div className="rounded-[26px] border border-[#e6e6e6] bg-[#f4fbff] overflow-hidden">
       
       {/* Top */}
-      <div className="p-6 flex justify-between gap-4">
+      <div className="relative p-6 flex gap-4">
         <div>
+          <div className="mb-4 w-full items-start flex justify-between">
           <Badge
             variant="outline"
-            className="mb-3 rounded-full px-4 py-1 font-bold text-xs bg-white"
+            className="rounded-full px-4 py-1 font-bold text-xs bg-white"
           >
             {category}
           </Badge>
+
+          <div className="absolute top-6 right-6 flex items-center gap-1 text-xs font-medium text-[#ff4d00] whitespace-nowrap">
+             <Clock className="h-3.5 w-3.5" />
+              {postedAgo}
+          </div>
+          </div>
 
           <h3 className="text-[20px] sm:text-[22px] font-semibold text-[#2c34a1]">
             {title}
           </h3>
 
-          <p className="mt-2 max-w-3xl text-[14px] text-[#8b8b8b] leading-relaxed">
+          <p className="mt-2 max-w-5xl text-[14px] text-[#8b8b8b] leading-relaxed">
             {description}
           </p>
-        </div>
-
-        <div className="flex items-center gap-2 text-sm text-[#ff4d00] whitespace-nowrap">
-          <Clock className="h-4 w-4" />
-          {postedAgo}
         </div>
       </div>
 
@@ -79,7 +81,7 @@ export function ProposalCard({
         </div>
         </div>
         {/* Actions */}
-        <div className="m-4 flex gap-3">
+        <div className="flex flex-col gap-3 m-4 sm:flex-row sm:gap-2">
           <Button
             onClick={onView}
             className="rounded-full bg-[#2c34a1] hover:bg-[#2c34a1] px-6"
