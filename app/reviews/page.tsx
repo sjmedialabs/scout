@@ -32,7 +32,7 @@ export default function ReviewsPage() {
       title: "Response Submitted",
       description: "Your response to the review has been submitted successfully.",
     })
-    // You can add API call here to save the response
+   
   }
 
   return (
