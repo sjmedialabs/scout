@@ -161,7 +161,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 })
     }
 
-    if (project.status.toLocaleLowerCase() === "closed") {
+    if (project.status.toLocaleLowerCase() === "closed" || project.status.toLocaleLowerCase() === "Allocated") {
       return NextResponse.json({ error: "Project is not accepting proposals" }, { status: 400 })
     }
 
@@ -192,7 +192,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Update project proposal count
-    // await Project.findByIdAndUpdate(projectId, { $inc: { proposalCount: 1 } })
+     await Requirement.findByIdAndUpdate(requirementId, { $inc: { proposals: 1 } })
 
     return NextResponse.json({
       success: true,

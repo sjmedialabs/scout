@@ -125,16 +125,17 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
            await Requirement.findByIdAndUpdate(proposal.requirementId, {status:body.status}, { new: true })
         }
         if(body.status.toLocaleLowerCase()==="accepted"){
-          await Requirement.findByIdAndUpdate(proposal.requirementId, {status:"Closed"}, { new: true })
-          await Proposal.updateMany(
-            {
-              requirementId:proposal.requirementId,
-              _id: { $ne:id } // exclude accepted proposal
-            },
-            {
-              $set: { status: "rejected" }
-            }
-          )
+          console.log("----Accepted proposal:::")
+          await Requirement.findByIdAndUpdate(proposal.requirementId, {status:"Allocated",allocatedToId:proposal.agencyId}, { new: true })
+          // await Proposal.updateMany(
+          //   {
+          //     requirementId:proposal.requirementId,
+          //     _id: { $ne:id } // exclude accepted proposal
+          //   },
+          //   {
+          //     $set: { status: "rejected" } 
+          //   }
+          // )
 
         }
       }

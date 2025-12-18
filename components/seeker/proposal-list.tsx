@@ -147,7 +147,7 @@ export function ProposalList({
             <div className="flex flex-wrap gap-3 mt-4">
                
                {
-                (proposal.status!=="shortlisted" && proposal.status!=="negotation") && (<Button
+                (proposal.status!=="shortlisted" && proposal.status!=="negotation" && proposal.status!=="accepted") && (<Button
                 size="sm"
                 className="rounded-full bg-[#2C34A1] hover:bg-[#2C34A1] text-sm"
                 onClick={() => onShortlist(proposal.id)}
@@ -169,7 +169,7 @@ export function ProposalList({
                 )
               }
               {
-                (proposal.status!=="negotation") && (
+                (proposal.status!=="negotation" && proposal.status!=="accepted") && (
                    <Button
                 size="sm"
                 className="rounded-full bg-[#F5A30C] hover:bg-[#F5A30C] text-sm"
@@ -182,7 +182,7 @@ export function ProposalList({
                 )
               }
 
-              {(proposal.status!=="rejected") && (
+              {(proposal.status!=="rejected" &&  proposal.status!=="accepted") && (
                 <Button
                 size="sm"
                 className="rounded-full bg-[#FF0000] hover:bg-[#FF0000]"
