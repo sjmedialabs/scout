@@ -24,6 +24,8 @@ export function RequirementList({ requirements, onViewProposals, onViewDetails }
         return "bg-[#CFEED2] text-[#39761E]"
       case "shortlisted":
         return "bg-[#D2E4FF] text-[#1E82C1]"
+      case "allocated":
+        return "bg-[#D2E4FF] text-[#1E82C1]"
       case "negotiation":
         return "bg-[#FCF6E3] text-[#AF905D]"
       case "closed":

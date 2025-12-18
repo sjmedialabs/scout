@@ -57,10 +57,27 @@ import {
   Target,
   Heart,
   SeparatorVertical as Separator,
+  Search
 } from "lucide-react"
 import { mockRequirements, mockProposals, mockProviders } from "@/lib/mock-data"
 import type { Requirement, Proposal, Provider, Notification } from "@/lib/types"
+import Link from "next/link"
+import RatingStars from "@/components/rating-star"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { CiCalendar } from "react-icons/ci";
+import { Content } from "next/font/google"
+import { IoIosCloseCircleOutline } from "react-icons/io";
+import { FaArrowRightLong } from "react-icons/fa6";
 interface ProjectProposal {
   id: string
   projectId: string
@@ -274,9 +291,89 @@ const menuItems: MenuItem[] = [
 const ClientProvidersPage=()=>{
     const { user, loading } = useAuth()
       const router = useRouter()
-      const [locationFilter, setLocationFilter] = useState("")
+      // const [locationFilter, setLocationFilter] = useState("")
       const [technologyFilter, setTechnologyFilter] = useState("")
-      const [ratingFilter, setRatingFilter] = useState("")
+      const[selectedProvider,setSelectedProvider]=useState()
+      // const [ratingFilter, setRatingFilter] = useState("")
+
+      //filters functions
+        const[searchFilter,setSearchFilter]=useState("");
+  const[serviceFilter,setServiceFilter]=useState("");
+  const[locationFilter,setLocationFilter]=useState("");
+  const[ratingFilter,setRatingFilter]=useState("");
+  const[filteredData,setFilteredData]=useState([]);
+  const[providersData,setProvidersData]=useState([])
+  const[responseLoading,setResponseLoading]=useState(true)
+  const[Failed,setFailed]=useState(false)
+  const[dialogOpen,setDialogOpen]=useState(false)
+  useEffect(()=>{
+    loadData();
+  },[])
+  console.log("Providers Datat::::::::::",providersData)
+  const loadData=async()=>{
+    setResponseLoading(true)
+    setFailed(false)
+     try{
+         const response=await fetch("/api/providers");
+         const data=await response.json();
+         console.log("Fetched  Data:::",data)
+         setProvidersData(data.providers)
+         setFilteredData(data.providers)
+         setFailed(false)
+     }catch(error){
+      console.log("Failded To retrive the data:::",error)
+      setFailed(true);
+     }
+     finally{
+      setResponseLoading(false)
+     }
+  }
+
+  const searchHandle=()=>{
+    console.log("Search Filter:::",searchFilter);
+    console.log("Service Filter::",serviceFilter);
+    console.log("Location Filter:::",locationFilter);
+    let tempFilteredData=providersData;
+    if(searchFilter.trim()!=""){
+      tempFilteredData= tempFilteredData.filter((item) =>
+      item.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
+  
+      item.location.toLowerCase().includes(searchFilter.toLowerCase())
+    );
+    }
+    if (serviceFilter !== "all") {
+    tempFilteredData = tempFilteredData.filter((eachItem) =>
+      eachItem.services.some((service) =>
+        service.toLowerCase().includes(serviceFilter.toLowerCase())
+      )
+    );
+    }
+    if(locationFilter !="all"){
+      tempFilteredData=tempFilteredData.filter((eachItem)=>eachItem.location.toLocaleLowerCase().includes(locationFilter.toLocaleLowerCase()));
+    }
+    setFilteredData(tempFilteredData);
+  }
+  const handleHighestRating=(value:any)=>{
+    let sortedData = [...filteredData]; // avoid mutating original array
+
+  switch (value) {
+
+    case "low-high":
+      sortedData.sort((a, b) => parseInt(a.rating) - parseInt(b.rating));
+      break;
+
+    case "high-low":
+      sortedData.sort((a, b) => parseInt(b.rating) - parseInt(a.rating));
+      break;
+
+    default:
+      return filteredData; // no sorting applied
+  }
+
+    setFilteredData(sortedData);
+  }
+
+      //end
     
       useEffect(() => {
         if (!loading && (!user || user.role !== "client")) {
@@ -285,10 +382,10 @@ const ClientProvidersPage=()=>{
       }, [user, loading, router])
   
       const handleViewProvider = (providerId: string) => {
-        const provider = mockProviders.find((p) => p.id === providerId)
+        const provider = providersData.find((p) => p.id === providerId)
         if (provider) {
           setSelectedProvider(provider)
-          setShowProviderProfile(true)
+          setDialogOpen(true)
         }
       }
     
@@ -315,135 +412,379 @@ const ClientProvidersPage=()=>{
     })
   
     return(
-          <div className="space-y-6">
+          <div className="space-y-6 p-6">
             <div>
-                <h1 className="text-3xl font-bold">Find Agencies</h1>
-                <p className="text-muted-foreground">Browse and connect with verified agencies</p>
+                <h1 className="text-4xl font-bold text-[#F4561C] my-custom-class tracking-tight">Find Agencies</h1>
+                <p className="text-lg font-light text-[#656565] my-custom-class tracking-tight">Browse and connect with verified agencies</p>
             </div>
 
-            <Card>
-                <CardContent className="p-6">
-                <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
-                    <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium">Location</label>
-                        <input
-                        type="text"
-                        placeholder="Enter city or state..."
-                        value={locationFilter}
-                        onChange={(e) => setLocationFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium">Technology/Service</label>
-                        <select
-                        value={technologyFilter}
-                        onChange={(e) => setTechnologyFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                        <option value="">All Technologies</option>
-                        <option value="Web Development">Web Development</option>
-                        <option value="Mobile Development">Mobile Development</option>
-                        <option value="UI/UX Design">UI/UX Design</option>
-                        <option value="Digital Marketing">Digital Marketing</option>
-                        <option value="E-commerce">E-commerce</option>
-                        <option value="WordPress">WordPress</option>
-                        <option value="SEO">SEO</option>
-                        <option value="Graphic Design">Graphic Design</option>
-                        <option value="Branding">Branding</option>
-                        <option value="Content Marketing">Content Marketing</option>
-                        </select>
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium">Minimum Rating</label>
-                        <select
-                        value={ratingFilter}
-                        onChange={(e) => setRatingFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                        <option value="">Any Rating</option>
-                        <option value="4.5">4.5+ Stars</option>
-                        <option value="4.0">4.0+ Stars</option>
-                        <option value="3.5">3.5+ Stars</option>
-                        <option value="3.0">3.0+ Stars</option>
-                        </select>
-                    </div>
-                    </div>
-                    <div className="flex gap-2">
-                    <Button variant="outline" onClick={clearFilters}>
-                        Clear Filters
-                    </Button>
-                    <div className="text-sm text-muted-foreground flex items-center">
-                        {filteredProviders.length} agencies found
-                    </div>
-                    </div>
-                </div>
-                </CardContent>
-            </Card>
+            <div className="max-w-7xl mx-auto text-center ">
+                {/* Header */}
+                {/* <div className="mb-8 px-2 sm:px-0">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#F54A0C] pt-6 sm:pt-10 mb-2">{bannerData.title}</h1>
+                  <p className="text-sm sm:text-base md:text-lg text-[#b2b2b2] leading-sung px-3 sm:px-0">{bannerData.description}</p>
+                </div> */}
 
-            <Card>
-                <CardContent className="max-h-[600px] overflow-y-auto p-6">
-                {filteredProviders.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filteredProviders.map((provider) => (
-                        <Card key={provider.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                        <CardContent className="pt-6">
-                            <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                                <Star className="h-5 w-5 text-primary" />
-                            </div>
-                            <div className="flex-1">
-                                <h4 className="font-medium">{provider.companyName}</h4>
-                                <div className="flex items-center gap-1">
-                                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                                <span className="text-xs">
-                                    {provider.rating} ({provider.reviewCount})
-                                </span>
-                                </div>
-                            </div>
-                            </div>
-                            <div className="mb-3">
-                            <p className="text-xs text-muted-foreground mb-1">📍 {provider.location}</p>
-                            <div className="flex flex-wrap gap-1">
-                                {provider.services.slice(0, 3).map((service, index) => (
-                                <span key={index} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                                    {service}
-                                </span>
-                                ))}
-                                {provider.services.length > 3 && (
-                                <span className="text-xs text-muted-foreground">
-                                    +{provider.services.length - 3} more
-                                </span>
-                                )}
-                            </div>
-                            </div>
-                            <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{provider.description}</p>
-                            <div className="flex gap-2 mb-3">
-                            <Button size="sm" onClick={() => handleViewProvider(provider.id)} className="flex-1">
-                                <Eye className="h-3 w-3 mr-1" />
-                                View Profile
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={() => handleContactProvider(provider.id)}>
-                                Contact
-                            </Button>
-                            </div>
-                        </CardContent>
-                        </Card>
-                    ))}
+                {/* Filters */}
+                <Card className="mb-8 text-center rounded-3xl shadow-md sm:shadow-lg">
+                  <CardContent className="pt-6 pb-6 px-4 sm:px-6 md:px-9">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
+
+                      {/* Search Input */}
+                      <div className="relative w-full min-w-0">
+                        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Search providers..."
+                          className="
+                            pl-10 w-full text-sm md:text-base
+                            border-0 border-b-2 border-b-[#b2b2b2]
+                            bg-transparent rounded-none shadow-none
+                            focus:outline-none focus:ring-0 focus:ring-offset-0
+                            focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
+                            focus:border-[#F54A0C]
+                          "
+                          onChange={(e) => setSearchFilter(e.target.value)}
+                        />
+                      </div>
+
+                      <div className="w-full min-w-0">
+                        <Select onValueChange={(value)=>setServiceFilter(value)}>
+                          <SelectTrigger
+                            className="
+                              mt-1
+                              border-0
+                              border-b-2
+                              border-b-[#b2b2b2]
+                              rounded-none
+                              shadow-none
+                              focus:outline-none focus:ring-0 focus:ring-offset-0
+                              focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
+                              focus:border-[#b2b2b2]
+                              placeholder:text-[#b2b2b2]
+                              px-0
+                              w-full
+                              h-12
+                              text-sm
+                              md:text-base
+                            "
+                          >
+                            <SelectValue placeholder="Service Category" className="text-[#b2b2b2]"/>
+                          </SelectTrigger>
+
+                          <SelectContent>
+                            <SelectItem value="all">All Services</SelectItem>
+                            <SelectItem value="development">Development</SelectItem>
+                            <SelectItem value="design">Design</SelectItem>
+                            <SelectItem value="marketing">Marketing</SelectItem>
+                            <SelectItem value="consulting">Consulting</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        </div>
+
+                      <div className="w-full min-w-0">
+                        <Select onValueChange={handleHighestRating}>
+                      <SelectTrigger
+                        className="
+                              mt-1
+                              border-0
+                              border-b-2
+                              border-b-[#b2b2b2]
+                              rounded-none
+                              shadow-none
+                              focus:outline-none focus:ring-0 focus:ring-offset-0
+                              focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
+                              focus:border-[#b2b2b2]
+                              placeholder:text-[#b2b2b2]
+                              px-0
+                              w-full
+                              h-12
+                              text-sm
+                              md:text-base
+                            "
+                      >
+                        <SelectValue placeholder="Rating" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        
+                        <SelectItem value="low-high">Rating: Low to High</SelectItem>
+                        <SelectItem value="high-low">Rating: High to Low</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                      </div>
+                       
+
+                      <div className="w-full min-w-0">
+                      <Button className="w-full sm:w-[150px] lg:w-[120px] h-10 mt-2 lg:mt-1
+                        rounded-3xl bg-[#F54A0C] text-white
+                        hover:bg-[#d93f0b] transition-all duration-300" onClick={searchHandle}>
+                            Search Now
+                      </Button>
+                      </div>
                     </div>
-                ) : (
-                    <div className="text-center py-12">
-                    <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-medium mb-2">No agencies found</h3>
-                    <p className="text-muted-foreground mb-4">Try adjusting your filters to see more results</p>
-                    <Button variant="outline" onClick={clearFilters}>
-                        Clear All Filters
-                    </Button>
+                  </CardContent>
+                </Card>
+            </div>
+   
+            {/* Dialog content */}
+
+           {
+            dialogOpen && (
+              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <DialogContent className="
+                  sm:max-w-[425px]
+                  overflow-y-auto
+                  max-h-[90%]
+                  rounded-2xl
+                  [&_[aria-label='Close']]:hidden
+                  [&::-webkit-scrollbar]:hidden
+                ">
+                   {/* Custom Close Icon */}
+                  {/* <DialogClose asChild>
+                    <button
+                      className="absolute right-4 top-4 rounded-full p-2 hover:bg-gray-100"
+                    >
+                      <IoIosCloseCircleOutline className="h-6 w-6 text-red-600" />
+                    </button>
+                  </DialogClose> */}
+                 <div className="flex justify-between items-start">
+                  <div>
+                   <h1 className="text-xl text-[#F4561C] font-bold my-custom-class">{selectedProvider.name}</h1>
+                   <p className="text-sm text-[#939191] -mt-0.5 font-normal">{selectedProvider.tagline}</p>
+                   <div className="flex justify-start gap-2">
+                    <RatingStars rating={selectedProvider.rating}/>
+                   <span className="text-md font-bold text-[#000] font-normal">{selectedProvider.rating}</span>
+                   </div>
+                   {/* Badges */}
+                    <div className="flex flex-wrap items-start justify-between gap-3 mt-2">
+                      <div className="flex flex-wrap gap-2">
+                        {selectedProvider.isVerified && (
+                          <Badge className="bg-[#2C34A1] text-white h-7 px-3 rounded-2xl">Verified</Badge>
+                        )}
+                        {selectedProvider.isFeatured && (
+                          <Badge className="bg-[#000] text-white h-7 px-3 rounded-2xl">Featured</Badge>
+                        )}
+                      </div>
+
+                      
                     </div>
-                )}
-                </CardContent>
-            </Card>
+                   
+                  </div>
+                  <div className="px-0">
+                      <Badge className="bg-[#CFEED2] text-[#39761E] rounded-md text-sm">
+                      Open
+                    </Badge>
+                  </div>
+                  <div>
+
+                  </div>
+                 </div>
+                  <hr className="border-1 w-full border-[#E4E4E4]"/>
+                  <h1 className="text-lg text-[#F4561C] font-bold my-custom-class">Company Information</h1>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-0 text-xs sm:text-sm">
+                        <div className="flex items-center gap-2">
+                          <img src="/location-filled.jpg" className="h-5 w-4" />
+                          <span className="text-[#808080] font-semibold break-words">
+                            {selectedProvider?.location || "N/A"}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CiCalendar color=" #F54A0C" className="h-5 w-5"/>
+                          <span className="text-[#808080] font-semibold">
+                           Founded Year: {selectedProvider.foundedYear}
+                          </span>
+                        </div>
+                        
+                  </div>
+                  <p className="text-md mt-0 text-[#656565] font-normal">{selectedProvider.description}</p>
+                   <hr className="border-1 w-full border-[#E4E4E4] mt-2"/>
+                   <h1 className="text-lg text-[#F4561C] font-bold my-custom-class">Services Offered</h1>
+                   {/*services offered*/}
+                   <div className="flex flex-wrap gap-2 -mt-3 mb-0">
+                        {selectedProvider.services.map((service) => (
+                          <Badge
+                            key={service}
+                            variant="outline"
+                            className="h-7 px-3 mb-2 rounded-2xl bg-[#f2f2f2] text-[#000] text-xs sm:text-sm"
+                          >
+                            {service}
+                          </Badge>
+                        ))}
+                    </div>
+                    <hr className="border-1 w-full border-[#E4E4E4]"/>
+                    <h1 className="text-lg text-[#F4561C] font-bold my-custom-class">Portfolio</h1>
+                    <div>
+                    {selectedProvider.portfolio.length !== 0 ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 gap-6">
+                        {selectedProvider.portfolio.map((item: any) => (
+                          <Card
+                            key={item._id}
+                            className="border py-0 border-[#E5E7EB] rounded-[20px] overflow-hidden bg-white hover:shadow-md transition-shadow"
+                          >
+                            {/* Image Section */}
+                            <div className="w-full h-[180px] bg-[#F5F5F5] flex items-center justify-center overflow-hidden">
+                              <img
+                                src={item.image || "ecommerce-fashion-website.png"}
+                                alt={item.title}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+
+                            {/* Content Section */}
+                            <div className="p-4 space-y-2">
+                              <h1 className="text-[16px] font-semibold text-[#111827] leading-snug">
+                                {item.title}
+                              </h1>
+
+                              <p className="text-[14px] text-[#6B7280] font-normal line-clamp-3">
+                                {item.description}
+                              </p>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="flex justify-center items-center py-10">
+                        <h1 className="text-xl font-normal text-[#656565]">
+                          No Portfolio Items
+                        </h1>
+                      </div>
+                    )}
+                  </div>
+
+                  <DialogFooter className="text-start">
+                    
+                    <Button className="bg-[#2C34A1] hover:bg-[#2C34A1]  active:bg-[#2C34A1] text-sm rounded-full text-[#fff] w-[50%]">Contact Provider <FaArrowRightLong className="w-4 h-4" color="#fff"/> </Button>
+                    <DialogClose asChild>
+                       <Button className="w-[50%] sm:w-[160px] bg-[#000] rounded-3xl text-white">
+                          Close
+                        </Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              
+            </Dialog>
+            )
+           }
+
+
+
+
+
+              {/* Providers Grid */}
+
+           {
+              Failed && (
+                <div className="flex flex-col justify-center items-center text-center">
+                  <h1 className="text-center font-semibold">Failed  to Retrive the data</h1>
+                  <Button onClick={loadData} className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]">Reload</Button>
+                </div>
+              )
+            }
+            {loading && (
+              <div className="min-h-screen flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            )}
+          <div className="grid md:grid-cols-2 gap-6">
+            {(filteredData.length!=0 && !loading && !Failed)?(filteredData.map((provider) => (
+
+                <Card
+                    key={provider.id}
+                    className="rounded-4xl overflow-hidden border-2 border-[#E0E0E0]  py-0 shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    {/* Image flush to top */}
+                    <div className="w-full">
+                      <img
+                        src={provider.coverImage}
+                        alt={provider.name}
+                        className="w-full h-[200px] sm:h-[240px] md:h-[300px] object-cover block"
+                      />
+                    </div>
+
+                    <div className="p-4 sm:p-6">
+                      {/* Badges + rating */}
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="flex flex-wrap gap-2">
+                          {provider.isVerified && (
+                            <Badge className="bg-[#2C34A1] text-white h-7 px-3 rounded-2xl">Verified</Badge>
+                          )}
+                          {provider.isFeatured && (
+                            <Badge className="bg-[#F54A0C] text-white h-7 px-3 rounded-2xl">Featured</Badge>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-1 text-sm">
+                          <RatingStars rating={provider.rating} />
+                          <span className="font-semibold">{provider.rating}</span>
+                          <span className="text-muted-foreground">({provider.reviewCount})</span>
+                        </div>
+                      </div>
+
+                      {/* Title + description (left aligned) */}
+                      <h3 className="mt-2 text-xl sm:text-2xl font-semibold text-left">
+                        {provider.name}
+                      </h3>
+                      <p className="mt-1 text-sm text-[#b2b2b2] text-left">
+                        {provider.tagline}
+                      </p>
+
+                      {/* Tags – tighter gap to description */}
+                      <div className="flex flex-wrap gap-2 mt-3 sm:mt-3 mb-4">
+                        {provider.services.map((service) => (
+                          <Badge
+                            key={service}
+                            variant="outline"
+                            className="h-7 px-3 rounded-2xl bg-[#f2f2f2] text-[#000] text-xs sm:text-sm"
+                          >
+                            {service}
+                          </Badge>
+                        ))}
+                      </div>
+
+                      {/* Info row */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-xs sm:text-sm">
+                        <div className="flex items-center gap-2">
+                          <img src="/location-filled.jpg" className="h-5 w-4" />
+                          <span className="text-[#808080] font-semibold break-words">
+                            {provider?.location || "N/A"}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img src="/briefcase.jpg" className="h-4 w-4" />
+                          <span className="text-[#808080] font-semibold">
+                            {provider.projectsCompleted} projects
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <img src="/chat-operational.jpg" className="h-4 w-4" />
+                          <span className="text-[#808080] font-semibold">
+                            Response: {provider?.responseTime || "2 hrs"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Price + buttons */}
+                      <p className="text-[#808080] text-sm sm:text-base font-semibold">
+                        From: {provider.hourlyRate}/hour
+                      </p>
+
+                      <div className="mt-3 flex flex-col sm:flex-row gap-2">
+                          <Button className="w-full sm:w-[140px] bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white" onClick={()=>(handleViewProvider(provider.id))}>
+                            View Profile
+                          </Button>
+                        <Button className="w-full sm:w-[160px] bg-[#4d4d4d] rounded-3xl text-white">
+                          Contact Provider
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+
+                ))):(<div className="text-center ml-[80px]">
+                  <p className="text-lg"></p>
+            </div>)}
+          </div>
        </div>
     )
 }

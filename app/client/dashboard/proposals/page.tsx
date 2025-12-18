@@ -415,10 +415,19 @@ const ProposalPage=()=>{
         }
       }
     
-      const handleAccept = (proposalId: string) => {
-        setProposals((prev) => prev.map((p) => (p.id === proposalId ? { ...p, status: "accepted" as const } : p)))
-        setNegotiationProposal(proposalId)
-        setShowNegotiationChat(true)
+      const handleAccept = async(proposalId: string) => {
+        console.log("Entered to accept fun:::",proposalId)
+         try{
+           const  response=await fetch(`/api/proposals/${proposalId}`,{
+            method:"PUT",
+            body:JSON.stringify({status:"accepted"})})
+            console.log("Shortlist action response::::",await response.json,proposalId)
+            setProposals((prev) => prev.map((p) => (p.id === proposalId ? { ...p, status: "accepted" as const } : p)))
+        }catch(error){
+          console.log("failed to update the  status",error)
+          alert("Staus failed to shortlist the proposal")
+        }
+        
       }
     
       const handleReject = async(proposalId: string) => {
