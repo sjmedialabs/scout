@@ -1,0 +1,122 @@
+import { NextRequest, NextResponse } from "next/server"
+import { connectToDatabase } from "@/lib/mongodb"
+import Requirement from "@/models/Requirement"
+import { getCurrentUser } from "@/lib/auth/jwt"   // <-- IMPORTANT
+import { error } from "console"
+import mongoose from "mongoose"
+
+// GET Requirements
+
+
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    await connectToDatabase()
+
+    const { id } = await params
+
+    console.log("---client Id:::",id);
+
+    // ✅ Validate ObjectId
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { success: false, error: "Invalid client ID" },
+        { status: 400 }
+      )
+    }
+
+    const clientObjectId = new mongoose.Types.ObjectId(id)
+
+    const search = req.nextUrl.searchParams.get("search") || ""
+    const category = req.nextUrl.searchParams.get("category") || ""
+    const minBudget = Number(req.nextUrl.searchParams.get("minBudget") || 0)
+    const maxBudget = Number(req.nextUrl.searchParams.get("maxBudget") || 9999999)
+
+    // ✅ Build query
+    const query: any = {
+      clientId: clientObjectId, // ObjectId match
+    }
+
+    if (search) {
+      query.title = { $regex: search, $options: "i" }
+    }
+
+    if (category && category !== "all") {
+      query.category = category
+    }
+
+    query.budgetMin = { $lte: maxBudget }
+    query.budgetMax = { $gte: minBudget }
+
+    const requirements = await Requirement.find(query)
+      .sort({ createdAt: -1 })
+      .lean()
+
+    return NextResponse.json({
+      success: true,
+      requirements,
+    })
+  } catch (error) {
+    console.error(error)
+    return NextResponse.json(
+      { success: false, error: "Failed to fetch requirements" },
+      { status: 500 }
+    )
+  }
+}
+
+
+
+function formatPostedDate(date: Date) {
+  const diff = (Date.now() - new Date(date).getTime()) / (1000 * 60 * 60 * 24)
+  if (diff < 1) return "Today"
+  if (diff < 2) return "1 day ago"
+  return `${Math.floor(diff)} days ago`
+}
+export async function POST(req: NextRequest) {
+  try {
+    await connectToDatabase()
+
+    const user = await getCurrentUser()
+
+    // ❌ Not logged in
+    if (!user) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
+    }
+    // ❌ Only client can post requirements
+    if (user.role !== "client") {
+      return NextResponse.json(
+        { error: "Only clients can post requirements" },
+        { status: 403 },
+      )
+    }
+
+    const body = await req.json()
+    console.log("body",body)
+    const newReq = await Requirement.create({
+      title: body.title,
+      image: body.image,
+      category: body.category,
+      budgetMin: body.budgetMin,
+      budgetMax: body.budgetMax,
+      timeline: body.timeline,
+      description: body.description,
+      documentUrl:body.documentUrl,
+      clientId: user.userId, // 👈 IMPORTANT: logged-in client
+    })
+    console.log("newReq",newReq)
+    return NextResponse.json({ success: true,   requirement: {
+    ...newReq.toObject(),
+    createdAt: newReq.createdAt,
+    updatedAt: newReq.updatedAt
+  } })
+  } catch (error) {
+    console.log(error)
+    return NextResponse.json(
+      { error: "Failed to create requirement" },
+      { status: 500 },
+    )
+  }
+}
