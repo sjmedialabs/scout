@@ -9,6 +9,9 @@ import { toast } from "@/hooks/use-toast"
 import type { Review } from "@/lib/types"
 import StarRating from "@/components/ui/star-rating"
 import { MessageSquareText } from "lucide-react"
+import { useRouter } from "next/navigation"
+
+const router = useRouter()
 
 export default function ReviewsPage() {
   const [selectedReview, setSelectedReview] = useState<Review | null>(null)
@@ -169,7 +172,7 @@ export default function ReviewsPage() {
       {/* ACTION */}
       <div className="flex justify-center sm:justify-start">
   <button
-    onClick={() => handleRespondClick(review)}
+    onClick={() => router.push("/reviews/respond")}
     className="flex w-fit items-center gap-2 px-4 py-2 text-sm rounded-full
                border border-slate-400 text-[#FF4D00] hover:bg-[#FFF1EB]"
   >
