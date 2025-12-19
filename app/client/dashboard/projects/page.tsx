@@ -330,13 +330,13 @@ if (loading || responseLoading) {
           )
       }
     return(
-       <div className="space-y-6 p-6">
-            <div className="flex justify-between items-center">
+       <div className="space-y-6 p-3 md:p-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center ">
               <div>
                 <h1 className="text-3xl font-bold text-[#F4561C] my-custom-class leading-6">Projects</h1>
                 <p className="text-lg text-[#656565] font-normal my-custom-class mt-0">Manage your projects and track progress</p>
               </div>
-              <Button onClick={() => setShowCreateProject(true)} className="bg-[#000] text-xs  rounded-full ">
+              <Button onClick={() => setShowCreateProject(true)} className="bg-[#000] text-xs mt-2 md:mt-0 rounded-full ">
                 <Plus className="h-4 w-4" />
                 Add New Project
               </Button>
@@ -346,8 +346,8 @@ if (loading || responseLoading) {
               {
                 (requirements || []).length!==0 && (
                   requirements.map((project) => (
-                <Card key={project._id} className="border-1 border-[#CFCACA] rounded-2xl">
-                  <CardContent className="px-6 py-0">
+                <Card key={project._id} className="border-1 px-0 border-[#CFCACA] rounded-2xl">
+                  <CardContent className="px-4 md:px-6 py-0">
                     <div className="flex justify-between items-start mb-3">
                       <Badge className="bg-[#F54A0C] text-xs rounded-full">
                        {project.proposals} proposals recieved
@@ -409,7 +409,7 @@ if (loading || responseLoading) {
                     </div>
                     <div className="flex justify-between items-center">
                      
-                       <Button variant="outline" size="sm"  className="bg-[#2C34A1] text-xs rounded-full text-[#fff]  hover:bg-[#2C34A1] h-[40px]">
+                       <Button variant="outline" size="sm" onClick={()=>router.push(`/client/dashboard/projects/${project._id}`)}  className="bg-[#2C34A1] text-xs rounded-full text-[#fff]  hover:bg-[#2C34A1] h-[40px]">
                         View Proposals
                           <FaArrowRightLong className="h-1 w-1" color="#fff"/>
                       </Button>
@@ -427,7 +427,7 @@ if (loading || responseLoading) {
 
             {showCreateProject && (
               <Dialog open={showCreateProject} onOpenChange={setShowCreateProject}>
-               <DialogContent className="max-w-xl rounded-2xl max-h-[90vh] overflow-y-auto">
+               <DialogContent className=" md:max-w-xl rounded-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-xl font-bold text-[#F4561C]">
                 Create New Project

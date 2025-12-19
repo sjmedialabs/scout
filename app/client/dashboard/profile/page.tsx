@@ -173,31 +173,51 @@ import { ImageUpload } from "@/components/ui/image-upload"
 
     return(
          <div className="space-y-8 mt-8">
-            <div className="flex justify-between items-center border-b border-[#707070] pb-[30px]">
-              <div className="">
-                <h1 className="text-3xl font-bold my-custom-class text-[#F54A0C] tracking-tight">Profile</h1>
-                <p className="text-[#656565] text-xl my-custom-class font-normal">Manage your client profile information</p>
-              </div>
-              <div className="flex gap-2]">
-                {isEditingProfile ? (
-                  <>
-                    <Button variant="outline" onClick={handleCancelEdit} className="h-[40px] w-[100px] rounded-3xl bg-[#E8E8E8] mr-6">
-                      <LuCircleX className="h-4 w-4"/>
-                      Cancel
-                    </Button>
-                    <Button onClick={handleSaveProfile} className="h-[40px] w-[140px] rounded-3xl bg-[#000]">
-                      <Save className="h-4 w-4" />
-                      Save Changes
-                    </Button>
-                  </>
-                ) : (
-                  <Button onClick={() => setIsEditingProfile(true)} className="h-[40px] w-[140px] rounded-3xl bg-[#000]">
-                    <Edit className="h-4 w-4" />
-                    Edit Profile
-                  </Button>
-                )}
-              </div>
-            </div>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-[#707070] pb-[30px] gap-4">
+  
+  {/* Left section */}
+  <div className="w-full">
+    <h1 className="text-3xl font-bold my-custom-class text-[#F54A0C] tracking-tight">
+      Profile
+    </h1>
+    <p className="text-[#656565] text-xl my-custom-class font-normal">
+      Manage your client profile information
+    </p>
+  </div>
+
+  {/* Right section */}
+  <div className="flex gap-2 w-full md:w-auto justify-start md:justify-end">
+    {isEditingProfile ? (
+      <>
+        <Button
+          variant="outline"
+          onClick={handleCancelEdit}
+          className="h-[40px] w-[100px] rounded-3xl bg-[#E8E8E8]"
+        >
+          <LuCircleX className="h-4 w-4 mr-1" />
+          Cancel
+        </Button>
+
+        <Button
+          onClick={handleSaveProfile}
+          className="h-[40px] w-[140px] rounded-3xl bg-[#000]"
+        >
+          <Save className="h-4 w-4 mr-1" />
+          Save Changes
+        </Button>
+      </>
+    ) : (
+      <Button
+        onClick={() => setIsEditingProfile(true)}
+        className="h-[40px] w-[140px] rounded-3xl bg-[#000]"
+      >
+        <Edit className="h-4 w-4 mr-1" />
+        Edit Profile
+      </Button>
+    )}
+  </div>
+</div>
+
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Profile Overview Card */}

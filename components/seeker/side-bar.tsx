@@ -2,12 +2,16 @@
 
 import { useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { ChevronDown, ChevronRight, Link, Plus } from "lucide-react"
+import {
+  ChevronDown,
+  ChevronRight,
+  Plus,
+  X,
+} from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "../ui/button"
 import { cn } from "@/lib/utils"
 
-// --- NEW MenuItem type with `path` ---
 interface MenuItem {
   id: string
   label: string
@@ -16,7 +20,6 @@ interface MenuItem {
   children?: MenuItem[]
 }
 
-// --- YOUR SAME MENU, but now includes PATHS ---
 import {
   Home,
   User,
@@ -47,7 +50,6 @@ const menuItems: MenuItem[] = [
       { id: "providers", label: "Find Agencies", icon: Users, path: "/client/dashboard/providers" },
     ],
   },
-
   {
     id: "performance",
     label: "PERFORMANCE",
@@ -58,7 +60,6 @@ const menuItems: MenuItem[] = [
       { id: "provider-comparison", label: "Provider Comparison", icon: GitCompare, path: "/client/dashboard/provider-comparison" },
     ],
   },
-
   {
     id: "account-settings",
     label: "ACCOUNT & SETTINGS",
@@ -71,13 +72,19 @@ const menuItems: MenuItem[] = [
   },
 ]
 
-
-export default function ClientSidebar({ user, setShowPostForm }: any) {
+export default function ClientSidebar({
+  user,
+  isOpen,
+  onClose,
+}: {
+  user: any
+  isOpen: boolean
+  onClose: () => void
+}) {
   const router = useRouter()
   const pathname = usePathname()
 
   const [expandedSections, setExpandedSections] = useState<string[]>([])
-  const [activeSection, setActiveSection] = useState<string>("")
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections((prev) =>
@@ -87,79 +94,106 @@ export default function ClientSidebar({ user, setShowPostForm }: any) {
     )
   }
 
-  const handleMenuClick = (item: MenuItem, parentId: string) => {
-    setActiveSection(item.id)
-    router.push(item.path!) // 🔥 THIS IS THE FINAL DESTINATION REDIRECT
+  const handleMenuClick = (item: MenuItem) => {
+    router.push(item.path!)
+    onClose() // close sidebar on mobile
   }
 
   return (
-    <div className="w-80 bg-card border-r border-border flex flex-col shrink-0">
-      <div className="p-6 border-b border-border">
-        <h2 className="text-xl font-bold">Client Dashboard</h2>
-        <p className="text-sm text-muted-foreground">
-          Welcome back, {user.name}
-        </p>
-        <div className="flex items-center gap-2 mt-3">
-          <Badge className="bg-green-100 text-green-800">Active Client</Badge>
-          <Badge variant="secondary">Verified</Badge>
+    <>
+      {/* Overlay (mobile only) */}
+      {isOpen && (
+        <div
+          onClick={onClose}
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+        />
+      )}
+
+      <aside
+        className={cn(
+          "fixed z-50 inset-y-0 left-0 w-80 bg-card border-r border-border flex flex-col transform transition-transform duration-300",
+          isOpen ? "translate-x-0" : "-translate-x-full",
+          "lg:translate-x-0 lg:static lg:z-auto"
+        )}
+      >
+        {/* Header */}
+        <div className="p-6 border-b border-border flex justify-between items-start">
+          <div>
+            <h2 className="text-xl font-bold">Client Dashboard</h2>
+            <p className="text-sm text-muted-foreground">
+              Welcome back, {user.name}
+            </p>
+            <div className="flex items-center gap-2 mt-3">
+              <Badge className="bg-green-100 text-green-800">Active Client</Badge>
+              <Badge variant="secondary">Verified</Badge>
+            </div>
+          </div>
+
+          {/* Close button (mobile) */}
+          <button onClick={onClose} className="lg:hidden">
+            <X className="h-5 w-5" />
+          </button>
         </div>
-      </div>
 
-      {/* Navigation Menu */}
-      <div className="flex-1 overflow-y-auto p-4">
-        <nav className="space-y-2">
-          {menuItems.map((section) => (
-            <div key={section.id}>
-              <button
-                onClick={() => toggleSection(section.id)}
-                className="w-full flex items-center justify-between p-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <section.icon className="h-4 w-4" />
-                  {section.label}
-                </div>
-
-                {section.children &&
-                  (expandedSections.includes(section.id) ? (
+        {/* Menu */}
+        <div className="flex-1 overflow-y-auto p-4">
+          <nav className="space-y-2">
+            {menuItems.map((section) => (
+              <div key={section.id}>
+                <button
+                  onClick={() => toggleSection(section.id)}
+                  className="w-full flex items-center justify-between p-3 text-sm font-medium text-muted-foreground hover:bg-accent rounded-lg"
+                >
+                  <div className="flex items-center gap-3">
+                    <section.icon className="h-4 w-4" />
+                    {section.label}
+                  </div>
+                  {expandedSections.includes(section.id) ? (
                     <ChevronDown className="h-4 w-4" />
                   ) : (
                     <ChevronRight className="h-4 w-4" />
-                  ))}
-              </button>
+                  )}
+                </button>
 
-              {section.children &&
-                expandedSections.includes(section.id) && (
-                  <div className="ml-4 mt-2 space-y-1">
-                    {section.children.map((item) => (
-                      <button
-                        key={item.id}
-                        onClick={() => handleMenuClick(item, section.id)}
-                        className={cn(
-                          "w-full flex items-center gap-3 p-2 text-sm rounded-lg transition-colors",
-                          pathname === item.path
-                            ? "bg-primary text-primary-foreground"
-                            : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                        )}
-                      >
-                        <item.icon className="h-4 w-4" />
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-            </div>
-          ))}
-        </nav>
-      </div>
+                {section.children &&
+                  expandedSections.includes(section.id) && (
+                    <div className="ml-4 mt-2 space-y-1">
+                      {section.children.map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() => handleMenuClick(item)}
+                          className={cn(
+                            "w-full flex items-center gap-3 p-2 text-sm rounded-lg",
+                            pathname === item.path
+                              ? "bg-primary text-primary-foreground"
+                              : "text-muted-foreground hover:bg-accent"
+                          )}
+                        >
+                          <item.icon className="h-4 w-4" />
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+              </div>
+            ))}
+          </nav>
+        </div>
 
-      <div className="p-4 border-t border-border">
-     
-        <Button onClick={() => router.push("/client/dashboard/post-requirement")} className="w-full">
-          <Plus className="h-4 w-4 mr-2" />
-          Post New Requirement
-        </Button>
-       
-      </div>
-    </div>
+        {/* Footer */}
+        <div className="p-4 border-t border-border">
+          <Button
+            className="w-full"
+            onClick={() => {
+              router.push("/client/dashboard/post-requirement")
+              onClose()
+            }}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Post New Requirement
+          </Button>
+        </div>
+      </aside>
+    </>
   )
 }

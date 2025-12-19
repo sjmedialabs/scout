@@ -42,7 +42,7 @@ export function RequirementList({ requirements, onViewProposals, onViewDetails }
   return (
     <div className="space-y-4"> 
       {requirements.map((requirement) => (
-        <Card key={requirement.id} className="hover:shadow-md transition-shadow bg-[#EFF7FA] rounded-[16px] px-0">
+        <Card key={requirement._id} className="hover:shadow-md transition-shadow bg-[#EFF7FA] rounded-[16px] px-0">
           <CardHeader className="px-0">
             <div className="flex justify-between items-start  px-0">
               <div className="flex-1 px-6">
@@ -58,7 +58,7 @@ export function RequirementList({ requirements, onViewProposals, onViewDetails }
             
           </CardHeader>
           <CardContent>
-            <div className="flex justify-between flex-wrap items-center mb-5">
+            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                <HiCurrencyDollar color="#F54A0C" className="h-6 w-6"/>
                 <span className="text-[14px] font-bold text-[#000]">{formatBudget(requirement.budgetMin, requirement.budgetMax)}</span>
@@ -77,13 +77,13 @@ export function RequirementList({ requirements, onViewProposals, onViewDetails }
               </div>
             </div>
 
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={() => onViewDetails(requirement.id)} className="bg-[#2C34A1] rounded-full text-[#fff] text-[14px] hover:bg-[#2C34A1] h-[40px]">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button variant="outline" size="sm" onClick={() => onViewDetails(requirement._id)} className="bg-[#2C34A1] max-w-[180px] rounded-full text-[#fff] text-[14px] hover:bg-[#2C34A1] h-[40px]">
                
                 View Details
                  <FaArrowRightLong className="h-3 w-3" color="#fff"/>
               </Button>
-              <Button variant="outline" size="sm" onClick={() => onViewProposals(requirement.id)} className="bg-[#000000] rounded-full text-[#fff] text-[14px] hover:bg-[#000000] h-[40px]">
+              <Button variant="outline" size="sm" onClick={() => onViewProposals(requirement._id)} className="bg-[#000000] max-w-[180px] rounded-full text-[#fff] text-[14px] hover:bg-[#000000] h-[40px]">
                 
                 View Proposals
                 <FaArrowRightLong className="h-3 w-3" color="#fff"/>
