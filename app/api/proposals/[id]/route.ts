@@ -5,6 +5,7 @@ import Project from "@/models/Project"
 import Provider from "@/models/Provider"
 import { getCurrentUser } from "@/lib/auth/jwt"
 import mongoose from "mongoose"
+import Requirement from "@/models/Requirement"
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -85,7 +86,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: "Invalid proposal ID" }, { status: 400 })
     }
 
-    const proposal = await Proposal.findById(id).populate("projectId", "clientId")
+    const proposal = await Proposal.findById(id).populate("requirementId", "clientId")
 
     if (!proposal) {
       return NextResponse.json({ error: "Proposal not found" }, { status: 404 })
@@ -97,7 +98,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     // Agency can update their proposal content
     if (user.role === "agency") {
       const provider = await Provider.findOne({ userId: user.userId })
-      if (!provider || proposal.providerId.toString() !== provider._id.toString()) {
+      if (!provider || proposal.agencyId.toString() !== user.userId) {
         return NextResponse.json({ error: "Not authorized" }, { status: 403 })
       }
 
@@ -110,7 +111,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     // Client can update proposal status
     if (user.role === "client") {
-      const project = proposal.projectId as any
+      const project = proposal.requirementId as any
       if (project.clientId.toString() !== user.userId) {
         return NextResponse.json({ error: "Not authorized" }, { status: 403 })
       }
@@ -119,6 +120,24 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         updates.status = body.status
         updates.clientResponded = true
         updates.clientRespondedAt = new Date()
+        //for the posted requirement status update
+        if(body.status.toLocaleLowerCase()==="shortlisted"){
+           await Requirement.findByIdAndUpdate(proposal.requirementId, {status:body.status}, { new: true })
+        }
+        if(body.status.toLocaleLowerCase()==="accepted"){
+          console.log("----Accepted proposal:::")
+          await Requirement.findByIdAndUpdate(proposal.requirementId, {status:"Allocated",allocatedToId:proposal.agencyId}, { new: true })
+          // await Proposal.updateMany(
+          //   {
+          //     requirementId:proposal.requirementId,
+          //     _id: { $ne:id } // exclude accepted proposal
+          //   },
+          //   {
+          //     $set: { status: "rejected" } 
+          //   }
+          // )
+
+        }
       }
 
       if (body.conversationStarted !== undefined) {

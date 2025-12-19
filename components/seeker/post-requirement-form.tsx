@@ -100,7 +100,7 @@ export function PostRequirementForm({ onSubmit,sendingStatus}: PostRequirementFo
           <div className="space-y-2">
             <Label htmlFor="title" className="text-[#98A0B4] text-[14px] font-normal">Project Title</Label>
             <Input
-              id="title"
+              id="title" 
               value={formData.title}
               className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
             
@@ -121,7 +121,8 @@ export function PostRequirementForm({ onSubmit,sendingStatus}: PostRequirementFo
             <SelectTrigger
               className="
                 border-2 border-[#D0D5DD] rounded-[8px]
-                data-[placeholder-shown]:text-[#98A0B4]
+                data-[placeholder]:text-[#98A0B4]
+                
                 text-[#000]
               "
             >

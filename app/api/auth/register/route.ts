@@ -88,6 +88,7 @@ export async function POST(request: NextRequest) {
     
     //Create Seeker Profile details for the client dashboatrd
     if(role==="client"){
+      console.log("---client condition ok:::",user._id)
       await Seeker.create({
         userId:user._id,
         name:user.name,

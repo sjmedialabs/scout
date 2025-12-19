@@ -65,6 +65,8 @@ import {
 import { mockRequirements, mockProposals, mockProviders } from "@/lib/mock-data"
 import type { Requirement, Proposal, Provider, Notification } from "@/lib/types"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import RatingStars from "@/components/rating-star"
+import { Linden_Hill } from "next/font/google"
 
 interface ProjectProposal {
   id: string
@@ -243,9 +245,9 @@ const ProposalPage=()=>{
       const [expandedSections, setExpandedSections] = useState<string[]>(["overview"])
       const [showPostForm, setShowPostForm] = useState(false)
       const [requirements, setRequirements] = useState<Requirement[]>(mockRequirements)
-      const [proposals, setProposals] = useState<Proposal[]>(mockProposals)
+      const [proposals, setProposals] = useState<Proposal[]>()
       const [selectedRequirement, setSelectedRequirement] = useState<string | null>(null)
-      const[responseLoading,setResponseLoaading]=useState(false);
+      const[responseLoading,setResponseLoading]=useState(false);
       const[failed,setFailed]=useState(false)
       const [selectedRequirementForDetails, setSelectedRequirementForDetails] = useState<Requirement | null>(null)
       const [showDetailsModal, setShowDetailsModal] = useState(false)
@@ -369,11 +371,21 @@ const ProposalPage=()=>{
       ])
     
 
-      const LoadData=async()=>{
+      const LoadData=async(userId:string)=>{
+        setResponseLoading(true)
+        setFailed(false)
+
         try{
-
+          const response=await fetch(`/api/proposals`)
+          const data=await response.json();
+          console.log("Fetched Proposal for your posted Requirements:::",data);
+           setProposals(data.proposals);
+          setFailed(false)
         }catch(error){
-
+          console.log("Failed to fetch the proposals")
+          setFailed(true)
+        }finally{
+          setResponseLoading(false);
         }
       }
 
@@ -381,22 +393,55 @@ const ProposalPage=()=>{
         if (!loading && (!user || user.role !== "client")) {
           router.push("/login")
         }
+        if(!loading && user){
+          LoadData(user.id)
+        }
       }, [user, loading, router])
     
      
     
-      const handleShortlist = (proposalId: string) => {
+      const handleShortlist = async(proposalId: string) => {
         setProposals((prev) => prev.map((p) => (p.id === proposalId ? { ...p, status: "shortlisted" as const } : p)))
+        console.log("recievd id::::",proposalId)
+        try{
+           const  response=await fetch(`/api/proposals/${proposalId}`,{
+            method:"PUT",
+            body:JSON.stringify({status:"shortlisted"})})
+            console.log("Shortlist action response::::",await response.json,proposalId)
+          
+        }catch(error){
+          console.log("failed to update the  status",error)
+          alert("Staus failed to shortlist the proposal")
+        }
       }
     
-      const handleAccept = (proposalId: string) => {
-        setProposals((prev) => prev.map((p) => (p.id === proposalId ? { ...p, status: "accepted" as const } : p)))
-        setNegotiationProposal(proposalId)
-        setShowNegotiationChat(true)
+      const handleAccept = async(proposalId: string) => {
+        console.log("Entered to accept fun:::",proposalId)
+         try{
+           const  response=await fetch(`/api/proposals/${proposalId}`,{
+            method:"PUT",
+            body:JSON.stringify({status:"accepted"})})
+            console.log("Shortlist action response::::",await response.json,proposalId)
+            setProposals((prev) => prev.map((p) => (p.id === proposalId ? { ...p, status: "accepted" as const } : p)))
+        }catch(error){
+          console.log("failed to update the  status",error)
+          alert("Staus failed to shortlist the proposal")
+        }
+        
       }
     
-      const handleReject = (proposalId: string) => {
-        setProposals((prev) => prev.map((p) => (p.id === proposalId ? { ...p, status: "rejected" as const } : p)))
+      const handleReject = async(proposalId: string) => {
+       
+        try{
+           const  response=await fetch(`/api/proposals/${proposalId}`,{
+            method:"PUT",
+            body:JSON.stringify({status:"rejected"})})
+            console.log("Shortlist action response::::",await response.json,proposalId)
+            setProposals((prev) => prev.map((p) => (p.id === proposalId ? { ...p, status: "rejected" as const } : p)))
+        }catch(error){
+          console.log("failed to update the  status",error)
+          alert("Staus failed to shortlist the proposal")
+        }
       }
     
       const handleRequestRevision = (proposalId: string, feedback: string) => {
@@ -421,10 +466,11 @@ const ProposalPage=()=>{
       }
     
       const handleViewPortfolio = (providerId: string) => {
-        setSelectedCompanyId(providerId)
-        setViewingPortfolio(true)
-        setViewingProfile(false)
-        setActiveSection("company-portfolio")
+        // setSelectedCompanyId(providerId)
+        // setViewingPortfolio(true)
+        // setViewingProfile(false)
+        // setActiveSection("company-portfolio")
+        router.push(`/client/dashboard/proposals/agency/${providerId}`)
       }
     
       const handleViewProfile = (providerId: string) => {
@@ -433,41 +479,57 @@ const ProposalPage=()=>{
         setViewingPortfolio(false)
         setActiveSection("company-profile")
       }
+
+      if (loading || responseLoading) {
+          return (
+            <div className="min-h-screen flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          )
+        }
+         if(failed || !proposals){
+                return(
+                  <div className="flex flex-col justify-center items-center text-center min-h-100">
+                    <h1 className="text-center font-semibold">Failed  to Retrive the data</h1>
+                    <Button onClick={LoadData} className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]">Reload</Button>
+                  </div>
+                )
+            }
     return(
    <div className="space-y-6">
                <div>
-                 <h1 className="text-3xl font-bold">
-                   Proposals
+                 <h1 className="text-2xl font-bold my-custom-class text-[#F4561C]">
+                   Proposals 
                    {selectedRequirement && (
-                     <span className="text-muted-foreground font-normal text-xl">
-                       {" "}
-                       for "{requirements.find((r) => r.id === selectedRequirement)?.title}"
+                     <span className="text-[#656565] font-normal text-sm">
+                       
+                      {` (for  ${requirements.find((r) => r.id === selectedRequirement)?.title} )`}
                      </span>
                    )}
                  </h1>
-                 <p className="text-muted-foreground">
+                 <p className="text-[#656565] text-xl font-medium my-custom-class">
                    {selectedRequirement
                      ? "Review and manage proposals for the selected requirement"
                      : "All proposals received for your projects and requirements"}
                  </p>
                </div>
    
-               <div className="flex gap-4 border-b">
+               <div className="flex gap-4  h-[40px] w-fit  justify-center items-center font-bold text-sm text-[#000] bg-[#E6EDF5] rounded-full">
                  <button
-                   className={`pb-2 px-1 border-b-2 transition-colors ${
+                   className={`h-[100%] ${
                      !selectedRequirement
-                       ? "border-primary text-primary font-medium"
-                       : "border-transparent text-muted-foreground hover:text-foreground"
+                       ? " bg-[#F54A0C] rounded-full text-[#fff] px-5"
+                       : " text-muted-foreground hover:text-foreground px-5"
                    }`}
                    onClick={() => setSelectedRequirement(null)}
                  >
                    Project Proposals ({projectProposals.length})
                  </button>
                  <button
-                   className={`pb-2 px-1 border-b-2 transition-colors ${
+                   className={`h-[100%] ${
                      selectedRequirement
-                       ? "border-primary text-primary font-medium"
-                       : "border-transparent text-muted-foreground hover:text-foreground"
+                       ? "bg-[#F54A0C] rounded-full text-[#fff] px-5"
+                       : "text-muted-foreground hover:text-foreground px-5"
                    }`}
                    onClick={() => setSelectedRequirement(requirements[0]?.id || null)}
                  >
@@ -477,9 +539,11 @@ const ProposalPage=()=>{
    
                <Card className="bg-[#fff] py-0 rounded-[22px]">
                  <CardContent className="max-h-[600px] overflow-y-auto p-4">
+                  
                    {selectedRequirement ? (
                      <ProposalList
-                       proposals={getProposalsForRequirement(selectedRequirement)}
+                        // proposals={getProposalsForRequirement(selectedRequirement)}
+                       proposals={proposals}
                        onShortlist={handleShortlist}
                        onAccept={handleAccept}
                        onReject={handleReject}
@@ -487,132 +551,155 @@ const ProposalPage=()=>{
                      />
                    ) : (
                      <div className="space-y-6">
-                       {projectProposals.length > 0 ? (
-                         projectProposals.map((proposal) => {
-                           const project = projects.find((p) => p.id === proposal.projectId)
-                           return (
-                             <Card key={proposal.id} className="border-l-4 border-l-blue-500">
-                               <CardContent className="p-6">
-                                 <div className="flex justify-between items-start mb-4">
-                                   <div>
-                                     <div className="flex items-center gap-2 mb-2">
-                                       <Badge variant="outline" className="text-xs">
-                                         {project?.title || "Unknown Project"}
-                                       </Badge>
-                                     </div>
-                                     <h3
-                                       className="text-xl font-semibold cursor-pointer hover:text-primary transition-colors"
-                                       onClick={() => handleViewProfile(proposal.providerId)}
-                                     >
-                                       {proposal.providerName}
-                                     </h3>
-                                     <div className="flex items-center gap-2 mt-1">
-                                       <div className="flex items-center">
-                                         {[...Array(5)].map((_, i) => (
-                                           <Star
-                                             key={i}
-                                             className={`h-4 w-4 ${
-                                               i < Math.floor(proposal.providerRating)
-                                                 ? "fill-yellow-400 text-yellow-400"
-                                                 : "text-gray-300"
-                                             }`}
-                                           />
-                                         ))}
-                                         <span className="ml-1 text-sm text-muted-foreground">
-                                           {proposal.providerRating}
-                                         </span>
-                                       </div>
-                                     </div>
-                                   </div>
-                                   <div className="text-right">
-                                     <div className="text-2xl font-bold text-green-600">
-                                       ${proposal.proposalAmount.toLocaleString()}
-                                     </div>
-                                     <div className="text-sm text-muted-foreground">{proposal.timeline}</div>
-                                   </div>
-                                 </div>
-   
-                                 <div className="space-y-4">
-                                   <div>
-                                     <h4 className="font-medium mb-2">Cover Letter</h4>
-                                     <p className="text-muted-foreground text-sm">{proposal.coverLetter}</p>
-                                   </div>
-   
-                                   <div>
-                                     <h4 className="font-medium mb-2">Proposal Description</h4>
-                                     <p className="text-muted-foreground text-sm">{proposal.description}</p>
-                                   </div>
-   
-                                   <div className="flex items-center justify-between pt-4 border-t">
-                                     <div className="flex items-center gap-2">
-                                       <Badge
-                                         variant={
-                                           proposal.status === "accepted"
-                                             ? "default"
-                                             : proposal.status === "shortlisted"
-                                               ? "secondary"
-                                               : proposal.status === "rejected"
-                                                 ? "destructive"
-                                                 : "outline"
-                                         }
-                                       >
-                                         {proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)}
-                                       </Badge>
-                                       <span className="text-sm text-muted-foreground">
-                                         Submitted on {new Date(proposal.submittedAt).toLocaleDateString()}
-                                       </span>
-                                     </div>
-   
-                                     <div className="flex gap-2">
-                                       <Button
-                                         variant="outline"
-                                         size="sm"
-                                         onClick={() => handleViewPortfolio(proposal.providerId)}
-                                       >
-                                         View Portfolio
-                                       </Button>
-                                       <Button
-                                         variant="outline"
-                                         size="sm"
-                                         onClick={() => {
-                                           setSelectedProjectId(proposal.projectId)
-                                           setActiveSection("proposals")
-                                         }}
-                                       >
-                                         View Project Details
-                                       </Button>
-                                       {proposal.status === "pending" && (
-                                         <>
-                                           <Button
-                                             variant="outline"
-                                             size="sm"
-                                             onClick={() => handleProjectProposalAction(proposal.id, "shortlist")}
-                                           >
-                                             Shortlist
-                                           </Button>
-                                           <Button
-                                             variant="default"
-                                             size="sm"
-                                             onClick={() => handleProjectProposalAction(proposal.id, "accept")}
-                                           >
-                                             Accept
-                                           </Button>
-                                           <Button
-                                             variant="destructive"
-                                             size="sm"
-                                             onClick={() => handleProjectProposalAction(proposal.id, "reject")}
-                                           >
-                                             Reject
-                                           </Button>
-                                         </>
-                                       )}
-                                     </div>
-                                   </div>
-                                 </div>
-                               </CardContent>
-                             </Card>
-                           )
-                         })
+                       {proposals.length > 0 ? (
+                         <div>
+                          <div className="space-y-4 mb-4">
+                            <div className="flex justify-between items-center mt-0">
+                              <h3 className="text-lg font-semibold my-custom-class tracking-tight">Proposals Received</h3>
+                              <div className="text-sm text-muted-foreground">
+                                Showing {proposals.length} of {proposals.length} proposals
+                                {proposals.rejectedCount > 0 && ` (${proposals.rejectedCount} rejected)`}
+                              </div>
+                            </div>
+                            </div>
+                          
+                           { proposals.map((proposal)=>(
+                                  <Card key={proposal.id} className="py-0 px-0 rounded-[22px] mb-3">
+                              <CardContent className="px-5 py-6">
+                                <div className="flex flex-col lg:flex-row lg:justify-start gap-4">
+                                  {/* Left Image */}
+                                  <div className="max-h-[300px] max-w-100 lg:max-h-[100%] lg:max-w-[300px] rounded-[18px] overflow-hidden shrink-0">
+                                    <img
+                                      src={proposal.agency.coverImage || "/proposal.jpg"}
+                                      alt={proposal.agency.name}
+                                      className="h-full w-full"
+                                    />
+                                  </div>
+                                  {/*Right side content */}
+                                  <div>
+                                    <div className="flex  justify-between items-center mb-2">
+                                    <div>
+                                      <div className="flex items-center gap-2 mb-2">
+                                        <Badge variant="outline" className="text-xs border-[#DEDEDE] bg-[#EDEDED] rounded-full h-[30px] px-3">
+                                          {proposal?.requirement?.title || "Unknown Project"}
+                                        </Badge>
+                                      </div>
+                                      <h3
+                                        className="text-2xl font-bold text-[#000] mb-0"
+                                        onClick={() => handleViewProfile(proposal.providerId)}
+                                      >
+                                        {proposal.agency.name}
+                                      </h3>
+                                      <p className="text-sm ml-1 -mt-1 text-[#939191] font-normal">
+                                        {proposal.agency.name}
+                                      </p>
+                                      {/* Rating */}
+                                        <div className="flex items-center mt-0 gap-1 text-sm font-medium">
+                                          <RatingStars rating={proposal.agency.rating} reviews={proposal.agency.reviewCount}/>
+                                          <span className="text-sm font-bold text-[#000] mt-1">{`${proposal.agency.rating || 0} (${proposal.agency.reviewCount || 0})`} </span>
+                                        </div>
+                                      
+                                    </div>
+                                    <div className="text-right mb-0">
+                                      <div className="text-2xl font-bold text-[#39A935] items-end">
+                                        ${proposal.proposedBudget.toLocaleString()}
+                                      </div>
+                                      <div className="text-sm text-[#A0A0A0] -mt-1">{proposal.proposedTimeline}</div>
+                                    </div>
+                                    </div>
+    
+                                  <div className="space-y-2">
+                                    <div>
+                                      <h4 className="font-bold text-xl text-[#616161] mb-0">Cover Letter</h4>
+                                      <p className="text-[#939191] font-normal text-sm">{proposal.coverLetter}</p>
+                                    </div>
+    
+                                    <div>
+                                      <h4 className="font-bold text-xl text-[#616161] mb-0">Proposal Description</h4>
+                                      <p className="text-[#939191] font-normal text-sm">{proposal.proposalDescription}</p>
+                                    </div>
+                                    <div className="flex  items-center mt-2 mb-3 gap-2">
+                                      <span className="text-sm text-[#000000] font-noormal">
+                                          Submitted on : {new Date(proposal.updatedAt).toLocaleDateString()}
+                                        </span>
+                                        <Badge
+                                          variant={
+                                            proposal.status === "accepted"
+                                              ? "default"
+                                              : proposal.status === "shortlisted"
+                                                ? "secondary"
+                                                : proposal.status === "rejected"
+                                                  ? "destructive"
+                                                  : "outline"
+                                          } className="border-[#DEDEDE] bg-[#EDEDED] rounded-full text-xs text-[#000]"
+                                        >
+                                          {proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)}
+                                        </Badge>
+                                        
+                                      </div>
+    
+                                    <div className="flex items-center  justify-between pt-4  border-[#DDDDDD] border-t-2">
+                                      
+    
+                                      <div className="flex flex-wrap gap-2">
+                                      
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => handleViewPortfolio(proposal.agencyId)}
+                                          className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
+                                        >
+                                          View Portfolio
+                                        </Button>
+                                      
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => {
+                                            setSelectedProjectId(proposal.projectId)
+                                            setActiveSection("proposals")
+                                          }}
+                                            className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
+                                        >
+                                          View Project Details
+                                        </Button>
+                                        {proposal.status === "pending" && (
+                                          <>
+                                            <Button
+                                              variant="outline"
+                                              size="sm"
+                                              onClick={() => handleShortlist(proposal.id)}
+                                                className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
+                                            >
+                                              Shortlist
+                                            </Button>
+                                            <Button
+                                              variant="default"
+                                              size="sm"
+                                              onClick={() => handleProjectProposalAction(proposal.id, "accept")}
+                                              className="bg-[#39A935] rounded-full text-xs font-bold hover:bg-[#39A935] active:bg-[#39A935]"
+                                            >
+                                              Accept
+                                            </Button>
+                                            <Button
+                                              variant="destructive"
+                                              size="sm"
+                                              onClick={() => handleProjectProposalAction(proposal.id, "reject")}
+                                              className="bg-[#FF0000] rounded-full text-xs font-bold hover:bg-[#FF0000] active:bg-[#FF0000]"
+                                            >
+                                              Reject
+                                            </Button>
+                                          </>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  </div>
+                                </div>
+                              </CardContent>
+                                  </Card>
+                           ))}
+                         </div>
                        ) : (
                          <div className="text-center py-8">
                            <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
