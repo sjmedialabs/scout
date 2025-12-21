@@ -54,6 +54,21 @@ import { mockRequirements, mockProposals, mockProviders } from "@/lib/mock-data"
 import type { Requirement, Proposal, Provider, Notification } from "@/lib/types"
 import { FiltersPanel } from "@/components/filters-panel"
 import { RequirementList } from "@/components/seeker/requirement-list"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { LuTag } from "react-icons/lu";
+import { PiCurrencyDollarBold } from "react-icons/pi";
+import { CiCalendar } from "react-icons/ci";
+import { CiLocationOn } from "react-icons/ci";
+import { FaRegFileLines } from "react-icons/fa6";
 interface ProjectProposal {
   id: string
   projectId: string
@@ -227,6 +242,9 @@ const RequirementsPage=()=>{
   const router = useRouter()
   const [requirements, setRequirements] = useState<Requirement[]>(mockRequirements)
   const [filteredRequirements, setFilteredRequirements] = useState<Requirement[]>(mockRequirements)
+  const[selectedRequirementId,setSelectedRequirementId]=useState<string|null>(null);
+  const[showDetailsModal,setShowDetailsModal]=useState(false);
+  const[selectedRequirement,setSelectedRequirement]=useState<Requirement|null>(null);
   const[responseLoading,setResponseLoading]=useState(false);
   const[failed,setFailed]=useState(false)
  
@@ -285,13 +303,20 @@ console.log("Fetched Requirements::::",requirements);
     setFilteredRequirements(filtered)
   }
 
-  const handleViewDetails=()=>{
-
+  const handleViewDetails=(recievedId)=>{
+        setSelectedRequirementId(recievedId);
+        setShowDetailsModal(true);
+        const requirement=requirements.find((r)=>r._id===recievedId);
+        setSelectedRequirement(requirement||null);
   }
-  const handleViewProposals=()=>{
-    
+  const handleViewProposals=(recievedId)=>{
+    console.log("Recieved Requirement ID::::",recievedId);
+    router.push(`/client/dashboard/proposals?requirementId=${recievedId}`)
   }
-
+ const getFileNameFromUrl = (url?: string) => {
+  if (!url) return ""
+  return url.split("/").pop()
+}
   if (loading || responseLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -313,7 +338,7 @@ console.log("Fetched Requirements::::",requirements);
               <h1 className="text-3xl font-bold text-[#F4561C] tracking-tight">My Requirements</h1>
               <p className="text-[#656565] text-xl font-light ">Manage all your posted requirements</p>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
               <div className="lg:col-span-1">
                 <FiltersPanel onFiltersChange={handleFiltersChange} />
               </div>
@@ -334,6 +359,119 @@ console.log("Fetched Requirements::::",requirements);
                 </Card>
               </div>
             </div>
+            {showDetailsModal && selectedRequirement && (
+               <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
+                <DialogContent className="sm:max-w-[520px] rounded-2xl p-0 overflow-hidden">
+                  
+                  {/* Header */}
+                  <div className="p-6 pb-0  mt-4 relative">
+
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold my-custom-class text-[#F4561C]">
+                        {selectedRequirement.title}
+                      </h2>
+
+                      <span className="text-xs px-3 py-1 rounded-lg bg-green-100 text-green-700">
+                        Open
+                      </span>
+                    </div>
+
+                    <p className="text-sm text-[#686868] my-custom-class font-normal mt-1">
+                      Posted on {new Date(selectedRequirement.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+
+                  {/* Body */}
+                  <div className="p-6 pt-0 space-y-5">
+
+                    {/* Meta Info */}
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="flex items-center gap-2 border-2 border-[#F0F0F0] rounded-lg px-3 py-2">
+                        <LuTag className="w-5 h-5" color="#000"/>
+                        <span className="my-custom-class font-bold text-xs text-[#000]">Category: {selectedRequirement.category}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+                        <PiCurrencyDollarBold className="w-5 h-5" color="#000"/>
+                       <span className="my-custom-class font-semibold text-xs text-[#000]">Budget: ${selectedRequirement.budgetMin} - ${selectedRequirement.budgetMax}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+                        <CiCalendar className="w-5 h-5" color="#000"/>
+                       <span className="my-custom-class font-semibold text-xs text-[#000]">Timeline: {selectedRequirement.timeline}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+                        <CiLocationOn className="w-5 h-5" color="#000"/>
+                         <span className="my-custom-class font-semibold text-xs text-[#000]">Location: {selectedRequirement.location || "Remote"}</span>
+                      </div>
+                    </div>
+
+                    <hr className="border-1 border-[#E4E4E4] my-6"/>
+
+                    {/* Description */}
+                    <div className="border-b-2 border-[#E4E4E4] pb-6">
+                      <h3 className="font-semibold text-[#F4561C] my-custom-class text-lg mb-1">Description</h3>
+                      <p className="text-sm text-[#656565] leading-relaxed">
+                        {selectedRequirement.description}
+                      </p>
+                    </div>
+
+                   {
+                    selectedRequirement.documentUrl &&(
+                       <div className="flex flex-row justify-start items-center p-4 border rounded-xl shadow gap-3">
+                          <div className="flex justify-center items-center bg-[#EEF7FE] shrink-0 rounded-full h-10 w-10">
+                            <FaRegFileLines className="h-6 w-6" color="#F54A0C"/>
+                          </div>
+                          <h1 className="text-md font-normal text-[#686868]">{getFileNameFromUrl(selectedRequirement.documentUrl)}</h1>
+                    </div>
+
+                    )
+                   } 
+                   
+                    {/* Attachments */}
+                    {/* {selectedRequirement.attachments?.length > 0 && (
+                      <div>
+                        <h3 className="font-semibold text-[#F4561C] text-lg mb-2">Attachments</h3>
+
+                        <div className="space-y-2">
+                          {selectedRequirement.attachments.map((file: any, index: number) => (
+                            <div
+                              key={index}
+                              className="flex items-center gap-3 border rounded-lg px-3 py-2"
+                            >
+                              📄
+                              <span className="text-sm text-gray-700">{file.name}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )} */}
+                    
+                  </div>
+
+                  {/* Footer */}
+                  <div className="p-6 pt-4 border-t flex justify-start gap-4">
+
+                    <Button
+                      className="bg-[#2C34A1] hover:bg-[#2C34A1] text-white rounded-full px-6 flex items-center gap-2" onClick={()=>handleViewProposals(selectedRequirement._id)}
+                    >
+                      View Proposal →
+                    </Button>
+                    <DialogClose asChild>
+                       <Button
+                          variant="default"
+                          className="bg-[#000] hover:bg-[#000] w-[100px] rounded-full px-6"
+                        >
+                          Close
+                        </Button>
+                    </DialogClose>
+                  </div>
+
+                </DialogContent>
+              </Dialog>
+
+            )}
           </div>
     )
 }

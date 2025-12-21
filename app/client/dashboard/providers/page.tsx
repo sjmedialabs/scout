@@ -412,7 +412,7 @@ const ClientProvidersPage=()=>{
     })
   
     return(
-          <div className="space-y-6 p-6">
+          <div className="space-y-6 p-2 md:p-6">
             <div>
                 <h1 className="text-4xl font-bold text-[#F4561C] my-custom-class tracking-tight">Find Agencies</h1>
                 <p className="text-lg font-light text-[#656565] my-custom-class tracking-tight">Browse and connect with verified agencies</p>

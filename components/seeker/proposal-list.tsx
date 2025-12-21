@@ -110,8 +110,8 @@ export function ProposalList({
                     <span className="text-[14px] font-bold text-[#616161]">$ {proposal.proposedBudget}</span>
                   </div>
                   <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
-                    <HiCurrencyDollar color="#F54A0C" className="h-6 w-6"/>
-                    <span className="text-[14px] font-bold text-[#616161]">$ {proposal.proposedTimeline}</span>
+                    <img src="/chat-operational-2.png" alt="chat" className="h-6 w-6"/>
+                    <span className="text-[14px] font-bold text-[#616161]"> {proposal.proposedTimeline}</span>
                   </div>
                 </div>
               </div>
@@ -196,6 +196,13 @@ export function ProposalList({
         </Card>
 
       ))}
+      {
+        visibleProposals.length===0 && (
+          <div className="mt-10">
+          <p className="text-center  text-[#616161] text-2xl">No  proposals recieved yet.</p>
+          </div>
+        )
+      }
 
       {/* Revision Request Dialog */}
       <Dialog open={revisionDialog.open} onOpenChange={(open) => setRevisionDialog({ open, proposalId: "" })}>

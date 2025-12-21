@@ -67,6 +67,7 @@ import type { Requirement, Proposal, Provider, Notification } from "@/lib/types"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import RatingStars from "@/components/rating-star"
 import { Linden_Hill } from "next/font/google"
+import { useSearchParams } from "next/navigation"
 
 interface ProjectProposal {
   id: string
@@ -234,12 +235,22 @@ const mockProjectProposals: ProjectProposal[] = [
       "We specialize in educational technology and have built LMS platforms for universities and corporate training programs. Our solutions support 10,000+ concurrent users with excellent performance.",
   },
 ]
-
+ 
 
 
 
 const ProposalPage=()=>{
     const { user, loading } = useAuth()
+    const searchParams = useSearchParams()
+    const requirementId = searchParams.get("requirementId")
+
+    useEffect(() => {
+
+      setSelectedRequirement(requirementId)
+      
+    }, [requirementId])
+
+      const[selectedRequirementProposals,setSelectedRequirementProposals]=useState<Proposal[]>()
       const router = useRouter()
       const [activeSection, setActiveSection] = useState("dashboard") // Set initial state to "dashboard" so content shows by default
       const [expandedSections, setExpandedSections] = useState<string[]>(["overview"])
@@ -371,23 +382,43 @@ const ProposalPage=()=>{
       ])
     
 
-      const LoadData=async(userId:string)=>{
-        setResponseLoading(true)
-        setFailed(false)
+     const LoadData = async (userId: string) => {
+  setResponseLoading(true)
+  setFailed(false)
 
-        try{
-          const response=await fetch(`/api/proposals`)
-          const data=await response.json();
-          console.log("Fetched Proposal for your posted Requirements:::",data);
-           setProposals(data.proposals);
-          setFailed(false)
-        }catch(error){
-          console.log("Failed to fetch the proposals")
-          setFailed(true)
-        }finally{
-          setResponseLoading(false);
-        }
-      }
+  try {
+    const response = await fetch(`/api/proposals`)
+    const data = await response.json()
+
+    console.log("Fetched Proposal for your posted Requirements:::", data)
+
+    const filteredProposals = data.proposals.filter((p: any) => {
+      const id =
+        p.requirement?._id ||   // populated
+        p.requirement?.id || // populated
+        p.requirementId         // not populated
+
+      console.log(
+        "Comparing:",
+        id?.toString(),
+        requirementId
+      )
+
+      return id?.toString() === requirementId
+    })
+
+    setProposals(data.proposals)
+    setSelectedRequirementProposals(filteredProposals)
+    setFailed(false)
+
+  } catch (error) {
+    console.log("Failed to fetch the proposals", error)
+    setFailed(true)
+  } finally {
+    setResponseLoading(false)
+  }
+}
+
 
       useEffect(() => {
         if (!loading && (!user || user.role !== "client")) {
@@ -500,10 +531,10 @@ const ProposalPage=()=>{
                <div>
                  <h1 className="text-2xl font-bold my-custom-class text-[#F4561C]">
                    Proposals 
-                   {selectedRequirement && (
+                   {((selectedRequirementProposals || [])?.length>0) && (
                      <span className="text-[#656565] font-normal text-sm">
                        
-                      {` (for  ${requirements.find((r) => r.id === selectedRequirement)?.title} )`}
+                      {` (for  ${selectedRequirementProposals[0].requirement?.title} )`}
                      </span>
                    )}
                  </h1>
@@ -523,7 +554,7 @@ const ProposalPage=()=>{
                    }`}
                    onClick={() => setSelectedRequirement(null)}
                  >
-                   Project Proposals ({projectProposals.length})
+                   Project Proposals ({proposals.length})
                  </button>
                  <button
                    className={`h-[100%] ${
@@ -543,7 +574,7 @@ const ProposalPage=()=>{
                    {selectedRequirement ? (
                      <ProposalList
                         // proposals={getProposalsForRequirement(selectedRequirement)}
-                       proposals={proposals}
+                       proposals={selectedRequirementProposals || []}
                        onShortlist={handleShortlist}
                        onAccept={handleAccept}
                        onReject={handleReject}
@@ -568,11 +599,11 @@ const ProposalPage=()=>{
                               <CardContent className="px-5 py-6">
                                 <div className="flex flex-col lg:flex-row lg:justify-start gap-4">
                                   {/* Left Image */}
-                                  <div className="max-h-[300px] max-w-100 lg:max-h-[100%] lg:max-w-[300px] rounded-[18px] overflow-hidden shrink-0">
+                                  <div className="max-h-[300px] max-w-full  lg:max-h-[100%] lg:max-w-[300px] rounded-[18px] overflow-hidden shrink-0">
                                     <img
                                       src={proposal.agency.coverImage || "/proposal.jpg"}
                                       alt={proposal.agency.name}
-                                      className="h-full w-full"
+                                      className="h-full w-full object-cover"
                                     />
                                   </div>
                                   {/*Right side content */}
