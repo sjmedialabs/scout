@@ -365,9 +365,19 @@ export default function RespondToReviewPage() {
               Tell us what your company does in a single sentence.
             </label>
             <textarea
-              className="w-full rounded-3xl text-base lg:text-xl md:placeholder:text-md
-                placeholder:text-xs sm:placeholder:text-[10px] lg:placeholder:text-base
-                border border-slate-400 px-5 py-4 h-25 sm:px-5 sm:py-2"
+              className=" w-full
+                rounded-3xl
+                text-sm
+                md:text-base
+                lg:text-lg
+                placeholder:text-xs
+                sm:placeholder:text-[10px]
+                md:placeholder:text-base
+                lg:placeholder:text-base
+
+                border border-slate-400
+                px-5 py-4
+                sm:py-3"
               placeholder="Enter your Company’s Description"
             />
           </div>
