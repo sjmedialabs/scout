@@ -8,42 +8,44 @@ export default function RegisterPage() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
       {/* Modal Card */}
-      <div className="relative w-full max-w-5xl overflow-hidden rounded-3xl bg-white shadow-xl">
-        <div className="grid grid-cols-1 lg:grid-cols-2">
+      <div className="relative w-full max-w-3xl h-[97vh] overflow-hidden rounded-3xl bg-white shadow-xl">
+        <div className="grid h-full grid-cols-1 lg:grid-cols-12">
 
           {/* LEFT SECTION (IMAGE + TEXT) */}
-          <div className="hidden lg:flex flex-col justify-between bg-[#8b2f3c] p-10 text-white">
-            <div>
-              <h2 className="text-4xl font-semibold leading-tight">
-                Built to Accelerate <br /> Business Success
+          <div
+            className="relative hidden lg:flex lg:col-span-6 h-full flex-col justify-between p-10 text-white bg-cover"
+            style={{
+              backgroundImage: "url('/images/Login-Image.png')",
+              backgroundPosition: "left bottom"
+            }}
+          >
+            <div className="relative z-10 max-w-sm">
+              <h2 className="text-2xl font-extrabold leading-tight">
+                Built to Accelerate <br/> Business Success
               </h2>
 
-              <ul className="mt-6 space-y-4 text-sm text-white/90">
+              <ul className="mt-2 space-y-2 text-[10px] text-white">
                 <li>owering Smarter Business Connections</li>
                 <li>700+ Categories. One Trusted Platform.</li>
                 <li>Quality Work. Accelerated Results.</li>
                 <li>Your Gateway to Global Talent & Businesses</li>
               </ul>
             </div>
-
-            <img
-              src="/signup-image.jpg"
-              alt="Signup"
-              className="mt-8 rounded-xl object-cover"
-            />
           </div>
 
           {/* RIGHT SECTION (FORM) */}
-          <div className="p-8 sm:p-10">
-            <h3 className="text-2xl font-semibold text-center">Create Account</h3>
-            <p className="mt-1 text-sm text-gray-400 text-center">
+          <div className="lg:col-span-6 h-full overflow-y-auto p-8 sm:p-10">
+            <h3 className="text-lg font-semibold text-center">Create Account</h3>
+            <p className="mt-0.1 text-[10px] text-gray-400 text-center">
               Join Spark to connect with agencies or offer your services
             </p>
 
             {/* Account Type */}
-            <div className="mt-8">
-              <label className="text-sm font-medium text-gray-700">Account Type</label>
-              <div className="mt-3 flex gap-6 text-sm text-gray-600">
+            <div className="mt-2">
+              <label className="text-xs font-bold text-gray-700">
+                Account Type
+              </label>
+              <div className="mt-2 flex gap-6 text-[10px] text-gray-400">
                 <label className="flex items-center gap-2">
                   <input
                     type="radio"
@@ -64,51 +66,53 @@ export default function RegisterPage() {
             </div>
 
             {/* Inputs */}
-            <div className="mt-6 space-y-4">
+            <div className="mt-1 space-y-4">
               <div>
-                <label className="text-sm text-gray-600">Full name</label>
+                <label className="text-xs font-bold text-gray-600">Full name</label>
                 <input
-                  placeholder="example@mail.com"
-                  className="mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm"
+                  placeholder="Enter Your Name"
+                  className="mt-0.1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
                 />
               </div>
 
               <div>
-                <label className="text-sm text-gray-600">Email</label>
+                <label className="text-xs font-bold text-gray-600">E-mail</label>
                 <input
                   type="email"
-                  placeholder="Seeker@example.com"
-                  className="mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm"
+                  placeholder="Enter E-Mail"
+                  className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
                 />
               </div>
 
               <div>
-                <label className="text-sm text-gray-600">Password</label>
+                <label className="text-xs font-bold text-gray-600">Password</label>
                 <input
                   type="password"
-                  placeholder="••••"
-                  className="mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm"
+                  placeholder="Enter Password"
+                  className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
                 />
               </div>
 
               <div>
-                <label className="text-sm text-gray-600">Company Name (Optional)</label>
+                <label className="text-xs font-bold text-gray-600">
+                  Company Name {role ==="agency" ? "(Requried)" : "(Optional)"}
+                </label>
                 <input
                   placeholder="Enter your Company Name"
-                  className="mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm"
+                  className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
                 />
               </div>
             </div>
 
             {/* Button */}
-            <button className="mt-8 w-full rounded-xl bg-black py-3 text-sm font-medium text-white hover:bg-gray-900 transition">
+            <button className="mt-4 w-full rounded-xl bg-black py-2 text-xs font-medium text-white hover:bg-gray-900 transition">
               Create Account
             </button>
 
             {/* Footer */}
-            <p className="mt-4 text-center text-sm text-gray-500">
+            <p className="mt-1 text-center text-xs text-black">
               Already have an account?
-              <span className="ml-1 cursor-pointer font-medium text-black">
+              <span className="ml-1 cursor-pointer underline hover:text-blue-400 font-medium text-black">
                 Sign in here
               </span>
             </p>
