@@ -31,7 +31,7 @@ export default function PricingPage() {
 
          {/* Monthly and Annually Toggle*/} 
         <div
-        className="mt-2 mb-10 flex items-center justify-center gap-4">
+        className="mt-2 mb-10 flex items-center justify-center gap-3 sm:flex-row sm:gap-4">
            <span
               className={`text-lg font-bold transition-colors  ${
                 isAnnual ? "text-slate-500" : "text-slate-900"
@@ -43,10 +43,14 @@ export default function PricingPage() {
 
           <button
           onClick={() => setIsAnnual(!isAnnual)}
-          className="relative inline-flex h-10 w-20 items-center rounded-full bg-slate-700 shadow-inner transition-colors focus:outline-none">
+          className="relative inline-flex h-10 w-20 items-center 
+          rounded-full bg-slate-700 shadow-inner transition-colors 
+          focus:outline-none shrink-0">
 
             <div
-                className={`absolute left-1 top-1 h-8 w-8 rounded-full bg-white shadow transition-transform duration-300 ease-in-out ${
+                className={`absolute left-1 top-1 h-8 w-8 rounded-full
+                   bg-white shadow transition-transform duration-300 
+                   ease-in-out ${
                   isAnnual ? "translate-x-10" : "translate-x-0"
                 }`}
               />
@@ -124,8 +128,8 @@ export default function PricingPage() {
                     <ul className="space-y-4 mb-8">
                       {plan.features.map((feature, index) => (
                         <li key={index} className="flex items-start gap-3">
-                           <span className="grid place-items-center h-7 w-7 rounded-full bg-blue-100 shrink-0">
-                             <span className="text-orange-500 text-[16px] font-extrabold leading-none translate-y-1px">
+                           <span className="grid place-items-center h-7 w-7 rounded-full bg-blue-100 flex-shrink-0">
+                             <span className="text-orange-500 text-[16px] font-extrabold leading-none translate-y-[1px]">
                                 🗸
                              </span>
                            </span>

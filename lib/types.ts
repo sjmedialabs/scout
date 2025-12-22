@@ -90,12 +90,22 @@ export interface PortfolioItem {
   id: string
   title: string
   description: string
-  category: string
-  imageUrl?: string
+  category?: string
+  image?: string
   projectUrl?: string
   completedAt: Date
   technologies: string[]
 }
+export interface TestimonialItem {
+  id: string
+  clientName: string
+  text: string
+  company: string
+  rating: string
+  date: string
+  avatar: string
+}
+
 
 export interface Notification {
   id: string

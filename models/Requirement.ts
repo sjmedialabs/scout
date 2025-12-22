@@ -9,30 +9,37 @@ export interface IRequirement extends Document {
   timeline: string
   description: string
   postedDate: Date
+  documentUrl:string
   proposals: number
-  status: "Open" | "Closed"
-  createdBy: mongoose.Types.ObjectId // always client ID
+  status: "Open" | "Closed" | "shortlisted" | "negotation" | "Allocated"
+  clientId: mongoose.Types.ObjectId // always client ID
+  allocatedToId:mongoose.Types.ObjectId
   createdAt: Date
   updatedAt: Date
+
 }
 
 const RequirementSchema = new Schema<IRequirement>(
   {
-    title: { type: String, required: true },
-    image: { type: String, required: true },
-    category: { type: String, required: true },
-    budgetMin: { type: Number, required: true },
-    budgetMax: { type: Number, required: true },
-    timeline: { type: String, required: true },
-    description: { type: String, required: true },
+    title: { type: String},
+    image: { type: String },
+    category: { type: String},
+    budgetMin: { type: Number},
+    budgetMax: { type: Number},
+    timeline: { type: String},
+    description: { type: String },
 
     postedDate: { type: Date, default: Date.now },
     proposals: { type: Number, default: 0 },
 
-    status: { type: String, enum: ["Open", "Closed"], default: "Open" },
+    documentUrl:{type:String},
 
-    createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  },
+    status: { type: String, enum: ["Open", "Closed","shortlisted","negotation","Allocated"], default: "Open" },
+
+    clientId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    allocatedToId:{ type: Schema.Types.ObjectId, ref: "User" },
+    
+  }, 
   { timestamps: true },
 )
 delete mongoose.models.Requirement;

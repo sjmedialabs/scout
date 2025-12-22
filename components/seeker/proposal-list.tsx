@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -8,6 +8,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Textarea } from "@/components/ui/textarea"
 import { Star, Verified, DollarSign, Calendar, MessageSquare, ThumbsUp, ThumbsDown, Edit } from "lucide-react"
 import type { Proposal } from "@/lib/types"
+import { HiCurrencyDollar } from "react-icons/hi2"
+import RatingStars from "../rating-star"
 
 interface ProposalListProps {
   proposals: Proposal[]
@@ -26,7 +28,7 @@ export function ProposalList({
   onReject,
   onRequestRevision,
 }: ProposalListProps) {
-  const [visibleProposals, setVisibleProposals] = useState(proposals.slice(0, maxVisible))
+  const [visibleProposals, setVisibleProposals] = useState(proposals.filter((item:any)=>(item.status!=="rejected")))
   const [rejectedCount, setRejectedCount] = useState(0)
   const [revisionDialog, setRevisionDialog] = useState<{ open: boolean; proposalId: string }>({
     open: false,
@@ -37,6 +39,9 @@ export function ProposalList({
     open: false,
     proposalId: "",
   })
+  useEffect(()=>{
+
+  },[])
 
   const handleReject = (proposalId: string) => {
     onReject(proposalId)
@@ -64,89 +69,140 @@ export function ProposalList({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Proposals Received</h3>
+      <div className="flex justify-between items-center mt-0">
+        <h3 className="text-lg font-semibold my-custom-class tracking-tight">Proposals Received</h3>
         <div className="text-sm text-muted-foreground">
           Showing {visibleProposals.length} of {proposals.length} proposals
-          {rejectedCount > 0 && ` (${rejectedCount} rejected)`}
+          {(proposals.length-visibleProposals.length) > 0 && ` (${proposals.length-visibleProposals.length} rejected)`}
         </div>
       </div>
-
+ 
       {visibleProposals.map((proposal) => (
-        <Card key={proposal.id} className="hover:shadow-md transition-shadow">
-          <CardHeader>
-            <div className="flex justify-between items-start">
+       <Card
+          key={proposal.id}
+          className="flex lg:flex-row  gap-6 bg-[#F5F5F5] border border-[#DAD7D7] rounded-[22px] p-4 hover:shadow-md transition-shadow"
+        >
+          {/* Left Image */}
+          <div className="lg:max-h-[300px] lg:max-w-[300px] rounded-[18px] overflow-hidden shrink-0">
+            <img
+              src={proposal.agency.coverImage || "/proposal.jpg"}
+              alt={proposal.agency.name}
+              className="h-full w-full"
+            />
+          </div>
+
+          {/* Right Content */}
+          <div className="flex-1 flex flex-col justify-between">
+            {/* Header */}
+            <div className="flex flex-col lg:flex-row justify-between items-start">
               <div>
-                <CardTitle className="flex items-center gap-2">
-                  {proposal.providerName}
-                  {proposal.verified && <Verified className="h-4 w-4 text-blue-500" />}
-                </CardTitle>
-                <CardDescription>{proposal.providerCompany}</CardDescription>
+                <h3 className="text-xl font-bold ">
+                  {proposal.agency.name}
+                </h3>
+                <p className="text-sm text-[#939191] font-normal">
+                  {proposal.agency.name}
+                </p>
+
+                {/* Price & Timeline */}
+                <div className="flex items-center gap-4 mt-2 text-sm">
+                  <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
+                    <HiCurrencyDollar color="#F54A0C" className="h-6 w-6"/>
+                    <span className="text-[14px] font-bold text-[#616161]">$ {proposal.proposedBudget}</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
+                    <img src="/chat-operational-2.png" alt="chat" className="h-6 w-6"/>
+                    <span className="text-[14px] font-bold text-[#616161]"> {proposal.proposedTimeline}</span>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-1">
-                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                <span className="text-sm font-medium">{proposal.rating}</span>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center gap-2 text-sm">
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">${proposal.proposedCost.toLocaleString()}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>{proposal.timeline}</span>
+
+              {/* Rating */}
+              <div className="flex items-center gap-1 text-sm font-medium">
+                <RatingStars rating={proposal.agency.rating} reviews={proposal.agency.reviewCount}/>
+                <span className="text-sm font-bold text-[#000] mt-1">{`${proposal.agency.rating || 0} (${proposal.agency.reviewCount || 0})`} </span>
               </div>
             </div>
 
-            <div>
-              <h4 className="font-medium mb-2">Work Approach</h4>
-              <p className="text-sm text-muted-foreground">{proposal.workApproach}</p>
-            </div>
+            {/* Work Approach */}
+            <p className="text-sm text-[#939191] font-normal mt-3">
+              {proposal?.proposalDescription|| "we will complete your project in a specific way"}
+            </p>
 
-            <div>
-              <h4 className="font-medium mb-2">Milestones</h4>
-              <div className="flex flex-wrap gap-2">
+            {/* Milestones */}
+            <div className="mt-3">
+              <h4 className="text-lg font-bold text-[#616161]">Milestones</h4>
+              <div className="flex flex-wrap gap-2 mt-1">
                 {proposal.milestones.map((milestone, index) => (
-                  <Badge key={index} variant="outline" className="text-xs">
-                    {milestone}
-                  </Badge>
+                  <span
+                    key={index}
+                    className="px-4 py-1.5 items-center border-2  rounded-full bg-[#EDEDED] h-[30px] border-[#DEDEDE] text-xs text-[#000] "
+                  >
+                    {milestone?.title || milestone}
+                  </span>
                 ))}
               </div>
             </div>
 
-            <div className="flex gap-2 pt-2">
-              {proposal.status === "pending" && (
-                <>
-                  <Button size="sm" onClick={() => onShortlist(proposal.id)}>
-                    <ThumbsUp className="h-4 w-4 mr-2" />
-                    Shortlist
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => handleAccept(proposal.id)}>
-                    <MessageSquare className="h-4 w-4 mr-2" />
-                    Accept
-                  </Button>
+            {/* Actions */}
+            <div className="flex flex-wrap gap-3 mt-4">
+               
+               {
+                (proposal.status!=="shortlisted" && proposal.status!=="negotation" && proposal.status!=="accepted") && (<Button
+                size="sm"
+                className="rounded-full bg-[#2C34A1] hover:bg-[#2C34A1] text-sm"
+                onClick={() => onShortlist(proposal.id)}
+              >
+                Shortlist →
+              </Button>)
+               }
+
+              {
+                (proposal.status!=="accepted" && proposal.status!=="rejected") && (
                   <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setRevisionDialog({ open: true, proposalId: proposal.id })}
-                  >
-                    <Edit className="h-4 w-4 mr-2" />
-                    Request Revision
-                  </Button>
-                  <Button size="sm" variant="destructive" onClick={() => handleReject(proposal.id)}>
-                    <ThumbsDown className="h-4 w-4 mr-2" />
-                    Reject
-                  </Button>
-                </>
+                size="sm"
+                className="rounded-full bg-[#39A935] hover:bg-[#39A935] text-sm"
+                onClick={() => handleAccept(proposal.id)}
+              >
+                Accept
+              </Button>
+
+                )
+              }
+              {
+                (proposal.status!=="negotation" && proposal.status!=="accepted") && (
+                   <Button
+                size="sm"
+                className="rounded-full bg-[#F5A30C] hover:bg-[#F5A30C] text-sm"
+                onClick={() =>
+                  setRevisionDialog({ open: true, proposalId: proposal.id })
+                }
+              >
+                Request Revision
+              </Button>
+                )
+              }
+
+              {(proposal.status!=="rejected" &&  proposal.status!=="accepted") && (
+                <Button
+                size="sm"
+                className="rounded-full bg-[#FF0000] hover:bg-[#FF0000]"
+                onClick={() => handleReject(proposal.id)}
+              >
+                Reject
+              </Button>
               )}
-              {proposal.status === "shortlisted" && <Badge className="bg-blue-100 text-blue-800">Shortlisted</Badge>}
             </div>
-          </CardContent>
+          </div>
         </Card>
+
       ))}
+      {
+        visibleProposals.length===0 && (
+          <div className="mt-10">
+          <p className="text-center  text-[#616161] text-2xl">No  proposals recieved yet.</p>
+          </div>
+        )
+      }
 
       {/* Revision Request Dialog */}
       <Dialog open={revisionDialog.open} onOpenChange={(open) => setRevisionDialog({ open, proposalId: "" })}>

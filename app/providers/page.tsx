@@ -195,34 +195,44 @@ export default function ProvidersPage() {
   return (
     <div className="bg-background">
        {/*Hero section */}
-        <div className="px-4 lg:px-30 h-[100%] py-10 lg:h-[400px]" style={{
+        <div className="px-4 sm:px-6 md:px-10 
+        pt-24 sm:pt-16 pb-12 overflow-hidden
+        min-h-screen sm:min-h-[85vh] items-center 
+        justify-start sm:justify-center" style={{
           backgroundImage:`url(${bannerData.backgroundImageUrl})`,
           backgroundRepeat:"no-repeat",
           backgroundSize:"cover",
           backgroundPosition:"center"
-        }}>
+         }}>
      
             <div className="max-w-7xl mx-auto text-center ">
                 {/* Header */}
-                <div className="mb-8">
-                  <h1 className="text-3xl font-bold text-[#F54A0C] pt-12 mb-2">{bannerData.title}</h1>
-                  <p className="text-md text-[#b2b2b2]">{bannerData.description}</p>
+                <div className="mb-8 px-2 sm:px-0">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#F54A0C] pt-6 sm:pt-10 mb-2">{bannerData.title}</h1>
+                  <p className="text-sm sm:text-base md:text-lg text-[#b2b2b2] leading-sung px-3 sm:px-0">{bannerData.description}</p>
                 </div>
 
                 {/* Filters */}
-                <Card className="mb-8 text-center rounded-3xl">
-                  <CardContent className="pt-6 pb-6 pl-9">
-                    <div className="grid md:grid-cols-4 gap-4">
-                      <div className="relative">
+                <Card className="mb-8 text-center rounded-3xl shadow-md sm:shadow-lg">
+                  <CardContent className="pt-6 pb-6 px-4 sm:px-6 md:px-9">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
+
+                      {/* Search Input */}
+                      <div className="relative w-fullmin-w-0">
                         <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input placeholder="Search providers..." className="pl-10 shadow-none border-b-2 border-b-[#b2b2b2] focus:outline-none"  onChange={(e)=>setSearchFilter(e.target.value)}/>
+                        <Input placeholder="Search providers..." 
+                        className="pl-10 w-full text:sm md:text-base border-0 border-b-2 border-b-[#b2b2b2] 
+                        bg-transparent rounded-none shadow-none focus:outline-none focus:ring-0 focus:border-[#F54A0C]"  
+                        onChange={(e)=>setSearchFilter(e.target.value)}/>
                       </div>
+
+                      <div className="w-full min-w-0">
                         <Select onValueChange={(value)=>setServiceFilter(value)}>
                           <SelectTrigger
                             className="
                               mt-1
-                              border-0 
-                              border-b-2 
+                              border-0
+                              border-b-2
                               border-b-[#b2b2b2]
                               rounded-none
                               shadow-none
@@ -231,6 +241,10 @@ export default function ProvidersPage() {
                               focus:ring-offset-0
                               placeholder:text-[#b2b2b2]
                               px-0
+                              w-full
+                              h-12
+                              text-sm
+                              md:text-base
                             "
                           >
                             <SelectValue placeholder="Service Category" className="text-[#b2b2b2]"/>
@@ -244,7 +258,9 @@ export default function ProvidersPage() {
                             <SelectItem value="consulting">Consulting</SelectItem>
                           </SelectContent>
                         </Select>
+                        </div>
 
+                      <div className="w-full min-w-0">
                       <Select onValueChange={(value)=>setLocationFilter(value)}>
                         <SelectTrigger className="
                               mt-1
@@ -256,8 +272,8 @@ export default function ProvidersPage() {
                               focus:outline-none
                               focus:ring-0 
                               focus:ring-offset-0
-              
                               px-0
+                              w-full text-sm md:text-base h-12
                             ">
                           <SelectValue placeholder="Location" />
                         </SelectTrigger>
@@ -269,21 +285,23 @@ export default function ProvidersPage() {
                           <SelectItem value="remote">Remote Only</SelectItem>
                         </SelectContent>
                       </Select>
+                      </div>
 
-                      <Button className="rounded-3xl ml-[30px] bg-[#F54A0C] w-[120px] h-[40px] mt-1" onClick={searchHandle}>
+                      <div className="flex justify-center lg:justify-end">
+                      <Button className="w-full sm:w-[150px] lg:w-[120px] h-10 mt-2 lg:mt-1
+                     rounded-3xl bg-[#F54A0C] text-white
+                     hover:bg-[#d93f0b] transition-all duration-300" onClick={searchHandle}>
                         Search Now
                       </Button>
-                    
+                    </div>
                     </div>
                   </CardContent>
                 </Card>
             </div>
-
         </div>
+
+
       <div className="py-8 px-4 lg:px-30">
-
-       
-
         <div className="max-w-7xl mx-auto">
 
         <div className="flex justify-between my-8">
@@ -334,62 +352,100 @@ export default function ProvidersPage() {
             )}
           <div className="grid md:grid-cols-2 gap-6">
             {(filteredData.length!=0 && !loading && !Failed)?(filteredData.map((provider) => (
-              <Card key={provider.id} className="hover:shadow-md transition-shadow pt-0">
-                <CardHeader className="px-0 mb-0">
-                  <img src={provider.coverImage} alt={provider.name} className="h-[300px] w-full mb-6"/>
-                  <div className="flex justify-between items-start px-6"> 
-                    <div className="flex gap-2">
-                      {provider.isVerified && <Badge variant="secondary" className="bg-[#2C34A1] h-[30px] w-[80px] rounded-2xl">Verified</Badge>}
-                      {provider.isFeatured && <Badge className="bg-[#F54A0C] h-[30px] w-[80px] rounded-2xl">Featured</Badge>}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      
-                      <RatingStars rating={provider.rating} />
-                      <span className="text-sm font-semibold">{provider.rating}</span>
-                     
-                      <span className="text-sm text-muted-foreground">({provider.reviewCount})</span>
-                    </div>
-                  </div>
-                  <CardTitle className="text-2xl px-6 mt-1">{provider.name}</CardTitle>
-                  <CardDescription className="px-6 text-md text-[#b2b2b2]">{provider.tagline}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2 -mt-4 mb-4">
-                    {provider.services.map((service) => (
-                      <Badge key={service} variant="outline" className="h-[30px] rounded-2xl bg-[#f2f2f2] px-[20px] text-[#000]">
-                        {service}
-                      </Badge>
-                    ))}
-                  </div>
 
-                  <div className="grid grid-cols-3 gap-4 mb-4 text-sm">
-                    <div className="flex items-center gap-2">
-                      <img src="/location-filled.jpg" className="h-5 w-4 text-[#F54A0C]" />
-                      <span className="text-[#808080] font-semibold text-sm">{provider?.location || 'N/A'}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <img src="/briefcase.jpg" className="h-5 w-5" />
-                      <span  className="text-[#808080] font-semibold text-sm">{provider.projectsCompleted} projects</span>
-                    </div>
-                     <div className="flex items-center gap-2">
-                      <img src="/chat-operational.jpg" className="h-5 w-5" />
-                      <span  className="text-[#808080] font-semibold text-sm">Response: {provider?.responseTime || '2 hrs'}</span>
-                    </div>
-                    
-                  </div>
-                   <p className="text-[#808080] text-md font-semibold">From: {provider.hourlyRate}/hour</p>
-                  <div className="flex gap-2 mt-3">
-                    <Link href={`/provider/${provider.id}`} className="flex justify-start">
-                      <Button className="w-[140px] bg-[#2C34A1] hover:bg-[#2C34A1] active:bg-[#2C34A1] rounded-3xl text-[#fff]">
-                        
-                        View Profile
-                        <FaArrowRightLong  height={4} width={5} color="#fff"/>
-                      </Button>
-                    </Link>
-                    <Button className="w-[160px] bg-[#4d4d4d] rounded-3xl text-[#fff]">Contact Provider <FaArrowRightLong  height={4} width={5} color="#fff"/></Button>
-                  </div>
-                </CardContent>
-              </Card>
+            <Card
+  key={provider.id}
+  className="rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+>
+  {/* Image flush to top */}
+  <div className="w-full">
+    <img
+      src={provider.coverImage}
+      alt={provider.name}
+      className="w-full h-[200px] sm:h-[240px] md:h-[300px] object-cover block"
+    />
+  </div>
+
+  <div className="p-4 sm:p-6">
+    {/* Badges + rating */}
+    <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="flex flex-wrap gap-2">
+        {provider.isVerified && (
+          <Badge className="bg-[#2C34A1] text-white h-7 px-3 rounded-2xl">Verified</Badge>
+        )}
+        {provider.isFeatured && (
+          <Badge className="bg-[#F54A0C] text-white h-7 px-3 rounded-2xl">Featured</Badge>
+        )}
+      </div>
+
+      <div className="flex items-center gap-1 text-sm">
+        <RatingStars rating={provider.rating} />
+        <span className="font-semibold">{provider.rating}</span>
+        <span className="text-muted-foreground">({provider.reviewCount})</span>
+      </div>
+    </div>
+
+    {/* Title + description (left aligned) */}
+    <h3 className="mt-2 text-xl sm:text-2xl font-semibold text-left">
+      {provider.name}
+    </h3>
+    <p className="mt-1 text-sm text-[#b2b2b2] text-left">
+      {provider.tagline}
+    </p>
+
+    {/* Tags – tighter gap to description */}
+    <div className="flex flex-wrap gap-2 mt-3 sm:mt-3 mb-4">
+      {provider.services.map((service) => (
+        <Badge
+          key={service}
+          variant="outline"
+          className="h-7 px-3 rounded-2xl bg-[#f2f2f2] text-[#000] text-xs sm:text-sm"
+        >
+          {service}
+        </Badge>
+      ))}
+    </div>
+
+    {/* Info row */}
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-xs sm:text-sm">
+      <div className="flex items-center gap-2">
+        <img src="/location-filled.jpg" className="h-4 w-4" />
+        <span className="text-[#808080] font-semibold break-words">
+          {provider?.location || "N/A"}
+        </span>
+      </div>
+      <div className="flex items-center gap-2">
+        <img src="/briefcase.jpg" className="h-4 w-4" />
+        <span className="text-[#808080] font-semibold">
+          {provider.projectsCompleted} projects
+        </span>
+      </div>
+      <div className="flex items-center gap-2">
+        <img src="/chat-operational.jpg" className="h-4 w-4" />
+        <span className="text-[#808080] font-semibold">
+          Response: {provider?.responseTime || "2 hrs"}
+        </span>
+      </div>
+    </div>
+
+    {/* Price + buttons */}
+    <p className="text-[#808080] text-sm sm:text-base font-semibold">
+      From: {provider.hourlyRate}/hour
+    </p>
+
+    <div className="mt-3 flex flex-col sm:flex-row gap-2">
+      <Link href={`/provider/${provider.id}`} className="flex">
+        <Button className="w-full sm:w-[140px] bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white">
+          View Profile
+        </Button>
+      </Link>
+      <Button className="w-full sm:w-[160px] bg-[#4d4d4d] rounded-3xl text-white">
+        Contact Provider
+      </Button>
+    </div>
+  </div>
+</Card>
+
             ))):(<div className="text-center ml-[80px]">
               <p className="text-lg"></p>
             </div>)}

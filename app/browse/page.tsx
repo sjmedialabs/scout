@@ -1,292 +1,197 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { Search } from "lucide-react"
+import { Filter } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import {
   Select,
+  SelectTrigger,
   SelectContent,
   SelectItem,
-  SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@/components/ui/select"
 
-import { Search, Clock, DollarSign, ArrowRight } from "lucide-react"
-import { Separator } from "@/components/ui/separator"
+import { ProposalsHeader } from "@/components/requirements/ProposalsHeader"
+import { ProposalCard } from "@/components/requirements/ProposalCard"
+
+const bannerData={
+    title:"Service Providers",
+    description:"Find verified professionals for your next project",
+    backgroundImageUrl:"/serviceProviderBanner.jpg"
+  }
 
 export default function BrowsePage() {
-  const [requirements, setRequirements] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [sortBy, setSortBy] = useState("newest");
-  const [bannerData, setBannerData] = useState({
-    title: "",
-    description: "",
-    backgroundImageUrl: ""
-  });
-
-  // Hero filter states
-  const [searchFilter, setSearchFilter] = useState("");
-  const [serviceFilter, setServiceFilter] = useState("all");
-  const [locationFilter, setLocationFilter] = useState("all");
-  useEffect(() => {
-    async function loadBanner() {
-      try {
-        const res = await fetch("/api/cms?key=browse-requirements-banner");
-        const data = await res.json();
-
-        setBannerData({
-          title: data?.content?.title || "Browse Requirements",
-          description: data?.content?.subtitle || "Discover opportunities from businesses",
-          backgroundImageUrl: data?.content?.image || "/images/banner.jpg"
-        });
-
-      } catch (error) {
-        console.error("Banner Load Failed:", error);
-      }
-    }
-
-    loadBanner();
-  }, []);
-
-  const categories = [
-    "Website design",
-    "Web Development",
-    "Graphic Designing",
-    "Mobile App",
-    "Digital Marketing",
+  const proposals = [
+    {
+      id: "1",
+      category: "Website design",
+      title: "E-commerce Website Design and development",
+      description:
+        "Looking for a modern e-commerce platform with payment integration, inventory management, and responsive design. Must support multiple payment gateways and have admin dashboard.",
+      budget: "$5,000 - $10,000",
+      timeline: "3 months",
+      proposalsCount: 12,
+      postedAgo: "2 days ago",
+    },
+    {
+      id: "2",
+      category: "Web application",
+      title: "Web application Development",
+      description:
+        "Need a scalable web application with secure authentication, role-based access, and modern UI. Experience with React and backend APIs required.",
+      budget: "$3,000 - $8,000",
+      timeline: "2 months",
+      proposalsCount: 8,
+      postedAgo: "4 days ago",
+    },
+    {
+      id: "3",
+      category: "Design",
+      title: "Brochure Design & Packaging design",
+      description:
+        "Creative brochure and packaging design needed for a retail brand. Deliverables include print-ready files and design guidelines.",
+      budget: "$1,500 - $3,000",
+      timeline: "1 month",
+      proposalsCount: 5,
+      postedAgo: "1 day ago",
+    },
   ]
-  const searchHandle = () => {
-    let filtered = [...requirements];
-
-    // Search match (title + description)
-    if (searchFilter.trim()) {
-      const q = searchFilter.toLowerCase();
-      filtered = filtered.filter(r =>
-        (r.title || "Title").toLowerCase().includes(q) ||
-        (r.description || "Description").toLowerCase().includes(q)
-      );
-    }
-
-    // Service Category Filter
-    if (serviceFilter !== "all") {
-      filtered = filtered.filter(r =>
-        (r.category || "Category").toLowerCase().includes(serviceFilter.toLowerCase())
-      );
-    }
-
-    // Location filter (if requirements have location)
-    if (locationFilter !== "all") {
-      filtered = filtered.filter(r =>
-        (r.location?? "Location").toLowerCase().includes(locationFilter.toLowerCase())
-      );
-    }
-
-    setRequirements(filtered);
-  };
-
-  // ⬇️ Fetch Requirements From API
-  useEffect(() => {
-    async function loadReq() {
-      try {
-        const res = await fetch("/api/requirements")
-        const data = await res.json()
-        setRequirements(data.requirements || [])
-      } catch (e) {
-        console.error("Error fetching requirements:", e)
-      } finally {
-        setLoading(false)
-      }
-    }
-    loadReq()
-  }, [])
-
-  useEffect(() => {
-    if (requirements.length === 0) return;
-
-    let sorted = [...requirements];
-
-    if (sortBy === "newest") {
-      sorted.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    }
-
-    if (sortBy === "budget-high") {
-      sorted.sort((a: any, b: any) => {
-        const maxA = Number(a.budgetMax || a.budget?.split("-")[1]?.replace(/\D/g, ""));
-        const maxB = Number(b.budgetMax || b.budget?.split("-")[1]?.replace(/\D/g, ""));
-        return maxB - maxA;
-      });
-    }
-
-    setRequirements(sorted);
-  }, [sortBy]);
-
 
   return (
     <div className="bg-background">
-      {/* HERO SECTION */}
+
+      {/*  HERO SECTION  */}
+      <section
+  className="relative w-full overflow-hidden"
+  style={{
+    backgroundImage: `url(${bannerData.backgroundImageUrl})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+  }}
+>
+  <div className="absolute inset-0 bg-white/35" />
+
+  <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-16 sm:py-20">
+    
+    {/* TITLE */}
+    <div className="text-center mb-10">
+      <h1 className="text-[26px] sm:text-[32px] md:text-[40px] font-bold text-[#F54A0C]">
+        Browse Requirements
+      </h1>
+      <p className="mt-[-10] text-sm sm:text-base text-[#9b9b9b] leading-tight">
+        Discover opportunities from businesses looking for your services
+      </p>
+    </div>
+
+    {/* FILTER BAR */}
+    <div className="flex justify-center">
       <div
-        className="px-4 lg:px-30 flex justify-center md:py-8 h-[65vh] md:h-[55vh] "
-        style={{
-          backgroundImage: `url(${bannerData.backgroundImageUrl || "/images/banner.jpg"})`,
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
-          backgroundPosition: "center"
-        }}
+        className="w-full max-w-5xl bg-white rounded-[28px]
+                   shadow-[0_20px_40px_rgba(0,0,0,0.08)]
+                   px-6 py-5 border"
       >
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="mb-8 pt-4 md:pt-12">
-            <h1 className="text-3xl font-bold text-[#F54A0C]">{bannerData.title}</h1>
-            <p className="text-md text-[#b2b2b2]">{bannerData.description}</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[1.5fr_1fr_1fr_auto] gap-6 items-center">
+
+          {/* Search */}
+          <div className="flex items-center gap-2 border-b border-[#dcdcdc] pb-2">
+            
+            <Input
+              placeholder="Search Requirement"
+              className="border-0 p-0 h-auto text-[15px] placeholder:text-[#9b9b9b]
+                         focus-visible:ring-0 focus-visible:ring-offset-0"
+            />
           </div>
 
-          {/* HERO FILTERS */}
-          <Card className="mb-8 text-center rounded-3xl">
-            <CardContent className="pt-6 pb-6 pl-9">
-              <div className="grid md:grid-cols-4 gap-4">
+          {/* Category */}
+          <Select>
+            <SelectTrigger
+            className="
+                border-0 border-b border-[#dcdcdc] rounded-none px-0 pb-2
+                text-[15px] font-normal
+                focus-visible:ring-0 focus-visible:ring-offset-0
 
-                {/* Search Box */}
-                <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search requirements..."
-                    className="pl-10 shadow-none border-b-2 border-b-[#b2b2b2]"
-                    onChange={(e) => setSearchFilter(e.target.value)}
-                  />
-                </div>
-
-                {/* Service Category */}
-                <Select onValueChange={(value) => setServiceFilter(value)}>
-                  <SelectTrigger className="border-0 border-b-2 border-b-[#b2b2b2] rounded-none shadow-none px-0">
-                    <SelectValue placeholder="Service Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Services</SelectItem>
-                    <SelectItem value="website design">Website Design</SelectItem>
-                    <SelectItem value="Web Development">Development</SelectItem>
-                    <SelectItem value="design">Design</SelectItem>
-                    <SelectItem value="marketing">Marketing</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {/* Location */}
-                <Select onValueChange={(value) => setLocationFilter(value)}>
-                  <SelectTrigger className="border-0 border-b-2 border-b-[#b2b2b2] rounded-none shadow-none px-0">
-                    <SelectValue placeholder="Location" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Locations</SelectItem>
-                    <SelectItem value="us">United States</SelectItem>
-                    <SelectItem value="ca">Canada</SelectItem>
-                    <SelectItem value="uk">United Kingdom</SelectItem>
-                    <SelectItem value="remote">Remote Only</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {/* Search Button */}
-                <Button
-                  className="rounded-3xl bg-[#F54A0C] w-[120px] h-10"
-                  onClick={searchHandle}
-                >
-                  Search Now
-                </Button>
-
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* LIST OF REQUIREMENTS */}
-      <div className="max-w-5xl mx-auto px-4 py-10">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-4xl font-medium text-gray-400">List of Proposals</h2>
-
-          <Select onValueChange={(val) => setSortBy(val)}>
-            <SelectTrigger className="w-[150px] h-10">
-              <SelectValue placeholder="Sort" />
+                [&_span]:text-[#9b9b9b]
+                [&_span]:text-[15px]
+                [&_span]:font-normal
+            "
+            >
+            <SelectValue placeholder="Select Category" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="newest">Newest First</SelectItem>
-              <SelectItem value="budget-high">Price High → Low</SelectItem>
+              <SelectItem value="web">Web Development</SelectItem>
+              <SelectItem value="design">Design</SelectItem>
+              <SelectItem value="marketing">Marketing</SelectItem>
             </SelectContent>
           </Select>
-        </div>
 
-        {loading ? (
-          <p className="text-center py-10 text-muted-foreground">Loading...</p>
-        ) : (
-          <div className="space-y-6">
-            {requirements.map((req: any) => (
-              <Card key={req.id} className="bg-blueBackground rounded-3xl p-4 shadow-md">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
+          {/* Budget */}
+          <Select>
+            <SelectTrigger
+            className="
+                border-0 border-b border-[#dcdcdc] rounded-none px-0 pb-2
+                text-[15px] font-normal
+                focus-visible:ring-0 focus-visible:ring-offset-0
 
-                    {/* CATEGORY BADGE */}
-                    <Badge className="bg-gray-100 text-black rounded-full px-4 py-1 shadow-sm">
-                      {req.category}
-                    </Badge>
+                [&_span]:text-[#9b9b9b]
+                [&_span]:text-[15px]
+                [&_span]:font-normal
+            "
+            >
+            <SelectValue placeholder="Budget Range" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1k">Under $1k</SelectItem>
+              <SelectItem value="5k">$1k – $5k</SelectItem>
+              <SelectItem value="10k">$5k – $10k</SelectItem>
+            </SelectContent>
+          </Select>
 
-                    {/* TIME BADGE */}
-                    <span className="text-xs text-orangeButton flex items-center gap-1">
-                      <img src="/images/clock1.jpg" alt="" className="h-3" />
-                      {req.postedDate}
-                    </span>
-                  </div>
-
-                  {/* TITLE */}
-                  <CardTitle className="text-2xl font-semibold mt-2 text-blueButton capitalize">
-                    {req.title}
-                  </CardTitle>
-
-                  {/* DESCRIPTION */}
-                  <p className="text-gray-600 mt-2 text-sm capitalize">{req.description}</p>
-
-                </CardHeader>
-
-                <CardContent>
-                  <Separator></Separator>
-                  {/* PRICE, TIMELINE & PROPOSALS */}
-                  <div className="flex flex-wrap md:flex-nowrap gap-6 mt-4 text-xs font-semibold">
-
-                    <div className="flex items-center gap-2">
-                      <img src="/images/doller.jpg" alt="" className="h-5" />
-                      {req.budget}
-                    </div>
-
-                    <div className="flex items-center gap-2 ">
-                      <img src="/images/clock.jpg" alt="" className="h-5" />
-                      {req.timeline}
-                    </div>
-
-                    <div className=" flex items-center gap-2">
-                      <img src="/images/download.jpg" alt="" className="h-5" /> {req.proposals} proposals received
-                    </div>
-                  </div>
-
-                  {/* ACTION BUTTONS */}
-                  <div className="flex flex-wrap gap-1 md:gap-4 items-center mt-6 ">
-                    <Button variant="outline" className="rounded-full px-6 bg-blueButton text-white text-xs font-semibold" size="lg">
-                      View Details<ArrowRight></ArrowRight>
-                    </Button>
-                    <Button className="rounded-full bg-black text-white px-6 text-xs font-semibold" size="lg">
-                      Submit Proposal
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-
-        {/* LOAD MORE */}
-        <div className="text-center mt-10">
-          <Button variant="outline" className="rounded-full px-8 py-2 bg-orangeButton text-white">
-            Load More Requirements
+          {/* APPLY FILTER */}
+          <Button
+            className="h-10 px-6 rounded-full bg-[#F54A0C] hover:bg-[#d93f0b]
+                       text-white text-[14px] font-medium whitespace-nowrap"
+          >
+            <Filter className="h-4 w-4" />
+            Apply Filter
           </Button>
+
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+      <div className="px-4 py-10">
+        <div className="max-w-6xl mx-auto">
+
+          {/* Header */}
+          <ProposalsHeader
+            onSortChange={(value) => console.log("Sort:", value)}
+          />
+
+          {/* Cards */}
+          <div className="space-y-8">
+            {proposals.map((item) => (
+              <ProposalCard
+                key={item.id}
+                category={item.category}
+                title={item.title}
+                description={item.description}
+                budget={item.budget}
+                timeline={item.timeline}
+                proposalsCount={item.proposalsCount}
+                postedAgo={item.postedAgo}
+                onView={() => console.log("View", item.id)}
+                onSubmit={() => console.log("Submit", item.id)}
+              />
+            ))}
+          </div>
+
+        </div>
+      </div>
+
     </div>
   )
 }
