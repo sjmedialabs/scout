@@ -25,12 +25,6 @@ export interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-function normalizeRole(role: string): UserRole {
-  if (role === "provider" || role === "service_provider") return "agency"
-  if (role === "seeker" || role === "service_seeker") return "client"
-  return role as UserRole
-}
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -41,10 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const response = await fetch("/api/auth/me")
       if (response.ok) {
         const data = await response.json()
-        setUser({
-          ...data.user,
-          role:normalizeRole(data.user.role),
-      })
+        setUser(data.user)
       }
     } catch (error) {
       console.error("Auth check failed:", error)
@@ -63,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, role }),
       })
 
       const data = await response.json()
@@ -72,17 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error(data.error || "Login failed")
       }
 
-      setUser({
-        ...data.user,
-        role:normalizeRole(data.user.role),
-      })
-
-      console.log("USER AFTER LOGIN:", {
-      originalRole: data.user.role,
-      normalizedRole: normalizeRole(data.user.role),
-      fullUser: data.user,
-    })
-    
+      setUser(data.user)
     } finally {
       setLoading(false)
     }
@@ -103,10 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error(data.error || "Registration failed")
       }
 
-      setUser({
-        ...data.user,
-        role:normalizeRole(data.user.role),
-    })
+      setUser(data.user)
     } finally {
       setLoading(false)
     }

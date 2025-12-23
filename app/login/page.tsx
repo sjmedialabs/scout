@@ -1,28 +1,43 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 
 export default function LoginPage() {
-  const [role, setRole] = useState<"agency" | "client" | "admin">("agency");
+  const [role, setRole] = useState<"agency" | "client" | "admin">("client");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const { login } = useAuth();
+  const router = useRouter();
 
-  const emailPlaceholder =
-    role === "agency"
-      ? "agency@example.com"
-      : role === "client"
-      ? "seeker@example.com"
-      : "admin@example.com";
+  const handleSubmit = async () => {
+    setError("");
+    setLoading(true);
+
+    try {
+      await login(email, password, role);
+
+      // Redirect based on role (EXACT OLD BEHAVIOR)
+      if (role === "client") router.push("/client/dashboard");
+      if (role === "agency") router.push("/agency/dashboard");
+      if (role === "admin") router.push("/admin/dashboard");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
       <div className="relative w-full max-w-3xl h-[97vh] overflow-hidden rounded-3xl bg-white shadow-xl">
         <div className="grid h-full grid-cols-1 lg:grid-cols-12">
 
-          {/* LEFT SECTION (IMAGE + TEXT) */}
+          {/* LEFT SECTION */}
           <div
             className="relative hidden lg:flex lg:col-span-6 h-full flex-col justify-between p-10 text-white bg-cover"
             style={{
@@ -44,7 +59,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* RIGHT SECTION (FORM) */}
+          {/* RIGHT SECTION */}
           <div className="lg:col-span-6 h-full overflow-y-auto p-8 sm:p-10">
             <h3 className="text-lg font-semibold text-center">Sign in</h3>
             <p className="mt-0.1 text-[10px] text-gray-400 text-center">
@@ -60,19 +75,19 @@ export default function LoginPage() {
                 <label className="flex items-center gap-2">
                   <input
                     type="radio"
-                    checked={role === "agency"}
-                    onChange={() => setRole("agency")}
+                    checked={role === "client"}
+                    onChange={() => setRole("client")}
                   />
-                  Service Provider
+                  Service seeker
                 </label>
 
                 <label className="flex items-center gap-2">
                   <input
                     type="radio"
-                    checked={role === "client"}
-                    onChange={() => setRole("client")}
+                    checked={role === "agency"}
+                    onChange={() => setRole("agency")}
                   />
-                  Service seeker
+                  Service Provider
                 </label>
 
                 <label className="flex items-center gap-2">
@@ -94,8 +109,8 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder={emailPlaceholder}
-                  className="mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2 text-[10px]"
+                  placeholder="Enter E-Mail"
+                  className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
                 />
               </div>
 
@@ -106,23 +121,33 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter Password"
-                  className="mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2 text-[10px]"
+                  className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
                 />
               </div>
             </div>
 
+            {error && (
+              <p className="mt-2 text-center text-[10px] text-red-500">
+                {error}
+              </p>
+            )}
+
             {/* Button */}
             <button
-              onClick={() => login(email, password, role)}
+              onClick={handleSubmit}
+              disabled={loading}
               className="mt-4 w-full rounded-xl bg-black py-2 text-xs font-medium text-white hover:bg-gray-900 transition"
             >
-              Sign in
+              {loading ? "Signing In..." : "Sign in"}
             </button>
 
             {/* Footer */}
             <p className="mt-1 text-center text-xs text-black">
               Don't have an account?
-              <span className="ml-1 cursor-pointer underline hover:text-blue-400 font-medium text-black">
+              <span
+                onClick={() => router.push("/register")}
+                className="ml-1 cursor-pointer underline hover:text-blue-400 font-medium text-black"
+              >
                 Register here
               </span>
             </p>

@@ -1,9 +1,43 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function RegisterPage() {
   const [role, setRole] = useState<"agency" | "client">("client");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [companyName, setCompanyName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const { register } = useAuth();
+  const router = useRouter();
+
+  const handleSubmit = async () => {
+    setError("");
+    setLoading(true);
+
+    try {
+      await register(
+        email,
+        password,
+        name,
+        role,
+        role === "agency" ? companyName : undefined
+      );
+
+      if (role === "client") router.push("/client/dashboard");
+      if (role === "agency") router.push("/agency/dashboard");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Registration failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
@@ -11,7 +45,7 @@ export default function RegisterPage() {
       <div className="relative w-full max-w-3xl h-[97vh] overflow-hidden rounded-3xl bg-white shadow-xl">
         <div className="grid h-full grid-cols-1 lg:grid-cols-12">
 
-          {/* LEFT SECTION (IMAGE + TEXT) */}
+          {/* LEFT SECTION */}
           <div
             className="relative hidden lg:flex lg:col-span-6 h-full flex-col justify-between p-10 text-white bg-cover"
             style={{
@@ -21,7 +55,7 @@ export default function RegisterPage() {
           >
             <div className="relative z-10 max-w-sm">
               <h2 className="text-2xl font-extrabold leading-tight">
-                Built to Accelerate <br/> Business Success
+                Built to Accelerate <br /> Business Success
               </h2>
 
               <ul className="mt-2 space-y-2 text-[10px] text-white">
@@ -33,7 +67,7 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* RIGHT SECTION (FORM) */}
+          {/* RIGHT SECTION */}
           <div className="lg:col-span-6 h-full overflow-y-auto p-8 sm:p-10">
             <h3 className="text-lg font-semibold text-center">Create Account</h3>
             <p className="mt-0.1 text-[10px] text-gray-400 text-center">
@@ -70,6 +104,8 @@ export default function RegisterPage() {
               <div>
                 <label className="text-xs font-bold text-gray-600">Full name</label>
                 <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   placeholder="Enter Your Name"
                   className="mt-0.1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
                 />
@@ -79,6 +115,8 @@ export default function RegisterPage() {
                 <label className="text-xs font-bold text-gray-600">E-mail</label>
                 <input
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter E-Mail"
                   className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
                 />
@@ -88,6 +126,8 @@ export default function RegisterPage() {
                 <label className="text-xs font-bold text-gray-600">Password</label>
                 <input
                   type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter Password"
                   className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
                 />
@@ -95,24 +135,40 @@ export default function RegisterPage() {
 
               <div>
                 <label className="text-xs font-bold text-gray-600">
-                  Company Name {role ==="agency" ? "(Requried)" : "(Optional)"}
+                  Company Name {role === "agency" ? "(Required)" : "(Optional)"}
                 </label>
                 <input
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
                   placeholder="Enter your Company Name"
+                  required={role === "agency"}
                   className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
                 />
               </div>
             </div>
 
+            {error && (
+              <p className="mt-2 text-center text-[10px] text-red-500">
+                {error}
+              </p>
+            )}
+
             {/* Button */}
-            <button className="mt-4 w-full rounded-xl bg-black py-2 text-xs font-medium text-white hover:bg-gray-900 transition">
-              Create Account
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="mt-4 w-full rounded-xl bg-black py-2 text-xs font-medium text-white hover:bg-gray-900 transition"
+            >
+              {loading ? "Creating Account..." : "Create Account"}
             </button>
 
             {/* Footer */}
             <p className="mt-1 text-center text-xs text-black">
               Already have an account?
-              <span className="ml-1 cursor-pointer underline hover:text-blue-400 font-medium text-black">
+              <span
+                onClick={() => router.push("/login")}
+                className="ml-1 cursor-pointer underline hover:text-blue-400 font-medium text-black"
+              >
                 Sign in here
               </span>
             </p>
