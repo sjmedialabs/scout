@@ -1,9 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function LoginPage() {
   const [role, setRole] = useState<"agency" | "client" | "admin">("agency");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const { login } = useAuth();
 
   const emailPlaceholder =
     role === "agency"
@@ -14,7 +19,6 @@ export default function LoginPage() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-      {/* Modal Card */}
       <div className="relative w-full max-w-3xl h-[97vh] overflow-hidden rounded-3xl bg-white shadow-xl">
         <div className="grid h-full grid-cols-1 lg:grid-cols-12">
 
@@ -48,7 +52,7 @@ export default function LoginPage() {
             </p>
 
             {/* Account Type */}
-            <div className="mt-4">
+            <div className="mt-2">
               <label className="text-xs font-bold text-gray-700">
                 Account Type
               </label>
@@ -88,8 +92,10 @@ export default function LoginPage() {
                 <label className="text-xs font-bold text-gray-600">E-mail</label>
                 <input
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder={emailPlaceholder}
-                  className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
+                  className="mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2 text-[10px]"
                 />
               </div>
 
@@ -97,19 +103,24 @@ export default function LoginPage() {
                 <label className="text-xs font-bold text-gray-600">Password</label>
                 <input
                   type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter Password"
-                  className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
+                  className="mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2 text-[10px]"
                 />
               </div>
             </div>
 
             {/* Button */}
-            <button className="mt-8 w-full rounded-xl bg-black py-2 text-xs font-medium text-white hover:bg-gray-900 transition">
+            <button
+              onClick={() => login(email, password, role)}
+              className="mt-4 w-full rounded-xl bg-black py-2 text-xs font-medium text-white hover:bg-gray-900 transition"
+            >
               Sign in
             </button>
 
             {/* Footer */}
-            <p className="mt-4 text-center text-xs text-black">
+            <p className="mt-1 text-center text-xs text-black">
               Don't have an account?
               <span className="ml-1 cursor-pointer underline hover:text-blue-400 font-medium text-black">
                 Register here

@@ -21,12 +21,34 @@ export function AuthGuard({
   const router = useRouter()
   const pathname = usePathname() ?? ""
 
-  // ✅ PUBLIC ROUTES (VERY IMPORTANT)
+  console.log("AUTH USER:", user)
+
+  // ✅ PUBLIC ROUTES (KEEP)
   const isPublicPage =
     pathname === "/login" ||
     pathname === "/register" ||
     pathname === "/forgot-password" ||
     pathname === "/reset-password"
+
+  // ✅ ROLE NORMALIZATION (TYPE-SAFE)
+  const normalizedRole: UserRole | undefined = (() => {
+    const role = user?.role as string | undefined
+    if (!role) return undefined
+
+    if (role === "provider" || role === "service_provider") {
+      return "agency"
+    }
+
+    if (role === "seeker" || role === "service_seeker") {
+      return "client"
+    }
+
+    if (role === "agency" || role === "client" || role === "admin") {
+      return role
+    }
+
+    return undefined
+  })()
 
   useEffect(() => {
     if (loading || isPublicPage) return
@@ -36,8 +58,8 @@ export function AuthGuard({
       return
     }
 
-    if (allowedRoles && user && !allowedRoles.includes(user.role)) {
-      switch (user.role) {
+    if (allowedRoles && normalizedRole && !allowedRoles.includes(normalizedRole)) {
+      switch (normalizedRole) {
         case "client":
           router.replace("/client/dashboard")
           break
@@ -54,7 +76,7 @@ export function AuthGuard({
   }, [
     loading,
     isAuthenticated,
-    user,
+    normalizedRole,
     allowedRoles,
     router,
     redirectTo,
@@ -76,7 +98,9 @@ export function AuthGuard({
 
   if (!isAuthenticated) return null
 
-  if (allowedRoles && user && !allowedRoles.includes(user.role)) return null
+  if (allowedRoles && normalizedRole && !allowedRoles.includes(normalizedRole)) {
+    return null
+  }
 
   return <>{children}</>
 }
