@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, ChevronRight } from "lucide-react";
 import { adminMenu } from "../sidebar-config";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Settings } from "lucide-react";
 
 export function AdminSidebar() {
   const pathname = usePathname();
@@ -16,27 +17,28 @@ export function AdminSidebar() {
   };
 
   return (
-    <aside className="fixed left-0 top-0 w-72 h-full bg-white border-r z-20">
+    <aside className="fixed left-0 top-0 w-64 flex justify-between flex-col h-full bg-sidebarMain text-white border-r z-20">
+      <div>
       <div className="p-5 border-b">
         <h2 className="text-xl font-bold">Super Admin Dashboard</h2>
-        <p className="text-sm text-gray-500">Welcome back</p>
+        <p className="text-sm text-white">Welcome back</p>
       </div>
 
-      <div className="p-4 overflow-y-auto h-full">
+      <div className="p-4 overflow-y-auto h-full text-white">
         {adminMenu.map(section => (
           <div key={section.label} className="mb-4">
             <button
               onClick={() => toggle(section.label)}
-              className="w-full flex justify-between items-center text-gray-600 hover:text-black"
+              className="w-full flex justify-between items-center hover:text-orangeButton text-white"
             >
               <div className="flex items-center gap-3">
                 <section.icon className="w-4 h-4" />
                 <span className="text-sm font-medium">{section.label}</span>
               </div>
 
-              {open.includes(section.label)
+              {/* {open.includes(section.label)
                 ? <ChevronDown className="w-4 h-4" />
-                : <ChevronRight className="w-4 h-4" />}
+                : <ChevronRight className="w-4 h-4" />} */}
             </button>
 
             {open.includes(section.label) && (
@@ -47,8 +49,8 @@ export function AdminSidebar() {
                     <Link
                       key={item.id}
                       href={`/admin/${item.id}`}
-                      className={`flex items-center gap-2 px-2 py-2 rounded-lg text-sm transition 
-                        ${active ? "bg-blue-600 text-white" : "text-gray-500 hover:bg-gray-100"}
+                      className={`flex items-center font-normal gap-2 px-2 py-2 rounded-lg text-sm transition 
+                        ${active ? "text-orangeButton" : "text-white hover:text-orangeButton"}
                       `}
                     >
                       <item.icon className="w-4 h-4" />
@@ -61,6 +63,12 @@ export function AdminSidebar() {
           </div>
         ))}
       </div>
+        </div>
+        <div className="">
+          <Button className="bg-blueButton text-white w-full flex justify-start">
+          <Settings className="w-4 h-4"/>  System Settings
+          </Button>
+        </div>
     </aside>
   );
 }

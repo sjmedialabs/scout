@@ -1,15 +1,32 @@
-"use client";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Target, Award, Globe } from "lucide-react"
-import aboutBanner from "../../public/aboutBanner.png";
+import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
-import { title } from "process";
-import { Description } from "@radix-ui/react-toast";
+import { headers } from "next/headers"
 
-export default function AboutPage() {
-  const [cms, setCms] = useState<any>(null);
+async function getAboutData() {
+  let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+  if (!baseUrl) {
+    const headersList = headers();
+    const host = headersList.get("host") || "localhost:3000";
+    const protocol = host.includes("localhost") ? "http" : "https";
+    baseUrl = `${protocol}://${host}`;
+  }
+
+  const REVALIDATE_TIME = Number(process.env.CMS_REVALIDATE_TIME) || 10;
+  const options = { next: { revalidate: REVALIDATE_TIME } };
+
+  try {
+    const res = await fetch(`${baseUrl}/api/cms`, options);
+    const result = await res.json();
+    return result?.success ? result.data : null;
+  } catch (e) {
+    console.error("[AboutPage] CMS Fetch Error:", e);
+    return null;
+  }
+}
+
+export default async function AboutPage() {
+  const cms = await getAboutData();
   // const stats = [
   //   { label: "Active Users", value: "50,000+", imageUrl:"/stat1.png" },
   //   { label: "Projects Completed", value: "25,000+",  imageUrl:"/stat2.png" },
@@ -108,20 +125,6 @@ export default function AboutPage() {
   //     ]
   //   }
   // }
-  useEffect(() => {
-  const fetchCMS = async () => {
-    try {
-      const res = await fetch("/api/cms");
-      const result = await res.json();
-      if (result?.success) setCms(result.data);
-      console.log("CMS response data from api", result.data.aboutBannerImage, result.data.aboutSideImage, result.data.aboutTeam[0].image);
-    } catch (e) {
-      console.error("CMS Fetch Error:", e);
-    }
-  };
-  fetchCMS();
-}, []);
-
   // const team = [
   //   {
   //     name: "Sarah Chen",
