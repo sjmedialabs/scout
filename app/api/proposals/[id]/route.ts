@@ -193,7 +193,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         }
         if(body.status.toLocaleLowerCase()==="accepted"){
           console.log("----Accepted proposal:::")
-          await Requirement.findByIdAndUpdate(proposal.requirementId, {status:"Allocated",allocatedToId:proposal.agencyId}, { new: true })
+          const requirementStaus=await Requirement.findById(proposal.requirementId)
+          if(requirementStaus?.status!=="Allocated"){
+              await Requirement.findByIdAndUpdate(proposal.requirementId, {status:"Allocated",allocatedToId:proposal.agencyId}, { new: true })
+          }
+          else{
+            return NextResponse.json({ error: "Requirement already allocated" }, { status: 400 })
+          }
+          
           // await Proposal.updateMany(
           //   {
           //     requirementId:proposal.requirementId,
