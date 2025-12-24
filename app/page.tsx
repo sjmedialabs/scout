@@ -1,39 +1,18 @@
-"use client"
-
-import type React from "react"
+import React from "react"
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
+import { headers } from "next/headers"
+import { HomeHero}  from "@/app/home-hero"
 import {
-  Search,
-  Star,
-  Users,
-  Zap,
-  Sparkles,
   Code,
   Palette,
   TrendingUp,
   Megaphone,
   Briefcase,
   Shield,
-  Divide,
 } from "lucide-react"
-import { match } from "assert"
-
-// CMS Content Types
-interface HeroContent {
-  headline: string
-  subheadline: string
-  ctaPrimary: { text: string; link: string }
-  ctaSecondary: { text: string; link: string }
-  searchPlaceholder: string
-  popularSearches: string[]
-}
 
 interface ServiceChild {
   _id: string;
@@ -72,204 +51,52 @@ const colorMap: Record<string, { bg: string; hover: string; text: string }> = {
   indigo: { bg: "from-indigo-100 to-indigo-200", hover: "hover:border-indigo-200", text: "text-indigo-600" },
 }
 
-export default function HomePage() {
-  const router = useRouter()
-  const [searchQuery, setSearchQuery] = useState("")
-  const [categories, setCategories] = useState<ServiceCategory[]>([])
-  const [providers, setProviders] = useState<any[]>([])
-  const [projects, setProjects] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [activeButton, setActiveButton] = useState<"match" | "browse" | null>(null);
-  const [cms, setcms] = useState<any>(null)
-  // Fetch CMS content
-  useEffect(() => {
-    const fetchContent = async () => {
-      try {
-        const [cmsRes, providersRes, projectsRes, categoriesRes] = await Promise.all([
-          fetch("/api/cms"),
-          fetch("/api/providers?featured=true"),
-          fetch("/api/requirements"),
-          fetch("/api/service-categories"),
-        ])
-        console.log("Categories response data from api", categoriesRes)
-        if (cmsRes.ok) {
-          const data = await cmsRes.json()
-          setcms(data.data)
-          console.log("CMS response data from api", data)
-        }
-
-        if (providersRes.ok) {
-          const providersData = await providersRes.json()
-          setProviders(providersData.providers?.slice(0, 3) || [])
-        }
-
-        if (projectsRes.ok) {
-          const projectsData = await projectsRes.json()
-          setProjects(projectsData.requirements?.slice(0, 3) || [])
-          console.log("Requirements response data from api", projectsData.requirements)
-        }
-
-        if (categoriesRes.ok) {
-          const categoriesData = await categoriesRes.json()
-          setCategories(categoriesData.data || [])
-          console.log("Categories response data from api", categoriesData.data)
-        }
-
-      } catch (error) {
-        console.error("Failed to fetch CMS content:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchContent()
-  }, [])
-
-  const handleGetMatched = () => {
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
-    } else {
-      router.push("/register")
-    }
+async function getData() {
+  // 1. Dynamically determine the base URL to avoid port mismatches
+  let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+  if (!baseUrl) {
+    const headersList = headers();
+    const host = headersList.get("host") || "localhost:3000";
+    const protocol = host.includes("localhost") ? "http" : "https";
+    baseUrl = `${protocol}://${host}`;
   }
+// const options: RequestInit = { cache: "no-store" }; for instant changes
+  // 2. Use ISR with revalidation (e.g., every hour)
+  const REVALIDATE_TIME = Number(process.env.CMS_REVALIDATE_TIME) || 10;
+  const options = { next: { revalidate: REVALIDATE_TIME } }; 
 
-  const handleLetUsMatch = () => {
-    router.push("/register?type=match")
+  try {
+    console.log(`[HomePage] Fetching data from: ${baseUrl}`);
+    const [cmsRes, providersRes, projectsRes, categoriesRes] = await Promise.all([
+      fetch(`${baseUrl}/api/cms`, options),
+      fetch(`${baseUrl}/api/providers?featured=true`, options),
+      fetch(`${baseUrl}/api/requirements`, options),
+      fetch(`${baseUrl}/api/service-categories`, options),
+    ]);
+
+    const cms = cmsRes.ok ? (await cmsRes.json()).data : null;
+    const providers = providersRes.ok ? (await providersRes.json()).providers?.slice(0, 3) : [];
+    
+    const projectsData = projectsRes.ok ? await projectsRes.json() : {};
+    // Try finding the array in 'requirements' OR 'data'
+    const projects = (projectsData.requirements || projectsData.data || []).slice(0, 3);
+    
+    const categories = categoriesRes.ok ? (await categoriesRes.json()).data : [];
+    
+    return { cms, providers, projects, categories };
+  } catch (error) {
+    // This log will appear in your VS Code TERMINAL, not the browser
+    console.error("[HomePage] Data Fetch Error:", error);
+    return { cms: null, providers: [], projects: [], categories: [] };
   }
+}
 
-  const handleBrowseOwn = () => {
-    router.push("/browse")
-  }
-
-  const handlePopularSearch = (query: string) => {
-    router.push(`/search?q=${encodeURIComponent(query)}`)
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
-
+export default async function HomePage() {
+  const { cms, providers, projects, categories } = await getData();
   return (
     <div className="bg-background">
       {/* Hero Section */}
-      <section className="py-12 sm:py-12 px-4 sm:px-6 md:px-10 bg-gray-50
-       min-h-[80vh] flex flex-col items-center justify-center"
-        style={{
-          backgroundImage: `url(${cms?.homeBannerImg || "/Banner.jpg"})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat"
-        }}>
-        <div className="w-full max-w-7xl mx-auto">
-          <div className="w-full max-w-5xl mx-auto text-center px-2 sm:px-4 md:px-8">
-            <h1 className="custom-heading text-3xl sm:text-4xl md:text-5xl font-normal text-white mb-6 leading-tight">
-              {cms?.homeBannerTitle || "Connect with trusted companies for your next project."}
-            </h1>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-6 mb-8 justify-center items-center w-full">
-              <div className="relative flex flex-col items-center">
-                <Button
-                  size="lg"
-                  className={`flex items-center justify-center gap-2 rounded-full transitation-all
-                    text-sm sm:text-base px-6 sm:px-8 md:px-10 py-3
-                ${activeButton === "match"
-                      ? "bg-[#F54A0C] text-white boder-[#F54A0C] shadow-lg"
-                      : "bg-[#F54A0C] hover:bg-[#d93f0b] text-white"
-                    } `}
-                  onClick={() => {
-                    setActiveButton("match")
-                    handleLetUsMatch()
-                  }}
-                >
-                  Let us match you
-                </Button>
-                {activeButton === "match" && (
-                  <div
-                    className="absolute -bottom-2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-[#F54A0C]"
-                  />
-                )}
-              </div>
-              <div className="relative flex flex-col items-center">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className={`flex items-center justify-center gap-2 rounded-full px-6sm:px-8 md:px-10 py-3 
-                    border text-sm transition-all focus-visible:ring-0 focus-visible:ring-offset-0 active:scale-95
-                ${activeButton === "browse"
-                      ? "bg-white text-[#F54A0C] shadow-lg"
-                      : "bg-white hover:bg-white/90 hover:text-[#F54A0C] text-[#F54A0C]"
-                    }`}
-                  onClick={() => {
-                    setActiveButton("browse")
-                    handleBrowseOwn()
-                  }}
-                >
-                  Browse on your own
-                </Button>
-                {activeButton === "browse" && (
-                  <div
-                    className="absolute -bottom-2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white"
-                  />
-                )}
-              </div>
-            </div>
-
-
-            {/* Search Section */}
-            <div className="space-y-4 w-full max-w-md sm:max-w-xl md:max-w-2xl mx-auto bg-white-50">
-              <div className="relative flex items-center w-full gap-2">
-                <Input
-                  placeholder="Search for Agency Name / Service Name?"
-                  className="flex-1 h-12 sm:h-14 text-white placeholder:text-white
-                   border-slate-300 bg-white/20 backdrop-blur-md 
-                   shadow-inner rounded-full px-4 sm:px-6 text-sm sm:text-base"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-
-                />
-                <Button
-                  onClick={handleGetMatched}
-                  className="absolute top-1/2 right-2 -translate-y-1/2 
-               flex items-center justify-center 
-               h-10 sm:h-12 w-10 sm:w-12 rounded-full bg-[#F54A0C] hover:bg-[#d93f0b] 
-               shadow-md transition-all rotate-90">
-                  <Search className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                </Button>
-              </div>
-
-              {/* Popular Searches */}
-              <div className="space-y-3 sm:space-y-2">
-                <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
-                  {(
-                    [
-                      "Get more qualified leads",
-                      "Improve my SEO rankings",
-                      "Develop a content strategy",
-                    ]
-                  ).map((search, index) => (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      size="sm"
-                      className="text-white border-slate-300 hover:bg-white/30 bg-transparentr rounded-full
-                      px-3 sm:px-4 text-xs sm:text-sm"
-                      onClick={() => handlePopularSearch(search)}
-                    >
-
-                      {search}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HomeHero cms={cms} />
 
       {/* Features */}
       <section className="py-8 px-4">
@@ -277,7 +104,7 @@ export default function HomePage() {
           <h2 className="text-4xl font-bold text-center mb-4">How Spark Works</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {cms?.homeWorkSection?.map((section: any, index: number) => (
-              <div className="flex flex-col gap-4 items-center text-center">
+              <div key={index} className="flex flex-col gap-4 items-center text-center">
                 <img src={section.image} alt="" />
                 <div className="">
                   <h3 className="text-2xl font-bold">{section.title}</h3>
@@ -315,16 +142,8 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             {(categories && categories.length > 0
               ? categories
-              : [
-                // // 🔥 fallback demo data
-                // { id: "1", name: "Web Development", image: "/images/icon-1.png", icon: "Code", color: "blue", services: ["Frontend", "Backend", "Full-Stack", "Frontend", "Backend", "Full-Stack"] },
-                // { id: "2", name: "Graphic Design", image: "/images/icon-2.png", icon: "Palette", color: "purple", services: ["Logo", "Branding", "UI Design", "Frontend", "Backend", "Full-Stack"] },
-                // { id: "3", name: "Marketing", image: "/images/icon-3.png", icon: "TrendingUp", color: "green", services: ["SEO", "Ads", "Strategy", "Frontend", "Backend", "Full-Stack"] },
-                // { id: "4", name: "Web Development", image: "/images/icon-4.png", icon: "Code", color: "blue", services: ["Frontend", "Backend", "Full-Stack", "Frontend", "Backend", "Full-Stack"] },
-                // { id: "5", name: "Graphic Design", image: "/images/icon-5.png", icon: "Palette", color: "purple", services: ["Logo", "Branding", "UI Design", "Frontend", "Backend", "Full-Stack"] },
-                // { id: "6", name: "Marketing", image: "/images/icon-6.png", icon: "TrendingUp", color: "green", services: ["SEO", "Ads", "Strategy", "Frontend", "Backend", "Full-Stack"] },
-              ]
-            ).map((category) => {
+              : []
+            ).map((category: any) => {
               const colors = colorMap[category.color] || colorMap.blue;
               const serviceLink = `/services/${category._id}`;
 
@@ -342,7 +161,7 @@ export default function HomePage() {
 
                   {/* Subcategories */}
                   <div className="space-y-3">
-                    {(category.children.slice(0, 6)|| []).map((sub, index) => (
+                    {(category.children.slice(0, 6)|| []).map((sub: any, index: number) => (
                       <p key={index} className={`block text-slate-500 text-sm hover:${colors.text} hover:translate-x-2 transition-all duration-200 font-medium`}>
                         {/* <Link
       key={index}
@@ -385,7 +204,7 @@ export default function HomePage() {
             </div>
             <div className="grid md:grid-cols-3 gap-6">
               {projects.map((project: any) => (
-                <div key={project.id} className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300">
+                <div key={project._id} className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300">
                   <div className="">
                     <div className="text-lg"><img src={project.image} alt="" className="rounded-t-3xl" /></div>
                     <div className="flex items-center justify-between mb-2 px-8 mt-4">
@@ -435,7 +254,7 @@ export default function HomePage() {
             </div>
             <div className="grid md:grid-cols-3 gap-6">
               {providers.map((provider: any) => (
-                <div key={provider.id} className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300 bg-white">
+                <div key={provider._id} className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300 bg-white">
                   <div className="">
                     <div className="text-lg"><img src={provider.coverImage} alt="" className="rounded-t-3xl" /></div>
                     <div className="flex items-center justify-between mb-2 px-8 mt-4">
