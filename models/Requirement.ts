@@ -16,6 +16,7 @@ export interface IRequirement extends Document {
   allocatedToId:mongoose.Types.ObjectId
   createdAt: Date
   updatedAt: Date
+  isReviewed?: boolean
 
 }
 
@@ -38,6 +39,7 @@ const RequirementSchema = new Schema<IRequirement>(
 
     clientId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     allocatedToId:{ type: Schema.Types.ObjectId, ref: "User" },
+    isReviewed: { type: Boolean, default: false },
     
   }, 
   { timestamps: true },

@@ -10,10 +10,13 @@ export interface IReview extends Document {
   scheduleRating: number
   costRating: number
   willingToReferRating: number
+  projectStartDate?: Date
+  projectEndDate?: Date
   title: string
   content: string
   pros?: string[]
   cons?: string[]
+  keyHighLights?: string[]
   isVerified: boolean
   isPublic: boolean
   response?: {
@@ -28,17 +31,22 @@ const ReviewSchema = new Schema<IReview>(
   {
     providerId: { type: Schema.Types.ObjectId, ref: "Provider", required: true },
     clientId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    projectId: { type: Schema.Types.ObjectId, ref: "Project", required: true },
+    projectId: { type: Schema.Types.ObjectId, ref: "Requirement", required: true },
     rating: { type: Number, required: true, min: 1, max: 5 },
     qualityRating: { type: Number, required: true, min: 1, max: 5 },
     scheduleRating: { type: Number, required: true, min: 1, max: 5 },
     costRating: { type: Number, required: true, min: 1, max: 5 },
     willingToReferRating: { type: Number, required: true, min: 1, max: 5 },
+    projectStartDate: { type: Date },
+    projectEndDate: { type: Date },
     title: { type: String, required: true },
     content: { type: String, required: true },
     pros: [{ type: String }],
     cons: [{ type: String }],
+    keyHighLights: [{ type: String }],
     isVerified: { type: Boolean, default: false },
+
+
     isPublic: { type: Boolean, default: true },
     response: {
       content: { type: String },
