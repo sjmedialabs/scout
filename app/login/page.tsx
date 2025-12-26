@@ -124,6 +124,12 @@ export default function LoginPage() {
                   className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
                 />
               </div>
+              <p
+                onClick={() => router.push("/forgot-password")}
+                className="mt-2 text-center text-xs  hover:text-blue-400 underline cursor-pointer"
+              >
+                Forgot password?
+              </p>
             </div>
 
             {error && (
