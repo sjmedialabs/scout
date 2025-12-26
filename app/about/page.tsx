@@ -194,7 +194,7 @@ export default async function AboutPage() {
               {cms?.aboutVisionCard?.map((item: any, i: number) => (
               <Card className="mb-3" style={{backgroundColor:"#fff"}} key={i}>
               <CardContent className="px-3 md:px-6">
-                <img src={item.icon} alt="Our Vission image" className="h-[50px] w-[50px] ml-[20px] mb-3"/>
+                <img src={item.icon} alt="Our Vission image" className="h-[50px] w-[50px] ml-5 mb-3"/>
                 <h1 className="text-md font-sans md:text-lg font-normal text-[#F54A0C]">{item.title}</h1>
                 <p className="text-[12px] font-sans md:text-sm font-normal text-gray-500 mb-5 leading-relaxed">
                   {item.description}
@@ -246,7 +246,7 @@ export default async function AboutPage() {
         {/*Team section */}
         <div className="py-10 px-8 lg:px-30">
            <h5 className="text-md font-normal text-[#F54A0C] text-center">{cms?.aboutTeamTitle}</h5>
-           <h5 className="text-2xl font-normal text-[#000] text-center max-w-[300px] mx-auto">
+           <h5 className="text-2xl font-normal text-black text-center max-w-[300px] mx-auto">
 {cms?.aboutTeamSubtitle}
 </h5>
 
@@ -266,7 +266,7 @@ export default async function AboutPage() {
               <div className="absolute inset-0 bg-black/0 backdrop-grayscale"></div>
 
               {/* Colored box */}
-              <div className="relative z-10 w-[80%] bg-[#F54A0C] pl-[30px] py-[20px] mb-5">
+              <div className="relative z-10 w-[80%] bg-[#F54A0C] pl-[30px] py-5 mb-5">
                 <h5 className="text-md font-bold text-white">{member.name}</h5>
                 <p className="text-[12px] font-normal text-white">{member.role}</p>
               </div>

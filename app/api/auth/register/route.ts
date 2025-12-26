@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
         userId:user._id,
         name:user.name,
     email:user.email,
-    phoneNumber: "",
+    phoneNumber: undefined,
     companyName: user.company || "",
     position: "",
     industry: "Technology",
