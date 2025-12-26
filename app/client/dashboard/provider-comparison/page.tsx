@@ -56,6 +56,7 @@ import { useState, useEffect } from "react"
 import { useAuth } from "@/contexts/auth-context"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import StarRating from "@/components/ui/star-rating"
 
 interface ProjectProposal {
   id: string
@@ -225,22 +226,22 @@ const mockProjectProposals: ProjectProposal[] = [
 ]
 const ProviderComparisonPage=()=>{
     return(
-            <div className="space-y-6">
+            <div className="space-y-6 p-3 md:p-6">
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Provider Comparison</h1>
-              <p className="text-muted-foreground">Compare vendors side-by-side to make informed decisions</p>
+              <h1 className="text-3xl text-[#F4561C] my-custom-class leading-6">Provider Comparison</h1>
+              <p className="text-lg text-[#656565] my-custom-class mt-0">Compare vendors side-by-side to make informed decisions</p>
             </div>
 
             {/* Vendor Selection */}
-            <Card>
+            <Card className="border-[1px] border-[#D1CBCB] rounded-3xl bg-[#fff] shadow-none w-auto">
               <CardHeader>
-                <CardTitle>Select Vendors to Compare</CardTitle>
-                <CardDescription>Choose up to 4 vendors to compare their ratings and proposals</CardDescription>
+                <CardTitle className="text-[#333333] text-2xl font-bold my-custom-class leading-6">Select Vendors to Compare</CardTitle>
+                <CardDescription className="text-md text-[#333333] font-normal my-custom-class">Choose up to 4 vendors to compare their ratings and proposals</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
                   {mockProjectProposals.slice(0, 6).map((proposal) => (
-                    <Button key={proposal.id} variant="outline" size="sm">
+                    <Button key={proposal.id} variant="outline" size="sm" className="border-[1px] border-[#DEDEDE] rounded-full bg-[#EDEDED] text-[#000] hover:text-[#000] active:bg-[#EDEDED] hover:bg-[#EDEDED]">
                       {proposal.providerName}
                     </Button>
                   ))}
@@ -251,108 +252,111 @@ const ProviderComparisonPage=()=>{
             {/* Side-by-Side Comparison */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {mockProjectProposals.slice(0, 3).map((proposal) => (
-                <Card key={proposal.id} className="relative">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <CardTitle className="text-lg">{proposal.providerName}</CardTitle>
-                        <div className="flex items-center gap-1 mt-1">
-                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <span className="text-sm font-medium">{proposal.providerRating}</span>
+                <Card key={proposal.id} className="relative px-0 py-3 border-[1px] shadow-none rounded-2xl bg-[#fff]  border-[#EBEBEB]  ">
+                  <CardHeader className="px-0 py-0 mb-0">
+                    <div className="flex items-start justify-start gap-2 p-4 bg-[#fff]">
+                      <div className="items-center">
+                        <img src="/demilogo.png" alt={proposal.providerName} className="min-h-18 min-w-18 max-h-23 max-w-23 object-contain mb-2" />
+                      </div>
+                      <div className="items-center mt-2">
+                        <CardTitle className="text-lg font-bold text-[#000]">{proposal.providerName}</CardTitle>
+                        <div className="flex items-center  mt-1">
+                          <StarRating rating={proposal.providerRating}/>
+                          <span className="text-sm ml-1  font-bold text-[#000]">{` (${proposal?.reviewCount || 0})`}</span>
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm">
+                      {/* <Button variant="ghost" size="sm">
                         <X className="h-4 w-4" />
-                      </Button>
+                      </Button> */}
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-6">
+                  <CardContent className="space-y-0 mb-1 px-0 py-0">
                     {/* Proposal Details */}
-                    <div className="space-y-2">
+                    <div className="space-y-0 bg-[#DBE8F2]  -mt-8 p-6">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Proposal Amount</span>
+                        <span className="text-[#000] text-xl font-bold">Proposal Amount</span>
                         <span className="font-bold text-lg">${proposal.proposalAmount.toLocaleString()}</span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Timeline</span>
-                        <span className="font-medium">{proposal.timeline}</span>
+                        <span className="text-[#000] text-xl font-bold">Timeline</span>
+                        <span className="font-bold text-lg">{proposal.timeline}</span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Location</span>
-                        <span className="font-medium">{proposal.providerId}</span>
+                        <span className="text-[#000] text-xl font-bold">Location</span>
+                        <span className="font-bold text-lg">{proposal.providerId}</span>
                       </div>
                     </div>
 
-                    <Separator />
+                   
 
                     {/* Rating Breakdown */}
-                    <div className="space-y-4">
-                      <h4 className="font-semibold text-sm">Rating Breakdown</h4>
+                    <div className="space-y-0 bg-[#E9F5FF] p-6">
+                      <h4 className="text-[#F54A0C] text-xl mb-3 font-bold -ml-2">Rating Breakdown</h4>
 
                       {/* Quality Rating */}
-                      <div className="space-y-1">
+                      <div className="space-y-1 mb-4">
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Quality</span>
-                          <span className="font-medium">4.8/5.0</span>
+                          <span className="text-[#6B6B6B] font-bold text-md my-custom-class">Quality</span>
+                          <span className="font-bold text-[#6B6B6B] text-md">4.8/5.0</span>
                         </div>
                         <div className="h-2 bg-muted rounded-full overflow-hidden">
-                          <div className="h-full bg-green-500" style={{ width: "96%" }} />
+                          <div className="h-full bg-[#00C951]" style={{ width: "90%" }} />
                         </div>
                       </div>
 
                       {/* Schedule Rating */}
-                      <div className="space-y-1">
+                      <div className="space-y-1 mb-4">
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Schedule</span>
-                          <span className="font-medium">4.5/5.0</span>
+                          <span className="text-[#6B6B6B] font-bold text-md my-custom-class">Schedule</span>
+                          <span className="font-bold text-[#6B6B6B] text-md">4.5/5.0</span>
                         </div>
                         <div className="h-2 bg-muted rounded-full overflow-hidden">
-                          <div className="h-full bg-blue-500" style={{ width: "90%" }} />
+                          <div className="h-full bg-[#2B7FFF]" style={{ width: "90%" }} />
                         </div>
                       </div>
 
                       {/* Cost Rating */}
-                      <div className="space-y-1">
+                      <div className="space-y-1 mb-4">
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Cost</span>
-                          <span className="font-medium">4.3/5.0</span>
+                          <span className="text-[#6B6B6B] font-bold text-md my-custom-class">Cost</span>
+                          <span className="font-bold text-[#6B6B6B] text-md">4.3/5.0</span>
                         </div>
                         <div className="h-2 bg-muted rounded-full overflow-hidden">
-                          <div className="h-full bg-yellow-500" style={{ width: "86%" }} />
+                          <div className="h-full bg-[#F0B100]" style={{ width: "86%" }} />
                         </div>
                       </div>
 
                       {/* Willing to Refer */}
-                      <div className="space-y-1">
+                      <div className="space-y-1 mb-4">
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Willing to Refer</span>
-                          <span className="font-medium">95%</span>
+                          <span className="text-[#6B6B6B] font-bold text-md my-custom-class">Willing to Refer</span>
+                          <span className="font-bold text-[#6B6B6B] text-md">95%</span>
                         </div>
                         <div className="h-2 bg-muted rounded-full overflow-hidden">
-                          <div className="h-full bg-purple-500" style={{ width: "95%" }} />
+                          <div className="h-full bg-[#34359B]" style={{ width: "95%" }} />
                         </div>
                       </div>
                     </div>
 
-                    <Separator />
+                  
 
                     {/* Key Strengths */}
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-sm">Key Strengths</h4>
+                    <div className="space-y-2 bg-[#fffff] p-6">
+                      <h4 className="text-[#F54A0C] font-bold text-lg">Key Strengths</h4>
                       <div className="flex flex-wrap gap-2">
-                        <Badge variant="secondary">Fast Delivery</Badge>
-                        <Badge variant="secondary">Great Communication</Badge>
-                        <Badge variant="secondary">High Quality</Badge>
+                        <Badge variant="secondary" className="bg-[#1C96F4] rounded-full text-xs my-custom-class min-h-[40px] min-w-[100px] text-[#fff]">Fast Delivery</Badge>
+                        <Badge variant="secondary" className="bg-[#1C96F4] rounded-full text-xs my-custom-class min-h-[40px] min-w-[100px] text-[#fff]">Great Communication</Badge>
+                        <Badge variant="secondary" className="bg-[#1C96F4] rounded-full text-xs my-custom-class min-h-[40px] min-w-[100px] text-[#fff]">High Quality</Badge>
                       </div>
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex gap-2">
-                      <Button className="flex-1" size="sm">
+                    <div className="flex gap-2 p-6 pt-0 bg-[#fff]">
+                      <Button className="flex-1 bg-[#2C34A1] rounded-full min-h-[40px]" size="sm">
                         View Details
                       </Button>
-                      <Button variant="outline" size="sm">
-                        <Heart className="h-4 w-4" />
+                      <Button variant="outline" size="sm" className="items-center bg-[#000000] rounded-full mt-0 min-h-[40px]">
+                        <Heart className="h-8 w-8"  color="#fff"/>
                       </Button>
                     </div>
                   </CardContent>
@@ -361,71 +365,62 @@ const ProviderComparisonPage=()=>{
             </div>
 
             {/* Comparison Summary */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Comparison Summary</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
+            <h1 className="text-xl text-[#F54A0C] font-bold mb-1 my-custom-class">Comparison Summary</h1>
+            <Card className="bg-[#fff] mt-2 rounded-xl border-[1px] border-[#E6E6E6]">
+              {/* ⚠️ Important: NO overflow on CardContent */}
+              <CardContent className="p-0 font-bold text-black text-sm">
+                
+                {/* Scroll wrapper */}
+                <div className="relative w-full overflow-x-auto">
+                  <table className="w-full  border-collapse">
                     <thead>
                       <tr className="border-b">
-                        <th className="text-left p-3 font-medium">Criteria</th>
+                        <th className="text-left p-3 font-bold">Criteria</th>
                         {mockProjectProposals.slice(0, 3).map((proposal) => (
-                          <th key={proposal.id} className="text-center p-3 font-medium">
+                          <th
+                            key={proposal.id}
+                            className="text-center p-3 font-bold text-black"
+                          >
                             {proposal.providerName}
                           </th>
                         ))}
                       </tr>
                     </thead>
+
                     <tbody>
                       <tr className="border-b">
-                        <td className="p-3 text-sm text-muted-foreground">Overall Rating</td>
-                        {mockProjectProposals.slice(0, 3).map((proposal) => (
-                          <td key={proposal.id} className="text-center p-3 font-medium">
-                            {proposal.providerRating}
+                        <td className="p-3 font-bold">Overall Rating</td>
+                        {mockProjectProposals.slice(0, 3).map((p) => (
+                          <td key={p.id} className="text-center p-3 font-medium">
+                            {p.providerRating}
                           </td>
                         ))}
                       </tr>
+
                       <tr className="border-b">
-                        <td className="p-3 text-sm text-muted-foreground">Proposal Amount</td>
-                        {mockProjectProposals.slice(0, 3).map((proposal) => (
-                          <td key={proposal.id} className="text-center p-3 font-medium">
-                            ${proposal.proposalAmount.toLocaleString()}
+                        <td className="p-3 font-bold">Proposal Amount</td>
+                        {mockProjectProposals.slice(0, 3).map((p) => (
+                          <td key={p.id} className="text-center p-3 font-medium">
+                            ${p.proposalAmount.toLocaleString()}
                           </td>
                         ))}
                       </tr>
+
                       <tr className="border-b">
-                        <td className="p-3 text-sm text-muted-foreground">Timeline</td>
-                        {mockProjectProposals.slice(0, 3).map((proposal) => (
-                          <td key={proposal.id} className="text-center p-3 font-medium">
-                            {proposal.timeline}
+                        <td className="p-3 font-bold">Timeline</td>
+                        {mockProjectProposals.slice(0, 3).map((p) => (
+                          <td key={p.id} className="text-center p-3 font-medium">
+                            {p.timeline}
                           </td>
                         ))}
-                      </tr>
-                      <tr className="border-b">
-                        <td className="p-3 text-sm text-muted-foreground">Quality Score</td>
-                        <td className="text-center p-3 font-medium">4.8</td>
-                        <td className="text-center p-3 font-medium">4.6</td>
-                        <td className="text-center p-3 font-medium">4.7</td>
-                      </tr>
-                      <tr className="border-b">
-                        <td className="p-3 text-sm text-muted-foreground">Schedule Score</td>
-                        <td className="text-center p-3 font-medium">4.5</td>
-                        <td className="text-center p-3 font-medium">4.7</td>
-                        <td className="text-center p-3 font-medium">4.4</td>
-                      </tr>
-                      <tr>
-                        <td className="p-3 text-sm text-muted-foreground">Cost Score</td>
-                        <td className="text-center p-3 font-medium">4.3</td>
-                        <td className="text-center p-3 font-medium">4.5</td>
-                        <td className="text-center p-3 font-medium">4.2</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
+
               </CardContent>
             </Card>
+
           </div>
     )
 }

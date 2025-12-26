@@ -11,6 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "../ui/button"
 import { cn } from "@/lib/utils"
+import { RiVerifiedBadgeFill } from "react-icons/ri";
 
 interface MenuItem {
   id: string
@@ -117,15 +118,15 @@ export default function ClientSidebar({
         )}
       >
         {/* Header */}
-        <div className="p-6 border-b border-border flex justify-between items-start">
+        <div className="p-6 border-b border-border bg-[#3C3A3E] flex justify-between items-start">
           <div>
-            <h2 className="text-xl font-bold">Client Dashboard</h2>
-            <p className="text-sm text-muted-foreground">
+            <h2 className="text-xl font-bold text-[#fff]">Client Dashboard</h2>
+            <p className="text-sm text-[#8B8585]">
               Welcome back, {user.name}
             </p>
             <div className="flex items-center gap-2 mt-3">
-              <Badge className="bg-green-100 text-green-800">Active Client</Badge>
-              <Badge variant="secondary">Verified</Badge>
+              <Badge className="bg-[#39A935] text-[#fff] rounded-full min-h-[30px]">Active Client</Badge>
+              <Badge variant="secondary" className="bg-[#fff] min-h-[30px] rounded-full text-[#2C34A1]"><RiVerifiedBadgeFill className="h-8 w-8" color={"#2C34A1"}/>Verified</Badge>
             </div>
           </div>
 
@@ -136,22 +137,22 @@ export default function ClientSidebar({
         </div>
 
         {/* Menu */}
-        <div className="flex-1 overflow-y-auto p-4">
-          <nav className="space-y-2">
+        <div className="flex-1 overflow-y-auto p-4 bg-[#3C3A3E] [&_[aria-label='Close']]:hidden [&::-webkit-scrollbar]:hidden">
+          <nav className="space-y-2 ">
             {menuItems.map((section) => (
               <div key={section.id}>
                 <button
                   onClick={() => toggleSection(section.id)}
-                  className="w-full flex items-center justify-between p-3 text-sm font-medium text-muted-foreground hover:bg-accent rounded-lg"
+                  className="w-full flex  items-center justify-between p-3 text-sm font-medium text-muted-foreground  rounded-lg"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 text-[#fff]">
                     <section.icon className="h-4 w-4" />
                     {section.label}
                   </div>
                   {expandedSections.includes(section.id) ? (
-                    <ChevronDown className="h-4 w-4" />
+                    <ChevronDown className="h-4 w-4 text-[#fff]" />
                   ) : (
-                    <ChevronRight className="h-4 w-4" />
+                    <ChevronRight className="h-4 w-4 text-[#fff]" />
                   )}
                 </button>
 
@@ -163,13 +164,13 @@ export default function ClientSidebar({
                           key={item.id}
                           onClick={() => handleMenuClick(item)}
                           className={cn(
-                            "w-full flex items-center gap-3 p-2 text-sm rounded-lg",
+                            "w-full flex items-center gap-3 p-2 text-sm rounded-lg text-[#fff]",
                             pathname === item.path
-                              ? "bg-primary text-primary-foreground"
-                              : "text-muted-foreground hover:bg-accent"
+                              ? "text-[#F54A0C] "
+                              : " "
                           )}
                         >
-                          <item.icon className="h-4 w-4" />
+                          <item.icon className="h-4 w-4 text-[#fff]" />
                           {item.label}
                         </button>
                       ))}
@@ -181,9 +182,9 @@ export default function ClientSidebar({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-border">
+        <div className="p-4 border-t bg-[#3C3A3E] border-border">
           <Button
-            className="w-full"
+            className="w-full bg-[#2C34A1] text-[#fff]"
             onClick={() => {
               router.push("/client/dashboard/post-requirement")
               onClose()

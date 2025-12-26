@@ -64,25 +64,28 @@ import {
 import { mockRequirements, mockProposals, mockProviders } from "@/lib/mock-data"
 import type { Requirement, Proposal, Provider, Notification } from "@/lib/types"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { MdLocationOn } from "react-icons/md";
 const ClientAnalyticsPage=()=>{
     return(
-        <div className="space-y-6">
+        <div className="space-y-6 p-3 md:p-6">
                 <div>
-                  <h1 className="text-2xl font-bold text-foreground">Project Analytics</h1>
-                  <p className="text-muted-foreground">Insights into vendor demographics and proposal trends</p>
+                  <h1 className="text-2xl font-bold my-custom-class leading-6 text-[#F4561C]">Project Analytics</h1>
+                  <p className="text-[#656565] font-medium text-lg my-custom-class">Insights into vendor demographics and proposal trends</p>
                 </div>
     
                 {/* Top Locations Analytics */}
-                <Card>
+                <Card className="border-1 border-[#CFCACA] rounded-3xl px-2 md:px-8 bg-[#fff]">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <MapPin className="h-5 w-5" />
-                      Top Vendor Locations
+                    <CardTitle className="flex items-center gap-0">
+                      <MdLocationOn className="h-6 w-9" color="#F54A0C" />
+                      <span className="text-2xl font-bold my-custom-class text-[#F54A0C]"> Top Vendor Locations</span>
+                     
                     </CardTitle>
-                    <CardDescription>Geographic distribution of vendors responding to your projects</CardDescription>
+                     <p className="text-[#656565] my-custom-class ml-3 -mt-2">Geographic distribution of vendors responding to your projects</p>
+                    
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
+                    <div className="space-y-4 px-2">
                       {[
                         { location: "San Francisco, CA", count: 12, percentage: 30 },
                         { location: "New York, NY", count: 10, percentage: 25 },
@@ -92,13 +95,13 @@ const ClientAnalyticsPage=()=>{
                       ].map((item) => (
                         <div key={item.location} className="space-y-2">
                           <div className="flex items-center justify-between text-sm">
-                            <span className="font-medium">{item.location}</span>
-                            <span className="text-muted-foreground">
+                            <span className="font-bold text-xs text-[#6B6B6B] my-custom-class">{item.location}</span>
+                            <span className="font-bold text-xs text-[#6B6B6B] my-custom-class">
                               {item.count} vendors ({item.percentage}%)
                             </span>
                           </div>
-                          <div className="h-2 bg-muted rounded-full overflow-hidden">
-                            <div className="h-full bg-primary transition-all" style={{ width: `${item.percentage}%` }} />
+                          <div className="h-2 bg-[#DAEDF8] rounded-full overflow-hidden">
+                            <div className="h-full bg-[#1C96F4] transition-all" style={{ width: `${item.percentage}%` }} />
                           </div>
                         </div>
                       ))}
@@ -107,13 +110,13 @@ const ClientAnalyticsPage=()=>{
                 </Card>
     
                 {/* Top Specialties Analytics */}
-                <Card>
+                <Card className="border-1 border-[#CFCACA] rounded-3xl bg-[#fff] px-2 md:px-8">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Target className="h-5 w-5" />
-                      Top Vendor Specialties
+                      <Target className="h-8 w-8" color="#F54A0C"/>
+                       <span className="text-2xl font-bold my-custom-class text-[#F54A0C]">Top Vendor Specialties</span>
                     </CardTitle>
-                    <CardDescription>Expertise areas of vendors responding to your projects</CardDescription>
+                    <p className="text-[#656565] my-custom-class ml-2 -mt-2">Expertise areas of vendors responding to your projects</p>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -126,13 +129,13 @@ const ClientAnalyticsPage=()=>{
                       ].map((item) => (
                         <div key={item.specialty} className="space-y-2">
                           <div className="flex items-center justify-between text-sm">
-                            <span className="font-medium">{item.specialty}</span>
-                            <span className="text-muted-foreground">
+                            <span className="font-bold text-xs text-[#6B6B6B] my-custom-class">{item.specialty}</span>
+                            <span className="font-bold text-xs text-[#6B6B6B] my-custom-class">
                               {item.count} vendors ({item.percentage}%)
                             </span>
                           </div>
-                          <div className="h-2 bg-muted rounded-full overflow-hidden">
-                            <div className="h-full bg-blue-500 transition-all" style={{ width: `${item.percentage}%` }} />
+                          <div className="h-2 bg-[#DAEDF8] rounded-full overflow-hidden">
+                            <div className="h-full bg-[#1C96F4] transition-all" style={{ width: `${item.percentage}%` }} />
                           </div>
                         </div>
                       ))}
@@ -141,25 +144,27 @@ const ClientAnalyticsPage=()=>{
                 </Card>
     
                 {/* Cost Distribution */}
-                <Card>
-                  <CardHeader>
+                <Card className="border-1 border-[#CFCACA] rounded-3xl bg-[#fff] px-0">
+                  <CardHeader className="px-8">
                     <CardTitle className="flex items-center gap-2">
-                      <DollarSign className="h-5 w-5" />
-                      Cost Distribution Analysis
+                      <div className="h-8 w-8 flex items-center justify-center border-2 border-[#F4561C]  rounded-md">
+                        <DollarSign className="h-5 w-5" color="#F4561C"/>
+                      </div>
+                     <span className="text-2xl font-bold my-custom-class text-[#F54A0C]">Cost Distribution Analysis</span>
                     </CardTitle>
-                    <CardDescription>Budget ranges of proposals received vs. your stated budget</CardDescription>
+                    <p className="text-[#656565] my-custom-class  -mt-2">Budget ranges of proposals received vs. your stated budget</p>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
-                      <div className="p-4 bg-muted rounded-lg">
+                  <CardContent className="px-0">
+                    <div className="space-y-6  px-0 ">
+                      <div className="py-4  rounded-lg px-8">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium">Your Stated Budget</span>
-                          <span className="text-lg font-bold text-primary">$50,000</span>
+                          <span className="text-lg text-[#000] font-bold my-custom-class">Your Stated Budget</span>
+                          <span className="text-lg font-bold text-[#000] my-custom-class">$50,000</span>
                         </div>
                       </div>
-    
-                      <div className="space-y-4">
-                        <h4 className="font-medium text-sm">Proposal Budget Ranges</h4>
+                      <hr className="border-[1px] border-[#E4E4E4] w-full"/>
+                      <div className="space-y-4 px-8">
+                        <h4 className="text-xl font-bold text-[#000] my-custom-class">Proposal Budget Ranges</h4>
                         {[
                           { range: "Under $30,000", count: 3, percentage: 15, color: "bg-green-500" },
                           { range: "$30,000 - $50,000", count: 8, percentage: 40, color: "bg-blue-500" },
@@ -168,12 +173,12 @@ const ClientAnalyticsPage=()=>{
                         ].map((item) => (
                           <div key={item.range} className="space-y-2">
                             <div className="flex items-center justify-between text-sm">
-                              <span className="font-medium">{item.range}</span>
-                              <span className="text-muted-foreground">
+                              <span className="font-bold text-xs text-[#6B6B6B] my-custom-class">{item.range}</span>
+                              <span className="font-bold text-xs text-[#6B6B6B] my-custom-class">
                                 {item.count} proposals ({item.percentage}%)
                               </span>
                             </div>
-                            <div className="h-3 bg-muted rounded-full overflow-hidden">
+                            <div className="h-2 bg-[#DAEDF8] rounded-full overflow-hidden">
                               <div
                                 className={`h-full ${item.color} transition-all`}
                                 style={{ width: `${item.percentage}%` }}
@@ -185,16 +190,16 @@ const ClientAnalyticsPage=()=>{
     
                       <div className="grid grid-cols-3 gap-4 pt-4 border-t">
                         <div className="text-center">
-                          <p className="text-sm text-muted-foreground">Average</p>
-                          <p className="text-lg font-bold">$52,500</p>
+                          <p className="text-sm text-[#6B6B6B] my-custom-class font-bold">Average</p>
+                          <p className="text-lg text-[#000] font-bold">$52,500</p>
                         </div>
                         <div className="text-center">
-                          <p className="text-sm text-muted-foreground">Median</p>
-                          <p className="text-lg font-bold">$48,000</p>
+                          <p className="text-sm text-[#6B6B6B] my-custom-class font-bold">Median</p>
+                          <p className="text-lg text-[#000] font-bold">$48,000</p>
                         </div>
                         <div className="text-center">
-                          <p className="text-sm text-muted-foreground">Range</p>
-                          <p className="text-lg font-bold">$25K - $85K</p>
+                          <p className="text-sm text-[#6B6B6B] my-custom-class font-bold">Range</p>
+                          <p className="text-lg font-bold text-[#000]">$25K - $85K</p>
                         </div>
                       </div>
                     </div>

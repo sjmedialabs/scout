@@ -63,6 +63,9 @@ import {
 import { mockRequirements, mockProposals, mockProviders } from "@/lib/mock-data"
 import type { Requirement, Proposal, Provider, Notification } from "@/lib/types"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { FaFileAlt } from "react-icons/fa";
+import { BiHeartCircle } from "react-icons/bi";
+import { BiDollarCircle } from "react-icons/bi";
 
 interface ProjectProposal {
   id: string
@@ -721,15 +724,7 @@ const handlePostRequirement = async (newRequirement: any) => {
     setSelectedProjectId(projectId)
   }
 
-  const handleProjectProposalAction = (proposalId: string, action: "shortlist" | "accept" | "reject") => {
-    setProjectProposals((prev) =>
-      prev.map((proposal) =>
-        proposal.id === proposalId
-          ? { ...proposal, status: action === "shortlist" ? "shortlisted" : action }
-          : proposal,
-      ),
-    )
-  }
+  
 
   const handleViewPortfolio = (providerId: string) => {
     setSelectedCompanyId(providerId)
@@ -795,94 +790,102 @@ const handlePostRequirement = async (newRequirement: any) => {
 
       {/* Main Content */}
       <div className="flex-1 p-6 overflow-y-auto">
-        {activeSection === "dashboard" && (
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Dashboard Overview</h1>
-              <p className="text-muted-foreground">Welcome to your client dashboard</p>
+        <div className="space-y-6">
+            <div className="border-b boreder-[1px] border-[#707070] pb-8">
+              <h1 className="text-3xl font-bold text-[#F4561C] my-custom-class leading-5">Dashboard Overview</h1>
+              <p className="text-lg text-[#656565] font-xl">Welcome to your client dashboard</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card>
+              <Card className="bg-[#fff]">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Vendor Matches</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium my-custom-class text-[#000]">Vendor Matches</CardTitle>
+                   <div className=" h-8 w-8 flex items-center justify-center rounded-full bg-[#EEF7FE]">
+                    <Users className="h-4 w-4" color="#F54A0C" />
+                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.vendorMatches}</div>
-                  <p className="text-xs text-muted-foreground">Providers matched to projects</p>
+                  <div className="text-2xl font-bold text-[#000]">{stats.vendorMatches}</div>
+                  <p className="text-xs text-[#F4561C] font-normal">Providers matched to projects</p>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-[#fff]">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Proposal Count</CardTitle>
-                  <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium my-custom-class text-[#000]">Proposal Count</CardTitle>
+                  <div className=" h-8 w-8 flex items-center justify-center rounded-full bg-[#EEF7FE]">
+                    <FaFileAlt  className="h-4 w-4" color="#F54A0C" />
+                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.proposalCount}</div>
-                  <p className="text-xs text-muted-foreground">Vendors submitted proposals</p>
+                  <div className="text-2xl font-bold text-[#000]">{stats.proposalCount}</div>
+                  <p className="text-xs text-[#F4561C] font-normal my-custom-class">Vendors submitted proposals</p>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-[#fff]">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Shortlisted Vendors</CardTitle>
-                  <Star className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium my-custom-class text-[#000]">Shortlisted Vendors</CardTitle>
+                  <div className=" h-8 w-8 flex items-center justify-center rounded-full bg-[#EEF7FE]">
+                    <BiHeartCircle  className="h-4 w-4" color="#F54A0C" />
+                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{stats.shortlistedVendors}</div>
-                  <p className="text-xs text-muted-foreground">Agencies shortlisted</p>
+                  <p className="text-xs text-[#F4561C] font-normal my-custom-class">Agencies shortlisted</p>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-[#fff]">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Avg Proposal</CardTitle>
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium my-custom-class text-[#000]" >Avg Proposal</CardTitle>
+                  <div className=" h-8 w-8 flex items-center justify-center rounded-full bg-[#EEF7FE]">
+                    <BiDollarCircle  className="h-4 w-4" color="#F54A0C" />
+                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">${costAnalytics.avgProposalAmount.toLocaleString()}</div>
-                  <p className="text-xs text-muted-foreground">Average proposal amount</p>
+                  <p className="text-xs text-[#F4561C] font-normal my-custom-class">Average proposal amount</p>
                 </CardContent>
               </Card>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
+              <Card className="bg-[#fff] rounded-2xl">
                 <CardHeader>
-                  <CardTitle>Vendor Comparison</CardTitle>
-                  <CardDescription>Compare vendors side-by-side with rating breakdown</CardDescription>
+                  <CardTitle className="font-bold text-[#F4561C] text-xl leading-4 my-custom-class">Vendor Comparison</CardTitle>
+                  <CardDescription className="text-md my-custom-class text-[#656565] font-normal">Compare vendors side-by-side with rating breakdown</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-0">
                   <div className="space-y-4">
-                    <div className="grid grid-cols-5 gap-2 text-xs font-medium text-muted-foreground border-b pb-2">
-                      <div>Vendor</div>
-                      <div className="text-center">Quality</div>
-                      <div className="text-center">Schedule</div>
-                      <div className="text-center">Cost</div>
-                      <div className="text-center">Refer</div>
+                    <div className="grid grid-cols-5 gap-2 text-xs font-medium text-muted-foreground pb-2 px-6">
+                      <div className="font-bold text-sm text-[#6B6B6B] my-custom-class">Vendor</div>
+                      <div className="text-center font-bold text-sm text-[#6B6B6B] my-custom-class">Quality</div>
+                      <div className="text-center font-bold text-sm text-[#6B6B6B] my-custom-class">Schedule</div>
+                      <div className="text-center font-bold text-sm text-[#6B6B6B] my-custom-class">Cost</div>
+                      <div className="text-center font-bold text-sm text-[#6B6B6B] my-custom-class">Refer</div>
                     </div>
+                    
                     {vendorComparisonData.slice(0, 4).map((vendor) => (
-                      <div key={vendor.id} className="grid grid-cols-5 gap-2 items-center text-sm">
-                        <div className="font-medium truncate">{vendor.name}</div>
+                      <div key={vendor.id} className="grid  border-t-[1px] px-6 pt-4 border-[#E3E3E3] grid-cols-5 gap-2 items-center text-sm">
+                        <div className="font-medium teext-sm text-[#6B6B6B] my-custom-class">{vendor.name}</div>
                         <div className="text-center">
-                          <Badge variant="secondary" className="text-xs">
+                          <Badge variant="secondary" className="text-xs border-1 border-[#B4D2F4] rounded-full bg-[#F2F2F2] min-w-[40px] text-[#000]">
                             {vendor.qualityRating.toFixed(1)}
                           </Badge>
                         </div>
                         <div className="text-center">
-                          <Badge variant="secondary" className="text-xs">
+                          <Badge variant="secondary" className="text-xs border-1 border-[#B4D2F4] rounded-full bg-[#F2F2F2] min-w-[40px] text-[#000]">
                             {vendor.scheduleRating.toFixed(1)}
                           </Badge>
                         </div>
                         <div className="text-center">
-                          <Badge variant="secondary" className="text-xs">
+                          <Badge variant="secondary" className="text-xs border-1 border-[#B4D2F4] rounded-full bg-[#F2F2F2] min-w-[40px] text-[#000]">
                             {vendor.costRating.toFixed(1)}
                           </Badge>
                         </div>
                         <div className="text-center">
-                          <Badge variant="secondary" className="text-xs">
+                          <Badge variant="secondary" className="text-xs border-1 border-[#B4D2F4] rounded-full bg-[#F2F2F2] min-w-[40px] text-[#000]">
                             {vendor.willingToRefer.toFixed(1)}
                           </Badge>
                         </div>
@@ -892,26 +895,26 @@ const handlePostRequirement = async (newRequirement: any) => {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-[#fff] rounded-2xl">
                 <CardHeader>
-                  <CardTitle>Cost Distribution</CardTitle>
-                  <CardDescription>Proposal budget ranges vs your stated budget</CardDescription>
+                  <CardTitle className="font-bold text-[#F4561C] text-xl leading-4 my-custom-class">Cost Distribution</CardTitle>
+                  <CardDescription className="text-md my-custom-class text-[#656565] font-normal">Proposal budget ranges vs your stated budget</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-0 py-0 mb-0">
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Budget Range</span>
-                      <span className="text-muted-foreground">Proposals</span>
+                    <div className="flex items-center justify-between text-sm px-6">
+                      <span className="text-[#6B6B6B] font-bold text-sm">Budget Range</span>
+                      <span className="text-[#6B6B6B] font-bold text-sm">Proposals</span>
                     </div>
                     {costAnalytics.budgetRanges.map((range, index) => (
-                      <div key={index} className="space-y-2">
+                      <div key={index} className="space-y-1 px-6">
                         <div className="flex items-center justify-between text-sm">
-                          <span className="font-medium">{range.range}</span>
-                          <span className="font-bold">{range.count}</span>
+                          <span className="text-[#6B6B6B] font-bold text-sm">{range.range}</span>
+                          <span className="text-[#6B6B6B] font-bold text-sm">{range.count}</span>
                         </div>
-                        <div className="w-full bg-secondary rounded-full h-2">
+                        <div className="w-full bg-[#DAEDF8] rounded-full h-2">
                           <div
-                            className="bg-primary rounded-full h-2 transition-all"
+                            className="bg-[#1C96F4] rounded-full h-2 transition-all"
                             style={{
                               width: `${(range.count / mockProjectProposals.length) * 100}%`,
                             }}
@@ -919,10 +922,10 @@ const handlePostRequirement = async (newRequirement: any) => {
                         </div>
                       </div>
                     ))}
-                    <div className="pt-4 border-t">
+                    <div className="pt-4 border-t-[1px] mt-8 border-[#E3E3E3] px-6 pb-0 mb-0">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Range</span>
-                        <span className="font-bold">
+                        <span className="text-[#6B6B6B] text-sm font-bold">Range</span>
+                        <span className="text-[#6B6B6B] text-sm font-bold">
                           ${costAnalytics.minProposalAmount.toLocaleString()} - $
                           {costAnalytics.maxProposalAmount.toLocaleString()}
                         </span>
@@ -934,28 +937,28 @@ const handlePostRequirement = async (newRequirement: any) => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
+              <Card className="bg-[#fff] rounded-2xl">
                 <CardHeader>
-                  <CardTitle>Top Vendor Locations</CardTitle>
-                  <CardDescription>Geographic distribution of responding vendors</CardDescription>
+                  <CardTitle className="font-bold text-[#F4561C] text-xl leading-4 my-custom-class">Top Vendor Locations</CardTitle>
+                  <CardDescription className="text-md my-custom-class text-[#656565] font-normal">Geographic distribution of responding vendors</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     {locationAnalytics.map((location, index) => (
-                      <div key={index} className="space-y-2">
+                      <div key={index} className="space-y-1">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm font-medium">{location.location}</span>
+                      
+                            <span className="text-sm font-normal text-[#6B6B6B] my-custom-class">{location.location}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold">{location.count}</span>
-                            <span className="text-xs text-muted-foreground">({location.percentage}%)</span>
+                            <span className="text-sm font-normal text-[#6B6B6B] my-custom-class">{location.count}</span>
+                            <span className="text-xs font-normal text-[#6B6B6B] my-custom-class">({location.percentage}%)</span>
                           </div>
                         </div>
-                        <div className="w-full bg-secondary rounded-full h-2">
+                        <div className="w-full bg-[#DAEDF8] rounded-full h-2">
                           <div
-                            className="bg-blue-500 rounded-full h-2 transition-all"
+                            className="bg-[#1C96F4] rounded-full h-2 transition-all"
                             style={{ width: `${location.percentage}%` }}
                           />
                         </div>
@@ -965,28 +968,28 @@ const handlePostRequirement = async (newRequirement: any) => {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-[#fff] rounded-2xl">
                 <CardHeader>
-                  <CardTitle>Top Vendor Specialties</CardTitle>
-                  <CardDescription>Expertise areas of responding vendors</CardDescription>
+                  <CardTitle className="font-bold text-[#F4561C] text-xl leading-4 my-custom-class">Top Vendor Specialties</CardTitle>
+                  <CardDescription className="text-md my-custom-class text-[#656565] font-normal">Expertise areas of responding vendors</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     {specialtyAnalytics.map((specialty, index) => (
-                      <div key={index} className="space-y-2">
+                      <div key={index} className="space-y-1">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <Target className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm font-medium">{specialty.specialty}</span>
+                            
+                            <span className="text-sm font-normal text-[#6B6B6B] my-custom-class">{specialty.specialty}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold">{specialty.count}</span>
-                            <span className="text-xs text-muted-foreground">({specialty.percentage}%)</span>
+                            <span className="text-sm font-normal text-[#6B6B6B] my-custom-class">{specialty.count}</span>
+                            <span className="text-xs font-normal text-[#6B6B6B] my-custom-class">({specialty.percentage}%)</span>
                           </div>
                         </div>
-                        <div className="w-full bg-secondary rounded-full h-2">
+                        <div className="w-full bg-[#DAEDF8] rounded-full h-2">
                           <div
-                            className="bg-green-500 rounded-full h-2 transition-all"
+                            className="bg-[#1C96F4] rounded-full h-2 transition-all"
                             style={{ width: `${specialty.percentage}%` }}
                           />
                         </div>
@@ -999,11 +1002,8 @@ const handlePostRequirement = async (newRequirement: any) => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Recent Requirements</CardTitle>
-                    <CardDescription>Your latest posted requirements</CardDescription>
-                  </CardHeader>
+                <Card className="bg-[#fff] rounded-2xl">
+                  
                   <CardContent>
                     <RequirementList
                       requirements={requirements.slice(0, 3)}
@@ -1023,1650 +1023,14 @@ const handlePostRequirement = async (newRequirement: any) => {
               </div>
             </div>
           </div>
-        )}
 
-        {/* My Requirements */}
         
-        {/* Proposals */}
-        {activeSection === "proposals" && !selectedProjectId && (
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold">
-                Proposals
-                {selectedRequirement && (
-                  <span className="text-muted-foreground font-normal text-xl">
-                    {" "}
-                    for "{requirements.find((r) => r.id === selectedRequirement)?.title}"
-                  </span>
-                )}
-              </h1>
-              <p className="text-muted-foreground">
-                {selectedRequirement
-                  ? "Review and manage proposals for the selected requirement"
-                  : "All proposals received for your projects and requirements"}
-              </p>
-            </div>
-
-            <div className="flex gap-4 border-b">
-              <button
-                className={`pb-2 px-1 border-b-2 transition-colors ${
-                  !selectedRequirement
-                    ? "border-primary text-primary font-medium"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-                onClick={() => setSelectedRequirement(null)}
-              >
-                Project Proposals ({projectProposals.length})
-              </button>
-              <button
-                className={`pb-2 px-1 border-b-2 transition-colors ${
-                  selectedRequirement
-                    ? "border-primary text-primary font-medium"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-                onClick={() => setSelectedRequirement(requirements[0]?.id || null)}
-              >
-                Requirement Proposals
-              </button>
-            </div>
-
-            <Card>
-              <CardContent className="max-h-[600px] overflow-y-auto p-6">
-                {selectedRequirement ? (
-                  <ProposalList
-                    proposals={getProposalsForRequirement(selectedRequirement)}
-                    onShortlist={handleShortlist}
-                    onAccept={handleAccept}
-                    onReject={handleReject}
-                    onRequestRevision={handleRequestRevision}
-                  />
-                ) : (
-                  <div className="space-y-6">
-                    {projectProposals.length > 0 ? (
-                      projectProposals.map((proposal) => {
-                        const project = projects.find((p) => p.id === proposal.projectId)
-                        return (
-                          <Card key={proposal.id} className="border-l-4 border-l-blue-500">
-                            <CardContent className="p-6">
-                              <div className="flex justify-between items-start mb-4">
-                                <div>
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <Badge variant="outline" className="text-xs">
-                                      {project?.title || "Unknown Project"}
-                                    </Badge>
-                                  </div>
-                                  <h3
-                                    className="text-xl font-semibold cursor-pointer hover:text-primary transition-colors"
-                                    onClick={() => handleViewProfile(proposal.providerId)}
-                                  >
-                                    {proposal.providerName}
-                                  </h3>
-                                  <div className="flex items-center gap-2 mt-1">
-                                    <div className="flex items-center">
-                                      {[...Array(5)].map((_, i) => (
-                                        <Star
-                                          key={i}
-                                          className={`h-4 w-4 ${
-                                            i < Math.floor(proposal.providerRating)
-                                              ? "fill-yellow-400 text-yellow-400"
-                                              : "text-gray-300"
-                                          }`}
-                                        />
-                                      ))}
-                                      <span className="ml-1 text-sm text-muted-foreground">
-                                        {proposal.providerRating}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="text-right">
-                                  <div className="text-2xl font-bold text-green-600">
-                                    ${proposal.proposalAmount.toLocaleString()}
-                                  </div>
-                                  <div className="text-sm text-muted-foreground">{proposal.timeline}</div>
-                                </div>
-                              </div>
-
-                              <div className="space-y-4">
-                                <div>
-                                  <h4 className="font-medium mb-2">Cover Letter</h4>
-                                  <p className="text-muted-foreground text-sm">{proposal.coverLetter}</p>
-                                </div>
-
-                                <div>
-                                  <h4 className="font-medium mb-2">Proposal Description</h4>
-                                  <p className="text-muted-foreground text-sm">{proposal.description}</p>
-                                </div>
-
-                                <div className="flex items-center justify-between pt-4 border-t">
-                                  <div className="flex items-center gap-2">
-                                    <Badge
-                                      variant={
-                                        proposal.status === "accepted"
-                                          ? "default"
-                                          : proposal.status === "shortlisted"
-                                            ? "secondary"
-                                            : proposal.status === "rejected"
-                                              ? "destructive"
-                                              : "outline"
-                                      }
-                                    >
-                                      {proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)}
-                                    </Badge>
-                                    <span className="text-sm text-muted-foreground">
-                                      Submitted on {new Date(proposal.submittedAt).toLocaleDateString()}
-                                    </span>
-                                  </div>
-
-                                  <div className="flex gap-2">
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => handleViewPortfolio(proposal.providerId)}
-                                    >
-                                      View Portfolio
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => {
-                                        setSelectedProjectId(proposal.projectId)
-                                        setActiveSection("proposals")
-                                      }}
-                                    >
-                                      View Project Details
-                                    </Button>
-                                    {proposal.status === "pending" && (
-                                      <>
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => handleProjectProposalAction(proposal.id, "shortlist")}
-                                        >
-                                          Shortlist
-                                        </Button>
-                                        <Button
-                                          variant="default"
-                                          size="sm"
-                                          onClick={() => handleProjectProposalAction(proposal.id, "accept")}
-                                        >
-                                          Accept
-                                        </Button>
-                                        <Button
-                                          variant="destructive"
-                                          size="sm"
-                                          onClick={() => handleProjectProposalAction(proposal.id, "reject")}
-                                        >
-                                          Reject
-                                        </Button>
-                                      </>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        )
-                      })
-                    ) : (
-                      <div className="text-center py-8">
-                        <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                        <h3 className="text-lg font-medium mb-2">No Proposals Yet</h3>
-                        <p className="text-muted-foreground">No proposals have been received for your projects yet.</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Projects */}
-        {activeSection === "projects" && (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-3xl font-bold">Projects</h1>
-                <p className="text-muted-foreground">Manage your projects and track progress</p>
-              </div>
-              <Button onClick={() => setShowCreateProject(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                New Project
-              </Button>
-            </div>
-
-            <div className="grid gap-6">
-              {projects.map((project) => (
-                <Card key={project.id}>
-                  <CardContent className="p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex-1">
-                        <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
-                        <p className="text-muted-foreground mb-3">{project.description}</p>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span>Budget: {project.budget}</span>
-                          <span>Category: {project.category}</span>
-                          <span>Created: {project.createdAt}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge
-                          variant={
-                            project.status === "Completed"
-                              ? "default"
-                              : project.status === "In Progress"
-                                ? "secondary"
-                                : "outline"
-                          }
-                        >
-                          {project.status}
-                        </Badge>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleEditProject(project)}>
-                              <Edit className="h-4 w-4 mr-2" />
-                              Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleDeleteProject(project.id)}>
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">{project.proposalsCount} proposals received</span>
-                      <Button variant="outline" size="sm" onClick={() => handleViewProjectProposals(project.id)}>
-                        View Proposals
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {showCreateProject && (
-              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                <Card className="w-full max-w-md mx-4">
-                  <CardHeader>
-                    <CardTitle>{editingProject ? "Edit Project" : "Create New Project"}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium">Project Title</label>
-                      <Input
-                        value={newProject.title}
-                        onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
-                        placeholder="Enter project title"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">Description</label>
-                      <textarea
-                        className="w-full p-2 border rounded-md resize-none"
-                        rows={3}
-                        value={newProject.description}
-                        onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                        placeholder="Describe your project"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">Budget Range</label>
-                      <Input
-                        value={newProject.budget}
-                        onChange={(e) => setNewProject({ ...newProject, budget: e.target.value })}
-                        placeholder="e.g., $5,000 - $10,000"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">Category</label>
-                      <select
-                        className="w-full p-2 border rounded-md"
-                        value={newProject.category}
-                        onChange={(e) => setNewProject({ ...newProject, category: e.target.value })}
-                      >
-                        <option value="">Select category</option>
-                        <option value="Web Development">Web Development</option>
-                        <option value="Mobile Development">Mobile Development</option>
-                        <option value="Design">Design</option>
-                        <option value="Marketing">Marketing</option>
-                        <option value="Business Services">Business Services</option>
-                      </select>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setShowCreateProject(false)
-                        setEditingProject(null)
-                        setNewProject({ title: "", description: "", budget: "", category: "" })
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button onClick={editingProject ? handleUpdateProject : handleCreateProject}>
-                      {editingProject ? "Update" : "Create"} Project
-                    </Button>
-                  </CardFooter>
-                </Card>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Project Proposals */}
-        {activeSection === "proposals" && selectedProjectId && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold">
-                  Project Proposals
-                  <span className="text-muted-foreground font-normal text-xl">
-                    {" "}
-                    for "{projects.find((p) => p.id === selectedProjectId)?.title}"
-                  </span>
-                </h1>
-                <p className="text-muted-foreground">Review and manage proposals received for this project</p>
-              </div>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setActiveSection("projects")
-                  setSelectedProjectId(null)
-                }}
-              >
-                Back to Projects
-              </Button>
-            </div>
-
-            <div className="grid gap-6">
-              {getProposalsForProject(selectedProjectId).length > 0 ? (
-                getProposalsForProject(selectedProjectId).map((proposal) => (
-                  <Card key={proposal.id}>
-                    <CardContent className="p-6">
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <h3 className="text-xl font-semibold">{proposal.providerName}</h3>
-                          <div className="flex items-center gap-2 mt-1">
-                            <div className="flex items-center">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`h-4 w-4 ${
-                                    i < Math.floor(proposal.providerRating)
-                                      ? "fill-yellow-400 text-yellow-400"
-                                      : "text-gray-300"
-                                  }`}
-                                />
-                              ))}
-                              <span className="ml-1 text-sm text-muted-foreground">{proposal.providerRating}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-green-600">
-                            ${proposal.proposalAmount.toLocaleString()}
-                          </div>
-                          <div className="text-sm text-muted-foreground">{proposal.timeline}</div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-4">
-                        <div>
-                          <h4 className="font-medium mb-2">Cover Letter</h4>
-                          <p className="text-muted-foreground">{proposal.coverLetter}</p>
-                        </div>
-
-                        <div>
-                          <h4 className="font-medium mb-2">Proposal Description</h4>
-                          <p className="text-muted-foreground">{proposal.description}</p>
-                        </div>
-
-                        <div className="flex items-center justify-between pt-4 border-t">
-                          <div className="flex items-center gap-2">
-                            <Badge
-                              variant={
-                                proposal.status === "accepted"
-                                  ? "default"
-                                  : proposal.status === "shortlisted"
-                                    ? "secondary"
-                                    : proposal.status === "rejected"
-                                      ? "destructive"
-                                      : "outline"
-                              }
-                            >
-                              {proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)}
-                            </Badge>
-                            <span className="text-sm text-muted-foreground">
-                              Submitted on {new Date(proposal.submittedAt).toLocaleDateString()}
-                            </span>
-                          </div>
-
-                          {proposal.status === "pending" && (
-                            <div className="flex gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleProjectProposalAction(proposal.id, "shortlist")}
-                              >
-                                Shortlist
-                              </Button>
-                              <Button
-                                variant="default"
-                                size="sm"
-                                onClick={() => handleProjectProposalAction(proposal.id, "accept")}
-                              >
-                                Accept
-                              </Button>
-                              <Button
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => handleProjectProposalAction(proposal.id, "reject")}
-                              >
-                                Reject
-                              </Button>
-                            </div>
-                          )}
-
-                          {proposal.status === "shortlisted" && (
-                            <div className="flex gap-2">
-                              <Button
-                                variant="default"
-                                size="sm"
-                                onClick={() => handleProjectProposalAction(proposal.id, "accept")}
-                              >
-                                Accept
-                              </Button>
-                              <Button
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => handleProjectProposalAction(proposal.id, "reject")}
-                              >
-                                Reject
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              ) : (
-                <Card>
-                  <CardContent className="p-12 text-center">
-                    <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-medium mb-2">No Proposals Yet</h3>
-                    <p className="text-muted-foreground">No proposals have been received for this project yet.</p>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Find Agencies */}
-        {activeSection === "providers" && (
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold">Find Agencies</h1>
-              <p className="text-muted-foreground">Browse and connect with verified agencies</p>
-            </div>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
-                  <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Location</label>
-                      <input
-                        type="text"
-                        placeholder="Enter city or state..."
-                        value={locationFilter}
-                        onChange={(e) => setLocationFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Technology/Service</label>
-                      <select
-                        value={technologyFilter}
-                        onChange={(e) => setTechnologyFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="">All Technologies</option>
-                        <option value="Web Development">Web Development</option>
-                        <option value="Mobile Development">Mobile Development</option>
-                        <option value="UI/UX Design">UI/UX Design</option>
-                        <option value="Digital Marketing">Digital Marketing</option>
-                        <option value="E-commerce">E-commerce</option>
-                        <option value="WordPress">WordPress</option>
-                        <option value="SEO">SEO</option>
-                        <option value="Graphic Design">Graphic Design</option>
-                        <option value="Branding">Branding</option>
-                        <option value="Content Marketing">Content Marketing</option>
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Minimum Rating</label>
-                      <select
-                        value={ratingFilter}
-                        onChange={(e) => setRatingFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="">Any Rating</option>
-                        <option value="4.5">4.5+ Stars</option>
-                        <option value="4.0">4.0+ Stars</option>
-                        <option value="3.5">3.5+ Stars</option>
-                        <option value="3.0">3.0+ Stars</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" onClick={clearFilters}>
-                      Clear Filters
-                    </Button>
-                    <div className="text-sm text-muted-foreground flex items-center">
-                      {filteredProviders.length} agencies found
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="max-h-[600px] overflow-y-auto p-6">
-                {filteredProviders.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filteredProviders.map((provider) => (
-                      <Card key={provider.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                        <CardContent className="pt-6">
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                              <Star className="h-5 w-5 text-primary" />
-                            </div>
-                            <div className="flex-1">
-                              <h4 className="font-medium">{provider.companyName}</h4>
-                              <div className="flex items-center gap-1">
-                                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                                <span className="text-xs">
-                                  {provider.rating} ({provider.reviewCount})
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="mb-3">
-                            <p className="text-xs text-muted-foreground mb-1">📍 {provider.location}</p>
-                            <div className="flex flex-wrap gap-1">
-                              {provider.services.slice(0, 3).map((service, index) => (
-                                <span key={index} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                                  {service}
-                                </span>
-                              ))}
-                              {provider.services.length > 3 && (
-                                <span className="text-xs text-muted-foreground">
-                                  +{provider.services.length - 3} more
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{provider.description}</p>
-                          <div className="flex gap-2 mb-3">
-                            <Button size="sm" onClick={() => handleViewProvider(provider.id)} className="flex-1">
-                              <Eye className="h-3 w-3 mr-1" />
-                              View Profile
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={() => handleContactProvider(provider.id)}>
-                              Contact
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-medium mb-2">No agencies found</h3>
-                    <p className="text-muted-foreground mb-4">Try adjusting your filters to see more results</p>
-                    <Button variant="outline" onClick={clearFilters}>
-                      Clear All Filters
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Profile Section */}
-        {activeSection === "profile" && (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-3xl font-bold">Profile</h1>
-                <p className="text-muted-foreground">Manage your client profile information</p>
-              </div>
-              <div className="flex gap-2">
-                {isEditingProfile ? (
-                  <>
-                    <Button variant="outline" onClick={handleCancelEdit}>
-                      <X className="h-4 w-4 mr-2" />
-                      Cancel
-                    </Button>
-                    <Button onClick={handleSaveProfile}>
-                      <Save className="h-4 w-4 mr-2" />
-                      Save Changes
-                    </Button>
-                  </>
-                ) : (
-                  <Button onClick={() => setIsEditingProfile(true)}>
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit Profile
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Profile Overview Card */}
-              <Card className="lg:col-span-1">
-                <CardHeader>
-                  <CardTitle>Profile Overview</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex flex-col items-center text-center">
-                    <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-                      <User className="h-10 w-10 text-primary" />
-                    </div>
-                    <h3 className="text-lg font-semibold">{profileData.name}</h3>
-                    <p className="text-sm text-muted-foreground">{profileData.position}</p>
-                    <p className="text-sm text-muted-foreground">{profileData.company}</p>
-                    <div className="flex gap-2 mt-3">
-                      <Badge className="bg-green-100 text-green-800">Active Client</Badge>
-                      <Badge variant="secondary">Verified</Badge>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3 pt-4 border-t">
-                    <div className="flex items-center gap-2 text-sm">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <span>{profileData.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span>Joined {profileData.joinedDate}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Building className="h-4 w-4 text-muted-foreground" />
-                      <span>{profileData.companySize}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Profile Details */}
-              <Card className="lg:col-span-2">
-                <CardHeader>
-                  <CardTitle>Profile Details</CardTitle>
-                  <CardDescription>
-                    {isEditingProfile ? "Edit your profile information" : "Your profile information"}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Full Name</Label>
-                      {isEditingProfile ? (
-                        <Input
-                          id="name"
-                          value={profileData.name}
-                          onChange={(e) => handleProfileUpdate("name", e.target.value)}
-                        />
-                      ) : (
-                        <p className="text-sm py-2">{profileData.name}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email Address</Label>
-                      {isEditingProfile ? (
-                        <Input
-                          id="email"
-                          type="email"
-                          value={profileData.email}
-                          onChange={(e) => handleProfileUpdate("email", e.target.value)}
-                        />
-                      ) : (
-                        <div className="flex items-center gap-2 text-sm py-2">
-                          <Mail className="h-4 w-4 text-muted-foreground" />
-                          {profileData.email}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Phone Number</Label>
-                      {isEditingProfile ? (
-                        <Input
-                          id="phone"
-                          value={profileData.phone}
-                          onChange={(e) => handleProfileUpdate("phone", e.target.value)}
-                        />
-                      ) : (
-                        <div className="flex items-center gap-2 text-sm py-2">
-                          <Phone className="h-4 w-4 text-muted-foreground" />
-                          {profileData.phone}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="company">Company</Label>
-                      {isEditingProfile ? (
-                        <Input
-                          id="company"
-                          value={profileData.company}
-                          onChange={(e) => handleProfileUpdate("company", e.target.value)}
-                        />
-                      ) : (
-                        <p className="text-sm py-2">{profileData.company}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="position">Position</Label>
-                      {isEditingProfile ? (
-                        <Input
-                          id="position"
-                          value={profileData.position}
-                          onChange={(e) => handleProfileUpdate("position", e.target.value)}
-                        />
-                      ) : (
-                        <p className="text-sm py-2">{profileData.position}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="industry">Industry</Label>
-                      {isEditingProfile ? (
-                        <Select
-                          value={profileData.industry}
-                          onValueChange={(value) => handleProfileUpdate("industry", value)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Technology">Technology</SelectItem>
-                            <SelectItem value="Healthcare">Healthcare</SelectItem>
-                            <SelectItem value="Finance">Finance</SelectItem>
-                            <SelectItem value="Education">Education</SelectItem>
-                            <SelectItem value="Retail">Retail</SelectItem>
-                            <SelectItem value="Manufacturing">Manufacturing</SelectItem>
-                            <SelectItem value="Other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <p className="text-sm py-2">{profileData.industry}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="location">Location</Label>
-                      {isEditingProfile ? (
-                        <Input
-                          id="location"
-                          value={profileData.location}
-                          onChange={(e) => handleProfileUpdate("location", e.target.value)}
-                        />
-                      ) : (
-                        <p className="text-sm py-2">{profileData.location}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="website">Website</Label>
-                      {isEditingProfile ? (
-                        <Input
-                          id="website"
-                          value={profileData.website}
-                          onChange={(e) => handleProfileUpdate("website", e.target.value)}
-                        />
-                      ) : (
-                        <div className="flex items-center gap-2 text-sm py-2">
-                          <Globe className="h-4 w-4 text-muted-foreground" />
-                          <a
-                            href={profileData.website}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline"
-                          >
-                            {profileData.website}
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="bio">Bio</Label>
-                    {isEditingProfile ? (
-                      <Textarea
-                        id="bio"
-                        value={profileData.bio}
-                        onChange={(e) => handleProfileUpdate("bio", e.target.value)}
-                        rows={4}
-                        placeholder="Tell us about yourself and your company..."
-                      />
-                    ) : (
-                      <p className="text-sm py-2 leading-relaxed">{profileData.bio}</p>
-                    )}
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="timezone">Timezone</Label>
-                      {isEditingProfile ? (
-                        <Select
-                          value={profileData.timezone}
-                          onValueChange={(value) => handleProfileUpdate("timezone", value)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="America/Los_Angeles">Pacific Time (PT)</SelectItem>
-                            <SelectItem value="America/Denver">Mountain Time (MT)</SelectItem>
-                            <SelectItem value="America/Chicago">Central Time (CT)</SelectItem>
-                            <SelectItem value="America/New_York">Eastern Time (ET)</SelectItem>
-                            <SelectItem value="Europe/London">GMT</SelectItem>
-                            <SelectItem value="Europe/Paris">CET</SelectItem>
-                            <SelectItem value="Asia/Tokyo">JST</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <p className="text-sm py-2">{profileData.timezone.replace("_", " ")}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="communication">Preferred Communication</Label>
-                      {isEditingProfile ? (
-                        <Select
-                          value={profileData.preferredCommunication}
-                          onValueChange={(value) => handleProfileUpdate("preferredCommunication", value)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="email">Email</SelectItem>
-                            <SelectItem value="phone">Phone</SelectItem>
-                            <SelectItem value="chat">Chat</SelectItem>
-                            <SelectItem value="video">Video Call</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <p className="text-sm py-2 capitalize">{profileData.preferredCommunication}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="budget">Typical Project Budget</Label>
-                      {isEditingProfile ? (
-                        <Select
-                          value={profileData.projectBudgetRange}
-                          onValueChange={(value) => handleProfileUpdate("projectBudgetRange", value)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="$1,000 - $5,000">$1,000 - $5,000</SelectItem>
-                            <SelectItem value="$5,000 - $10,000">$5,000 - $10,000</SelectItem>
-                            <SelectItem value="$10,000 - $50,000">$10,000 - $50,000</SelectItem>
-                            <SelectItem value="$50,000 - $100,000">$50,000 - $100,000</SelectItem>
-                            <SelectItem value="$100,000+">$100,000+</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <p className="text-sm py-2">{profileData.projectBudgetRange}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="companySize">Company Size</Label>
-                      {isEditingProfile ? (
-                        <Select
-                          value={profileData.companySize}
-                          onValueChange={(value) => handleProfileUpdate("companySize", value)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="1-10 employees">1-10 employees</SelectItem>
-                            <SelectItem value="11-50 employees">11-50 employees</SelectItem>
-                            <SelectItem value="51-200 employees">51-200 employees</SelectItem>
-                            <SelectItem value="201-500 employees">201-500 employees</SelectItem>
-                            <SelectItem value="500+ employees">500+ employees</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <p className="text-sm py-2">{profileData.companySize}</p>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        )}
-
-        {activeSection === "company-portfolio" && selectedCompanyId && (
-          <div className="space-y-6">
-            <div className="flex items-center gap-4">
-              <Button variant="outline" size="sm" onClick={handleBackToProposals}>
-                ← Back to Proposals
-              </Button>
-              <div>
-                <h1 className="text-3xl font-bold">
-                  {projectProposals.find((p) => p.providerId === selectedCompanyId)?.providerName} - Portfolio
-                </h1>
-                <p className="text-muted-foreground">View previous work and projects completed by this agency</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Mock portfolio projects */}
-              {[
-                {
-                  id: "1",
-                  title: "E-commerce Platform",
-                  description: "Modern e-commerce solution with payment integration",
-                  image: "/ecommerce-website-homepage.png",
-                  technologies: ["React", "Node.js", "MongoDB"],
-                  completedDate: "2024-01-15",
-                },
-                {
-                  id: "2",
-                  title: "Healthcare Management System",
-                  description: "Comprehensive patient management and scheduling system",
-                  image: "/healthcare-dashboard.jpg",
-                  technologies: ["Vue.js", "Python", "PostgreSQL"],
-                  completedDate: "2023-11-20",
-                },
-                {
-                  id: "3",
-                  title: "Real Estate Portal",
-                  description: "Property listing and management platform",
-                  image: "/real-estate-website-hero.png",
-                  technologies: ["Angular", "Java", "MySQL"],
-                  completedDate: "2023-09-10",
-                },
-                {
-                  id: "4",
-                  title: "Educational Learning Platform",
-                  description: "Online learning management system with video streaming",
-                  image: "/education-platform.png",
-                  technologies: ["React", "Express", "AWS"],
-                  completedDate: "2023-07-05",
-                },
-                {
-                  id: "5",
-                  title: "Financial Dashboard",
-                  description: "Investment tracking and portfolio management tool",
-                  image: "/financial-dashboard.png",
-                  technologies: ["Next.js", "TypeScript", "Prisma"],
-                  completedDate: "2023-05-18",
-                },
-                {
-                  id: "6",
-                  title: "Social Media App",
-                  description: "Mobile-first social networking application",
-                  image: "/social-media-app-interface.png",
-                  technologies: ["React Native", "Firebase", "Redux"],
-                  completedDate: "2023-03-22",
-                },
-              ].map((project) => (
-                <Card key={project.id} className="overflow-hidden">
-                  <div className="aspect-video relative">
-                    <img
-                      src={project.image || "/placeholder.svg"}
-                      alt={project.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold mb-2">{project.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-3">{project.description}</p>
-                    <div className="flex flex-wrap gap-1 mb-3">
-                      {project.technologies.map((tech) => (
-                        <Badge key={tech} variant="secondary" className="text-xs">
-                          {tech}
-                        </Badge>
-                      ))}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      Completed: {new Date(project.completedDate).toLocaleDateString()}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {activeSection === "company-profile" && selectedCompanyId && (
-          <div className="space-y-6">
-            <div className="flex items-center gap-4">
-              <Button variant="outline" size="sm" onClick={handleBackToProposals}>
-                ← Back to Proposals
-              </Button>
-              <div>
-                <h1 className="text-3xl font-bold">
-                  {projectProposals.find((p) => p.providerId === selectedCompanyId)?.providerName}
-                </h1>
-                <p className="text-muted-foreground">Company profile and information</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Company Overview */}
-              <div className="lg:col-span-2 space-y-6">
-                <Card>
-                  <CardContent className="p-6">
-                    <h2 className="text-xl font-semibold mb-4">About the Company</h2>
-                    <p className="text-muted-foreground mb-4">
-                      We are a leading digital agency specializing in web development, mobile applications, and digital
-                      transformation solutions. With over 8 years of experience, we have successfully delivered 200+
-                      projects across various industries including healthcare, finance, e-commerce, and education.
-                    </p>
-                    <p className="text-muted-foreground">
-                      Our team of 25+ skilled developers, designers, and project managers work collaboratively to
-                      deliver high-quality solutions that drive business growth and enhance user experiences.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-6">
-                    <h2 className="text-xl font-semibold mb-4">Services Offered</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {[
-                        "Web Development",
-                        "Mobile App Development",
-                        "UI/UX Design",
-                        "E-commerce Solutions",
-                        "Cloud Integration",
-                        "Digital Marketing",
-                        "Maintenance & Support",
-                        "Consulting Services",
-                      ].map((service) => (
-                        <div key={service} className="flex items-center gap-2">
-                          <div className="w-2 h-2 bg-primary rounded-full"></div>
-                          <span className="text-sm">{service}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-6">
-                    <h2 className="text-xl font-semibold mb-4">Client Testimonials</h2>
-                    <div className="space-y-4">
-                      {[
-                        {
-                          client: "Sarah Johnson, CEO at TechStart",
-                          feedback:
-                            "Exceptional work quality and timely delivery. The team understood our requirements perfectly and delivered beyond expectations.",
-                        },
-                        {
-                          client: "Michael Chen, CTO at FinanceFlow",
-                          feedback:
-                            "Professional approach and excellent communication throughout the project. Highly recommend for complex development projects.",
-                        },
-                      ].map((testimonial, index) => (
-                        <div key={index} className="border-l-4 border-primary pl-4">
-                          <p className="text-muted-foreground italic mb-2">"{testimonial.feedback}"</p>
-                          <p className="text-sm font-medium">- {testimonial.client}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Company Stats */}
-              <div className="space-y-6">
-                <Card>
-                  <CardContent className="p-6">
-                    <h2 className="text-xl font-semibold mb-4">Company Stats</h2>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">Founded</span>
-                        <span className="font-medium">2016</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">Team Size</span>
-                        <span className="font-medium">25+ Members</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">Projects Completed</span>
-                        <span className="font-medium">200+</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">Client Rating</span>
-                        <div className="flex items-center gap-1">
-                          <div className="flex items-center">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                            ))}
-                          </div>
-                          <span className="font-medium">4.9</span>
-                        </div>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">Response Time</span>
-                        <span className="font-medium">{"<"} 2 hours</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-6">
-                    <h2 className="text-xl font-semibold mb-4">Technologies</h2>
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        "React",
-                        "Node.js",
-                        "Python",
-                        "Java",
-                        "Angular",
-                        "Vue.js",
-                        "MongoDB",
-                        "PostgreSQL",
-                        "AWS",
-                        "Docker",
-                        "Kubernetes",
-                        "TypeScript",
-                      ].map((tech) => (
-                        <Badge key={tech} variant="outline" className="text-xs">
-                          {tech}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-6">
-                    <h2 className="text-xl font-semibold mb-4">Contact Info</h2>
-                    <div className="space-y-3">
-                      <div>
-                        <span className="text-muted-foreground text-sm">Email</span>
-                        <p className="font-medium">contact@agency.com</p>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground text-sm">Phone</span>
-                        <p className="font-medium">+1 (555) 123-4567</p>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground text-sm">Location</span>
-                        <p className="font-medium">San Francisco, CA</p>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground text-sm">Website</span>
-                        <p className="font-medium text-primary">www.agency.com</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Analytics Page */}
-        {activeSection === "analytics" && (
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Project Analytics</h1>
-              <p className="text-muted-foreground">Insights into vendor demographics and proposal trends</p>
-            </div>
-
-            {/* Top Locations Analytics */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5" />
-                  Top Vendor Locations
-                </CardTitle>
-                <CardDescription>Geographic distribution of vendors responding to your projects</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {[
-                    { location: "San Francisco, CA", count: 12, percentage: 30 },
-                    { location: "New York, NY", count: 10, percentage: 25 },
-                    { location: "Austin, TX", count: 8, percentage: 20 },
-                    { location: "Seattle, WA", count: 6, percentage: 15 },
-                    { location: "Boston, MA", count: 4, percentage: 10 },
-                  ].map((item) => (
-                    <div key={item.location} className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="font-medium">{item.location}</span>
-                        <span className="text-muted-foreground">
-                          {item.count} vendors ({item.percentage}%)
-                        </span>
-                      </div>
-                      <div className="h-2 bg-muted rounded-full overflow-hidden">
-                        <div className="h-full bg-primary transition-all" style={{ width: `${item.percentage}%` }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Top Specialties Analytics */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="h-5 w-5" />
-                  Top Vendor Specialties
-                </CardTitle>
-                <CardDescription>Expertise areas of vendors responding to your projects</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {[
-                    { specialty: "Web Development", count: 15, percentage: 35 },
-                    { specialty: "Mobile Apps", count: 12, percentage: 28 },
-                    { specialty: "UI/UX Design", count: 10, percentage: 23 },
-                    { specialty: "Cloud Services", count: 4, percentage: 9 },
-                    { specialty: "DevOps", count: 2, percentage: 5 },
-                  ].map((item) => (
-                    <div key={item.specialty} className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="font-medium">{item.specialty}</span>
-                        <span className="text-muted-foreground">
-                          {item.count} vendors ({item.percentage}%)
-                        </span>
-                      </div>
-                      <div className="h-2 bg-muted rounded-full overflow-hidden">
-                        <div className="h-full bg-blue-500 transition-all" style={{ width: `${item.percentage}%` }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Cost Distribution */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5" />
-                  Cost Distribution Analysis
-                </CardTitle>
-                <CardDescription>Budget ranges of proposals received vs. your stated budget</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  <div className="p-4 bg-muted rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium">Your Stated Budget</span>
-                      <span className="text-lg font-bold text-primary">$50,000</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h4 className="font-medium text-sm">Proposal Budget Ranges</h4>
-                    {[
-                      { range: "Under $30,000", count: 3, percentage: 15, color: "bg-green-500" },
-                      { range: "$30,000 - $50,000", count: 8, percentage: 40, color: "bg-blue-500" },
-                      { range: "$50,000 - $70,000", count: 6, percentage: 30, color: "bg-yellow-500" },
-                      { range: "Over $70,000", count: 3, percentage: 15, color: "bg-red-500" },
-                    ].map((item) => (
-                      <div key={item.range} className="space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="font-medium">{item.range}</span>
-                          <span className="text-muted-foreground">
-                            {item.count} proposals ({item.percentage}%)
-                          </span>
-                        </div>
-                        <div className="h-3 bg-muted rounded-full overflow-hidden">
-                          <div
-                            className={`h-full ${item.color} transition-all`}
-                            style={{ width: `${item.percentage}%` }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4 pt-4 border-t">
-                    <div className="text-center">
-                      <p className="text-sm text-muted-foreground">Average</p>
-                      <p className="text-lg font-bold">$52,500</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-sm text-muted-foreground">Median</p>
-                      <p className="text-lg font-bold">$48,000</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-sm text-muted-foreground">Range</p>
-                      <p className="text-lg font-bold">$25K - $85K</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Provider Comparison Page */}
-        {activeSection === "provider-comparison" && (
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Provider Comparison</h1>
-              <p className="text-muted-foreground">Compare vendors side-by-side to make informed decisions</p>
-            </div>
-
-            {/* Vendor Selection */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Select Vendors to Compare</CardTitle>
-                <CardDescription>Choose up to 4 vendors to compare their ratings and proposals</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {mockProjectProposals.slice(0, 6).map((proposal) => (
-                    <Button key={proposal.id} variant="outline" size="sm">
-                      {proposal.providerName}
-                    </Button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Side-by-Side Comparison */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {mockProjectProposals.slice(0, 3).map((proposal) => (
-                <Card key={proposal.id} className="relative">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <CardTitle className="text-lg">{proposal.providerName}</CardTitle>
-                        <div className="flex items-center gap-1 mt-1">
-                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <span className="text-sm font-medium">{proposal.providerRating}</span>
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="sm">
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    {/* Proposal Details */}
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Proposal Amount</span>
-                        <span className="font-bold text-lg">${proposal.proposalAmount.toLocaleString()}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Timeline</span>
-                        <span className="font-medium">{proposal.timeline}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Location</span>
-                        <span className="font-medium">{proposal.providerId}</span>
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    {/* Rating Breakdown */}
-                    <div className="space-y-4">
-                      <h4 className="font-semibold text-sm">Rating Breakdown</h4>
-
-                      {/* Quality Rating */}
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Quality</span>
-                          <span className="font-medium">4.8/5.0</span>
-                        </div>
-                        <div className="h-2 bg-muted rounded-full overflow-hidden">
-                          <div className="h-full bg-green-500" style={{ width: "96%" }} />
-                        </div>
-                      </div>
-
-                      {/* Schedule Rating */}
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Schedule</span>
-                          <span className="font-medium">4.5/5.0</span>
-                        </div>
-                        <div className="h-2 bg-muted rounded-full overflow-hidden">
-                          <div className="h-full bg-blue-500" style={{ width: "90%" }} />
-                        </div>
-                      </div>
-
-                      {/* Cost Rating */}
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Cost</span>
-                          <span className="font-medium">4.3/5.0</span>
-                        </div>
-                        <div className="h-2 bg-muted rounded-full overflow-hidden">
-                          <div className="h-full bg-yellow-500" style={{ width: "86%" }} />
-                        </div>
-                      </div>
-
-                      {/* Willing to Refer */}
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Willing to Refer</span>
-                          <span className="font-medium">95%</span>
-                        </div>
-                        <div className="h-2 bg-muted rounded-full overflow-hidden">
-                          <div className="h-full bg-purple-500" style={{ width: "95%" }} />
-                        </div>
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    {/* Key Strengths */}
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-sm">Key Strengths</h4>
-                      <div className="flex flex-wrap gap-2">
-                        <Badge variant="secondary">Fast Delivery</Badge>
-                        <Badge variant="secondary">Great Communication</Badge>
-                        <Badge variant="secondary">High Quality</Badge>
-                      </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-2">
-                      <Button className="flex-1" size="sm">
-                        View Details
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Heart className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* Comparison Summary */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Comparison Summary</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left p-3 font-medium">Criteria</th>
-                        {mockProjectProposals.slice(0, 3).map((proposal) => (
-                          <th key={proposal.id} className="text-center p-3 font-medium">
-                            {proposal.providerName}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-b">
-                        <td className="p-3 text-sm text-muted-foreground">Overall Rating</td>
-                        {mockProjectProposals.slice(0, 3).map((proposal) => (
-                          <td key={proposal.id} className="text-center p-3 font-medium">
-                            {proposal.providerRating}
-                          </td>
-                        ))}
-                      </tr>
-                      <tr className="border-b">
-                        <td className="p-3 text-sm text-muted-foreground">Proposal Amount</td>
-                        {mockProjectProposals.slice(0, 3).map((proposal) => (
-                          <td key={proposal.id} className="text-center p-3 font-medium">
-                            ${proposal.proposalAmount.toLocaleString()}
-                          </td>
-                        ))}
-                      </tr>
-                      <tr className="border-b">
-                        <td className="p-3 text-sm text-muted-foreground">Timeline</td>
-                        {mockProjectProposals.slice(0, 3).map((proposal) => (
-                          <td key={proposal.id} className="text-center p-3 font-medium">
-                            {proposal.timeline}
-                          </td>
-                        ))}
-                      </tr>
-                      <tr className="border-b">
-                        <td className="p-3 text-sm text-muted-foreground">Quality Score</td>
-                        <td className="text-center p-3 font-medium">4.8</td>
-                        <td className="text-center p-3 font-medium">4.6</td>
-                        <td className="text-center p-3 font-medium">4.7</td>
-                      </tr>
-                      <tr className="border-b">
-                        <td className="p-3 text-sm text-muted-foreground">Schedule Score</td>
-                        <td className="text-center p-3 font-medium">4.5</td>
-                        <td className="text-center p-3 font-medium">4.7</td>
-                        <td className="text-center p-3 font-medium">4.4</td>
-                      </tr>
-                      <tr>
-                        <td className="p-3 text-sm text-muted-foreground">Cost Score</td>
-                        <td className="text-center p-3 font-medium">4.3</td>
-                        <td className="text-center p-3 font-medium">4.5</td>
-                        <td className="text-center p-3 font-medium">4.2</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Spending Insights Page */}
-        {activeSection === "spending" && (
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Spending Insights</h1>
-              <p className="text-muted-foreground">Track your project spending and budget utilization</p>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Coming Soon</CardTitle>
-                <CardDescription>Detailed spending analytics and budget tracking features</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  This page will provide comprehensive insights into your project spending, budget allocation, and cost
-                  trends.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Other sections with placeholder content */}
-        {(activeSection === "billing" || activeSection === "notifications" || activeSection === "account-settings") && (
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold capitalize">{activeSection.replace("-", " ")}</h1>
-              <p className="text-muted-foreground">This section is coming soon</p>
-            </div>
-            <Card>
-              <CardContent className="p-6">
-                <div className="text-center py-8">
-                  <Settings className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <p className="text-muted-foreground">Feature under development</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
       </div>
 
-      {/* Modals - keeping existing modal components */}
-      <RequirementDetailsModal
-        requirement={selectedRequirementForDetails}
-        isOpen={showDetailsModal}
-        onClose={() => setShowDetailsModal(false)}
-        onViewProposals={handleViewProposals}
-      />
 
-      <NegotiationChat
-        isOpen={showNegotiationChat}
-        onClose={() => setShowNegotiationChat(false)}
-        proposalId={negotiationProposal || ""}
-        providerName="TechSolutions Inc."
-      />
+      
 
-      <ProviderProfileModal
-        provider={selectedProvider}
-        isOpen={showProviderProfile}
-        onClose={() => setShowProviderProfile(false)}
-        onContact={handleContactProvider}
-      />
-
-      <ProjectSubmissionForm
-        isOpen={showProjectSubmission}
-        onClose={() => setShowProjectSubmission(false)}
-        onSubmit={handleProjectSubmissionComplete}
-        projectId={selectedProjectId || ""}
-      />
-
-      <ReviewSubmissionForm
-        isOpen={showReviewSubmission}
-        onClose={() => setShowReviewSubmission(false)}
-        onSubmit={handleSubmitReview}
-        providerId={selectedProviderId || ""}
-        providerName={selectedProvider?.companyName || "Provider"}
-      />
-
-      <ProviderComparison
-        providers={comparisonProviders}
-        isOpen={showProviderComparison}
-        onClose={() => setShowProviderComparison(false)}
-        onSelectProvider={handleSelectProviderFromComparison}
-      />
+      
     </div>
 
   )
