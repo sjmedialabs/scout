@@ -77,6 +77,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 
 const ProjectsPage=()=>{
@@ -114,6 +115,8 @@ const ProjectsPage=()=>{
   //     category: "Marketing",
   //   },
   // ])
+  
+  const[filterStatus,setFilterStatus]=useState<string>("all");
 
   const [showCreateProject, setShowCreateProject] = useState(false)
   const [editingProject, setEditingProject] = useState<any>(null)
@@ -127,7 +130,23 @@ const ProjectsPage=()=>{
       documentUrl:"",
       timeline: "",
     })
+
+    const[showReviewModal,setShowReviewModal]=useState(false);
+    const[reviewForm,setReviewForm]=useState({
+      title:"",
+      content:"",
+      rating:0,
+      qualityRating:0,
+      costRating:0,
+      scheduleRating:0,
+      willingToReferRating:0,
+      projectStartDate:"",
+      projectEndDate:"",
+    })
+    const[reviewSubmissionProjectId,setReviewSubmissionProjectId]=useState<string|null>(null);
+
  const [requirements, setRequirements] = useState<Requirement[]>([])
+ const[filteredRequirements,setFilteredRequirements]=useState<Requirement[]>([])
   const[responseLoading,setResponseLoading]=useState(false);
   const[failed,setFailed]=useState(false)
   //for sending the form staus
@@ -138,6 +157,7 @@ const loadData=async(userId:string)=>{
         const response= await fetch(`/api/requirements/${userId}`)
         const data=await response.json();
         setRequirements(data.requirements)
+        setFilteredRequirements(data.requirements)
         
         setFailed(false)
         
@@ -261,6 +281,66 @@ const loadData=async(userId:string)=>{
      
       // console.log("Requirement submitted:", formData)
     }
+  const handleReviewSubmit = async(e: React.FormEvent) => {
+    e.preventDefault()
+    const projectTemp=requirements.find((req)=>req._id===reviewSubmissionProjectId);
+    if(!projectTemp){
+      toast.error("Invalid Project for review submission")
+    }
+    if(!reviewForm.title.trim() || !reviewForm.content.trim() || reviewForm.rating<=0 || reviewForm.costRating<=0 || reviewForm.qualityRating<=0 || reviewForm.scheduleRating<=0 || reviewForm.willingToReferRating<=0 || !reviewForm.projectStartDate || !reviewForm.projectEndDate){
+      toast.error("All Fields are required for review submission")
+    }
+    //Build correct payload for API
+    const payload = {
+      title: reviewForm.title.trim(),
+      content: reviewForm.content.trim(),
+      rating: reviewForm.rating,
+      costRating: reviewForm.costRating,
+      qualityRating: reviewForm.qualityRating,
+      scheduleRating: reviewForm.scheduleRating,
+      willingToReferRating: reviewForm.willingToReferRating,
+      projectStartDate: reviewForm.projectStartDate,
+      projectEndDate: reviewForm.projectEndDate,
+      providerId: projectTemp?.allocatedToId,
+      projectId: projectTemp?._id,
+    }
+    try{
+      // API CALL
+      setSending(true)
+      const res= await fetch(`/api/reviews`,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify(payload),
+      })
+      if(res.ok){
+        toast.success("Review submitted successfully")
+        setShowReviewModal(false);
+        setReviewForm({
+          title:"",
+          content:"",
+          rating:0,
+          qualityRating:0,
+          costRating:0,
+          scheduleRating:0,
+          willingToReferRating:0,
+          projectStartDate:"",
+          projectEndDate:"",
+        })
+      }
+      else{
+        toast.error("Failed to submit the review")
+      }
+
+    }catch(error){
+      console.log("Failed to submit the review")
+      toast.error("Failed to submit the review")
+    }
+    finally{
+      setSending(false)
+    }
+
+    console.log("Review submitted payload:", payload)
+  }
 
   const handleEditProject = (project: any) => {
     setEditingProject(project)
@@ -314,6 +394,26 @@ console.log("Clicked Project for the edit:::",formData)
   }
  }
  console.log("Fetched Requirements:::",requirements)
+
+ const handleFilterChange = (value: string) => {
+  requirements.forEach(req => {
+  console.log(`[${req.status}]`, req.status.length)
+})
+
+  setFilterStatus(value)
+
+  if (value === "all") {
+    setFilteredRequirements(requirements)
+    return
+  }
+
+  setFilteredRequirements(
+    requirements.filter(
+      (req) => req.status.toLowerCase() === value.toLowerCase()
+    )
+  )
+}
+
 if (loading || responseLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -343,9 +443,44 @@ if (loading || responseLoading) {
             </div>
 
             <div className="grid gap-6 border-1 px-8 py-7 bg-[#FAFAFA] border-[#E6E2E2] bg-[#fff] rounded-3xl">
+               <Select onValueChange={handleFilterChange} value={filterStatus}>
+                                    <SelectTrigger
+                                      className="
+                                            mt-1
+                                            border-0
+                                            border-2
+                                            border-[#b2b2b2]
+                                            
+                                            rounded-full
+
+                                            shadow-none
+                                            focus:outline-none focus:ring-0 focus:ring-offset-0
+                                            focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
+                                            focus:border-[#b2b2b2]
+                                            placeholder:text-[#b2b2b2]
+                                            px-6
+                                            w-[150px]
+                                            h-12
+                                            text-sm
+                                            md:text-base
+                                          "
+                                    >
+                                      <SelectValue placeholder="Rating" />
+                                    </SelectTrigger>
+              
+                                    <SelectContent>
+                                      <SelectItem value="all">All</SelectItem>
+                                      <SelectItem value="open">Open</SelectItem>
+                                      <SelectItem value="shortlisted">Shortlisted</SelectItem>
+                                      <SelectItem value="negotation">Negotiation</SelectItem>
+                                      <SelectItem value="allocated">Allocated</SelectItem>
+                                      <SelectItem value="closed">Closed</SelectItem>
+                                    </SelectContent>
+
+                </Select>
               {
-                (requirements || []).length!==0 && (
-                  requirements.map((project) => (
+                (filteredRequirements || []).length!==0 && (
+                  filteredRequirements.map((project) => (
                 <Card key={project._id} className="border-1 px-0 border-[#CFCACA] rounded-2xl">
                   <CardContent className="px-4 md:px-6 py-0">
                     <div className="flex justify-between items-start mb-3">
@@ -413,10 +548,23 @@ if (loading || responseLoading) {
                         View Proposals
                           <FaArrowRightLong className="h-1 w-1" color="#fff"/>
                       </Button>
-                      <Button variant="outline" size="sm" onClick={()=>handleEditProject(project)}  className="bg-[#000] text-sm rounded-full text-[#fff]  hover:bg-[#000] w-[100px] h-[40px]">
+                      {
+                        (project.status.toLowerCase()!=="allocated" && project.status.toLowerCase()!=="closed" && project.status.toLowerCase()!=="completed") && (
+                          <Button variant="outline" size="sm" onClick={()=>handleEditProject(project)}  className="bg-[#000] text-sm rounded-full text-[#fff]  hover:bg-[#000] w-[100px] h-[40px]">
                         Edit
                           
                       </Button>
+                        )
+                      }
+                      {((project.status.toLowerCase()==="closed" || project.status.toLowerCase()==="completed") && !project?.isReviewed) && (
+                        <Button variant="outline" size="sm" onClick={()=>{
+                          setReviewSubmissionProjectId(project._id);
+                          setShowReviewModal(true);
+                        }}  className="bg-[#00C951] text-sm rounded-full text-[#fff]  hover:bg-[#00C951] w-[140px]  h-[40px]">
+                        Submit Review
+                          
+                      </Button>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -558,6 +706,137 @@ if (loading || responseLoading) {
                     </DialogContent>
                   </Dialog>
                
+            )}
+            {showReviewModal && (
+              <Dialog open={showReviewModal} onOpenChange={setShowReviewModal}>
+  <DialogContent className="md:max-w-xl rounded-2xl h-[90vh] flex flex-col p-0">
+
+    {/* ✅ FIXED HEADER */}
+    <DialogHeader className="px-6 py-4 border-b shrink-0">
+      <DialogTitle className="text-xl font-bold text-[#F4561C]">
+        Submit Project Review
+      </DialogTitle>
+    </DialogHeader>
+
+    {/* ✅ SCROLLABLE FORM FIELDS */}
+    <form
+      onSubmit={handleReviewSubmit}
+      className="flex-1 overflow-y-auto px-6 py-4 space-y-6"
+    >
+      {/* Title */}
+      <div className="space-y-2">
+        <Label className="text-[#000] text-[14px] font-bold">Title</Label>
+        <Input
+          value={reviewForm.title}
+          className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
+          onChange={(e) =>
+            setReviewForm((prev) => ({ ...prev, title: e.target.value }))
+          }
+          placeholder="e.g., E-commerce Website Development"
+          required
+        />
+      </div>
+
+      {/* Summary */}
+      <div className="space-y-2">
+        <Label className="text-[#000] text-[14px] font-bold">Review Summary</Label>
+        <Textarea
+          value={reviewForm.content}
+          className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
+          onChange={(e) =>
+            setReviewForm((prev) => ({ ...prev, content: e.target.value }))
+          }
+          placeholder="Write your detailed review here..."
+          required
+        />
+      </div>
+
+      {/* Ratings (unchanged UI) */}
+      {[
+        { label: "Rating", key: "rating" },
+        { label: "Cost Rating", key: "costRating" },
+        { label: "Quality Rating", key: "qualityRating" },
+        { label: "Willing To Refer Rating", key: "willingToReferRating" },
+        { label: "Schedule Rating", key: "scheduleRating" },
+      ].map((item) => (
+        <div className="space-y-2" key={item.key}>
+          <Label className="text-[#000] text-[14px] font-bold">{item.label}</Label>
+          <Input
+            type="number"
+            min={0.1}
+            max={5}
+            step={0.1}
+            value={reviewForm[item.key]}
+            className="border-2 border-[#D0D5DD] rounded-[8px]"
+            onChange={(e) =>
+              setReviewForm((prev) => ({
+                ...prev,
+                [item.key]: parseFloat(e.target.value),
+              }))
+            }
+            required
+          />
+        </div>
+      ))}
+
+      {/* ✅ Start Date – Calendar Popover */}
+   <div className="space-y-2">
+  <Label htmlFor="startDate" className="text-[#000] text-[14px] font-bold">
+    Start Date
+  </Label>
+  <Input
+    id="startDate"
+    type="date"
+    value={reviewForm.projectStartDate}
+    className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
+    onChange={(e) =>
+      setReviewForm((prev) => ({
+        ...prev,
+        projectStartDate: e.target.value,
+      }))
+    }
+    required
+  />
+</div>
+
+
+
+      {/* ✅ End Date – Calendar Popover */}
+      <div className="space-y-2">
+          <Label htmlFor="endDate" className="text-[#000] text-[14px] font-bold">
+            End Date
+          </Label>
+          <Input
+            id="endDate"
+            type="date"
+            value={reviewForm.projectEndDate}
+            className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
+            onChange={(e) =>
+              setReviewForm((prev) => ({
+                ...prev,
+                projectEndDate: e.target.value,
+              }))
+            }
+            min={reviewForm.projectStartDate} // prevents selecting earlier date
+            required
+          />
+      </div>
+
+    </form>
+
+    {/* ✅ FIXED FOOTER */}
+    <div className="px-6 py-4 border-t flex gap-5 shrink-0">
+      <Button type="submit" disabled={sending} onClick={handleReviewSubmit} className="bg-[#2C34A1] rounded-full">
+        {sending ? "Submitting..." : "Submit Review"}
+      </Button>
+      <DialogClose asChild>
+        <Button className="bg-[#000] rounded-full">Cancel</Button>
+      </DialogClose>
+    </div>
+
+  </DialogContent>
+</Dialog>
+
             )}
           </div>
     )

@@ -39,6 +39,10 @@ export interface IProvider extends Document {
   industries: string[]
   rating: number
   reviewCount: number
+  qualityRating?:number
+  scheduleRating?:number
+  costRating?:number
+  willingToReferRating?:number
   projectsCompleted: number
   hourlyRate?: string
   minProjectSize?: string
@@ -102,6 +106,10 @@ const ProviderSchema = new Schema<IProvider>(
     technologies: [{ type: String }],
     industries: [{ type: String }],
     rating: { type: Number, default: 0, min: 0, max: 5 },
+    qualityRating: { type: Number, default: 0, min: 0, max: 5 },
+    scheduleRating: { type: Number, default: 0, min: 0, max: 5 },
+    costRating: { type: Number, default: 0, min: 0, max: 5 },
+    willingToReferRating: { type: Number, default: 0, min: 0, max: 5 },
     reviewCount: { type: Number, default: 0 },
     projectsCompleted: { type: Number, default: 0 },
     hourlyRate: { type: String },
