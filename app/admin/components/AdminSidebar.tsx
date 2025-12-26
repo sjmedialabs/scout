@@ -5,70 +5,105 @@ import { usePathname } from "next/navigation";
 import { adminMenu } from "../sidebar-config";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Settings } from "lucide-react";
+import { Settings, ChevronLeft, ChevronRight } from "lucide-react";
 
-export function AdminSidebar() {
+interface SidebarProps {
+  collapsed: boolean;
+  onToggle: () => void;
+}
+
+export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
   const pathname = usePathname();
-  const current = pathname.split("/")[2]; // admin/<section>
+  const current = pathname.split("/")[2];
   const [open, setOpen] = useState<string[]>(["dashboard"]);
 
-  const toggle = (label: string) => {
-    setOpen(prev => prev.includes(label) ? prev.filter(v => v !== label) : [...prev, label]);
+  const toggleSection = (label: string) => {
+    setOpen(prev =>
+      prev.includes(label)
+        ? prev.filter(v => v !== label)
+        : [...prev, label]
+    );
   };
 
   return (
-    <aside className="fixed left-0 top-0 w-64 flex justify-between flex-col h-full bg-sidebarMain text-white border-r z-20">
+    <aside
+      className={`
+        fixed left-0 top-0 h-full z-20
+        transition-all duration-300
+        ${collapsed ? "w-20 items-center" : "w-64"}
+        bg-sidebarMain text-white border-r
+        flex flex-col justify-between
+      `}
+    >
+      {/* HEADER (CLICK TO TOGGLE) */}
       <div>
-      <div className="p-5 border-b">
-        <h2 className="text-xl font-bold">Super Admin Dashboard</h2>
-        <p className="text-sm text-white">Welcome back</p>
+        <button
+          onClick={onToggle}
+          className="w-full p-5 border-b flex items-center justify-between hover:bg-white/10"
+        >
+          {!collapsed && (
+            <div>
+              <h2 className="text-lg font-extrabold">Super Admin Dashboard</h2>
+              <p className="text-sm text-white/70">Welcome back</p>
+            </div>
+          )}
+          {collapsed ? (
+            <ChevronRight className="w-5 h-5" />
+          ) : (
+            <ChevronLeft className="w-5 h-5" />
+          )}
+        </button>
+
+        {/* MENU */}
+        <div className="p-3 space-y-4 overflow-y-auto">
+          {adminMenu.map(section => (
+            <div key={section.label}>
+              <button
+                onClick={() => toggleSection(section.label)}
+                className="w-full flex items-center gap-3 hover:text-orangeButton"
+              >
+                <section.icon className="w-5 h-5" />
+                {!collapsed && (
+                  <span className="text-sm font-medium">
+                    {section.label}
+                  </span>
+                )}
+              </button>
+
+              {open.includes(section.label) && (
+                <div className={` mt-2 space-y-1 ${collapsed ? "ml-0" : "ml-8"}`}>
+                  {section.children.map(item => {
+                    const active = current === item.id;
+                    return (
+                      <Link
+                        key={item.id}
+                        href={`/admin/${item.id}`}
+                        className={`flex items-center gap-2 px-2 py-2 rounded-lg text-sm
+                          ${active
+                            ? "text-orangeButton"
+                            : "hover:text-orangeButton"
+                          }`}
+                      >
+                        <item.icon className="w-4 h-4" />
+                        
+                      {!collapsed && <span>{item.label}</span>}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="p-4 overflow-y-auto h-full text-white">
-        {adminMenu.map(section => (
-          <div key={section.label} className="mb-4">
-            <button
-              onClick={() => toggle(section.label)}
-              className="w-full flex justify-between items-center hover:text-orangeButton text-white"
-            >
-              <div className="flex items-center gap-3">
-                <section.icon className="w-4 h-4" />
-                <span className="text-sm font-medium">{section.label}</span>
-              </div>
-
-              {/* {open.includes(section.label)
-                ? <ChevronDown className="w-4 h-4" />
-                : <ChevronRight className="w-4 h-4" />} */}
-            </button>
-
-            {open.includes(section.label) && (
-              <div className="ml-6 mt-2 space-y-1">
-                {section.children.map(item => {
-                  const active = current === item.id;
-                  return (
-                    <Link
-                      key={item.id}
-                      href={`/admin/${item.id}`}
-                      className={`flex items-center font-normal gap-2 px-2 py-2 rounded-lg text-sm transition 
-                        ${active ? "text-orangeButton" : "text-white hover:text-orangeButton"}
-                      `}
-                    >
-                      <item.icon className="w-4 h-4" />
-                      {item.label}
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        ))}
+      {/* FOOTER */}
+      <div className="p-3">
+        <Button className="bg-blueButton text-white w-full flex gap-2 justify-start">
+          <Settings className="w-4 h-4" />
+          {!collapsed && "System Settings"}
+        </Button>
       </div>
-        </div>
-        <div className="">
-          <Button className="bg-blueButton text-white w-full flex justify-start">
-          <Settings className="w-4 h-4"/>  System Settings
-          </Button>
-        </div>
     </aside>
   );
 }
