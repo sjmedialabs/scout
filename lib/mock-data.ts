@@ -410,6 +410,7 @@ export const mockSubscriptionStats: SubscriptionStats = {
   premium: 22,
   totalRevenue: 28400,
   monthlyRecurring: 15600,
+  totalSubscriptions: 423,
 }
 
 export const mockProviders: Provider[] = [
