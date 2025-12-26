@@ -11,11 +11,11 @@ import StarRating from "@/components/ui/star-rating"
 import { MessageSquareText } from "lucide-react"
 import { useRouter } from "next/navigation"
 
-const router = useRouter()
 
 export default function ReviewsPage() {
   const [selectedReview, setSelectedReview] = useState<Review | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const router = useRouter()
 
   const handleRespondClick = (review: Review) => {
     setSelectedReview(review)

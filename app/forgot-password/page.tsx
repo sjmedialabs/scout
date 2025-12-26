@@ -26,6 +26,12 @@ export default function ForgotPasswordPage() {
         throw new Error("Something went wrong");
       }
 
+      const data = await res.json()
+      if (data.resetUrl) {
+        router.push(data.resetUrl)
+        return
+      }
+
       setSuccess(true);
     } catch (err) {
       setError("Unable to send reset link. Try again.");
