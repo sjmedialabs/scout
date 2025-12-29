@@ -9,15 +9,20 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    // 🔐 Auth check
     const user = await getCurrentUser()
     if (!user) {
-        return NextResponse.json({ error: "Authentication required" }, { status: 401 })
+      return NextResponse.json(
+        { success: false, message: "Authentication required" },
+        { status: 401 }
+      )
     }
+
     await connectToDatabase()
 
     const { id } = params
 
-    // ✅ Validate ObjectId
+    // ✅ Validate clientId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
         { success: false, message: "Invalid clientId" },
@@ -35,47 +40,32 @@ export async function GET(
         },
       },
 
-      // 🔗 Join Provider (agency) details
+      // 🔗 Join Provider (agency) using Provider._id
       {
         $lookup: {
           from: "providers",
           localField: "agencyId",
-          foreignField: "userId",
+          foreignField: "_id",
           as: "agency",
         },
       },
       {
         $unwind: {
           path: "$agency",
-          preserveNullAndEmptyArrays: true,
+          preserveNullAndEmptyArrays: false,
         },
       },
 
-      // 🔗 Join Proposal details
-      {
-        $lookup: {
-          from: "proposals",
-          localField: "proposalId",
-          foreignField: "_id",
-          as: "proposal",
-        },
-      },
-      {
-        $unwind: {
-          path: "$proposal",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-
-      // 🎯 Final response shaping
+      // 🎯 Final response
       {
         $project: {
           _id: 1,
           clientId: 1,
-
+          createdAt: 1,
           agency: {
+            _id: "$agency._id",
             name: "$agency.name",
-            coverImage: "$agency.coverImage",
+            logo: "$agency.logo",
             rating: "$agency.rating",
             reviewCount: "$agency.reviewCount",
             costRating: "$agency.costRating",
@@ -83,15 +73,20 @@ export async function GET(
             scheduleRating: "$agency.scheduleRating",
             willingToReferRating: "$agency.willingToReferRating",
             location: "$agency.location",
+             minAmount: {
+                $ifNull: ["$agency.minAmount", 0],
+              },
+              minTimeLine: {
+                $ifNull: ["$agency.minTimeLine", "N/A"],
+              },
+              keyHighlights: {
+                $ifNull: ["$agency.keyHighlights", []],
+              },
           },
-
-          proposal: {
-            proposedBudget: "$proposal.proposedBudget",
-            proposedTimeline: "$proposal.proposedTimeline",
-          },
-
-          createdAt: 1,
         },
+      },
+      {
+        $sort: { createdAt: -1 }, // optional
       },
     ])
 
