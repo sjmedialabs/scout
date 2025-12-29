@@ -66,6 +66,9 @@ export interface IProvider extends Document {
   websiteClicks: number
   createdAt: Date
   updatedAt: Date
+  minAmount?:number
+  minTimeLine?:String
+  keyHighlights:String[]
 }
 
 const PortfolioItemSchema = new Schema({
@@ -132,6 +135,9 @@ const ProviderSchema = new Schema<IProvider>(
     profileViews: { type: Number, default: 0 },
     impressions: { type: Number, default: 0 },
     websiteClicks: { type: Number, default: 0 },
+    minAmount:{type:Number,default:0},
+    minTimeLine:{type:String},
+    keyHighlights:[{type:String}]
   },
   { timestamps: true },
 )

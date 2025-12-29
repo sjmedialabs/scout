@@ -2,59 +2,69 @@ import { NextRequest, NextResponse } from "next/server"
 import mongoose from "mongoose"
 import { connectToDatabase } from "@/lib/mongodb"
 import Comparision from "@/models/Comparision"
+import { getCurrentUser } from "@/lib/auth/jwt"
 
 export async function POST(req: NextRequest) {
   try {
+    // 🔐 Auth check
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "Authentication required" },
+        { status: 401 }
+      )
+    }
+
+    const clientId = user.userId
+
     await connectToDatabase()
 
     const body = await req.json()
-    const { clientId, agencyId, projectId, proposalId } = body
+    const { agencyId } = body
 
-    // ✅ Validate required fields
-    if (!clientId || !agencyId || !projectId || !proposalId) {
+    // ✅ Required fields
+    if (!agencyId) {
       return NextResponse.json(
-        { success: false, message: "All fields are required" },
+        { success: false, message: "agencyId is required" },
         { status: 400 }
       )
     }
 
     // ✅ Validate ObjectIds
-    const ids = [clientId, agencyId, projectId, proposalId]
-    const isValid = ids.every((id) => mongoose.Types.ObjectId.isValid(id))
-
-    if (!isValid) {
+    if (
+      !mongoose.Types.ObjectId.isValid(clientId) ||
+      !mongoose.Types.ObjectId.isValid(agencyId)
+    ) {
       return NextResponse.json(
         { success: false, message: "Invalid ObjectId provided" },
         { status: 400 }
       )
     }
 
-    // ✅ Check existing comparisons for clientId
+    // ✅ Limit: Max 4 vendors per client
     const comparisonCount = await Comparision.countDocuments({ clientId })
 
     if (comparisonCount >= 4) {
       return NextResponse.json(
         {
           success: false,
-          message: "Maximum 4 comparisons allowed per client",
+          message: "You can compare only up to 4 vendors",
         },
         { status: 400 }
       )
     }
 
-    // ✅ Prevent duplicate comparison (optional but recommended)
+    // ✅ Prevent duplicate vendor for same client
     const alreadyExists = await Comparision.findOne({
       clientId,
       agencyId,
-      projectId,
-      proposalId,
     })
 
     if (alreadyExists) {
       return NextResponse.json(
         {
           success: false,
-          message: "This comparison already exists",
+          message: "This vendor is already added for comparison",
         },
         { status: 409 }
       )
@@ -64,15 +74,61 @@ export async function POST(req: NextRequest) {
     const comparison = await Comparision.create({
       clientId,
       agencyId,
-      projectId,
-      proposalId,
     })
+
+    // ✅ Fetch populated response
+    const comparisons = await Comparision.aggregate([
+      {
+        $match: {
+          _id: comparison._id,
+        },
+      },
+      {
+        $lookup: {
+          from: "providers",
+          localField: "agencyId",
+          foreignField: "_id", // 🔥 direct Provider reference
+          as: "agency",
+        },
+      },
+      {
+        $unwind: "$agency",
+      },
+      {
+        $project: {
+          _id: 1,
+          clientId: 1,
+          createdAt: 1,
+          agency: {
+            _id: "$agency._id",
+            name: "$agency.name",
+            logo: "$agency.logo",
+            rating: "$agency.rating",
+            reviewCount: "$agency.reviewCount",
+            costRating: "$agency.costRating",
+            qualityRating: "$agency.qualityRating",
+            scheduleRating: "$agency.scheduleRating",
+            willingToReferRating: "$agency.willingToReferRating",
+            location: "$agency.location",
+           minAmount: {
+                $ifNull: ["$agency.minAmount", 0],
+              },
+              minTimeLine: {
+                $ifNull: ["$agency.minTimeLine", "N/A"],
+              },
+              keyHighlights: {
+                $ifNull: ["$agency.keyHighlights", []],
+              },
+          },
+        },
+      },
+    ])
 
     return NextResponse.json(
       {
         success: true,
-        message: "Comparison added successfully",
-        data: comparison,
+        message: "Vendor added to comparison successfully",
+        data: comparisons[0],
       },
       { status: 201 }
     )
