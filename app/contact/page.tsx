@@ -1,159 +1,209 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+"use client"
+
+import {useEffect, useState } from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Mail, Phone, MapPin, Clock } from "lucide-react"
 
+
 export default function ContactPage() {
-  return (
-    <div className="bg-background">
-      <div className="py-8 px-4">
-        <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-3xl font-bold mb-4">Contact Us</h1>
-            <p className="text-muted-foreground text-balance">
-              Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+  const [cms, setCms] = useState<any>(null)
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    company: "",
+    website: "",
+    country: "",
+    phone: "",
+  })
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+
+  useEffect(() => {
+    const fetchCMS = async () => {
+      const res = await fetch("/api/cms")
+      const data = await res.json()
+      setCms(data)
+    }
+    fetchCMS()
+  }, [])
+
+  const handleSubmit = async () => {
+    setLoading(true)
+    try{
+      await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      })
+      setSuccess(true)
+      setForm({
+        name: "",
+        email: "",
+        company: "",
+        website: "",
+        country: "",
+        phone: "",
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+
+return (
+  <div className="min-h-screen pc-4 py-14">
+    <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
+
+      {/* LEFT */}
+      <div>
+        <h2 className="text-xl font-normal text-[#F54A0C]">
+          {cms?.contact?.heading || "How Can We Help?"}
+        </h2>
+        <p className="mt-1 text-sm">
+          {cms?.contact?.description || "Share a few details about your queries and we'll get back to you soon."}
+        </p>
+
+
+        <div className="mt-8 w-full max-w-xl rounded-2xl bg-white shadow-[0_0_5px_rgba(0,0,0,0.15)] p-6 overflow-hidden">
+
+          <div className="flex items-center gap-2">
+            <span className="text-3xl font-extrabold">Media Enqueries :</span>
+            <span className="text-lg text-gray-500">{cms?.contact?.mediaEmail || "enquiry@scout.com"}</span>
+          </div>
+
+          <div className="-mx-6 my-6 border border-t-gray-700  bg-[#707070]" />
+
+          <div className="flex items-center gap-2">
+            <span className="text-3xl font-extrabold">Contact Number :</span>
+            <span className="text-lg text-gray-500">
+              {cms?.contact?.phone || "+91-9848123456 , 99491237894"}
+            </span>
+          </div>
+
+          <div className="-mx-6 my-6 border border-t-gray-700 bg-[#707070]" />
+
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-3xl font-extrabold">Email :</span>
+              <span className="text-lg text-gray-500">
+                {cms?.contact?.email ||"info@scout.com"}
+              </span>
+            </div>  
+
+            <div className="pl-[87px] leading-4 text-lg text-gray-500">
+              {cms?.contact?.supportEmail || "support@scout.com"}
+            </div> 
+          </div>
+        </div>  
+
+          <div className="mt-8">
+            <p className=" text-3xl font-semibold">
+              Grow  your business by registering with us.
             </p>
+            <button className="mt-3 rounded-full bg-orangeButton px-6 py-2 text-white text-sm">
+              Get Listed
+            </button>
           </div>
+        </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Contact Form */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Send us a message</CardTitle>
-                <CardDescription>Fill out the form below and we'll get back to you within 24 hours.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input id="firstName" placeholder="John" />
-                  </div>
-                  <div>
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input id="lastName" placeholder="Doe" />
-                  </div>
-                </div>
+        {/* RIGHT */}
+        <div className="mt-15 rounded-2xl vorder p-6 shadow-[0_0_5px_rgba(0,0,0,0.15)]">
+          <h3 className="font-semibold text-orangeButton">Send Message</h3>
+          <p className="text-sm mt-1">
+            Share a few datails about your queries and we'll get back to you soon.
+          </p>
 
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="john@example.com" />
-                </div>
+          {!success ? (
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
 
-                <div>
-                  <Label htmlFor="company">Company (Optional)</Label>
-                  <Input id="company" placeholder="Your Company" />
-                </div>
+              <div className="mt-0 leading-0">
+                <label className="text-xs font-medium">
+                  Your Full Name<span className="text-red-500">*</span>
+                </label>
+                <input
+                  placeholder="Search for agency name/service name"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="mt-0 w-full border rounded-full border-blue-200 px-4 py-3 text-[10px] outline-none"
+                />
+              </div>
 
-                <div>
-                  <Label htmlFor="subject">Subject</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a topic" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="general">General Inquiry</SelectItem>
-                      <SelectItem value="support">Technical Support</SelectItem>
-                      <SelectItem value="billing">Billing Question</SelectItem>
-                      <SelectItem value="partnership">Partnership</SelectItem>
-                      <SelectItem value="feedback">Feedback</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="mt-0 leading-0">
+                <label className="text-xs font-medium">
+                  Email address<span className="text-red-500">*</span>
+                </label>
+                  <input
+                    placeholder="Enter email address"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    className="mt-0 w-full border rounded-full border-blue-200 px-4 py-3 text-[10px] outline-none"
+                  />
+              </div>
 
-                <div>
-                  <Label htmlFor="message">Message</Label>
-                  <Textarea id="message" placeholder="Tell us how we can help you..." className="min-h-[120px]" />
-                </div>
+              <div className="mt-0 leading-0">
+                <label className="text-xs font-medium">
+                  Enter company name<span className="text-red-500">*</span>
+                </label>
+                  <input
+                    placeholder="Enter your company name"
+                    value={form.company}
+                    onChange={(e) => setForm({ ...form, company: e.target.value })}
+                    className="mt-0 w-full border rounded-full border-blue-200 px-4 py-3 text-[10px] outline-none" 
+                  />
+              </div>
 
-                <Button className="w-full">Send Message</Button>
-              </CardContent>
-            </Card>
+              <div className="mt-0 leading-0">
+                <label className="text-xs font-medium">
+                  Website<span className="text-red-500">*</span>
+                </label>
+                  <input 
+                    placeholder="Website"
+                    value={form.website}
+                    onChange={(e) => setForm({ ...form, website: e.target.value })}
+                    className="mt-0 w-full border rounded-full border-blue-200 px-4 py-3 text-[10px] outline-none"
+                  />
+              </div>
 
-            {/* Contact Info */}
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Get in touch</CardTitle>
-                  <CardDescription>Prefer to reach out directly? Here are our contact details.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <Mail className="h-5 w-5 text-primary" />
-                    <div>
-                      <div className="font-medium">Email</div>
-                      <div className="text-sm text-muted-foreground">hello@spark.com</div>
-                    </div>
-                  </div>
+              <div className="mt-0 leading-0">
+                <label className="text-xs font-medium">
+                  Select Country<span className="text-red-500">*</span>
+                </label>
+                  <input 
+                    placeholder="Select"
+                    value={form.country}
+                    onChange={(e) => setForm({ ...form, country: e.target.value })}
+                    className="mt-0 w-full border rounded-full border-blue-200 px-4 py-3 text-[10px] outline-none"
+                  />
+              </div>
 
-                  <div className="flex items-center gap-3">
-                    <Phone className="h-5 w-5 text-primary" />
-                    <div>
-                      <div className="font-medium">Phone</div>
-                      <div className="text-sm text-muted-foreground">+1 (555) 123-4567</div>
-                    </div>
-                  </div>
+              <div className="mt-0 leading-0">
+                <label className="text-xs font-medium">
+                  Phone number<span className="text-red-500">*</span>
+                </label>
+                  <input
+                    placeholder="Enter your phone number"
+                    value={form.phone}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    className="mt-0 w-full border rounded-full border-blue-200 px-4 py-3 text-[10px] outline-none"
+                  />
+              </div>
 
-                  <div className="flex items-center gap-3">
-                    <MapPin className="h-5 w-5 text-primary" />
-                    <div>
-                      <div className="font-medium">Address</div>
-                      <div className="text-sm text-muted-foreground">
-                        123 Business Ave
-                        <br />
-                        San Francisco, CA 94105
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <Clock className="h-5 w-5 text-primary" />
-                    <div>
-                      <div className="font-medium">Business Hours</div>
-                      <div className="text-sm text-muted-foreground">
-                        Monday - Friday: 9:00 AM - 6:00 PM PST
-                        <br />
-                        Weekend: Emergency support only
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Frequently Asked Questions</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <div className="font-medium mb-1">How do I get started?</div>
-                    <div className="text-sm text-muted-foreground">
-                      Simply register for an account and choose whether you're a service seeker or provider.
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="font-medium mb-1">Is there a fee to join?</div>
-                    <div className="text-sm text-muted-foreground">
-                      Basic membership is free. Premium features are available with our subscription plans.
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="font-medium mb-1">How are providers verified?</div>
-                    <div className="text-sm text-muted-foreground">
-                      We verify business credentials, check references, and review past work samples.
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <button
+              onClick={handleSubmit}
+              disabled={loading}    
+              className="mt-0 max-w-[190px] rounded-full bg-orangeButton px-6 py-3 text-white text-[10px] outline-none"
+            >
+              {loading ? "Submitting..." : "Submit Request"}
+              </button>  
             </div>
-          </div>
+          ) : (
+            <p className="mt-6 text-green-600 text-sm">
+              Thank you! Your message has been sent successfully.
+            </p>
+          )}
         </div>
       </div>
     </div>
-  )
+ )  
 }
