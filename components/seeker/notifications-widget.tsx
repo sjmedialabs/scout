@@ -8,6 +8,8 @@ import { Bell, Check, X, MessageSquare, FileText, Star } from "lucide-react"
 import type { Notification } from "@/lib/types"
 import { RxCross2 } from "react-icons/rx";
 
+import { timeAgo } from "../times-ago"
+
 interface NotificationsWidgetProps {
   notifications: Notification[]
   onMarkAsRead: (notificationId: string) => void
@@ -18,6 +20,7 @@ export function NotificationsWidget({ notifications, onMarkAsRead, onDismiss }: 
   const [showAll, setShowAll] = useState(false)
 
   const unreadNotifications = notifications.filter((n) => !n.read)
+  const[showNotification,setShowNotification]=useState(true)
   const displayNotifications = showAll ? notifications : notifications.slice(0, 5)
 
   const getNotificationColor = (type: string) => {
@@ -53,7 +56,7 @@ export function NotificationsWidget({ notifications, onMarkAsRead, onDismiss }: 
   }
 
   return (
-    <Card className="bg-[#fff] rounded-2xl">
+    <Card className={`bg-[#fff] rounded-2xl ${showNotification?"block":"hidden"}`}>
       <CardHeader>
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -66,7 +69,7 @@ export function NotificationsWidget({ notifications, onMarkAsRead, onDismiss }: 
             )} */}
           </div>
           <div className="flex justify-center items-center bg-[#F4F9FD] h-10 w-10 rounded-xl cursor-pointer">
-            <RxCross2 className="h-5 w-5 text-[#000]" onClick={() => console.log("Close notifications widget")} />
+            <RxCross2 className="h-5 w-5 text-[#000]" onClick={() =>setShowNotification((prev)=>!prev)} />
           </div>
           {notifications.length > 5 && (
             <Button variant="ghost" size="sm" onClick={() => setShowAll(!showAll)}>
@@ -82,14 +85,14 @@ export function NotificationsWidget({ notifications, onMarkAsRead, onDismiss }: 
           <div className="space-y-3">
             {displayNotifications.map((notification) => (
               <div
-                key={notification.id}
+                key={notification._id}
                 // className={`p-3 rounded-lg border ${notification.read ? "bg-background" : "bg-muted/50"}`}
-                className="border-t border-[#E3E3E3] px-4 py-4"
+                className="border-t border-[#E3E3E3] px-4 py-4 cursor-pointer" onClick={()=>onMarkAsRead(notification._id)}
               >
                 <div className="flex justify-between items-start gap-2">
                   <div className="flex gap-3 flex-1">
                     {/* <div className="mt-1">{getNotificationIcon(notification.type)}</div> */}
-                    <img src="/notificationprofile.png" className="h-10 w-10 rounded-full object-cover items-center" alt="profile"/>
+                    <img src={notification.image || "/notificationprofile.png"} className="h-10 w-10 rounded-full object-cover items-center" alt="profile"/>
                     <div className="flex-1">
                       {/* <div className="flex items-center gap-2 mb-1">
                         <Badge className={getNotificationColor(notification.type)} variant="secondary">
@@ -101,7 +104,7 @@ export function NotificationsWidget({ notifications, onMarkAsRead, onDismiss }: 
                       </div> */}
                       <h4 className="font-bold text-[#000] text-sm my-custom-class">{notification.title}</h4>
                       <p className="text-xs text-[#656565] my-custom-class mt-1">{notification.message}</p>
-                      <p className="text-xs text-[#6B6B6B] my-custom-class font-bold mt-1">2 h ago</p>
+                      <p className="text-xs text-[#6B6B6B] my-custom-class font-bold mt-1">{timeAgo(notification.createdAt)}</p>
                     </div>
                   </div>
                   {/* <div className="flex gap-1">

@@ -6,6 +6,7 @@ import Provider from "@/models/Provider"
 import { getCurrentUser } from "@/lib/auth/jwt"
 import mongoose from "mongoose"
 import Requirement from "@/models/Requirement"
+import Notification from "@/models/Notification"
 
 export async function GET(request: NextRequest) {
   try {
@@ -193,6 +194,18 @@ export async function POST(request: NextRequest) {
 
     // Update project proposal count
      await Requirement.findByIdAndUpdate(requirementId, { $inc: { proposals: 1 } })
+
+     await Notification.create({
+          userId: clientId,                 //  RECEIVER (client)
+          triggeredBy: user.userId,          // AGENCY who submitted proposal
+          title: "New Proposal Received!",
+          message: `${provider.name} submitted a proposal for your ${project.title} project.`,
+          type: "proposal_submitted",
+          userRole: "client",
+          linkUrl: `/client/dashboard/projects/${requirementId}`,
+          sourceId: proposal._id,
+        })
+
 
     return NextResponse.json({
       success: true,

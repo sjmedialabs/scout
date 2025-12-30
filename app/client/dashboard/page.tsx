@@ -66,6 +66,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { FaFileAlt } from "react-icons/fa";
 import { BiHeartCircle } from "react-icons/bi";
 import { BiDollarCircle } from "react-icons/bi";
+import { set } from "mongoose"
 
 interface ProjectProposal {
   id: string
@@ -281,159 +282,233 @@ export default function ClientDashboard() {
   const { user, loading } = useAuth()
   const router = useRouter()
   const [activeSection, setActiveSection] = useState("dashboard") // Set initial state to "dashboard" so content shows by default
-  const [expandedSections, setExpandedSections] = useState<string[]>(["overview"])
+  
   const [showPostForm, setShowPostForm] = useState(false)
   const [requirements, setRequirements] = useState<Requirement[]>(mockRequirements)
-  const [proposals, setProposals] = useState<Proposal[]>(mockProposals)
+  const [proposals, setProposals] = useState<Proposal[]>([])
   const [selectedRequirement, setSelectedRequirement] = useState<string | null>(null)
   const [selectedRequirementForDetails, setSelectedRequirementForDetails] = useState<Requirement | null>(null)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
-  const [showNegotiationChat, setShowNegotiationChat] = useState(false)
-  const [negotiationProposal, setNegotiationProposal] = useState<string | null>(null)
+  
   const [filteredRequirements, setFilteredRequirements] = useState<Requirement[]>(mockRequirements)
-  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null)
-  const [showProviderProfile, setShowProviderProfile] = useState(false)
-  const [showProjectSubmission, setShowProjectSubmission] = useState(false)
-  const [showReviewSubmission, setShowReviewSubmission] = useState(false)
-  const [showProviderComparison, setShowProviderComparison] = useState(false)
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
-  const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null)
-  const [comparisonProviders, setComparisonProviders] = useState<Provider[]>([])
 
-  // Adding project proposal state
-  const [projectProposals, setProjectProposals] = useState<ProjectProposal[]>(mockProjectProposals)
+  const[responseLoading,setResponseLoading]=useState(false)
+  const[failed,setFailed]=useState(false)
 
-  const [isEditingProfile, setIsEditingProfile] = useState(false)
-  const [profileData, setProfileData] = useState({
-    name: user?.name || "John Smith",
-    email: user?.email || "john.smith@example.com",
-    phone: "+1 (555) 123-4567",
-    company: "Tech Innovations Inc.",
-    position: "Chief Technology Officer",
-    industry: "Technology",
-    location: "San Francisco, CA",
-    website: "https://techinnovations.com",
-    bio: "Experienced technology leader with over 10 years in software development and digital transformation. Passionate about leveraging cutting-edge solutions to drive business growth.",
-    timezone: "America/Los_Angeles",
-    preferredCommunication: "email",
-    projectBudgetRange: "$10,000 - $50,000",
-    companySize: "51-200 employees",
-    joinedDate: "January 2024",
+  const[vendors,setVendors]=useState<Provider[]>([])
+
+  const[statsValues,setStatsValues]=useState({
+    matchedVendors:0,
+    proposalCount:0,
+    shorlistedVendors:0,
+    avgProposalAmount:0
   })
 
-  const [notifications, setNotifications] = useState<Notification[]>([
+  const[costDistributionStats,setCostDistributionStats]=useState([
     {
-      id: "1",
-      userId: user?.id || "1",
-      type: "proposal_received",
-      title: "New Proposal Received!",
-      message: 'TechCraft Solutions submitted a proposal for your "E-commerce Website Development" project.',
-      read: false,
-      createdAt: new Date("2024-01-20"),
-      relatedId: "1",
+      id:1,
+      range:"$0-$5k",
+      value:0
     },
-    {
-      id: "2",
-      userId: user?.id || "1",
-      type: "proposal_received",
-      title: "New Proposal Received!",
-      message: 'WebDev Pro submitted a proposal for your "E-commerce Website Development" project.',
-      read: false,
-      createdAt: new Date("2024-01-19"),
-      relatedId: "1",
+     {
+      id:2,
+      range:"$5k-$10k",
+      value:0
     },
-    {
-      id: "3",
-      userId: user?.id || "1",
-      type: "message_received",
-      title: "New Message",
-      message: "TechCraft Solutions sent you a message about your project requirements.",
-      read: true,
-      createdAt: new Date("2024-01-18"),
-      relatedId: "1",
+     {
+      id:3,
+      range:"$10k-$20k",
+      value:0
     },
-    {
-      id: "4",
-      userId: user?.id || "1",
-      type: "proposal_received",
-      title: "New Proposal Received!",
-      message: 'Creative Design Studio submitted a proposal for your "Mobile App UI/UX Design" project.',
-      read: false,
-      createdAt: new Date("2024-01-17"),
-      relatedId: "2",
-    },
-    {
-      id: "5",
-      userId: user?.id || "1",
-      type: "review_requested",
-      title: "Review Requested",
-      message: "Please review your completed project with Digital Marketing Pro.",
-      read: true,
-      createdAt: new Date("2024-01-15"),
-      relatedId: "3",
-    },
+     {
+      id:4,
+      range:"$20k+",
+      value:0
+    }
+
   ])
 
-  const [projects, setProjects] = useState([
-    {
-      id: "1",
-      title: "E-commerce Website Development",
-      description: "Modern responsive e-commerce platform with payment integration",
-      budget: "$15,000 - $25,000",
-      status: "In Progress",
-      createdAt: "2024-01-15",
-      proposalsCount: 12,
-      category: "Web Development",
-    },
-    {
-      id: "2",
-      title: "Mobile App UI/UX Design",
-      description: "Complete mobile app design for iOS and Android platforms",
-      budget: "$8,000 - $12,000",
-      status: "Planning",
-      createdAt: "2024-01-20",
-      proposalsCount: 8,
-      category: "Design",
-    },
-    {
-      id: "3",
-      title: "Digital Marketing Campaign",
-      description: "Comprehensive digital marketing strategy and execution",
-      budget: "$5,000 - $10,000",
-      status: "Completed",
-      createdAt: "2024-01-10",
-      proposalsCount: 15,
-      category: "Marketing",
-    },
-  ])
+  const[topVendorsLocations,setTopVendorsLocations]=useState([])
+  const[topVendorsServices,setTopVendorsServices]=useState([]);
 
-  const [showCreateProject, setShowCreateProject] = useState(false)
-  const [editingProject, setEditingProject] = useState<any>(null)
-  const [newProject, setNewProject] = useState({
-    title: "",
-    description: "",
-    budget: "",
-    category: "",
-  })
+ const loadData = async () => {
+  setResponseLoading(true)
+  setFailed(false)
 
-  const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null)
-  const [viewingPortfolio, setViewingPortfolio] = useState(false)
-  const [viewingProfile, setViewingProfile] = useState(false)
+  try {
+    const [notificationsRes, vendorsRes, proposalsRes,reqRes] = await Promise.all([
+      fetch("/api/notifications"),
+      fetch("/api/providers"),
+      fetch(`/api/proposals/${user?.id}`),
+      fetch(`/api/requirements/${user?.id}`)
+    ])
 
-  const [locationFilter, setLocationFilter] = useState("")
-  const [technologyFilter, setTechnologyFilter] = useState("")
-  const [ratingFilter, setRatingFilter] = useState("")
+    //  If ANY request failed → throw error
+    if (!notificationsRes.ok || !vendorsRes.ok || !proposalsRes.ok) {
+      throw new Error("One or more requests failed")
+    }
 
-  const stats = {
-    totalRequirements: requirements.length,
-    activeRequirements: requirements.filter((r) => r.status === "active").length,
-    totalProposals: proposals.length,
-    shortlistedProposals: proposals.filter((p) => p.status === "shortlisted").length,
-    // New analytics
-    vendorMatches: mockProviders.length, // Total vendors matched
-    proposalCount: mockProjectProposals.length, // Total proposals received
-    shortlistedVendors: mockProjectProposals.filter((p) => p.status === "shortlisted").length,
+    const [notificationsData, vendorsData, proposalsData,reqData] = await Promise.all([
+      notificationsRes.json(),
+      vendorsRes.json(),
+      proposalsRes.json(),
+      reqRes.json()
+    ])
+
+    setNotifications(
+      notificationsData.data.filter((item: any) => !item.isRead)
+    )
+    setVendors(vendorsData.providers)
+     setProposals(proposalsData.proposals)
+    // setRequirements(reqData.requirements)
+     let uniqueRequirementCategories = new Set(
+      reqData.requirements.map((item) => item.category)
+    )
+
+    let matchedVendors = 0
+
+    vendorsData.providers.forEach((eachItem) => {
+      const hasMatch = eachItem.services.some((service) =>
+        uniqueRequirementCategories.has(service)
+      )
+
+      if (hasMatch) {
+        matchedVendors += 1
+      }
+    })
+
+    const avgBudget =
+    proposalsData.proposals.length === 0
+      ? 0
+      : proposalsData.proposals.reduce((sum, p) => sum + (p.proposedBudget ?? 0), 0) /
+        proposalsData.proposals.length
+
+ 
+    
+    setStatsValues((prev)=>({...prev,matchedVendors:matchedVendors,proposalCount:proposalsData.proposals.length,avgProposalAmount:avgBudget}))
+
+    let proposalsLessThanFiveThousand=0;
+    let proposalsLessThanTenThousand=0;
+    let proposalsLessThanTwentyThousand=0
+    let proposalsMoreThanTwentyThousand=0;
+
+    proposalsData.proposals.map((item:any)=>{
+      if(((item.proposedBudget || 0)>0  && (item.proposedBudget || 0)<=5000)){
+         proposalsLessThanFiveThousand+=1
+      }
+      if(((item.proposedBudget || 0)>5000  && (item.proposedBudget || 0)<=10000)){
+         proposalsLessThanTenThousand+=1
+      }
+      if(((item.proposedBudget || 0)>10000  && (item.proposedBudget || 0)<=20000)){
+         proposalsLessThanTwentyThousand+=1
+      }
+      if(((item.proposedBudget || 0)>20000 )){
+        proposalsMoreThanTwentyThousand+=1
+      }
+
+    })
+ 
+      setCostDistributionStats([
+      { id: 1, range: "$0-$5k", value: proposalsLessThanFiveThousand },
+      { id: 2, range: "$5k-$10k", value: proposalsLessThanTenThousand },
+      { id: 3, range: "$10k-$20k", value: proposalsLessThanTwentyThousand },
+      { id: 4, range: "$20k+", value: proposalsMoreThanTwentyThousand },
+    ])
+
+    
+    let topVendors=vendorsData.providers.filter((item)=>item.rating>=3);
+    let topVendorsUniqueLocations=new Set((topVendors || []).map((item:any)=>item.location))
+    const topVendorsUniqueServices = new Set(
+    (topVendors || []).flatMap((item: any) => item.services)
+    )
+
+    let tempVendorLocations=[];
+    topVendorsUniqueLocations.forEach((item:any)=>{
+      let temp={
+        count:0,
+        locationName:item,
+      }
+      topVendors.map((vendor:any)=>{
+        if(vendor.location.trim().toLowerCase()===item.trim().toLowerCase()){
+            temp.count=temp.count+1
+        }
+      })
+      if(!item.trim().toLowerCase().includes("not specified")){
+          tempVendorLocations.push(temp)
+      }
+      
+    })
+    setTopVendorsLocations(tempVendorLocations)
+
+    let tempVendorServices: any[] = []
+
+    topVendorsUniqueServices.forEach((service: any) => {
+      let temp = {
+        serviceName: service,
+        count: 0,
+        percentage: 0,
+      }
+
+      topVendors.forEach((vendor: any) => {
+        if (
+          vendor.services?.some(
+            (s: string) =>
+              s.trim().toLowerCase() === service.trim().toLowerCase()
+          )
+        ) {
+          temp.count = temp.count + 1
+        }
+      })
+
+      // optional filter like "not specified"
+      if (!service.trim().toLowerCase().includes("not specified")) {
+        tempVendorServices.push(temp)
+      }
+    })
+
+    const totalServiceCount = tempVendorServices.reduce(
+      (sum, item) => sum + item.count,
+      0
+    )
+
+    tempVendorServices = tempVendorServices.map((item) => ({
+      ...item,
+      percentage:
+        totalServiceCount === 0
+          ? 0
+          : Math.round((item.count / totalServiceCount) * 100),
+    }))
+
+    
+
+   setTopVendorsServices(tempVendorServices)
+
+
+
+    console.log("Top vendors services are :::",tempVendorServices)
+    
+    console.log("Cost Distribbution :::",proposalsLessThanFiveThousand,proposalsLessThanTenThousand,proposalsLessThanTwentyThousand,proposalsMoreThanTwentyThousand)
+    console.log("Fetched Data", notificationsData.data)
+    console.log("Vendors fetched Data::",vendorsData.providers)
+    console.log("Proposals fetched data::",proposalsData.proposals)
+    console.log("Requirements fetched data:::",reqData.requirements)
+  } catch (error) {
+    console.error("Failed to fetch data:", error)
+    setFailed(true)
+  } finally {
+    setResponseLoading(false)
   }
+}
+
+  
+
+
+
+  const [notifications, setNotifications] = useState<Notification[]>([])
+
+
+  
+ 
 
   const costAnalytics = {
     avgProposalAmount: Math.round(
@@ -470,38 +545,19 @@ export default function ClientDashboard() {
     { specialty: "Enterprise Solutions", count: 2, percentage: 20 },
   ]
 
-  const [selectedVendorsForComparison, setSelectedVendorsForComparison] = useState<string[]>([])
-  const vendorComparisonData = mockProjectProposals.slice(0, 5).map((proposal) => ({
-    id: proposal.id,
-    name: proposal.providerName,
-    overallRating: proposal.providerRating,
-    qualityRating: proposal.providerRating - 0.1,
-    scheduleRating: proposal.providerRating + 0.1,
-    costRating: proposal.providerRating - 0.2,
-    willingToRefer: proposal.providerRating + 0.05,
-    proposalAmount: proposal.proposalAmount,
-    timeline: proposal.timeline,
-  }))
+  
+ 
 
   useEffect(() => {
     if (!loading && (!user || user.role !== "client")) {
       router.push("/login")
     }
+    if(user && !loading){
+      loadData()
+    }
   }, [user, loading, router])
 
-  const toggleSection = (sectionId: string) => {
-    setExpandedSections((prev) =>
-      prev.includes(sectionId) ? prev.filter((id) => id !== sectionId) : [...prev, sectionId],
-    )
-  }
-
-  const handleMenuClick = (itemId: string, parentId?: string) => {
-    setActiveSection(itemId)
-    if (parentId && !expandedSections.includes(parentId)) {
-      setExpandedSections((prev) => [...prev, parentId])
-    }
-  }
-
+ 
 const handlePostRequirement = async (newRequirement: any) => {
   try {
     if (!user || user.role !== "client") {
@@ -579,198 +635,50 @@ const handlePostRequirement = async (newRequirement: any) => {
     }
   }
 
-  const handleShortlist = (proposalId: string) => {
-    setProposals((prev) => prev.map((p) => (p.id === proposalId ? { ...p, status: "shortlisted" as const } : p)))
-  }
+ 
 
-  const handleAccept = (proposalId: string) => {
-    setProposals((prev) => prev.map((p) => (p.id === proposalId ? { ...p, status: "accepted" as const } : p)))
-    setNegotiationProposal(proposalId)
-    setShowNegotiationChat(true)
-  }
-
-  const handleReject = (proposalId: string) => {
-    setProposals((prev) => prev.map((p) => (p.id === proposalId ? { ...p, status: "rejected" as const } : p)))
-  }
-
-  const handleRequestRevision = (proposalId: string, feedback: string) => {
-    console.log("Revision requested for proposal:", proposalId, "Feedback:", feedback)
-    // In real app, this would send the revision request to the provider
-  }
-
-  const handleFiltersChange = (filters: any) => {
-    let filtered = [...requirements]
-
-    if (filters.serviceType) {
-      filtered = filtered.filter((r) => r.category === filters.serviceType)
-    }
-
-    if (filters.location) {
-      filtered = filtered.filter(
-        (r) => r.location === filters.location || (!r.location && filters.location === "Remote"),
-      )
-    }
-
-    if (filters.budgetRange) {
-      filtered = filtered.filter((r) => r.budgetMin >= filters.budgetRange[0] && r.budgetMax <= filters.budgetRange[1])
-    }
-
-    setFilteredRequirements(filtered)
-  }
-
-  const getProposalsForRequirement = (requirementId: string) => {
-    return proposals.filter((p) => p.requirementId === requirementId)
-  }
-
-  const getProposalsForProject = (projectId: string) => {
-    return projectProposals.filter((proposal) => proposal.projectId === projectId)
-  }
-
-  const handleMarkNotificationAsRead = (notificationId: string) => {
-    setNotifications((prev) => prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n)))
+  const handleMarkNotificationAsRead = async(notificationId: string) => {
+     console.log("notification Id recievd:::",notificationId)
+     const filteredNotification=notifications.find((item)=>item._id===notificationId)
+     try{
+        const res=await fetch(`/api/notifications/${notificationId}`,{
+          method:"PUT",
+          headers:{
+            "Content-Type":"application/json"
+          }
+        })
+        console.log("response of the mark as read::",res)
+        if(res.ok){
+            setNotifications((prev)=>prev.filter((eachItem)=>eachItem._id!==notificationId))
+        }
+     }catch(error){
+       console.log("Failed to update the status of the notification::",error)
+     }
+     if(filteredNotification){
+      router.push(filteredNotification?.linkUrl)
+     }
   }
 
   const handleDismissNotification = (notificationId: string) => {
     setNotifications((prev) => prev.filter((n) => n.id !== notificationId))
   }
 
-  const handleViewProvider = (providerId: string) => {
-    const provider = mockProviders.find((p) => p.id === providerId)
-    if (provider) {
-      setSelectedProvider(provider)
-      setShowProviderProfile(true)
-    }
-  }
-
-  const handleContactProvider = (providerId: string) => {
-    console.log("Contacting provider:", providerId)
-    // In real app, this would open a contact form or chat
-    setShowProviderProfile(false)
-  }
-
-  const handleSubmitProject = (projectId: string) => {
-    setSelectedProjectId(projectId)
-    setShowProjectSubmission(true)
-  }
-
-  const handleProjectSubmissionComplete = (submissionData: any) => {
-    console.log("Project submitted:", submissionData)
-    setShowProjectSubmission(false)
-    setSelectedProjectId(null)
-    // Show review form after project submission
-    setShowReviewSubmission(true)
-  }
-
-  const handleSubmitReview = (reviewData: any) => {
-    console.log("Review submitted:", reviewData)
-    setShowReviewSubmission(false)
-    setSelectedProviderId(null)
-  }
-
-  const handleCompareProviders = () => {
-    // Get top 3 providers for comparison
-    const topProviders = mockProviders.slice(0, 3)
-    setComparisonProviders(topProviders)
-    setShowProviderComparison(true)
-  }
-
-  const handleSelectProviderFromComparison = (providerId: string) => {
-    handleViewProvider(providerId)
-    setShowProviderComparison(false)
-  }
-
-  const handleCreateProject = () => {
-    if (newProject.title && newProject.description && newProject.budget && newProject.category) {
-      const project = {
-        id: Date.now().toString(),
-        ...newProject,
-        status: "Planning",
-        createdAt: new Date().toISOString().split("T")[0],
-        proposalsCount: 0,
-      }
-      setProjects([...projects, project])
-      setNewProject({ title: "", description: "", budget: "", category: "" })
-      setShowCreateProject(false)
-    }
-  }
-
-  const handleEditProject = (project: any) => {
-    setEditingProject(project)
-    setNewProject({
-      title: project.title,
-      description: project.description,
-      budget: project.budget,
-      category: project.category,
-    })
-    setShowCreateProject(true)
-  }
-
-  const handleUpdateProject = () => {
-    if (editingProject && newProject.title && newProject.description && newProject.budget && newProject.category) {
-      setProjects(projects.map((p) => (p.id === editingProject.id ? { ...p, ...newProject } : p)))
-      setEditingProject(null)
-      setNewProject({ title: "", description: "", budget: "", category: "" })
-      setShowCreateProject(false)
-    }
-  }
-
-  const handleDeleteProject = (projectId: string) => {
-    setProjects(projects.filter((p) => p.id !== projectId))
-  }
-
-  const handleViewProjectProposals = (projectId: string) => {
-    // Navigate to proposals for this project
-    setActiveSection("proposals")
-    setSelectedProjectId(projectId)
-  }
-
-  
-
-  const handleViewPortfolio = (providerId: string) => {
-    setSelectedCompanyId(providerId)
-    setViewingPortfolio(true)
-    setViewingProfile(false)
-    setActiveSection("company-portfolio")
-  }
-
-  const handleViewProfile = (providerId: string) => {
-    setSelectedCompanyId(providerId)
-    setViewingProfile(true)
-    setViewingPortfolio(false)
-    setActiveSection("company-profile")
-  }
-
-  const handleBackToProposals = () => {
-    setSelectedCompanyId(null)
-    setViewingPortfolio(false)
-    setViewingProfile(false)
-    setActiveSection("proposals")
-  }
-
  
-
-  const filteredProviders = mockProviders.filter((provider) => {
-    const matchesLocation = !locationFilter || provider.location.toLowerCase().includes(locationFilter.toLowerCase())
-    const matchesTechnology =
-      !technologyFilter ||
-      provider.services.some((service) => service.toLowerCase().includes(technologyFilter.toLowerCase()))
-    const matchesRating = !ratingFilter || provider.rating >= Number.parseFloat(ratingFilter)
-
-    return matchesLocation && matchesTechnology && matchesRating
-  })
-
-  const clearFilters = () => {
-    setLocationFilter("")
-    setTechnologyFilter("")
-    setRatingFilter("")
-  }
-
-  if (loading) {
+  if (loading || responseLoading) {
     return <div className="bg-background flex items-center justify-center">Loading...</div>
   }
 
   if (!user || user.role !== "client") {
     return null
+  }
+
+  if(failed){
+      return(
+        <div className="flex flex-col justify-center items-center text-center">
+          <h1 className="text-center font-semibold">Failed  to Retrive the data</h1>
+          <Button onClick={loadData} className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]">Reload</Button>
+        </div>
+      )
   }
 
   if (showPostForm) {
@@ -805,7 +713,7 @@ const handlePostRequirement = async (newRequirement: any) => {
                    </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-[#000]">{stats.vendorMatches}</div>
+                  <div className="text-2xl font-bold text-[#000]">{statsValues.matchedVendors}</div>
                   <p className="text-xs text-[#F4561C] font-normal">Providers matched to projects</p>
                 </CardContent>
               </Card>
@@ -818,7 +726,7 @@ const handlePostRequirement = async (newRequirement: any) => {
                    </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-[#000]">{stats.proposalCount}</div>
+                  <div className="text-2xl font-bold text-[#000]">{statsValues.proposalCount}</div>
                   <p className="text-xs text-[#F4561C] font-normal my-custom-class">Vendors submitted proposals</p>
                 </CardContent>
               </Card>
@@ -831,7 +739,7 @@ const handlePostRequirement = async (newRequirement: any) => {
                    </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.shortlistedVendors}</div>
+                  <div className="text-2xl font-bold">{statsValues.shorlistedVendors}</div>
                   <p className="text-xs text-[#F4561C] font-normal my-custom-class">Agencies shortlisted</p>
                 </CardContent>
               </Card>
@@ -844,7 +752,7 @@ const handlePostRequirement = async (newRequirement: any) => {
                    </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">${costAnalytics.avgProposalAmount.toLocaleString()}</div>
+                  <div className="text-2xl font-bold">${statsValues.avgProposalAmount.toLocaleString()}</div>
                   <p className="text-xs text-[#F4561C] font-normal my-custom-class">Average proposal amount</p>
                 </CardContent>
               </Card>
@@ -866,27 +774,27 @@ const handlePostRequirement = async (newRequirement: any) => {
                       <div className="text-center font-bold text-sm text-[#6B6B6B] my-custom-class">Refer</div>
                     </div>
                     
-                    {vendorComparisonData.slice(0, 4).map((vendor) => (
+                    {vendors.slice(0, 4).map((vendor) => (
                       <div key={vendor.id} className="grid  border-t-[1px] px-6 pt-4 border-[#E3E3E3] grid-cols-5 gap-2 items-center text-sm">
                         <div className="font-medium teext-sm text-[#6B6B6B] my-custom-class">{vendor.name}</div>
                         <div className="text-center">
                           <Badge variant="secondary" className="text-xs border-1 border-[#B4D2F4] rounded-full bg-[#F2F2F2] min-w-[40px] text-[#000]">
-                            {vendor.qualityRating.toFixed(1)}
+                            {vendor?.qualityRating?.toFixed(1) || 0}
                           </Badge>
                         </div>
                         <div className="text-center">
                           <Badge variant="secondary" className="text-xs border-1 border-[#B4D2F4] rounded-full bg-[#F2F2F2] min-w-[40px] text-[#000]">
-                            {vendor.scheduleRating.toFixed(1)}
+                            {vendor?.scheduleRating?.toFixed(1) || 0}
                           </Badge>
                         </div>
                         <div className="text-center">
                           <Badge variant="secondary" className="text-xs border-1 border-[#B4D2F4] rounded-full bg-[#F2F2F2] min-w-[40px] text-[#000]">
-                            {vendor.costRating.toFixed(1)}
+                            {vendor?.costRating?.toFixed(1) || 0}
                           </Badge>
                         </div>
                         <div className="text-center">
                           <Badge variant="secondary" className="text-xs border-1 border-[#B4D2F4] rounded-full bg-[#F2F2F2] min-w-[40px] text-[#000]">
-                            {vendor.willingToRefer.toFixed(1)}
+                            {vendor?.willingToRefer?.toFixed(1) || 0}
                           </Badge>
                         </div>
                       </div>
@@ -906,17 +814,17 @@ const handlePostRequirement = async (newRequirement: any) => {
                       <span className="text-[#6B6B6B] font-bold text-sm">Budget Range</span>
                       <span className="text-[#6B6B6B] font-bold text-sm">Proposals</span>
                     </div>
-                    {costAnalytics.budgetRanges.map((range, index) => (
+                    {costDistributionStats.map((range, index) => (
                       <div key={index} className="space-y-1 px-6">
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-[#6B6B6B] font-bold text-sm">{range.range}</span>
-                          <span className="text-[#6B6B6B] font-bold text-sm">{range.count}</span>
+                          <span className="text-[#6B6B6B] font-bold text-sm">{range.value}</span>
                         </div>
                         <div className="w-full bg-[#DAEDF8] rounded-full h-2">
                           <div
                             className="bg-[#1C96F4] rounded-full h-2 transition-all"
                             style={{
-                              width: `${(range.count / mockProjectProposals.length) * 100}%`,
+                              width: `${(range.value / proposals.length) * 100}%`,
                             }}
                           />
                         </div>
@@ -936,37 +844,66 @@ const handlePostRequirement = async (newRequirement: any) => {
               </Card>
             </div>
 
+            {/*Top vendor locations */}
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-[#fff] rounded-2xl">
-                <CardHeader>
-                  <CardTitle className="font-bold text-[#F4561C] text-xl leading-4 my-custom-class">Top Vendor Locations</CardTitle>
-                  <CardDescription className="text-md my-custom-class text-[#656565] font-normal">Geographic distribution of responding vendors</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {locationAnalytics.map((location, index) => (
-                      <div key={index} className="space-y-1">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                      
-                            <span className="text-sm font-normal text-[#6B6B6B] my-custom-class">{location.location}</span>
+             <Card className="bg-[#fff] rounded-2xl">
+              <CardHeader>
+                <CardTitle className="font-bold text-[#F4561C] text-xl leading-4 my-custom-class">
+                  Top Vendor Locations
+                </CardTitle>
+                <CardDescription className="text-md my-custom-class text-[#656565] font-normal">
+                  Geographic distribution of responding vendors
+                </CardDescription>
+              </CardHeader>
+
+              <CardContent>
+                <div className="space-y-4">
+                  {(() => {
+                    const totalVendorsCount = (topVendorsLocations || []).reduce(
+                      (sum, item) => sum + (item.count || 0),
+                      0
+                    )
+
+                    return (topVendorsLocations || []).map((location, index) => {
+                      const percentage =
+                        totalVendorsCount === 0
+                          ? 0
+                          : Math.round((location.count / totalVendorsCount) * 100)
+
+                      return (
+                        <div key={index} className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-normal text-[#6B6B6B] my-custom-class">
+                                {location.locationName}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-normal text-[#6B6B6B] my-custom-class">
+                                {location.count}
+                              </span>
+                              <span className="text-xs font-normal text-[#6B6B6B] my-custom-class">
+                                ({percentage}%)
+                              </span>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-normal text-[#6B6B6B] my-custom-class">{location.count}</span>
-                            <span className="text-xs font-normal text-[#6B6B6B] my-custom-class">({location.percentage}%)</span>
+
+                          <div className="w-full bg-[#DAEDF8] rounded-full h-2">
+                            <div
+                              className="bg-[#1C96F4] rounded-full h-2 transition-all"
+                              style={{ width: `${percentage}%` }}
+                            />
                           </div>
                         </div>
-                        <div className="w-full bg-[#DAEDF8] rounded-full h-2">
-                          <div
-                            className="bg-[#1C96F4] rounded-full h-2 transition-all"
-                            style={{ width: `${location.percentage}%` }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                      )
+                    })
+                  })()}
+                </div>
+              </CardContent>
+            </Card>
+
 
               <Card className="bg-[#fff] rounded-2xl">
                 <CardHeader>
@@ -975,12 +912,12 @@ const handlePostRequirement = async (newRequirement: any) => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {specialtyAnalytics.map((specialty, index) => (
+                    {topVendorsServices.map((specialty, index) => (
                       <div key={index} className="space-y-1">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             
-                            <span className="text-sm font-normal text-[#6B6B6B] my-custom-class">{specialty.specialty}</span>
+                            <span className="text-sm font-normal text-[#6B6B6B] my-custom-class">{specialty.serviceName}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-normal text-[#6B6B6B] my-custom-class">{specialty.count}</span>
@@ -999,6 +936,8 @@ const handlePostRequirement = async (newRequirement: any) => {
                 </CardContent>
               </Card>
             </div>
+
+            {/*Requirement cards Notifications*/}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-6">
