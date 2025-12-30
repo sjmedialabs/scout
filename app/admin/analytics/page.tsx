@@ -6,40 +6,160 @@ import {
   mockAdminStats,
   mockSubscriptionStats,
   mockProvider,
+  mockReportedContent,
 } from "@/lib/mock-data";
+import { User } from "@/lib/types";
+import { AlertTriangle, FileText, Users } from "lucide-react";
 
 export default function AnalyticsPage() {
   const [stats, setStats] = useState(mockAdminStats);
   const [subscriptionStats, setSubscriptionStats] = useState(mockSubscriptionStats);
   const [topProviders, setTopProviders] = useState([mockProvider]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
+  const [reportedContent, setReportedContent] = useState(mockReportedContent);
+  const [requirements, setRequirements] = useState([]);
 
-  /*
-  ----------------------------------------
-  OPTIONAL: Fetch real analytics from API
-  ----------------------------------------
   useEffect(() => {
-    async function loadAnalytics() {
-      const res = await fetch("/api/admin/analytics");
-      const data = await res.json();
+    async function fetchDashboardData() {
+      // To decrease server load, use a single aggregated endpoint
+      // or Promise.all to fetch concurrently.
+      try {
+        setIsLoading(true);
+        const [
+          //statsRes, subRes,
+           usersRes, requirementsRes,
+          //  reportsRes
+          ] = await Promise.all([
+        //   fetch("/api/admin/stats"),
+        //   fetch("/api/admin/subscriptions"),
+          fetch("/api/users"),
+        fetch("/api/requirements"),
+        //   fetch("/api/admin/reports"),
+        ]);
+       const usersData = await usersRes.json();
+        setUsers(usersData.users);
 
-      setStats(data.stats);
-      setSubscriptionStats(data.subscriptionStats);
-      setTopProviders(data.topProviders);
+        const requirementsData = await requirementsRes.json();
+        console.log("Fetched requirements data:", requirementsData);
+        setRequirements(requirementsData.requirements);
+      } catch (error) {
+        console.error("Failed to fetch dashboard data", error);
+      } finally {
+        // setIsLoading(false);
+      }
     }
-    loadAnalytics();
+
+    fetchDashboardData();
   }, []);
-  */
+
+  const pendingReports = reportedContent.filter((r) => r.status === "pending").length;
+  const pendingUsers = users.filter((u) => !u.isVerified).length;
+  const activeRequirements = requirements.filter((r) => r.status === "Allocated").length;
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Analytics Overview</h1>
-      <p className="text-gray-500">Key platform insights and performance metrics</p>
+      <h1 className="text-4xl font-bold text-orangeButton">Analytics Overview</h1>
+      <p className="text-gray-500 text-xl">Key platform insights and performance metrics</p>
 
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Total Users */}
+        <DashboardCard
+          title="Total Users"
+          icon={<Users className="h-4 w-4 text-orangeButton" />}
+          gradient="from-blue-100 to-blue-200"
+          value={users.length}
+          helper={`${pendingUsers} pending approval`}
+        />
+
+        {/* Active Projects */}
+        <DashboardCard
+          title="Active Projects"
+          icon={<FileText className="h-4 w-4 text-orangeButton" />}
+          gradient="from-green-100 to-green-200"
+          value={activeRequirements}
+          helper={`${requirements.length} requirements posted`}
+        />
+
+        {/* Pending Reports */}
+        <DashboardCard
+          title="Pending Reports"
+          icon={<AlertTriangle className="h-4 w-4 text-orangeButton" />}
+          gradient="from-orange-100 to-orange-200"
+          value={pendingReports}
+          helper="Require moderation"
+        />
+
+        {/* Monthly Revenue */}
+        <DashboardCard
+          title="Monthly Revenue"
+          icon={<img src="/images/revenue-icon.png" className="h-4 w-4 text-orangeButton" />}
+          gradient="from-purple-100 to-purple-200"
+          value={`$${subscriptionStats.monthlyRecurring.toLocaleString()}`}
+          helper={`+${stats.monthlyGrowth}% growth`}
+        />
+      </div>
       <AnalyticsDashboard
         stats={stats}
         subscriptionStats={subscriptionStats}
         topProviders={topProviders}
       />
+            {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Total Users */}
+        <DashboardCard
+          title="Average Revenue Per User"
+          icon={<Users className="h-4 w-4 text-orangeButton" />}
+          gradient="from-blue-100 to-blue-200"
+          value={`${subscriptionStats.monthlyRecurring.toLocaleString()}`}
+          helper={`From ${subscriptionStats.totalSubscriptions} active subscriptions`}
+        />
+
+        {/* Active Projects */}
+        <DashboardCard
+          title="Average Revenue Per User"
+          icon={<FileText className="h-4 w-4 text-orangeButton" />}
+          gradient="from-green-100 to-green-200"
+          value={`${Math.round(subscriptionStats.totalRevenue / subscriptionStats.totalSubscriptions)}`}
+          helper={`Per paying user`}
+        />
+
+        {/* Pending Reports */}
+        <DashboardCard
+          title="Platform Growth"
+          icon={<AlertTriangle className="h-4 w-4 text-orangeButton" />}
+          gradient="from-orange-100 to-orange-200"
+          value={`+${stats.monthlyGrowth}%`}
+          helper="Month over month growth"
+        />
+      </div>
+    </div>
+  );
+}
+/* ---------------------------------------------------------
+   REUSABLE DASHBOARD CARD COMPONENT
+--------------------------------------------------------- */
+function DashboardCard({ title, value, icon, helper, gradient }: any) {
+  return (
+    <div
+      className="group bg-white rounded-2xl p-6  shadow-lg
+                 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+    >
+      <div className="flex items-center justify-between pb-8">
+        <div>
+          <h3 className="text-sm font-semibold">{title}</h3>
+        </div>
+        <div
+          className={`p-2 rounded-full flex items-center justify-center shadow-md
+          bg-[#EEF7FE] group-hover:scale-110 transition-transform`}
+        >
+          {icon}
+        </div>
+      </div>
+
+      <div className="text-2xl font-extrabold text-slate-800">{value}</div>
+      <p className="text-xs text-orangeButton font-extralight mt-1">{helper}</p>
     </div>
   );
 }

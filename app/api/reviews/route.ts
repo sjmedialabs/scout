@@ -5,6 +5,7 @@ import Provider from "@/models/Provider"
 import Project from "@/models/Project"
 import { getCurrentUser } from "@/lib/auth/jwt"
 import mongoose from "mongoose"
+import Requirement from "@/models/Requirement"
 
 export async function GET(request: NextRequest) {
   try {
@@ -113,7 +114,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify project belongs to user
-    const project = await Project.findById(projectId)
+    const project = await Requirement.findById(projectId)
     if (!project || project.clientId.toString() !== user.userId) {
       return NextResponse.json({ error: "Project not found or unauthorized" }, { status: 404 })
     }
@@ -143,18 +144,44 @@ export async function POST(request: NextRequest) {
       content,
       pros: pros || [],
       cons: cons || [],
+      keyHighLights: body.keyHighLights || [],
       isVerified: false,
       isPublic: true,
     })
 
+    // Mark project as reviewed
+    await Requirement.findByIdAndUpdate(projectId, { isReviewed: true })
+
     // Update provider rating
     const reviews = await Review.find({ providerId, isPublic: true })
     const avgRating = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+    const avgCostRating = reviews.reduce((sum, r) => sum + r.costRating, 0) / reviews.length
+    const avgQualityRating = reviews.reduce((sum, r) => sum + r.qualityRating, 0) / reviews.length
+    const avgScheduleRating = reviews.reduce((sum, r) => sum + r.scheduleRating, 0) / reviews.length
+    const avgWillingToReferRating = reviews.reduce((sum, r) => sum + r.willingToReferRating, 0) / reviews.length
 
-    await Provider.findByIdAndUpdate(providerId, {
-      rating: Math.round(avgRating * 10) / 10,
-      reviewCount: reviews.length,
-    })
+    const providerToupdate= await Provider.findOneAndUpdate(
+              { userId: providerId },
+              {
+                rating: Math.round(avgRating * 10) / 10,
+                reviewCount: reviews.length,
+                costRating: Math.round(avgCostRating * 10) / 10,
+                qualityRating: Math.round(avgQualityRating * 10) / 10,
+                scheduleRating: Math.round(avgScheduleRating * 10) / 10,
+                willingToReferRating: Math.round(avgWillingToReferRating * 10) / 10,
+              },
+              { new: true }
+    )
+    console.log("--Updated provider ratings:", providerToupdate);
+//     console.log({
+//   avgRating,
+//   avgCostRating,
+//   avgQualityRating,
+//   avgScheduleRating,
+//   avgWillingToReferRating,
+// })
+
+
 
     return NextResponse.json({
       success: true,
