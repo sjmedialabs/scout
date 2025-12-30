@@ -14,6 +14,7 @@ import {
 
 import { ProposalsHeader } from "@/components/requirements/ProposalsHeader"
 import { ProposalCard } from "@/components/requirements/ProposalCard"
+import { useEffect, useState } from "react"
 
 const bannerData={
     title:"Service Providers",
@@ -22,47 +23,32 @@ const bannerData={
   }
 
 export default function BrowsePage() {
-  const proposals = [
-    {
-      id: "1",
-      category: "Website design",
-      title: "E-commerce Website Design and development",
-      description:
-        "Looking for a modern e-commerce platform with payment integration, inventory management, and responsive design. Must support multiple payment gateways and have admin dashboard.",
-      budget: "$5,000 - $10,000",
-      timeline: "3 months",
-      proposalsCount: 12,
-      postedAgo: "2 days ago",
-    },
-    {
-      id: "2",
-      category: "Web application",
-      title: "Web application Development",
-      description:
-        "Need a scalable web application with secure authentication, role-based access, and modern UI. Experience with React and backend APIs required.",
-      budget: "$3,000 - $8,000",
-      timeline: "2 months",
-      proposalsCount: 8,
-      postedAgo: "4 days ago",
-    },
-    {
-      id: "3",
-      category: "Design",
-      title: "Brochure Design & Packaging design",
-      description:
-        "Creative brochure and packaging design needed for a retail brand. Deliverables include print-ready files and design guidelines.",
-      budget: "$1,500 - $3,000",
-      timeline: "1 month",
-      proposalsCount: 5,
-      postedAgo: "1 day ago",
-    },
-  ]
+
+  const [requriments, setRequriments] =useState()
+
+  useEffect(() => {
+    const fetchRequirements =async () => {
+      try {
+        const res=await fetch("/api/requirements")
+        console.log("Res from api", res)
+        const data =await res.json()
+        console.log("data from api", data.requirements)
+        if (data?.success && data.requirements?.length > 0) {
+          const mapped =data.requirements
+          setRequriments(mapped)
+        }
+      } catch (e) {}
+    }
+    fetchRequirements()
+  }, [])
+  const proposals = requriments || []
+
 
   return (
     <div className="bg-background">
 
-      {/*  HERO SECTION  */}
-      <section
+  {/*  HERO SECTION  */}
+  <section
   className="relative w-full overflow-hidden"
   style={{
     backgroundImage: `url(${bannerData.backgroundImageUrl})`,
@@ -78,7 +64,7 @@ export default function BrowsePage() {
     {/* TITLE */}
     <div className="text-center mb-10">
       <h1 className="text-[26px] sm:text-[32px] md:text-[40px] font-bold text-[#F54A0C]">
-        Browse Requirements
+        Browse Requirements {requriments?.[0].title}
       </h1>
       <p className="mt-[-10] text-sm sm:text-base text-[#9b9b9b] leading-tight">
         Discover opportunities from businesses looking for your services
@@ -173,7 +159,7 @@ export default function BrowsePage() {
 
           {/* Cards */}
           <div className="space-y-8">
-            {proposals.map((item) => (
+            {proposals?.map((item) => (
               <ProposalCard
                 key={item.id}
                 category={item.category}
