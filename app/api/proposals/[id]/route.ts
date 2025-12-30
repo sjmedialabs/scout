@@ -3,9 +3,11 @@ import { connectToDatabase } from "@/lib/mongodb"
 import Proposal from "@/models/Proposal"
 import Project from "@/models/Project"
 import Provider from "@/models/Provider"
+import Seeker from "@/models/Seeker"
 import { getCurrentUser } from "@/lib/auth/jwt"
 import mongoose from "mongoose"
 import Requirement from "@/models/Requirement"
+import Notification from "@/models/Notification"
 
 export async function GET(
   request: NextRequest,
@@ -229,6 +231,27 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const updated = await Proposal.findByIdAndUpdate(id, updates, { new: true })
+     const seeker =user.role==="client"?await Seeker.findOne({ userId: user.userId }) : await Provider.findOne({ userId: user.userId });
+     const project=await Requirement.findById(proposal.requirementId)
+     console.log("----project in the put---",project)
+
+    //  if(user.role==="client"){
+    //   seeker= await Seeker.findOne({ userId: user.userId })
+    //  }
+    //  if(user.role==="agency"){
+    //   seeker=await Provider.findOne({ userId: user.userId })
+    //  }
+    //Notification creation
+     await Notification.create({
+          userId: proposal?.agencyId,                
+          triggeredBy: user.userId,         
+          title: "Proposal status update !",
+          message: `${seeker?.companyName || seeker?.name} ${body.status} your proposal for the ${project?.title} project.`,
+          type: "proposal_updated",
+          userRole: "client",
+          linkUrl: `/agency/dashboard/proposals`,
+          sourceId: proposal._id,
+        })
 
     return NextResponse.json({
       success: true,
