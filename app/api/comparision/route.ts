@@ -58,6 +58,7 @@ export async function POST(req: NextRequest) {
     const alreadyExists = await Comparision.findOne({
       clientId,
       agencyId,
+      
     })
 
     if (alreadyExists) {
@@ -74,7 +75,9 @@ export async function POST(req: NextRequest) {
     const comparison = await Comparision.create({
       clientId,
       agencyId,
+      isFavourite:false,
     })
+
 
     // ✅ Fetch populated response
     const comparisons = await Comparision.aggregate([
@@ -99,6 +102,7 @@ export async function POST(req: NextRequest) {
           _id: 1,
           clientId: 1,
           createdAt: 1,
+          isFavourite:1,
           agency: {
             _id: "$agency._id",
             name: "$agency.name",

@@ -161,14 +161,14 @@ import { ImageUpload } from "@/components/ui/image-upload"
       )
       
     }
-    if(failed){
-        return(
-          <div className="flex flex-col justify-center items-center text-center">
-            <h1 className="text-center font-semibold">Failed  to Retrive the data</h1>
-            <Button onClick={loadData} className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]">Reload</Button>
-          </div>
-        )
-    }
+    // if(failed){
+    //     return(
+    //       <div className="flex flex-col justify-center items-center text-center">
+    //         <h1 className="text-center font-semibold">Failed  to Retrive the data</h1>
+    //         <Button onClick={loadData} className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]">Reload</Button>
+    //       </div>
+    //     )
+    // }
 
 
     return(
