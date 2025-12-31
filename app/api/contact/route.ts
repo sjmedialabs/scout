@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server"
 import { connectToDatabase } from "@/lib/mongodb"
 import Contact from "@/models/contact"
 
+const isValidEmail = (email: string) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+
+const isValidPhone = (phone: string) =>
+  /^[0-9]{10,15}$/.test(phone)
+
 export async function POST(req: NextRequest) {
     try {
         await connectToDatabase()
@@ -14,6 +20,20 @@ export async function POST(req: NextRequest) {
                 {error: "All fields are requried"},
                 {status:400}
             )
+        }
+
+        if (!isValidEmail(email)) {
+            return NextResponse.json(
+                { error: "Invalid email address" },
+                { status: 400}
+            )
+        }
+
+        if (!isValidPhone(phone)) {
+            return NextResponse.json(
+                { error: "Invalid phone number"},
+                { status: 400 }
+            ) 
         }
 
         await Contact.create({
