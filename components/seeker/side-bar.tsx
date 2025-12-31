@@ -59,6 +59,7 @@ const menuItems: MenuItem[] = [
       { id: "analytics", label: "Project Analytics", icon: TrendingUp, path: "/client/dashboard/analytics" },
       { id: "spending", label: "Spending Insights", icon: Eye, path: "/client/dashboard/spending" },
       { id: "provider-comparison", label: "Provider Comparison", icon: GitCompare, path: "/client/dashboard/provider-comparison" },
+      { id: "wishlist", label: "Wish List", icon: Eye, path: "/client/dashboard/wishlist" },
     ],
   },
   {

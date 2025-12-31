@@ -66,6 +66,310 @@ import type { Requirement, Proposal, Provider, Notification } from "@/lib/types"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MdLocationOn } from "react-icons/md";
 const ClientAnalyticsPage=()=>{
+   const { user, loading } = useAuth()
+   const router = useRouter()
+
+   const[responseLoading,setResponseLoading]=useState(false)
+   const[failed,setFailed]=useState(false)
+   
+   const[vendors,setVendors]=useState<Provider[]>([])
+   const[proposals,setProposals]=useState<Proposal[]>([])
+   const[requirements,setRequirements]=useState<Requirement[]>([])
+   const[costDistributionStats,setCostDistributionStats]=useState([
+       {
+         id:1,
+         range:"Under $30,000",
+         value:0,
+         color:"bg-green-500",
+         percentage:0,
+      
+       },
+        {
+         id:2,
+         range:"$30,000 - $50,000",
+         value:0,
+         color:"bg-blue-500",
+         percentage:0
+       },
+        {
+         id:3,
+         range:"$50,000 - $70,000",
+         value:0,
+         color:"bg-yellow-500",
+         percentage:0,
+       },
+        {
+         id:4,
+         range:"Over $70,000",
+         value:0,
+         color:"bg-red-500",
+         percentage:0
+       }
+   
+     ])
+     const[costAnalyticsStats,setCostAnalyticsStats]=useState({
+      avg:0,
+      median:0,
+      range:'$0-0$'
+     })
+   
+     const[topVendorsLocations,setTopVendorsLocations]=useState([])
+     const[topVendorsServices,setTopVendorsServices]=useState([]);
+   
+  const loadData = async () => {
+      setResponseLoading(true)
+      setFailed(false)
+
+      try {
+        const [vendorsRes, proposalsRes,reqRes] = await Promise.all([
+          
+          fetch("/api/providers"),
+          fetch(`/api/proposals/${user?.id}`),
+          fetch(`/api/requirements/${user?.id}`)
+        ])
+
+        //  If ANY request failed → throw error
+        
+
+        const [vendorsData,reqData] = await Promise.all([
+         
+          vendorsRes.json(),
+          
+          reqRes.json()
+        ])
+
+        let proposalsData = { proposals: [] }
+
+    if (proposalsRes.ok) {
+      proposalsData = await proposalsRes.json()
+    } else if (proposalsRes.status === 404) {
+      // New user → no proposals yet
+      proposalsData = { proposals: [] }
+    } else {
+      throw new Error("Failed to fetch proposals")
+    }
+
+
+        
+        setVendors(vendorsData.providers)
+        setProposals(proposalsData.proposals)
+        setRequirements(reqData.requirements)
+        
+
+        let underThirtyThousand = 0
+        let ThirtyToFiftyThousand = 0
+        let FiftyToSeventyThousand = 0
+        let proposalsMoreThanSeventyThousand = 0
+
+        proposalsData.proposals.map((item: any) => {
+          if ((item.proposedBudget || 0) > 0 && (item.proposedBudget || 0) <= 30000) {
+            underThirtyThousand += 1
+          }
+          if ((item.proposedBudget || 0) > 30000 && (item.proposedBudget || 0) <= 50000) {
+            ThirtyToFiftyThousand += 1
+          }
+          if ((item.proposedBudget || 0) > 50000 && (item.proposedBudget || 0) <= 70000) {
+            FiftyToSeventyThousand += 1
+          }
+          if ((item.proposedBudget || 0) > 70000) {
+            proposalsMoreThanSeventyThousand += 1
+          }
+        })
+
+    //  total proposals count
+    const totalProposals =
+      underThirtyThousand +
+      ThirtyToFiftyThousand +
+      FiftyToSeventyThousand +
+      proposalsMoreThanSeventyThousand
+
+    // helper for percentage calculation
+    const getPercentage = (count: number) =>
+      totalProposals > 0 ? Math.round((count / totalProposals) * 100) : 0
+
+      setCostDistributionStats([
+        {
+          id: 1,
+          range: "$0-$5k",
+          value: underThirtyThousand,
+          percentage: getPercentage(underThirtyThousand),
+          color:"bg-green-500"
+        },
+        {
+          id: 2,
+          range: "$5k-$10k",
+          value: ThirtyToFiftyThousand,
+          percentage: getPercentage(ThirtyToFiftyThousand),
+          color:"bg-blue-500"
+        },
+        {
+          id: 3,
+          range: "$10k-$20k",
+          value: FiftyToSeventyThousand,
+          percentage: getPercentage(FiftyToSeventyThousand),
+          color:"bg-yellow-500"
+        },
+        {
+          id: 4,
+          range: "$20k+",
+          value: proposalsMoreThanSeventyThousand,
+          percentage: getPercentage(proposalsMoreThanSeventyThousand),
+          color:"bg-red-500"
+        },
+      ])
+
+      const budgets = proposalsData.proposals
+      .map((item: any) => item.proposedBudget)
+      .filter((budget: number) => typeof budget === "number" && budget > 0)
+
+      const average =
+      budgets.length > 0
+        ? Math.round(
+            budgets.reduce((sum: number, val: number) => sum + val, 0) /
+              budgets.length
+          )
+        : 0
+
+        const sortedBudgets = [...budgets].sort((a, b) => a - b)
+
+        let median = 0
+        if (sortedBudgets.length > 0) {
+          const mid = Math.floor(sortedBudgets.length / 2)
+
+          median =
+            sortedBudgets.length % 2 !== 0
+              ? sortedBudgets[mid]
+              : Math.round((sortedBudgets[mid - 1] + sortedBudgets[mid]) / 2)
+        }
+        const range =
+        sortedBudgets.length > 0
+          ? sortedBudgets[sortedBudgets.length - 1] - sortedBudgets[0]
+          : 0
+
+         
+          console.log("sorted budgets are ::",sortedBudgets)
+
+          setCostAnalyticsStats({
+            avg:average,
+            median:median,
+            range:`$ ${sortedBudgets[0] || 0} - $ ${sortedBudgets[sortedBudgets.length-1] || 0}`
+          })
+
+
+
+
+        
+        let topVendors=vendorsData.providers.filter((item)=>item.rating>=3);
+        let topVendorsUniqueLocations=new Set((topVendors || []).map((item:any)=>item.location))
+        const topVendorsUniqueServices = new Set(
+        (topVendors || []).flatMap((item: any) => item.services)
+        )
+
+        let tempVendorLocations=[];
+        topVendorsUniqueLocations.forEach((item:any)=>{
+          let temp={
+            count:0,
+            locationName:item,
+          }
+          topVendors.map((vendor:any)=>{
+            if(vendor.location.trim().toLowerCase()===item.trim().toLowerCase()){
+                temp.count=temp.count+1
+            }
+          })
+          if(!item.trim().toLowerCase().includes("not specified")){
+              tempVendorLocations.push(temp)
+          }
+          
+        })
+        setTopVendorsLocations(tempVendorLocations)
+
+        let tempVendorServices: any[] = []
+
+        topVendorsUniqueServices.forEach((service: any) => {
+          let temp = {
+            serviceName: service,
+            count: 0,
+            percentage: 0,
+          }
+
+          topVendors.forEach((vendor: any) => {
+            if (
+              vendor.services?.some(
+                (s: string) =>
+                  s.trim().toLowerCase() === service.trim().toLowerCase()
+              )
+            ) {
+              temp.count = temp.count + 1
+            }
+          })
+
+          // optional filter like "not specified"
+          if (!service.trim().toLowerCase().includes("not specified")) {
+            tempVendorServices.push(temp)
+          }
+        })
+
+        const totalServiceCount = tempVendorServices.reduce(
+          (sum, item) => sum + item.count,
+          0
+        )
+
+        tempVendorServices = tempVendorServices.map((item) => ({
+          ...item,
+          percentage:
+            totalServiceCount === 0
+              ? 0
+              : Math.round((item.count / totalServiceCount) * 100),
+        }))
+
+        
+
+      setTopVendorsServices(tempVendorServices)
+
+
+
+        console.log("Top vendors services are :::",tempVendorServices)
+        
+        // console.log("Cost Distribbution :::",proposalsLessThanFiveThousand,proposalsLessThanTenThousand,proposalsLessThanTwentyThousand,proposalsMoreThanTwentyThousand)
+       
+        console.log("Vendors fetched Data::",vendorsData.providers)
+        console.log("Proposals fetched data::",proposalsData.proposals)
+        console.log("Requirements fetched data:::",reqData.requirements)
+      } catch (error) {
+        console.error("Failed to fetch data:", error)
+        setFailed(true)
+      } finally {
+        setResponseLoading(false)
+      }
+   }
+
+    useEffect(() => {
+       if (!loading && (!user || user.role !== "client")) {
+         router.push("/login")
+       }
+       if(user && !loading){
+         loadData()
+       }
+     }, [user, loading, router])
+
+     if(loading || responseLoading){
+      return(  
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      )
+      
+    }
+   
+     if(failed){
+           return(
+             <div className="flex flex-col justify-center items-center text-center">
+               <h1 className="text-center font-semibold">Failed  to Retrive the data</h1>
+               <Button onClick={loadData} className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]">Reload</Button>
+             </div>
+           )
+       }
+
     return(
         <div className="space-y-6 p-3 md:p-6">
                 <div>
@@ -84,29 +388,51 @@ const ClientAnalyticsPage=()=>{
                      <p className="text-[#656565] my-custom-class ml-3 -mt-2">Geographic distribution of vendors responding to your projects</p>
                     
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4 px-2">
-                      {[
-                        { location: "San Francisco, CA", count: 12, percentage: 30 },
-                        { location: "New York, NY", count: 10, percentage: 25 },
-                        { location: "Austin, TX", count: 8, percentage: 20 },
-                        { location: "Seattle, WA", count: 6, percentage: 15 },
-                        { location: "Boston, MA", count: 4, percentage: 10 },
-                      ].map((item) => (
-                        <div key={item.location} className="space-y-2">
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="font-bold text-xs text-[#6B6B6B] my-custom-class">{item.location}</span>
-                            <span className="font-bold text-xs text-[#6B6B6B] my-custom-class">
-                              {item.count} vendors ({item.percentage}%)
-                            </span>
-                          </div>
-                          <div className="h-2 bg-[#DAEDF8] rounded-full overflow-hidden">
-                            <div className="h-full bg-[#1C96F4] transition-all" style={{ width: `${item.percentage}%` }} />
-                          </div>
+                    <CardContent className="md:px-8">
+                        <div className="space-y-4">
+                          {(() => {
+                            const totalVendorsCount = (topVendorsLocations || []).reduce(
+                              (sum, item) => sum + (item.count || 0),
+                              0
+                            )
+        
+                            return (topVendorsLocations || []).map((location, index) => {
+                              const percentage =
+                                totalVendorsCount === 0
+                                  ? 0
+                                  : Math.round((location.count / totalVendorsCount) * 100)
+        
+                              return (
+                                <div key={index} className="space-y-1">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-sm font-bold text-[#6B6B6B] my-custom-class">
+                                        {location.locationName}
+                                      </span>
+                                    </div>
+        
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-sm font-bold text-[#6B6B6B] my-custom-class">
+                                        {location.count}
+                                      </span>
+                                      <span className="text-xs font-bold text-[#6B6B6B] my-custom-class">
+                                        ({percentage}%)
+                                      </span>
+                                    </div>
+                                  </div>
+        
+                                  <div className="w-full bg-[#DAEDF8] rounded-full h-2">
+                                    <div
+                                      className="bg-[#1C96F4] rounded-full h-2 transition-all"
+                                      style={{ width: `${percentage}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              )
+                            })
+                          })()}
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
+                      </CardContent>
                 </Card>
     
                 {/* Top Specialties Analytics */}
@@ -118,29 +444,28 @@ const ClientAnalyticsPage=()=>{
                     </CardTitle>
                     <p className="text-[#656565] my-custom-class ml-2 -mt-2">Expertise areas of vendors responding to your projects</p>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {[
-                        { specialty: "Web Development", count: 15, percentage: 35 },
-                        { specialty: "Mobile Apps", count: 12, percentage: 28 },
-                        { specialty: "UI/UX Design", count: 10, percentage: 23 },
-                        { specialty: "Cloud Services", count: 4, percentage: 9 },
-                        { specialty: "DevOps", count: 2, percentage: 5 },
-                      ].map((item) => (
-                        <div key={item.specialty} className="space-y-2">
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="font-bold text-xs text-[#6B6B6B] my-custom-class">{item.specialty}</span>
-                            <span className="font-bold text-xs text-[#6B6B6B] my-custom-class">
-                              {item.count} vendors ({item.percentage}%)
-                            </span>
+                  <div className="space-y-4 md:px-8">
+                    {topVendorsServices.map((specialty, index) => (
+                      <div key={index} className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            
+                            <span className="text-sm font-normal text-[#6B6B6B] my-custom-class">{specialty.serviceName}</span>
                           </div>
-                          <div className="h-2 bg-[#DAEDF8] rounded-full overflow-hidden">
-                            <div className="h-full bg-[#1C96F4] transition-all" style={{ width: `${item.percentage}%` }} />
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-normal text-[#6B6B6B] my-custom-class">{specialty.count}</span>
+                            <span className="text-xs font-normal text-[#6B6B6B] my-custom-class">({specialty.percentage}%)</span>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
+                        <div className="w-full bg-[#DAEDF8] rounded-full h-2">
+                          <div
+                            className="bg-[#1C96F4] rounded-full h-2 transition-all"
+                            style={{ width: `${specialty.percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </Card>
     
                 {/* Cost Distribution */}
@@ -165,12 +490,7 @@ const ClientAnalyticsPage=()=>{
                       <hr className="border-[1px] border-[#E4E4E4] w-full"/>
                       <div className="space-y-4 px-8">
                         <h4 className="text-xl font-bold text-[#000] my-custom-class">Proposal Budget Ranges</h4>
-                        {[
-                          { range: "Under $30,000", count: 3, percentage: 15, color: "bg-green-500" },
-                          { range: "$30,000 - $50,000", count: 8, percentage: 40, color: "bg-blue-500" },
-                          { range: "$50,000 - $70,000", count: 6, percentage: 30, color: "bg-yellow-500" },
-                          { range: "Over $70,000", count: 3, percentage: 15, color: "bg-red-500" },
-                        ].map((item) => (
+                        {(costDistributionStats || []).map((item) => (
                           <div key={item.range} className="space-y-2">
                             <div className="flex items-center justify-between text-sm">
                               <span className="font-bold text-xs text-[#6B6B6B] my-custom-class">{item.range}</span>
@@ -191,15 +511,15 @@ const ClientAnalyticsPage=()=>{
                       <div className="grid grid-cols-3 gap-4 pt-4 border-t">
                         <div className="text-center">
                           <p className="text-sm text-[#6B6B6B] my-custom-class font-bold">Average</p>
-                          <p className="text-lg text-[#000] font-bold">$52,500</p>
+                          <p className="text-lg text-[#000] font-bold">${costAnalyticsStats.avg}</p>
                         </div>
                         <div className="text-center">
                           <p className="text-sm text-[#6B6B6B] my-custom-class font-bold">Median</p>
-                          <p className="text-lg text-[#000] font-bold">$48,000</p>
+                          <p className="text-lg text-[#000] font-bold">${costAnalyticsStats.median}</p>
                         </div>
                         <div className="text-center">
                           <p className="text-sm text-[#6B6B6B] my-custom-class font-bold">Range</p>
-                          <p className="text-lg font-bold text-[#000]">$25K - $85K</p>
+                          <p className="text-lg font-bold text-[#000]">{costAnalyticsStats.range}</p>
                         </div>
                       </div>
                     </div>
