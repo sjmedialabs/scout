@@ -126,22 +126,18 @@ const ProjectDetailPage=() => {
     //         </div>
     //         )
     // }
-    const handleFilterChange = (value: string) => {
- 
-
-  setFilterStatus(value)
-
-  if (value === "all") {
-    setFilteredProposals(proposals)
-    return
-  }
-
-  setFilteredProposals(
-    proposals.filter(
-      (req) => req.status.toLowerCase() === value.toLowerCase()
-    )
-  )
-}
+     useEffect(() => {
+      if (filterStatus === "all") {
+        setFilteredProposals(proposals)
+      } else {
+        setFilteredProposals(
+          proposals.filter(
+            (req) => req.status.toLowerCase() === filterStatus.toLowerCase()
+          )
+        )
+      }
+    }, [proposals, filterStatus])
+    
     return(
         <div className="space-6 p-5">
             <div className="flex justify-between items-start">
@@ -174,7 +170,7 @@ const ProjectDetailPage=() => {
            {(proposals || []).length > 0 && (
              <Card className="mt-6 p-3  bg-[#fff] py-5 rounded-[22px]">
                 <CardContent>
-                    <Select onValueChange={handleFilterChange} value={filterStatus}>
+                    <Select onValueChange={(value)=>setFilterStatus(value)} value={filterStatus}>
                         <SelectTrigger
                           className="
                                 mt-1

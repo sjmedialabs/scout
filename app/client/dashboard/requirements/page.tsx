@@ -285,21 +285,25 @@ console.log("Fetched Requirements::::",requirements);
 
   const handleFiltersChange = (filters: any) => {
     let filtered = [...requirements]
+    console.log("Applied filters:::::",filters)
 
     if (filters.serviceType) {
       filtered = filtered.filter((r) => r.category === filters.serviceType)
     }
 
-    if (filters.location) {
+    if (filters.status) {
       filtered = filtered.filter(
-        (r) => r.location === filters.location || (!r.location && filters.location === "Remote"),
+        (r) => r.status.toLowerCase() === filters.status.toLowerCase(),
       )
     }
 
     if (filters.budgetRange) {
       filtered = filtered.filter((r) => r.budgetMin >= filters.budgetRange[0] && r.budgetMax <= filters.budgetRange[1])
     }
-
+    if(filters.title){
+      filtered=filtered.filter((eachItem)=>eachItem.title.toLowerCase().includes(filters.title.toLowerCase()))
+    }
+ 
     setFilteredRequirements(filtered)
   }
 

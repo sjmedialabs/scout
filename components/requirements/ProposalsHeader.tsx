@@ -15,9 +15,10 @@ interface ProposalsHeaderProps {
 export function ProposalsHeader({
   title = "List of Proposals",
   sortOptions = [
-    { label: "Price high - low", value: "price_desc" },
-    { label: "Price low - high", value: "price_asc" },
-    { label: "Newest first", value: "newest" },
+     { label: "All", value: "all" },
+    { label: "high - low", value: "price_desc" },
+    { label: "low - high", value: "price_asc" },
+   
   ],
   onSortChange,
 }: ProposalsHeaderProps) {
@@ -32,7 +33,7 @@ export function ProposalsHeader({
           className="h-11 w-[200px] rounded-full bg-[#f6f3f2] 
                      border border-[#e5e5e5] text-sm text-[#444]"
         >
-          <SelectValue placeholder="Price high - low" />
+          <SelectValue placeholder="All" />
         </SelectTrigger>
         <SelectContent>
           {sortOptions.map((opt) => (

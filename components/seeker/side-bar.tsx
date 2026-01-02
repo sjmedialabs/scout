@@ -126,8 +126,12 @@ export default function ClientSidebar({
               Welcome back, {user.name}
             </p>
             <div className="flex items-center gap-2 mt-3">
-              <Badge className="bg-[#39A935] text-[#fff] rounded-full min-h-[30px]">Active Client</Badge>
-              <Badge variant="secondary" className="bg-[#fff] min-h-[30px] rounded-full text-[#2C34A1]"><RiVerifiedBadgeFill className="h-8 w-8" color={"#2C34A1"}/>Verified</Badge>
+              <Badge className={`${user.isActive?"bg-[#39A935]":"bg-red-500"} min-w-[80px] text-[#fff] rounded-full min-h-[30px]`}>{`${user.isActive?"Active":"Inactive"}`}</Badge>
+              {
+                (user.isVerified) && (
+                   <Badge variant="secondary" className="bg-[#fff] min-h-[30px] rounded-full text-[#2C34A1]"><RiVerifiedBadgeFill className="h-8 w-8" color={"#2C34A1"}/>Verified</Badge>
+                )
+              }
             </div>
           </div>
 
