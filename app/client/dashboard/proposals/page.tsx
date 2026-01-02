@@ -253,134 +253,17 @@ const ProposalPage=()=>{
       const[selectedRequirementProposals,setSelectedRequirementProposals]=useState<Proposal[]>()
       const router = useRouter()
       const [activeSection, setActiveSection] = useState("dashboard") // Set initial state to "dashboard" so content shows by default
-      const [expandedSections, setExpandedSections] = useState<string[]>(["overview"])
-      const [showPostForm, setShowPostForm] = useState(false)
-      const [requirements, setRequirements] = useState<Requirement[]>(mockRequirements)
+     
       const [proposals, setProposals] = useState<Proposal[]>()
       const [selectedRequirement, setSelectedRequirement] = useState<string | null>(null)
       const[responseLoading,setResponseLoading]=useState(false);
       const[failed,setFailed]=useState(false)
-      const [selectedRequirementForDetails, setSelectedRequirementForDetails] = useState<Requirement | null>(null)
-      const [showDetailsModal, setShowDetailsModal] = useState(false)
-      const [showNegotiationChat, setShowNegotiationChat] = useState(false)
-      const [negotiationProposal, setNegotiationProposal] = useState<string | null>(null)
-      const [filteredRequirements, setFilteredRequirements] = useState<Requirement[]>(mockRequirements)
-      const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null)
-      const [showProviderProfile, setShowProviderProfile] = useState(false)
-      const [showProjectSubmission, setShowProjectSubmission] = useState(false)
-      const [showReviewSubmission, setShowReviewSubmission] = useState(false)
-      const [showProviderComparison, setShowProviderComparison] = useState(false)
+     
       const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
-      const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null)
-      const [comparisonProviders, setComparisonProviders] = useState<Provider[]>([])
+     
+      
     
-      // Adding project proposal state
-      const [projectProposals, setProjectProposals] = useState<ProjectProposal[]>(mockProjectProposals)
-    
-      const [isEditingProfile, setIsEditingProfile] = useState(false)
-      const [profileData, setProfileData] = useState({
-        name: user?.name || "John Smith",
-        email: user?.email || "john.smith@example.com",
-        phone: "+1 (555) 123-4567",
-        company: "Tech Innovations Inc.",
-        position: "Chief Technology Officer",
-        industry: "Technology",
-        location: "San Francisco, CA",
-        website: "https://techinnovations.com",
-        bio: "Experienced technology leader with over 10 years in software development and digital transformation. Passionate about leveraging cutting-edge solutions to drive business growth.",
-        timezone: "America/Los_Angeles",
-        preferredCommunication: "email",
-        projectBudgetRange: "$10,000 - $50,000",
-        companySize: "51-200 employees",
-        joinedDate: "January 2024",
-      })
-    
-      const [notifications, setNotifications] = useState<Notification[]>([
-        {
-          id: "1",
-          userId: user?.id || "1",
-          type: "proposal_received",
-          title: "New Proposal Received!",
-          message: 'TechCraft Solutions submitted a proposal for your "E-commerce Website Development" project.',
-          read: false,
-          createdAt: new Date("2024-01-20"),
-          relatedId: "1",
-        },
-        {
-          id: "2",
-          userId: user?.id || "1",
-          type: "proposal_received",
-          title: "New Proposal Received!",
-          message: 'WebDev Pro submitted a proposal for your "E-commerce Website Development" project.',
-          read: false,
-          createdAt: new Date("2024-01-19"),
-          relatedId: "1",
-        },
-        {
-          id: "3",
-          userId: user?.id || "1",
-          type: "message_received",
-          title: "New Message",
-          message: "TechCraft Solutions sent you a message about your project requirements.",
-          read: true,
-          createdAt: new Date("2024-01-18"),
-          relatedId: "1",
-        },
-        {
-          id: "4",
-          userId: user?.id || "1",
-          type: "proposal_received",
-          title: "New Proposal Received!",
-          message: 'Creative Design Studio submitted a proposal for your "Mobile App UI/UX Design" project.',
-          read: false,
-          createdAt: new Date("2024-01-17"),
-          relatedId: "2",
-        },
-        {
-          id: "5",
-          userId: user?.id || "1",
-          type: "review_requested",
-          title: "Review Requested",
-          message: "Please review your completed project with Digital Marketing Pro.",
-          read: true,
-          createdAt: new Date("2024-01-15"),
-          relatedId: "3",
-        },
-      ])
-    
-      const [projects, setProjects] = useState([
-        {
-          id: "1",
-          title: "E-commerce Website Development",
-          description: "Modern responsive e-commerce platform with payment integration",
-          budget: "$15,000 - $25,000",
-          status: "In Progress",
-          createdAt: "2024-01-15",
-          proposalsCount: 12,
-          category: "Web Development",
-        },
-        {
-          id: "2",
-          title: "Mobile App UI/UX Design",
-          description: "Complete mobile app design for iOS and Android platforms",
-          budget: "$8,000 - $12,000",
-          status: "Planning",
-          createdAt: "2024-01-20",
-          proposalsCount: 8,
-          category: "Design",
-        },
-        {
-          id: "3",
-          title: "Digital Marketing Campaign",
-          description: "Comprehensive digital marketing strategy and execution",
-          budget: "$5,000 - $10,000",
-          status: "Completed",
-          createdAt: "2024-01-10",
-          proposalsCount: 15,
-          category: "Marketing",
-        },
-      ])
-    
+      
 
      const LoadData = async (userId: string) => {
   setResponseLoading(true)
@@ -531,7 +414,7 @@ const ProposalPage=()=>{
                <div>
                  <h1 className="text-2xl font-bold my-custom-class text-[#F4561C]">
                    Proposals 
-                   {((selectedRequirementProposals || [])?.length>0) && (
+                   {((selectedRequirementProposals[0]?.requirement?.title)) && (
                      <span className="text-[#656565] font-normal text-sm">
                        
                       {` (for  ${selectedRequirementProposals[0].requirement?.title} )`}
@@ -562,7 +445,7 @@ const ProposalPage=()=>{
                        ? "bg-[#F54A0C] rounded-full text-[#fff] px-5"
                        : "text-muted-foreground hover:text-foreground px-5"
                    }`}
-                   onClick={() => setSelectedRequirement(requirements[0]?.id || null)}
+                   onClick={() => setSelectedRequirement("req" || null)}
                  >
                    Requirement Proposals
                  </button>
@@ -686,10 +569,8 @@ const ProposalPage=()=>{
                                         <Button
                                           variant="outline"
                                           size="sm"
-                                          onClick={() => {
-                                            setSelectedProjectId(proposal.projectId)
-                                            setActiveSection("proposals")
-                                          }}
+                                          onClick={() => ( router.push(`projects/${proposal.requirement.id}`))
+                                          }
                                             className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
                                         >
                                           View Project Details

@@ -62,6 +62,7 @@ export async function GET(
           _id: 1,
           clientId: 1,
           createdAt: 1,
+          isFavourite:1,
           agency: {
             _id: "$agency._id",
             name: "$agency.name",
@@ -147,6 +148,78 @@ export async function DELETE(
     )
   } catch (error) {
     console.error("DELETE Comparison Error:", error)
+    return NextResponse.json(
+      { success: false, message: "Internal server error" },
+      { status: 500 }
+    )
+  }
+}
+
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    //  Auth check
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "Authentication required" },
+        { status: 401 }
+      )
+    }
+
+    const clientId = user.userId
+    const { id } = params
+
+    //  Validate ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { success: false, message: "Invalid comparison ID" },
+        { status: 400 }
+      )
+    }
+
+    const body = await req.json()
+    const { isFavourite } = body
+
+    // Validate body
+    if (typeof isFavourite !== "boolean") {
+      return NextResponse.json(
+        { success: false, message: "isFavourite must be boolean" },
+        { status: 400 }
+      )
+    }
+
+    await connectToDatabase()
+
+    // Update with ownership check
+    const updatedComparison = await Comparision.findOneAndUpdate(
+      { _id: id, clientId },
+      { isFavourite },
+      { new: true }
+    )
+
+    if (!updatedComparison) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Comparison not found or unauthorized",
+        },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Favourite status updated",
+        data: updatedComparison,
+      },
+      { status: 200 }
+    )
+  } catch (error) {
+    console.error("Comparison PUT Error:", error)
     return NextResponse.json(
       { success: false, message: "Internal server error" },
       { status: 500 }

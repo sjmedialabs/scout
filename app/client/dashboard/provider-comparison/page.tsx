@@ -367,36 +367,74 @@ const ProviderComparisonPage=()=>{
     }
    }
 
+   console.log("Selected Providers::::",selectedVendor);
 
- const handleFilterChange = (value: string) => {
-  setFilterStatus(value)
-  applyFilters(searchFilter, value)
-}
-const applyFilters = (searchValue: string, sortValue: string) => {
-  let data = [...providers]
+    const handleFilterChange = (value: string) => {
+      setFilterStatus(value)
+      applyFilters(searchFilter, value)
+    }
+    const applyFilters = (searchValue: string, sortValue: string) => {
+      let data = [...providers]
 
-  // 🔍 Search
-  if (searchValue) {
-    data = data.filter((item) =>
-      item.name.toLowerCase().includes(searchValue.toLowerCase())
-    )
-  }
+      // 🔍 Search
+      if (searchValue) {
+        data = data.filter((item) =>
+          item.name.toLowerCase().includes(searchValue.toLowerCase())
+        )
+      }
 
-  // ⭐ Sort
-  if (sortValue === "lowToHigh") {
-    data.sort((a, b) => (a.rating ?? 0) - (b.rating ?? 0))
-  }
+      // ⭐ Sort
+      if (sortValue === "lowToHigh") {
+        data.sort((a, b) => (a.rating ?? 0) - (b.rating ?? 0))
+      }
 
-  if (sortValue === "highToLow") {
-    data.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
-  }
+      if (sortValue === "highToLow") {
+        data.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
+      }
 
-  setFilteredProviders(data)
-}
+      setFilteredProviders(data)
+    }
 
+    const handleAddtoFavourite=async(recievdId:string)=>{
+      console.log("Id for the add to wishlist:::",recievdId)
+      const provider = (selectedVendor || []).find((eachItem:any)=>eachItem.agency._id===recievdId)
+      console.log("data to be add::",provider)
 
+      try{
+        const comparisonRes=await fetch(`/api/comparision/${provider?._id}`,{
+          method:"PUT",
+          headers: { "Content-Type": "application/json" },
+          body:JSON.stringify({isFavourite:!provider?.isFavourite})
+          
+        })
+        if(!provider?.isFavourite){
+          const wishlistRes=await fetch("/api/wishlist",{
+            method:"POST",
+            headers: { "Content-Type": "application/json" },
+            body:JSON.stringify({agencyId:recievdId})
+          })
+        }
+        if(provider?.isFavourite){
+           const wishlistRes=await fetch(`/api/wishlist/${recievdId}`,{
+            method:"DELETE",
+            headers: { "Content-Type": "application/json" },
+            
+          })
+        }
+        if(comparisonRes.ok){
+          setSelectedVendor((prev) =>
+          prev.map((eachItem) =>
+            eachItem.agency._id === recievdId
+              ? { ...eachItem, isFavourite: !eachItem.isFavourite }
+              : eachItem
+          )
+        )
 
-
+        }
+      }catch(error){
+        console.log("Failed to add to the wishlist the provider::",error?.message)
+      }
+    }
 
    if(loadingResponse || loading){
     return (
@@ -405,6 +443,7 @@ const applyFilters = (searchValue: string, sortValue: string) => {
           </div>
         )
    }
+
    if(failed){
            return(
              <div className="flex flex-col justify-center items-center text-center">
@@ -412,7 +451,7 @@ const applyFilters = (searchValue: string, sortValue: string) => {
                <Button onClick={loadData} className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]">Reload</Button>
              </div>
            )
-       }
+    }
 
 
     return(
@@ -567,7 +606,7 @@ const applyFilters = (searchValue: string, sortValue: string) => {
                         View Details
                       </Button>
                       </a>
-                      <Button variant="outline" size="sm" className="items-center bg-[#000000] rounded-full mt-0 min-h-[40px]">
+                      <Button variant="outline" onClick={()=>handleAddtoFavourite(proposal.agency._id)} size="sm" className={`items-center ${proposal.isFavourite?"bg-red-500":"bg-[#000]"} rounded-full mt-0 min-h-[40px]`}>
                         <Heart className="h-8 w-8"  color="#fff"/>
                       </Button>
                     </div>

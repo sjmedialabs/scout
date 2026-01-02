@@ -66,6 +66,21 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { FaFileAlt } from "react-icons/fa";
 import { BiHeartCircle } from "react-icons/bi";
 import { BiDollarCircle } from "react-icons/bi";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { LuTag } from "react-icons/lu";
+import { PiCurrencyDollarBold } from "react-icons/pi";
+import { CiCalendar } from "react-icons/ci";
+import { CiLocationOn } from "react-icons/ci";
+import { FaRegFileLines } from "react-icons/fa6";
 import { set } from "mongoose"
 
 interface ProjectProposal {
@@ -331,6 +346,8 @@ export default function ClientDashboard() {
   const[topVendorsLocations,setTopVendorsLocations]=useState([])
   const[topVendorsServices,setTopVendorsServices]=useState([]);
 
+  const[selectedRequirementId,setSelectedRequirementId]=useState("")
+
  const loadData = async () => {
   setResponseLoading(true)
   setFailed(false)
@@ -344,23 +361,33 @@ export default function ClientDashboard() {
     ])
 
     //  If ANY request failed → throw error
-    if (!notificationsRes.ok || !vendorsRes.ok || !proposalsRes.ok) {
-      throw new Error("One or more requests failed")
-    }
+    // if (!notificationsRes.ok || !vendorsRes.ok || !proposalsRes.ok) {
+    //   throw new Error("One or more requests failed")
+    // }
 
-    const [notificationsData, vendorsData, proposalsData,reqData] = await Promise.all([
+    const [notificationsData, vendorsData,reqData] = await Promise.all([
       notificationsRes.json(),
       vendorsRes.json(),
-      proposalsRes.json(),
       reqRes.json()
     ])
+    let proposalsData = { proposals: [] }
+
+    if (proposalsRes.ok) {
+      proposalsData = await proposalsRes.json()
+    } else if (proposalsRes.status === 404) {
+      // New user → no proposals yet
+      proposalsData = { proposals: [] }
+    } else {
+      throw new Error("Failed to fetch proposals")
+    }
+
 
     setNotifications(
       notificationsData.data.filter((item: any) => !item.isRead)
     )
     setVendors(vendorsData.providers)
-     setProposals(proposalsData.proposals)
-    // setRequirements(reqData.requirements)
+     setProposals(proposalsData?.proposals || [])
+    setRequirements(reqData.requirements)
      let uniqueRequirementCategories = new Set(
       reqData.requirements.map((item) => item.category)
     )
@@ -485,7 +512,7 @@ export default function ClientDashboard() {
 
 
 
-    console.log("Top vendors services are :::",tempVendorServices)
+    console.log("Top vendors locations are :::",tempVendorLocations)
     
     console.log("Cost Distribbution :::",proposalsLessThanFiveThousand,proposalsLessThanTenThousand,proposalsLessThanTwentyThousand,proposalsMoreThanTwentyThousand)
     console.log("Fetched Data", notificationsData.data)
@@ -622,17 +649,20 @@ const handlePostRequirement = async (newRequirement: any) => {
 }
 
 
-  const handleViewProposals = (requirementId: string) => {
-    setSelectedRequirement(requirementId)
-    setActiveSection("proposals")
+   const handleViewProposals=(recievedId:string)=>{
+    console.log("Recieved Requirement ID::::",recievedId);
+    router.push(`/client/dashboard/proposals?requirementId=${recievedId}`)
   }
 
-  const handleViewDetails = (requirementId: string) => {
-    const requirement = requirements.find((r) => r.id === requirementId)
-    if (requirement) {
-      setSelectedRequirementForDetails(requirement)
-      setShowDetailsModal(true)
-    }
+  const handleViewDetails=(recievedId:string)=>{
+        setSelectedRequirementId(recievedId);
+        setShowDetailsModal(true);
+        const requirement=requirements.find((r)=>r._id===recievedId);
+        setSelectedRequirement(requirement||null);
+  }
+  const getFileNameFromUrl = (url?: string) => {
+  if (!url) return ""
+  return url.split("/").pop()
   }
 
  
@@ -672,14 +702,14 @@ const handlePostRequirement = async (newRequirement: any) => {
     return null
   }
 
-  if(failed){
-      return(
-        <div className="flex flex-col justify-center items-center text-center">
-          <h1 className="text-center font-semibold">Failed  to Retrive the data</h1>
-          <Button onClick={loadData} className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]">Reload</Button>
-        </div>
-      )
-  }
+  // if(failed){
+  //     return(
+  //       <div className="flex flex-col justify-center items-center text-center">
+  //         <h1 className="text-center font-semibold">Failed  to Retrive the data</h1>
+  //         <Button onClick={loadData} className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]">Reload</Button>
+  //       </div>
+  //     )
+  // }
 
   if (showPostForm) {
     return (
@@ -824,8 +854,13 @@ const handlePostRequirement = async (newRequirement: any) => {
                           <div
                             className="bg-[#1C96F4] rounded-full h-2 transition-all"
                             style={{
-                              width: `${(range.value / proposals.length) * 100}%`,
+                              width: `${
+                                proposals.length === 0
+                                  ? 0
+                                  : (range.value / proposals.length) * 100
+                              }%`,
                             }}
+
                           />
                         </div>
                       </div>
@@ -944,11 +979,13 @@ const handlePostRequirement = async (newRequirement: any) => {
                 <Card className="bg-[#fff] rounded-2xl">
                   
                   <CardContent>
-                    <RequirementList
+                    {
+                      (requirements || []).length!==0?<RequirementList
                       requirements={requirements.slice(0, 3)}
                       onViewProposals={handleViewProposals}
                       onViewDetails={handleViewDetails}
-                    />
+                    />:<p className="text-center">No Posted requirements</p>
+                    }
                   </CardContent>
                 </Card>
               </div>
@@ -966,7 +1003,119 @@ const handlePostRequirement = async (newRequirement: any) => {
         
       </div>
 
+      {showDetailsModal && selectedRequirement && (
+               <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
+                <DialogContent className="sm:max-w-[520px] rounded-2xl p-0 overflow-hidden">
+                  
+                  {/* Header */}
+                  <div className="p-6 pb-0  mt-4 relative">
 
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold my-custom-class text-[#F4561C]">
+                        {selectedRequirement.title}
+                      </h2>
+
+                      <span className="text-xs px-3 py-1 rounded-lg bg-green-100 text-green-700">
+                        Open
+                      </span>
+                    </div>
+
+                    <p className="text-sm text-[#686868] my-custom-class font-normal mt-1">
+                      Posted on {new Date(selectedRequirement.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+
+                  {/* Body */}
+                  <div className="p-6 pt-0 space-y-5">
+
+                    {/* Meta Info */}
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="flex items-center gap-2 border-2 border-[#F0F0F0] rounded-lg px-3 py-2">
+                        <LuTag className="w-5 h-5" color="#000"/>
+                        <span className="my-custom-class font-bold text-xs text-[#000]">Category: {selectedRequirement.category}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+                        <PiCurrencyDollarBold className="w-5 h-5" color="#000"/>
+                       <span className="my-custom-class font-semibold text-xs text-[#000]">Budget: ${selectedRequirement.budgetMin} - ${selectedRequirement.budgetMax}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+                        <CiCalendar className="w-5 h-5" color="#000"/>
+                       <span className="my-custom-class font-semibold text-xs text-[#000]">Timeline: {selectedRequirement.timeline}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+                        <CiLocationOn className="w-5 h-5" color="#000"/>
+                         <span className="my-custom-class font-semibold text-xs text-[#000]">Location: {selectedRequirement.location || "Remote"}</span>
+                      </div>
+                    </div>
+
+                    <hr className="border-1 border-[#E4E4E4] my-6"/>
+
+                    {/* Description */}
+                    <div className="border-b-2 border-[#E4E4E4] pb-6">
+                      <h3 className="font-semibold text-[#F4561C] my-custom-class text-lg mb-1">Description</h3>
+                      <p className="text-sm text-[#656565] leading-relaxed">
+                        {selectedRequirement.description}
+                      </p>
+                    </div>
+
+                   {
+                    selectedRequirement.documentUrl &&(
+                       <div className="flex flex-row justify-start items-center p-4 border rounded-xl shadow gap-3">
+                          <div className="flex justify-center items-center bg-[#EEF7FE] shrink-0 rounded-full h-10 w-10">
+                            <FaRegFileLines className="h-6 w-6" color="#F54A0C"/>
+                          </div>
+                          <h1 className="text-md font-normal text-[#686868]">{getFileNameFromUrl(selectedRequirement.documentUrl)}</h1>
+                    </div>
+
+                    )
+                   } 
+                   
+                    {/* Attachments */}
+                    {/* {selectedRequirement.attachments?.length > 0 && (
+                      <div>
+                        <h3 className="font-semibold text-[#F4561C] text-lg mb-2">Attachments</h3>
+
+                        <div className="space-y-2">
+                          {selectedRequirement.attachments.map((file: any, index: number) => (
+                            <div
+                              key={index}
+                              className="flex items-center gap-3 border rounded-lg px-3 py-2"
+                            >
+                              📄
+                              <span className="text-sm text-gray-700">{file.name}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )} */}
+                    
+                  </div>
+
+                  {/* Footer */}
+                  <div className="p-6 pt-4 border-t flex justify-start gap-4">
+
+                    <Button
+                      className="bg-[#2C34A1] hover:bg-[#2C34A1] text-white rounded-full px-6 flex items-center gap-2" onClick={()=>handleViewProposals(selectedRequirement._id)}
+                    >
+                      View Proposal →
+                    </Button>
+                    <DialogClose asChild>
+                       <Button
+                          variant="default"
+                          className="bg-[#000] hover:bg-[#000] w-[100px] rounded-full px-6"
+                        >
+                          Close
+                        </Button>
+                    </DialogClose>
+                  </div>
+
+                </DialogContent>
+              </Dialog>
+
+      )}
       
 
       
