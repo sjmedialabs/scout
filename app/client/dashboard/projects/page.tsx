@@ -257,6 +257,9 @@ const loadData=async(userId:string)=>{
               toast.error("Failed to post the requirement")
             }
             toast.success("Requirement Posted successfully")
+            
+            setRequirements((prev) => [data.requirement,...prev])
+            
             setFormData({
               title: "",
               image: "",
@@ -268,7 +271,6 @@ const loadData=async(userId:string)=>{
               timeline: "",
             })
             setShowCreateProject(false);
-            setRequirements((prev) => [...prev, data.requirement])
             }
 
         } catch (error) {
@@ -326,6 +328,7 @@ const loadData=async(userId:string)=>{
           projectStartDate:"",
           projectEndDate:"",
         })
+        window.location.reload();
       }
       else{
         toast.error("Failed to submit the review")
@@ -395,24 +398,18 @@ console.log("Clicked Project for the edit:::",formData)
  }
  console.log("Fetched Requirements:::",requirements)
 
- const handleFilterChange = (value: string) => {
-  requirements.forEach(req => {
-  console.log(`[${req.status}]`, req.status.length)
-})
-
-  setFilterStatus(value)
-
-  if (value === "all") {
+ useEffect(() => {
+  if (filterStatus === "all") {
     setFilteredRequirements(requirements)
-    return
-  }
-
-  setFilteredRequirements(
-    requirements.filter(
-      (req) => req.status.toLowerCase() === value.toLowerCase()
+  } else {
+    setFilteredRequirements(
+      requirements.filter(
+        (req) => req.status.toLowerCase() === filterStatus.toLowerCase()
+      )
     )
-  )
-}
+  }
+}, [requirements, filterStatus])
+
 
 if (loading || responseLoading) {
     return (
@@ -443,7 +440,7 @@ if (loading || responseLoading) {
             </div>
 
             <div className="grid gap-6 border-1 px-8 py-7 bg-[#FAFAFA] border-[#E6E2E2] bg-[#fff] rounded-3xl">
-               <Select onValueChange={handleFilterChange} value={filterStatus}>
+               <Select onValueChange={(value)=>setFilterStatus(value)} value={filterStatus}>
                                     <SelectTrigger
                                       className="
                                             mt-1
@@ -697,7 +694,7 @@ if (loading || responseLoading) {
                             </Button>
                           </DialogClose>
                           <Button type="submit" className="  bg-[#2C34A1] hover:bg-[#2C34A1] active:bg-[#2C34A1] rounded-full" disabled={sending}>
-                            Post Requirement
+                            {editingProject?"Update":"Post  Project"}
                           </Button>
                           
                           
@@ -707,135 +704,137 @@ if (loading || responseLoading) {
                   </Dialog>
                
             )}
+
+            {/*Reviews Modal */}
             {showReviewModal && (
               <Dialog open={showReviewModal} onOpenChange={setShowReviewModal}>
-  <DialogContent className="md:max-w-xl rounded-2xl h-[90vh] flex flex-col p-0">
+              <DialogContent className="md:max-w-xl rounded-2xl h-[90vh] flex flex-col p-0">
 
-    {/* ✅ FIXED HEADER */}
-    <DialogHeader className="px-6 py-4 border-b shrink-0">
-      <DialogTitle className="text-xl font-bold text-[#F4561C]">
-        Submit Project Review
-      </DialogTitle>
-    </DialogHeader>
+                {/* ✅ FIXED HEADER */}
+                <DialogHeader className="px-6 py-4 border-b shrink-0">
+                  <DialogTitle className="text-xl font-bold text-[#F4561C]">
+                    Submit Project Review
+                  </DialogTitle>
+                </DialogHeader>
 
-    {/* ✅ SCROLLABLE FORM FIELDS */}
-    <form
-      onSubmit={handleReviewSubmit}
-      className="flex-1 overflow-y-auto px-6 py-4 space-y-6"
-    >
-      {/* Title */}
-      <div className="space-y-2">
-        <Label className="text-[#000] text-[14px] font-bold">Title</Label>
-        <Input
-          value={reviewForm.title}
-          className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
-          onChange={(e) =>
-            setReviewForm((prev) => ({ ...prev, title: e.target.value }))
-          }
-          placeholder="e.g., E-commerce Website Development"
-          required
-        />
-      </div>
+                {/* ✅ SCROLLABLE FORM FIELDS */}
+                <form
+                  onSubmit={handleReviewSubmit}
+                  className="flex-1 overflow-y-auto px-6 py-4 space-y-6"
+                >
+                  {/* Title */}
+                  <div className="space-y-2">
+                    <Label className="text-[#000] text-[14px] font-bold">Title</Label>
+                    <Input
+                      value={reviewForm.title}
+                      className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
+                      onChange={(e) =>
+                        setReviewForm((prev) => ({ ...prev, title: e.target.value }))
+                      }
+                      placeholder="e.g., E-commerce Website Development"
+                      required
+                    />
+                  </div>
 
-      {/* Summary */}
-      <div className="space-y-2">
-        <Label className="text-[#000] text-[14px] font-bold">Review Summary</Label>
-        <Textarea
-          value={reviewForm.content}
-          className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
-          onChange={(e) =>
-            setReviewForm((prev) => ({ ...prev, content: e.target.value }))
-          }
-          placeholder="Write your detailed review here..."
-          required
-        />
-      </div>
+                  {/* Summary */}
+                  <div className="space-y-2">
+                    <Label className="text-[#000] text-[14px] font-bold">Review Summary</Label>
+                    <Textarea
+                      value={reviewForm.content}
+                      className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
+                      onChange={(e) =>
+                        setReviewForm((prev) => ({ ...prev, content: e.target.value }))
+                      }
+                      placeholder="Write your detailed review here..."
+                      required
+                    />
+                  </div>
 
-      {/* Ratings (unchanged UI) */}
-      {[
-        { label: "Rating", key: "rating" },
-        { label: "Cost Rating", key: "costRating" },
-        { label: "Quality Rating", key: "qualityRating" },
-        { label: "Willing To Refer Rating", key: "willingToReferRating" },
-        { label: "Schedule Rating", key: "scheduleRating" },
-      ].map((item) => (
-        <div className="space-y-2" key={item.key}>
-          <Label className="text-[#000] text-[14px] font-bold">{item.label}</Label>
-          <Input
-            type="number"
-            min={0.1}
-            max={5}
-            step={0.1}
-            value={reviewForm[item.key]}
-            className="border-2 border-[#D0D5DD] rounded-[8px]"
-            onChange={(e) =>
-              setReviewForm((prev) => ({
-                ...prev,
-                [item.key]: parseFloat(e.target.value),
-              }))
-            }
-            required
-          />
-        </div>
-      ))}
+                  {/* Ratings (unchanged UI) */}
+                  {[
+                    { label: "Rating", key: "rating" },
+                    { label: "Cost Rating", key: "costRating" },
+                    { label: "Quality Rating", key: "qualityRating" },
+                    { label: "Willing To Refer Rating", key: "willingToReferRating" },
+                    { label: "Schedule Rating", key: "scheduleRating" },
+                  ].map((item) => (
+                    <div className="space-y-2" key={item.key}>
+                      <Label className="text-[#000] text-[14px] font-bold">{item.label}</Label>
+                      <Input
+                        type="number"
+                        min={0.1}
+                        max={5}
+                        step={0.1}
+                        value={reviewForm[item.key]}
+                        className="border-2 border-[#D0D5DD] rounded-[8px]"
+                        onChange={(e) =>
+                          setReviewForm((prev) => ({
+                            ...prev,
+                            [item.key]: parseFloat(e.target.value),
+                          }))
+                        }
+                        required
+                      />
+                    </div>
+                  ))}
 
-      {/* ✅ Start Date – Calendar Popover */}
-   <div className="space-y-2">
-  <Label htmlFor="startDate" className="text-[#000] text-[14px] font-bold">
-    Start Date
-  </Label>
-  <Input
-    id="startDate"
-    type="date"
-    value={reviewForm.projectStartDate}
-    className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
-    onChange={(e) =>
-      setReviewForm((prev) => ({
-        ...prev,
-        projectStartDate: e.target.value,
-      }))
-    }
-    required
-  />
-</div>
+                  {/* ✅ Start Date – Calendar Popover */}
+              <div className="space-y-2">
+              <Label htmlFor="startDate" className="text-[#000] text-[14px] font-bold">
+                Start Date
+              </Label>
+              <Input
+                id="startDate"
+                type="date"
+                value={reviewForm.projectStartDate}
+                className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
+                onChange={(e) =>
+                  setReviewForm((prev) => ({
+                    ...prev,
+                    projectStartDate: e.target.value,
+                  }))
+                }
+                required
+              />
+            </div>
 
 
 
-      {/* ✅ End Date – Calendar Popover */}
-      <div className="space-y-2">
-          <Label htmlFor="endDate" className="text-[#000] text-[14px] font-bold">
-            End Date
-          </Label>
-          <Input
-            id="endDate"
-            type="date"
-            value={reviewForm.projectEndDate}
-            className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
-            onChange={(e) =>
-              setReviewForm((prev) => ({
-                ...prev,
-                projectEndDate: e.target.value,
-              }))
-            }
-            min={reviewForm.projectStartDate} // prevents selecting earlier date
-            required
-          />
-      </div>
+                  {/* ✅ End Date – Calendar Popover */}
+                  <div className="space-y-2">
+                      <Label htmlFor="endDate" className="text-[#000] text-[14px] font-bold">
+                        End Date
+                      </Label>
+                      <Input
+                        id="endDate"
+                        type="date"
+                        value={reviewForm.projectEndDate}
+                        className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
+                        onChange={(e) =>
+                          setReviewForm((prev) => ({
+                            ...prev,
+                            projectEndDate: e.target.value,
+                          }))
+                        }
+                        min={reviewForm.projectStartDate} // prevents selecting earlier date
+                        required
+                      />
+                  </div>
 
-    </form>
+                </form>
 
-    {/* ✅ FIXED FOOTER */}
-    <div className="px-6 py-4 border-t flex gap-5 shrink-0">
-      <Button type="submit" disabled={sending} onClick={handleReviewSubmit} className="bg-[#2C34A1] rounded-full">
-        {sending ? "Submitting..." : "Submit Review"}
-      </Button>
-      <DialogClose asChild>
-        <Button className="bg-[#000] rounded-full">Cancel</Button>
-      </DialogClose>
-    </div>
+                {/* ✅ FIXED FOOTER */}
+                <div className="px-6 py-4 border-t flex gap-5 shrink-0">
+                  <Button type="submit" disabled={sending} onClick={handleReviewSubmit} className="bg-[#2C34A1] rounded-full">
+                    {sending ? "Submitting..." : "Submit Review"}
+                  </Button>
+                  <DialogClose asChild>
+                    <Button className="bg-[#000] rounded-full">Cancel</Button>
+                  </DialogClose>
+                </div>
 
-  </DialogContent>
-</Dialog>
+              </DialogContent>
+            </Dialog>
 
             )}
           </div>

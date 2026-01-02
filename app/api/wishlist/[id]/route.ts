@@ -3,6 +3,7 @@ import mongoose from "mongoose"
 import { connectToDatabase } from "@/lib/mongodb"
 import { getCurrentUser } from "@/lib/auth/jwt"
 import Wishlist from "@/models/Wishlist"
+import Comparision from "@/models/Comparision"
 
 export async function DELETE(
   req: NextRequest,
@@ -46,6 +47,18 @@ export async function DELETE(
         { status: 404 }
       )
     }
+    await Comparision.findOneAndUpdate({
+       agencyId: new mongoose.Types.ObjectId(id),
+      clientId,
+    },
+   {
+    $set: {
+      isFavourite: false, // example field
+    },
+  },
+  {
+    new: true, // returns updated document
+  })
 
     return NextResponse.json(
       {
