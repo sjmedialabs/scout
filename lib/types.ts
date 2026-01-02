@@ -190,6 +190,7 @@ export interface SubscriptionPlan {
     supportLevel: "basic" | "priority" | "dedicated"
   }
   popular?: boolean
+  trialDays?: number
 }
 
 export interface UserSubscription {

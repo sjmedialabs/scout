@@ -6,22 +6,79 @@ import { Badge } from "@/components/ui/badge"
 import { Check, Star } from "lucide-react"
 import Link from "next/link"
 import { subscriptionPlans } from "@/lib/subscription-plans"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+
+interface CmsPlan {
+  _id: string
+  title: string
+  pricePerMonth: number
+  pricePerYear?: number
+  yearlySubscription?: boolean
+  description?: string
+  features: string[]
+  isActive: boolean
+  slug?: string
+}
 
 
 export default function PricingPage() {
   const [isAnnual, setIsAnnual] = useState(true)
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [cmsFeatures, setCmsFeatures] = useState<Record<string, string[]>>({})
+
+  useEffect(() => {
+    const fetchCmsFeatures = async () => {
+      try {
+        const res = await fetch("/api/subscription")
+        const data: CmsPlan[] = await res.json()
+
+        const featureMap: Record<string, string[]> = {}
+
+        data.forEach((plan) => {
+          // map CMS plan → frontend plan id
+          const key =
+            plan.slug ||
+            plan.title?.toLowerCase() ||
+            plan._id
+
+          featureMap[key] = plan.features || []
+        })
+
+        setCmsFeatures(featureMap)
+      } catch (error) {
+        console.error("Failed to fetch CMS features", error)
+      }
+    }
+
+    fetchCmsFeatures()
+  }, [])
+
+  const getDisplayPrice = (plan: any) => {
+  if (!isAnnual) {
+    return {
+      price: plan.price,
+      label: "month",
+    }
+  }
+
+  // yearly pricing (CMS or fallback)
+  const yearlyPrice = Math.round(plan.price * 12 * 0.85) // 15% discount fallback
+
+  return {
+    price: yearlyPrice,
+    label: "year",
+  }
+}
   
   return (
     <div className="bg-background">
-      {/* Navigation component rendering removed */}
-
       <div className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
-            <p className="text-1xl font-thin text-orange-400 mb-1">Choose Your Plan</p>
+            <p className="text-1xl font-thin text-orange-400 mb-1">
+              Choose Your Plan
+            </p>
             <p className="text-xl text-muted-foreground text-balance text-center max-w-xl mx-auto leading-tight">
               Select the perfect plan for your business needs.<br/> Upgrade or downgrade at any time.
             </p>
@@ -73,6 +130,7 @@ export default function PricingPage() {
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             {subscriptionPlans.map((plan) => {
               const selected = selectedId === plan.id
+              const {price, label } = getDisplayPrice(plan)
               const isFeatured = plan.id === "standard" || plan.popular
 
               return (
@@ -81,7 +139,9 @@ export default function PricingPage() {
                   role="button"
                   tabIndex={0}
                   onClick={() => setSelectedId(plan.id)}                  
-                  onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setSelectedId(plan.id)}
+                  onKeyDown={(e) => 
+                    (e.key === "Enter" || e.key === " ") && 
+                    setSelectedId(plan.id)}
                   className={[
                    "group relative cursor-pointer transition-all duration-500 ease-out",
                    "border border-slate-50 bg-neutral-10 shadow-[0_1px_3px_rgb(0,0,0,0.03)]",
@@ -90,14 +150,14 @@ export default function PricingPage() {
                   + "flex flex-col justify-between h-full",
                  ].join(" ")}
                 >
-                  {false && plan.popular && (
+                  {/* {{false && plan.popular && (
                     <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                       <Badge className="bg-primary text-primary-foreground px-3 py-1">
                         <Star className="h-3 w-3 mr-1" />
                         Most Popular
                       </Badge>
                     </div>
-                  )}
+                  )}} */}
 
                 <div>
                   <CardHeader className="text-left pb-4">
@@ -109,24 +169,31 @@ export default function PricingPage() {
                     <div className="mt-2 flex items-baseline gap-1">
                       <span className="text-4xl font-semibold tracking-tight text-zinc-900"
                       style={{ fontFamily: "sans-serif" }}
-                      >${plan.price}</span>
+                      >
+                        ${price}
+                      </span>
                       <span className="text-[14px] text-zinc-900 font-medium"
                       style={{ fontFamily: "sans-serif" }}
-                      >/{plan.billingPeriod}</span>
+                      >/{label}
+                      </span>
                     </div>
 
                     <CardDescription className="mt-1 text-[15px] text-zinc-400 leading-relaxed"
                     style={{ fontFamily: "sans-serif" }}
                     >
-                      {plan.id === "basic" && "Perfect for individuals or occasional sellers looking to list a few properties"}
-                      {plan.id === "standard" && "Ideal for Agents seeking enhanced listings and priority placement"}
-                      {plan.id === "premium" && "Designed for agencies to manage multiple agents and listings"}
+                      {plan.id === "basic" && 
+                       "Perfect for individuals or occasional sellers looking to list a few properties"}
+                      {plan.id === "standard" && 
+                       "Ideal for Agents seeking enhanced listings and priority placement"}
+                      {plan.id === "premium" && 
+                        "Designed for agencies to manage multiple agents and listings"}
                     </CardDescription>
                   </CardHeader>
 
                   <CardContent>
                     <ul className="space-y-4 mb-8">
-                      {plan.features.map((feature, index) => (
+                      {(cmsFeatures[plan.id] || plan.features).map(
+                          (feature, index) => (
                         <li key={index} className="flex items-start gap-3">
                            <span className="grid place-items-center h-7 w-7 rounded-full bg-blue-100 flex-shrink-0">
                              <span className="text-orange-500 text-[16px] font-extrabold leading-none translate-y-[1px]">
@@ -158,8 +225,15 @@ export default function PricingPage() {
                       variant="outline"
                       asChild
                     >
-                      <Link href={plan.id === "basic" ? "/register" : `/subscribe/${plan.id}`}>
-                        {plan.id === "basic" ? "Get Started Free" : `Choose ${plan.name}`}
+                      <Link href={
+                        plan.id === "basic" 
+                        ? "/register" 
+                        : `/subscribe/${plan.id}?billing=${isAnnual ? "yearly" : "monthly"}`
+                        }
+                      >
+                        {plan.id === "basic" 
+                        ? "Get Started Free" 
+                        : `Choose ${plan.name}`}
                       </Link>
                     </Button>
                   </div>
