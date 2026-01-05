@@ -72,7 +72,7 @@ const AgencyPortfolioPage=()=>{
             providerDetails?.portfolio.length!==0 && (
                 <div className="flex justify-start flex-wrap gap-5">
                     {
-                        (providerDetails.portfolio || []).map((item)=>(
+                        (providerDetails?.portfolio || []).map((item)=>(
                             <div
                                 key={item.id}
                                 className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300"

@@ -38,6 +38,7 @@ export default function ProviderProfilePage({ params }: { params: { id: string }
   const[sortByFilter,setSortByFilter]=useState("");
   const[providerDetails,setProviderDetails]=useState({});
   const[reviews,setReviews]=useState([]);
+  const[filteredReviews,setFilteredReviews]=useState([]);
   const[loading,setLoading]=useState(true);
   const[failed,setFailed]=useState(false);
   useEffect(()=>{
@@ -49,8 +50,11 @@ export default function ProviderProfilePage({ params }: { params: { id: string }
     try{
        const response=await fetch(`/api/providers/${id}`)
        const data=await response.json();
+       const reviewsResponse=await fetch(`/api/reviews/${data.provider.userId}`);
+       const reviewsdata=await reviewsResponse.json();
+       console.log("Fetched Reviews are the::::",reviewsdata)
        setProviderDetails(data.provider);
-       setReviews(data.reviews)
+       setReviews(reviewsdata.reviews)
        setFailed(false)
     }catch(error){
       console.log("Failed to get the data error:::",error);
@@ -145,60 +149,16 @@ console.log("Providers Details are :::",providerDetails);
     )
   }
 
-  // Mock additional data
-  const companyStats = {
-    founded: providerDetails.foundedYear || 2018,
-    teamSize: providerDetails.teamSize,
-    projectsCompleted: providerDetails.projectsCompleted,
-    clientRating: providerDetails.rating,
-    responseTime: "< 2 hours",
-    successRate: "98%",
-  }
+  
 
-  const testimonials = [
-    {
-      id: "1",
-      client: "Sarah Johnson",
-      company: "TechStart Inc",
-      rating: 5,
-      comment:
-        "Outstanding work! The team delivered beyond our expectations and maintained excellent communication throughout the project.",
-      date: "2 months ago",
-    },
-    {
-      id: "2",
-      client: "Michael Chen",
-      company: "Global Solutions",
-      rating: 5,
-      comment:
-        "Professional, efficient, and creative. They transformed our vision into reality with exceptional attention to detail.",
-      date: "3 months ago",
-    },
-    {
-      id: "3",
-      client: "Emily Rodriguez",
-      company: "Innovation Labs",
-      rating: 4,
-      comment:
-        "Great experience working with this team. Highly recommend for complex projects requiring technical expertise.",
-      date: "4 months ago",
-    },
-  ]
+  const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    month: "long",
+    day: "2-digit",
+    year: "numeric",
+  });
+};
 
-  const technologies = [
-    "React",
-    "Node.js",
-    "Python",
-    "TypeScript",
-    "AWS",
-    "Docker",
-    "PostgreSQL",
-    "MongoDB",
-    "GraphQL",
-    "Next.js",
-    "Tailwind CSS",
-    "Kubernetes",
-  ]
   const stats = [
     { label: "Year founded", value: providerDetails.foundedYear },
     { label: "Team Size", value: providerDetails.teamSize },
@@ -207,6 +167,37 @@ console.log("Providers Details are :::",providerDetails);
     { label: "Hourly rate", value: providerDetails.hourlyRate },
     { label: "Success Rate", value: "98%" },
   ];
+
+  useEffect(() => {
+  let tempFilteredReviews = [...reviews]
+
+  // 🔹 Service filter
+  if (serviceFilter && serviceFilter !== "all") {
+    tempFilteredReviews = tempFilteredReviews.filter((eachItem) =>
+      eachItem.project.category
+        .toLowerCase()
+        .includes(serviceFilter.toLowerCase())
+    )
+  }
+
+  // 🔹 Rating sort
+  if (sortByFilter) {
+    if (sortByFilter === "low-to-high") {
+      tempFilteredReviews.sort(
+        (a, b) => (a.rating ?? 0) - (b.rating ?? 0)
+      )
+    }
+
+    if (sortByFilter === "high-to-low") {
+      tempFilteredReviews.sort(
+        (a, b) => (b.rating ?? 0) - (a.rating ?? 0)
+      )
+    }
+  }
+
+  setFilteredReviews(tempFilteredReviews)
+}, [serviceFilter, sortByFilter, reviews])
+
  
   if(loading){
     return(
@@ -225,7 +216,7 @@ console.log("Providers Details are :::",providerDetails);
   }
 
   return (
-    <div className="min-h-screen bg-[#fff]">
+    <div className="min-h-screen mt-0 bg-[#fff]">
       {/* Hero Section */}
       <div className="text-white py-16" style={{
         backgroundImage:`url(/ProviderDetailBanner.jpg)`,
@@ -579,7 +570,7 @@ console.log("Providers Details are :::",providerDetails);
           <h1 className="text-3xl text-[#000] mb-4 lg:mb-0">Creative Design Studios Reviews</h1>
           <div className="flex gap-2 items-center mb-4 lg:mb-0">
              <span className="text-md font-semibold">Services:</span>
-          <Select onValueChange={(value)=>setServiceFilter(value)}>
+          <Select onValueChange={(value)=>setServiceFilter(value)} value={serviceFilter}>
            
             <SelectTrigger
               className="
@@ -612,7 +603,7 @@ console.log("Providers Details are :::",providerDetails);
           </div>
            <div className="flex gap-2 items-center">
              <span className="text-md font-semibold">Sortby:</span>
-             <Select onValueChange={(value)=>setSortByFilter(value)}>
+             <Select onValueChange={(value)=>setSortByFilter(value)} value={sortByFilter}>
            
             <SelectTrigger
               className="
@@ -645,7 +636,9 @@ console.log("Providers Details are :::",providerDetails);
         </div>
         {/*Reviews contenet */}
          {
-          mockReviews.map((review)=>(
+          filteredReviews.length !==0?(<div>
+            {
+              filteredReviews.map((review)=>(
             <div className="border border-gray-300 rounded-3xl  bg-white max-w-6xl mx-auto mb-5">
               
               <div className="w-full rounded-3xl border border-[#e6e6e6] bg-white p-8">
@@ -657,30 +650,30 @@ console.log("Providers Details are :::",providerDetails);
                       <h2 className="text-xl font-bold text-black">The Review</h2>
 
                       <p className="text-sm text-[#b2b2b2] mt-0">
-                        {review.review.date}
+                        {formatDate(review.createdAt)}
                       </p>
 
                       <h4 className="text-md font-semibold mt-2">Feed back summary</h4>
 
                       <p className="text-sm text-[#9c9c9c] leading-relaxed mt-0">
-                        {review.review.summary}
+                        {review.content}
                       </p>
                     </div>
 
                     {/* RIGHT — RATING */}
                     <div className="flex flex-col items-end min-w-[120px]">
                       <span className="text-5xl font-bold text-[#898383]">
-                        {review.rating.overall}
+                        {review.rating || 0}
                       </span>
 
-                      <RatingStars rating={review.rating.overall} />
+                      <RatingStars rating={review.rating || 0} />
 
                       <p className="text-sm mt-1">
                         <span className="font-semibold text-black">
-                          {review.rating.overall}
+                          {review.rating || 0}
                         </span>{" "}
                         <span className="text-[#898383]">
-                          ({review.rating.totalReviews})
+                          {`(${reviews.length})`}
                         </span>
                       </p>
                     </div>
@@ -695,13 +688,13 @@ console.log("Providers Details are :::",providerDetails);
                       <h3 className="text-md font-bold mt-4">The Reviewer</h3>
 
                       <p className="text-sm text-[#b2b2b2] mt-0">
-                        {review.reviewer.role}
+                        {review.client.position}
                       </p>
 
                       <div className="flex items-center gap-2 mt-0 text-[#bdbdbd]">
                         <FaCircleUser className="h-5 w-5" />
                         <span className="text-sm font-medium">
-                          {review.reviewer.name}
+                          {review.client.name}
                         </span>
                       </div>
                     </div>
@@ -740,6 +733,12 @@ console.log("Providers Details are :::",providerDetails);
                 </div>
             </div>
           ))
+            }
+            </div>
+            ):
+            (<div className="text-center mt-20">
+              <p className="text-xl">No Reviews for this provider</p>
+            </div>)
          }
       </div>
     </div>
