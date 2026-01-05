@@ -77,7 +77,12 @@ import {
 import { CiCalendar } from "react-icons/ci";
 import { Content } from "next/font/google"
 import { IoIosCloseCircleOutline } from "react-icons/io";
-import { FaArrowRightLong } from "react-icons/fa6";
+import { FaArrowRightLong, FaS } from "react-icons/fa6";
+import { MdMailOutline } from "react-icons/md";
+import { FaPhone } from "react-icons/fa6";
+import { FaLocationDot } from "react-icons/fa6";
+import { FaLinkedin } from "react-icons/fa";
+import { RiInstagramFill } from "react-icons/ri";
 interface ProjectProposal {
   id: string
   projectId: string
@@ -306,6 +311,20 @@ const ClientProvidersPage=()=>{
   const[responseLoading,setResponseLoading]=useState(true)
   const[Failed,setFailed]=useState(false)
   const[dialogOpen,setDialogOpen]=useState(false)
+
+  //contact provider functions
+  const[showContactProviderDialog,setShowContactProviderDialog]=useState(false)
+  const[contactProviderForm,setContactProviderForm]=useState({
+    name:"",
+    email:"",
+    message:"",
+    intrestedIn:"",
+  })
+  const[contactProviderData,setContactProviderData]=useState();
+  const[sendingFormResponse,setSendigFormResponse]=useState(false);
+  const[formResponseMessage,setFormResponseMessage]=useState({});
+
+  
   useEffect(()=>{
     loadData();
   },[])
@@ -392,7 +411,15 @@ const ClientProvidersPage=()=>{
       const handleContactProvider = (providerId: string) => {
         console.log("Contacting provider:", providerId)
         // In real app, this would open a contact form or chat
-        setShowProviderProfile(false)
+         const provider = providersData.find((p) => p.id === providerId)
+        if (provider) {
+          setContactProviderData(provider)
+          setFormResponseMessage({})
+          setShowContactProviderDialog(true)
+          
+        }
+        
+        
       }
     
      
@@ -411,6 +438,49 @@ const ClientProvidersPage=()=>{
       return matchesLocation && matchesTechnology && matchesRating
     })
   
+    const handleFormSubmit=async(e)=>{
+        e.preventDefault()
+        console.log("Form Submit::::",contactProviderForm);
+        if(!contactProviderForm.name || !contactProviderForm.email || !contactProviderForm.message || !contactProviderForm.intrestedIn){
+          setFormResponseMessage({status:"failed",value:"Required all fileds"})
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(contactProviderForm.email)) {
+          setFormResponseMessage({
+            status: "failed",
+            value: "Invalid email",
+          })
+        }
+        const payload={
+          ...contactProviderForm,
+          agencyId:contactProviderData.userId
+        }
+
+        try{
+          setSendigFormResponse(true)
+          const res=await fetch("/api/contactprovider",{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify(payload)
+          })
+          const data=await res.json()
+          console.log("POsst form response",data)
+          if(res.ok){
+            setContactProviderForm({
+             name:"",
+              email:"",
+              message:"",
+              intrestedIn:"",
+            })
+            setFormResponseMessage({status:"success",value:"submitted form successfully"})
+
+          }
+
+        }catch(error){
+
+        }finally{
+          setSendigFormResponse(false)
+        }
+    }
     return(
           <div className="space-y-6 p-2 md:p-6">
             <div>
@@ -668,6 +738,183 @@ const ClientProvidersPage=()=>{
             )
            }
 
+           {/*Contact providers modal */}
+
+           {
+            showContactProviderDialog &&(
+             <div>
+               <Dialog onOpenChange={setShowContactProviderDialog} open={showContactProviderDialog}>
+                <DialogContent className="max-w-7xl max-h-[95%] overflow-y-auto">
+                  <div className="grid grid-cols-2 gap-5">
+                    {/*left side content */}
+                    <div className="flex flex-col justify-between">
+                      <div>
+                        <h1 className="my-custom-class text-2xl text-[#000] mb-8 font-bold">Les’t talk on something <span className="text-[#F54A0C]">great</span> together</h1>
+                       <div className="flex flex-row justify-start  items-center mb-8 gap-2">
+                          <MdMailOutline color="#F54A0C" className="h-6 w-6"/>
+                          <p className="text-sm text-[#000000] my-custom-class font-normal">{contactProviderData.email || "example@gmail.com"}</p>
+                       </div>
+                       <div className="flex flex-row justify-start  items-center mb-8 gap-2">
+                          <FaPhone color="#F54A0C" className="h-4 w-4"/>
+                          <p className="text-sm text-[#000000] my-custom-class font-normal">{contactProviderData.phone || "8900776543"}</p>
+                       </div>
+                       <div className="flex flex-row justify-start  items-center mb-4 gap-2">
+                          <FaLocationDot color="#F54A0C" className="h-4 w-4"/>
+                          <p className="text-sm text-[#000000] my-custom-class font-normal">{contactProviderData.location || "N/A"}</p>
+                       </div>
+                      </div>
+                      <div className="flex flex-row gap-4">
+                        <FaLinkedin color="#F54A0C" className="h-6 w-6"/>
+                        <RiInstagramFill color="#F54A0C" className="h-6 w-6"/>
+                      </div>
+                    </div>
+
+                    {/*right side content */}
+                    <div className="mt-8">
+                      <p className="text-[#00000] text-md my-custom-class font-bold">I'm intertsed in</p>
+                      {
+                        (contactProviderData.services || []).map((eachItem,index)=>(
+                          <Badge className={`
+                            border-1  m-2 border-[#787878] rounded-full min-w-[80px] text-sm
+                            ${contactProviderForm.intrestedIn===eachItem?"bg-[#F4561C] border-[#F4561C] text-[#fff]":"bg-transparent text-[#787878]"}`} 
+                          id={index} 
+                          onClick={()=>setContactProviderForm((prev)=>({...prev,intrestedIn:eachItem}))}>
+                           {eachItem}
+                          </Badge>
+                        ))
+                      }
+                        <form onSubmit={handleFormSubmit} >
+                          <div className="flex flex-col gap-0 group mt-5">
+                            <Label
+                              htmlFor="clientName"
+                              className="text-[#cdcdcd] text-sm group-focus-within:text-[#F44336] font-medium transition-colors"
+                            >
+                              Your name
+                            </Label>
+
+                            <Input
+                              id="clientName"
+                              type="text"
+                              placeholder="John Smith"
+                              value={contactProviderForm.name}
+                              onChange={(e)=>setContactProviderForm((prev)=>({...prev,name:e.target.value}))}
+                              className="
+                                pl-0
+                                border-0
+                                border-b-2
+                                border-b-[#cdcdcd]
+                                rounded-none
+                                bg-transparent
+                                text-base
+                                text-black
+                                shadow-none
+
+                                placeholder:text-[#cdcdcd]
+
+                                focus:!border-b-[#F44336]
+                                focus:outline-none
+                                focus:ring-0
+                                focus:ring-offset-0
+                                focus-visible:ring-0
+                                focus-visible:ring-offset-0
+                              "
+                            />
+                          </div>
+
+                          <div className="flex flex-col gap-0 group mt-5">
+                            <Label
+                              htmlFor="email"
+                              className="text-[#cdcdcd] text-sm group-focus-within:text-[#F44336] font-medium transition-colors"
+                            >
+                              Your name
+                            </Label>
+
+                            <Input
+                              id="email"
+                              type="text"
+                              placeholder="John@gmail.com"
+                              value={contactProviderForm.email}
+                              onChange={(e)=>setContactProviderForm((prev)=>({...prev,email:e.target.value}))}
+                              className="
+                                pl-0
+                                border-0
+                                border-b-2
+                                border-b-[#cdcdcd]
+                                rounded-none
+                                bg-transparent
+                                text-base
+                                text-black
+                                shadow-none
+
+                                placeholder:text-[#cdcdcd]
+
+                                focus:!border-b-[#F44336]
+                                focus:outline-none
+                                focus:ring-0
+                                focus:ring-offset-0
+                                focus-visible:ring-0
+                                focus-visible:ring-offset-0
+                              "
+                            />
+                          </div>
+
+                          <div className="flex flex-col gap-0 group mt-5">
+                            <Label
+                              htmlFor="message"
+                              className="text-[#cdcdcd] text-sm group-focus-within:text-[#F44336] font-medium transition-colors"
+                            >
+                              Your name
+                            </Label>
+
+                            <Textarea
+                              id="message"
+                              
+                              placeholder="John Smith"
+                              value={contactProviderForm.message}
+                              onChange={(e)=>setContactProviderForm((prev)=>({...prev,message:e.target.value}))}
+                              className="
+                                pl-3
+                                
+                                border-2
+                                border-[#cdcdcd]
+                                rounded-xl
+                                bg-transparent
+                                text-base
+                                text-black
+                                shadow-none
+
+                                placeholder:text-[#cdcdcd]
+
+                                focus:!border-[#F44336]
+                                focus:outline-none
+                                focus:ring-0
+                                focus:ring-offset-0
+                                focus-visible:ring-0
+                                focus-visible:ring-offset-0
+                              "
+                            ></Textarea>
+                            {formResponseMessage && (<p className={`text-sm ${formResponseMessage?.status==="failed"?"text-red-500":"text-green-500"}`}>{formResponseMessage.value}</p>)}
+                          </div>
+
+                          <Button type="submit"
+                           className="w-full mt-5 rounded-full bg-[#F44336] hover:bg-[#F44336] active:bg-[#F44336] text-[#fff]"
+                           disabled={sendingFormResponse}>
+                            {sendingFormResponse?"Submiting":"Submit"}
+                          </Button>
+                        </form>
+
+
+
+
+                    </div>
+                   
+                  </div>
+                </DialogContent>
+              </Dialog>
+              </div>
+            )
+           }
+
 
 
 
@@ -774,7 +1021,7 @@ const ClientProvidersPage=()=>{
                           <Button className="w-full sm:w-[140px] bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white" onClick={()=>(handleViewProvider(provider.id))}>
                             View Profile
                           </Button>
-                        <Button className="w-full sm:w-[160px] bg-[#4d4d4d] rounded-3xl text-white">
+                        <Button className="w-full sm:w-[160px] bg-[#4d4d4d] rounded-3xl text-white" onClick={()=>handleContactProvider(provider.id)}>
                           Contact Provider
                         </Button>
                       </div>
