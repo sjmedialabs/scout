@@ -25,10 +25,20 @@ export default function SearchPage() {
 
   const query = searchParams.get("q") || ""
   const [searchQuery, setSearchQuery] = useState(query)
-  const [results, setResults] = useState({ agencies: [], services: [] })
+ 
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState(options[0])
+
+  type SearchResults = {
+  services: any[]
+  agencies: any[]
+}
+
+const [results, setResults] = useState<SearchResults>({
+  services: [],
+  agencies: [],
+})
 
   
   useEffect(() => {
@@ -58,9 +68,9 @@ export default function SearchPage() {
   }
 
   const providers: Provider[] = [
-    ...results.services,
-    ...results.agencies,
-  ]
+  ...(Array.isArray(results.services) ? results.services : []),
+  ...(Array.isArray(results.agencies) ? results.agencies : []),
+]
 
 
   return (

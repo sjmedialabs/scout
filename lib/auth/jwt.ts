@@ -1,8 +1,6 @@
 // JWT Authentication Utilities
 // Secure token generation and verification
 
-"use server"
-
 import { SignJWT, jwtVerify } from "jose"
 import { cookies } from "next/headers"
 import type { IUser } from "@/models/User"
@@ -40,7 +38,7 @@ export async function generateToken(user: IUser): Promise<string> {
 export async function verifyToken(token: string): Promise<JWTPayload | null> {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET)
-    return payload as unknown as JWTPayload
+    return payload as JWTPayload
   } catch (error) {
     console.error("Token verification failed:", error)
     return null

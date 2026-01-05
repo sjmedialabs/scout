@@ -23,7 +23,7 @@ import {
   CircleUser,
   Share2
 } from "lucide-react"
-
+import { FaCircleUser } from "react-icons/fa6";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { mockProviders } from "@/lib/mock-data"
 import RatingStars from "@/components/rating-star"
@@ -646,144 +646,100 @@ console.log("Providers Details are :::",providerDetails);
         {/*Reviews contenet */}
          {
           mockReviews.map((review)=>(
-            <div className="border border-gray-300 rounded-2xl  bg-white max-w-6xl mx-auto mb-5">
+            <div className="border border-gray-300 rounded-3xl  bg-white max-w-6xl mx-auto mb-5">
               
-              {/* ===================== TOP SECTION ===================== */}
-              <div
-                className="
-                  grid 
-                  grid-cols-1 
-                  lg:grid-cols-3 
-                  gap-6 
-                  border-b 
-                
-                "
-              >
-                {/* LEFT COLUMN — PROJECT DETAILS */}
-                <div className="lg:border-r-2  pl-6 pr-6 pt-6 pb-6">
-                  <h2 className="text-xl font-bold text-[#000] mb-0">{review.project.title}</h2>
-
-                  <p className="text-[14px] font-medium text-[#afacab]">{review.project.type}</p>
-
-                  <p className="text-[14px] font-medium text-[#afacab]">{review.project.timeline}</p>
-                  <p className="text-[14px] font-medium text-[#afacab]">{review.project.budget}</p>
-
-                  <h4 className="text-sm font-semibold mt-4">Project summary:</h4>
-                  <p className="text-[14px] font-medium text-[#afacab] leading-relaxed">
-                    {review.project.summary}
-                  </p>
-                </div>
-
-                {/* RIGHT SECTION — REVIEW CONTENT */}
-                <div className="md:col-span-2 relative pl-6 pr-6 pt-6 pb-0">
-                  <button className="absolute right-0 top-0 text-gray-400 hover:text-gray-600 mr-6 mt-6">
-                    <Share2 className="h-5 w-5" />
-                  </button>
-
-                  <h2 className="text-xl font-bold">The Review</h2>
-
-                  <p className="text-[14px] font-medium text-[#afacab] leading-relaxed">
-                    "{review.review.quote}"
-                  </p>
-
-                  <p className="text-sm text-gray-400 mt-2">{review.review.date}</p>
-
-                  <h4 className="text-sm font-semibold mt-4">Feed back summary</h4>
-
-                  <p className="text-[14px] font-medium text-[#afacab] leading-relaxed">
-                    {review.review.summary}
-                  </p>
-                </div>
-              </div>
-
-              {/* ===================== BOTTOM SECTION ===================== */}
-              <div
-                className="
-                  grid 
-                  grid-cols-1 
-                  lg:grid-cols-3 
-                  gap-6 
-                  pt-0
-                "
-              >
-                {/* RATING BLOCK */}
-                <div className="flex flex-row items-center justify-start gap-3 pl-6 text-center md:border-r md:pr-6">
-                  
-                  <div className="pt-6 pb-6">
-                    <span className="text-5xl font-bold text-[#898383]">{review.rating.overall}</span>
-                  <RatingStars rating={review.rating.overall}/>
-                  <div className="flex text-yellow-500 mt-1">
-                  
-                  </div>
-
-                  <span className="text-[#000] text-sm font-semibold mr-0.5">{review.rating.overall}</span>
-                  <span className="text-[#898383]">({review.rating.totalReviews})</span>
+              <div className="w-full rounded-3xl border border-[#e6e6e6] bg-white p-8">
+                  {/* TOP SECTION */}
+                  <div className="flex flex-col lg:flex-row justify-between gap-6">
                     
+                    {/* LEFT — REVIEW CONTENT */}
+                    <div className="flex-1">
+                      <h2 className="text-xl font-bold text-black">The Review</h2>
+
+                      <p className="text-sm text-[#b2b2b2] mt-0">
+                        {review.review.date}
+                      </p>
+
+                      <h4 className="text-md font-semibold mt-2">Feed back summary</h4>
+
+                      <p className="text-sm text-[#9c9c9c] leading-relaxed mt-0">
+                        {review.review.summary}
+                      </p>
+                    </div>
+
+                    {/* RIGHT — RATING */}
+                    <div className="flex flex-col items-end min-w-[120px]">
+                      <span className="text-5xl font-bold text-[#898383]">
+                        {review.rating.overall}
+                      </span>
+
+                      <RatingStars rating={review.rating.overall} />
+
+                      <p className="text-sm mt-1">
+                        <span className="font-semibold text-black">
+                          {review.rating.overall}
+                        </span>{" "}
+                        <span className="text-[#898383]">
+                          ({review.rating.totalReviews})
+                        </span>
+                      </p>
+                    </div>
+                  </div>
                   
-                  </div>
 
-                  <div className="mt-4 text-sm text-[#000] font-bold space-y-1 text-center">
-                    <p>Quality: {review.rating.quality}</p>
-                    <p>Cost: {review.rating.cost}</p>
-                    <p>Schedule: {review.rating.schedule}</p>
-                    <p>Willing to Refer: {review.rating.refer}</p>
-                  </div>
-                </div>
-
-                {/* REVIEWER DETAILS */}
-                <div className="md:col-span-2 flex flex-col justify-center pl-6 pt-6 pb-6 gap-3">
-                  <h3 className="text-md font-bold mb-0">The Reviewer</h3>
-
-                  <p className="text-[14px] text-[#b2b2b2] -mt-3">{review.reviewer.role}</p>
-                  <div className="flex flex-row flex-start gap-1 items-center text-[#cbc8c8]">
-                    <CircleUser className="w-4 h-4"/>
-                    <p className="text-sm font-medium">{review.reviewer.name}</p>
-                  </div>
-                
-
-                  <div
-                    className="
-                      flex 
-                      flex-wrap 
-                      gap-3 
-                      text-sm 
-                      text-gray-600 
-                      mt-2
-                    "
-                  >
+                  {/* BOTTOM SECTION */}
+                  <div className="flex flex-col lg:flex-row justify-between gap-6">
                     
-                  
-                    <div className="flex items-center gap-1">
-                        <Building className="h-4 w-4"  />
-                      {review.reviewer.industry}
-                    </div>
+                    {/* LEFT — REVIEWER */}
+                    <div>
+                      <h3 className="text-md font-bold mt-4">The Reviewer</h3>
 
-                    <div className="flex items-center gap-1">
-                      <MapPin className="h-4 w-4" />
-                      {review.reviewer.location}
-                    </div>
+                      <p className="text-sm text-[#b2b2b2] mt-0">
+                        {review.reviewer.role}
+                      </p>
 
-                    <div className="flex items-center gap-1">
-                      <Users className="h-4 w-4" />
-                      {review.reviewer.employees}
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <MessageSquareMore  className="h-4 w-4" />
-                      {review.reviewer.reviewType}
-                    </div>
-
-                    {review.reviewer.verified && (
-                      <div className="flex items-center gap-1 text-green-600">
-                        <CheckCircle2 className="h-4 w-4" />
-                        Verified
+                      <div className="flex items-center gap-2 mt-0 text-[#bdbdbd]">
+                        <FaCircleUser className="h-5 w-5" />
+                        <span className="text-sm font-medium">
+                          {review.reviewer.name}
+                        </span>
                       </div>
-                    )}
+                    </div>
+
+                    {/* RIGHT — META INFO */}
+                    <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-[#9c9c9c]">
+                      
+                      {/* <div className="flex items-center gap-1">
+                        <Building className="h-4 w-4" />
+                        {review.reviewer.industry}
+                      </div>
+
+                      <div className="flex items-center gap-1">
+                        <MapPin className="h-4 w-4" />
+                        {review.reviewer.location}
+                      </div>
+
+                      <div className="flex items-center gap-1">
+                        <Users className="h-4 w-4" />
+                        {review.reviewer.employees}
+                      </div>
+
+                      <div className="flex items-center gap-1">
+                        <MessageSquareMore className="h-4 w-4" />
+                        {review.reviewer.reviewType}
+                      </div>
+
+                      {review.reviewer.verified && (
+                        <div className="flex items-center gap-1 text-green-600">
+                          <CheckCircle2 className="h-4 w-4" />
+                          Verified
+                        </div>
+                      )} */}
+                    </div>
                   </div>
                 </div>
-              </div>
-                  </div>
-              ))
+            </div>
+          ))
          }
       </div>
     </div>
