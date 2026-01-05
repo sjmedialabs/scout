@@ -358,7 +358,7 @@ export default function ProvidersPage() {
   className="rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
 >
   {/* Image flush to top */}
-  <div className="w-full">
+  <div className="h-full w-full">
     <img
       src={provider.coverImage}
       alt={provider.name}

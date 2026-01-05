@@ -12,31 +12,20 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const { id } = await params
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json({ error: "Invalid ID format" }, { status: 400 })
+      return NextResponse.json({ error: "Invalid provider ID" }, { status: 400 })
     }
 
-    // ---------------------------------------------
-    // 🔥 NEW LOGIC: Find provider by _id OR userId
-    // ---------------------------------------------
-    const provider = await Provider.findOne({
-      $or: [
-        { _id: id },         // match provider's _id
-        { userId: id },      // match provider's userId
-      ],
-    }).lean()
+    const provider = await Provider.findById(id).lean()
 
     if (!provider) {
       return NextResponse.json({ error: "Provider not found" }, { status: 404 })
     }
 
     // Increment profile views
-    await Provider.updateOne(
-      { _id: provider._id },
-      { $inc: { profileViews: 1 } }
-    )
+    await Provider.findByIdAndUpdate(id, { $inc: { profileViews: 1 } })
 
     // Get reviews for this provider
-    const reviews = await Review.find({ providerId: provider._id.toString(), isPublic: true })
+    const reviews = await Review.find({ providerId: id, isPublic: true })
       .populate("clientId", "name company")
       .sort({ createdAt: -1 })
       .limit(10)
@@ -62,48 +51,46 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     return NextResponse.json({
       provider: {
-        id: provider._id.toString(),
-        userId: provider.userId?.toString(),
-        name: provider.name,
-        tagline: provider.tagline,
-        description: provider.description,
-        logo: provider.logo,
-        coverImage: provider.coverImage,
-        location: provider.location,
-        website: provider.website,
-        email: provider.email,
-        salesEmail: provider.salesEmail,
-        phone: provider.phone,
-        adminContactPhone: provider.adminContactPhone,
-        services: provider.services,
-        technologies: provider.technologies,
-        industries: provider.industries,
-        rating: provider.rating,
-        reviewCount: provider.reviewCount,
-        projectsCompleted: provider.projectsCompleted,
-        hourlyRate: provider.hourlyRate,
-        minProjectSize: provider.minProjectSize,
-        teamSize: provider.teamSize,
-        foundedYear: provider.foundedYear,
-        portfolio: provider.portfolio,
-        testimonials: provider.testimonials,
-        certifications: provider.certifications,
-        awards: provider.awards,
-        socialLinks: provider.socialLinks,
-        isFeatured: provider.isFeatured,
-        isVerified: provider.isVerified,
-        profileViews: (provider.profileViews || 0) + 1,
-        createdAt: provider.createdAt,
+        id: (provider as any)._id.toString(),
+        userId: (provider as any).userId?.toString(),
+        name: (provider as any).name,
+        tagline: (provider as any).tagline,
+        description: (provider as any).description,
+        logo: (provider as any).logo,
+        coverImage: (provider as any).coverImage,
+        location: (provider as any).location,
+        website: (provider as any).website,
+        email: (provider as any).email,
+        salesEmail: (provider as any).salesEmail,
+        phone: (provider as any).phone,
+        adminContactPhone: (provider as any).adminContactPhone,
+        services: (provider as any).services,
+        technologies: (provider as any).technologies,
+        industries: (provider as any).industries,
+        rating: (provider as any).rating,
+        reviewCount: (provider as any).reviewCount,
+        projectsCompleted: (provider as any).projectsCompleted,
+        hourlyRate: (provider as any).hourlyRate,
+        minProjectSize: (provider as any).minProjectSize,
+        teamSize: (provider as any).teamSize,
+        foundedYear: (provider as any).foundedYear,
+        portfolio: (provider as any).portfolio,
+        testimonials: (provider as any).testimonials,
+        certifications: (provider as any).certifications,
+        awards: (provider as any).awards,
+        socialLinks: (provider as any).socialLinks,
+        isFeatured: (provider as any).isFeatured,
+        isVerified: (provider as any).isVerified,
+        profileViews: ((provider as any).profileViews || 0) + 1,
+        createdAt: (provider as any).createdAt,
       },
       reviews: formattedReviews,
     })
-
   } catch (error) {
     console.error("Error fetching provider:", error)
     return NextResponse.json({ error: "Failed to fetch provider" }, { status: 500 })
   }
 }
-
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -120,15 +107,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: "Invalid provider ID" }, { status: 400 })
     }
 
-     // ---------------------------------------------
-    // 🔥 NEW LOGIC: Find provider by _id OR userId
-    // ---------------------------------------------
-    const provider = await Provider.findOne({
-      $or: [
-        { _id: id },         // match provider's _id
-        { userId: id },      // match provider's userId
-      ],
-    }).lean()
+    const provider = await Provider.findById(id)
 
     if (!provider) {
       return NextResponse.json({ error: "Provider not found" }, { status: 404 })
@@ -150,7 +129,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       "email",
       "salesEmail",
       "phone",
-      "projectsCompleted",
       "adminContactPhone",
       "services",
       "technologies",
@@ -172,7 +150,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         updates[key] = body[key]
       }
     }
-    console.log("----------------updated portfolio items:::::::;",updates.portfolio)
 
     // Admin-only updates
     if (user.role === "admin") {
@@ -181,7 +158,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       if (body.isActive !== undefined) updates.isActive = body.isActive
     }
 
-    const updated = await Provider.findOneAndUpdate({ userId: id }, updates, { new: true })
+    const updated = await Provider.findByIdAndUpdate(id, updates, { new: true })
 
     return NextResponse.json({
       success: true,

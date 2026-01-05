@@ -7,14 +7,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { usePathname } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Twitter } from "lucide-react"
 
 export function Footer() {
   const pathname = usePathname()
   const isAgencyDashboard = pathname?.startsWith("/agency/dashboard")
   const [email, setEmail] = useState("")
-  const [cms, setCms] = useState<any>(null);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,18 +37,6 @@ export function Footer() {
       alert("Failed to subscribe. Please try again.")
     }
   }
-useEffect(() => {
-  const fetchCMS = async () => {
-    try {
-      const res = await fetch("/api/cms");
-      const data = await res.json();
-      if (data?.success) setCms(data.data); // assuming { success, data }
-    } catch (err) {
-      console.error("CMS fetch error:", err);
-    }
-  };
-  fetchCMS();
-}, []);
 
   return (
     <footer className="bg-[url('/images/background-footer.jpg')] bg-cover bg-no-repeat bg-center] dark">
@@ -168,21 +155,21 @@ useEffect(() => {
               <li>
                 <Link href="/browse" className=" hover:text-foreground">
                   <span className="flex flex-col font-semibold">
-                  Address <span className="font-normal">{cms?.contact?.address || "—"}</span>
+                  Address <span className="font-normal">123 Business Ave San Fancisco, CA 94105</span>
                   </span>
                 </Link>
               </li>
               <li>
                 <Link href="/providers" className=" hover:text-foreground">
                   <span className="flex flex-col font-semibold">
-                  Phone <span className="font-normal">{cms?.contact?.phone || "—"}</span>
+                  Phone <span className="font-normal">+1 (123) 456-7890</span>
                   </span>
                 </Link>
               </li>
               <li>
                 <Link href="/register" className=" hover:text-foreground">
                   <span className="flex flex-col font-semibold">
-                  Email <span className="font-normal">{cms?.contact?.email || "—"}</span>
+                  Email <span className="font-normal">hello@spark.com</span>
                   </span>
                 </Link>
               </li>
@@ -195,7 +182,7 @@ useEffect(() => {
         <div className="flex flex-col gap-1 justify-between items-center text-lg text-white font-medium">
           <div className="flex flex-wrap gap-6 mt-4 md:mt-0">
             <Link
-              href={cms?.contact?.facebookUrl || "#"}
+              href="https://facebook.com/sparkplatform"
               className="hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"
@@ -203,7 +190,7 @@ useEffect(() => {
             <img src="/images/Facebook.png" alt="" className="h-8"/>
             </Link>
             <Link
-              href={cms?.contact?.twitterUrl || "#"}
+              href="https://twitter.com/sparkplatform"
               className="hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"
@@ -211,7 +198,7 @@ useEffect(() => {
             <img src="/images/twitter.png" alt="" className="h-8"/>
             </Link>
             <Link
-              href={cms?.contact?.linkedinUrl || "#"}
+              href="https://linkedin.com/company/sparkplatform"
               className="hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"
@@ -219,7 +206,7 @@ useEffect(() => {
             <img src="/images/Linkedin.png" alt="" className="h-8"/>
             </Link>
             <Link
-              href={cms?.contact?.youtubeUrl || "#"}
+              href="https://youtube.com/sparkplatform"
               className="hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"

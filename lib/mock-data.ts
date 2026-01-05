@@ -252,7 +252,7 @@ export const mockProviderReviews: Review[] = [
     projectId: "1",
     seekerId: "1",
     providerId: "p1",
-    rating: 4.5,
+    rating: 5,
     qualityRating: 5,
     costRating: 4,
     timelinessRating: 5,
@@ -369,40 +369,40 @@ export const mockAdminStats: AdminStats = {
   monthlyGrowth: 12.5,
 }
 
-// export const mockReportedContent: ReportedContent[] = [
-//   {
-//     id: "1",
-//     type: "review",
-//     contentId: "1",
-//     reportedBy: "user123",
-//     reason: "Inappropriate content",
-//     description: "This review contains offensive language and false accusations.",
-//     status: "pending",
-//     createdAt: new Date("2024-01-20"),
-//   },
-//   {
-//     id: "2",
-//     type: "proposal",
-//     contentId: "2",
-//     reportedBy: "user456",
-//     reason: "Spam",
-//     description: "This proposal appears to be spam with unrealistic pricing.",
-//     status: "pending",
-//     createdAt: new Date("2024-01-19"),
-//   },
-//   {
-//     id: "3",
-//     type: "user",
-//     contentId: "p2",
-//     reportedBy: "user789",
-//     reason: "Fraudulent activity",
-//     description: "This agency has been using fake credentials and portfolio items.",
-//     status: "resolved",
-//     createdAt: new Date("2024-01-15"),
-//     resolvedAt: new Date("2024-01-18"),
-//     resolvedBy: "admin1",
-//   },
-// ]
+export const mockReportedContent: ReportedContent[] = [
+  {
+    id: "1",
+    type: "review",
+    contentId: "1",
+    reportedBy: "user123",
+    reason: "Inappropriate content",
+    description: "This review contains offensive language and false accusations.",
+    status: "pending",
+    createdAt: new Date("2024-01-20"),
+  },
+  {
+    id: "2",
+    type: "proposal",
+    contentId: "2",
+    reportedBy: "user456",
+    reason: "Spam",
+    description: "This proposal appears to be spam with unrealistic pricing.",
+    status: "pending",
+    createdAt: new Date("2024-01-19"),
+  },
+  {
+    id: "3",
+    type: "user",
+    contentId: "p2",
+    reportedBy: "user789",
+    reason: "Fraudulent activity",
+    description: "This agency has been using fake credentials and portfolio items.",
+    status: "resolved",
+    createdAt: new Date("2024-01-15"),
+    resolvedAt: new Date("2024-01-18"),
+    resolvedBy: "admin1",
+  },
+]
 
 export const mockSubscriptionStats: SubscriptionStats = {
   basic: 245,
@@ -500,98 +500,3 @@ export const mockProviders: Provider[] = [
     hourlyRate: 95,
   },
 ]
-
-export const mockFinancialSummary = {
-  totalRevenue: 185000,
-  totalExpenses: 92000,
-  netProfit: 93000,
-};
-
-export const mockQuarterlyFinancials = [
-  { quarter: "Q1 2025", revenue: 42000, expenses: 21000, net: 21000 },
-  { quarter: "Q2 2025", revenue: 52000, expenses: 25000, net: 27000 },
-  { quarter: "Q3 2025", revenue: 61000, expenses: 30000, net: 31000 },
-  { quarter: "Q4 2025", revenue: 70000, expenses: 32000, net: 38000 },
-];
-
-export const mockYearlyComparison = [
-  { year: "2023", revenue: 120000, expenses: 65000, profit: 55000 },
-  { year: "2024", revenue: 160000, expenses: 80000, profit: 80000 },
-  { year: "2025", revenue: 185000, expenses: 92000, profit: 93000 },
-];
-export const mockGrowthData = [
-  { month: "Jan", users: 120, providers: 15, requirements: 30 },
-  { month: "Feb", users: 180, providers: 22, requirements: 45 },
-  { month: "Mar", users: 250, providers: 30, requirements: 60 },
-  { month: "Apr", users: 320, providers: 40, requirements: 75 },
-  { month: "May", users: 400, providers: 52, requirements: 100 },
-  { month: "Jun", users: 490, providers: 60, requirements: 130 },
-];
-
-export const mockKpiStats = {
-  monthlyUserGrowth: 14,
-  monthlyProviderGrowth: 12,
-  requirementGrowth: 18,
-  churnRate: 3.2,
-};
-export const mockEngagement = [
-  { month: "Jan", engagement: 45 },
-  { month: "Feb", engagement: 52 },
-  { month: "Mar", engagement: 63 },
-  { month: "Apr", engagement: 78 },
-  { month: "May", engagement: 92 },
-  { month: "Jun", engagement: 105 },
-];
-
-export const mockProviderSuccess = [
-  { provider: "Techify", successRate: 82 },
-  { provider: "WebCraft", successRate: 75 },
-  { provider: "BuildHub", successRate: 91 },
-  { provider: "StudioMax", successRate: 68 },
-];
-
-export const mockConversion = [
-  { month: "Jan", conversions: 120 },
-  { month: "Feb", conversions: 180 },
-  { month: "Mar", conversions: 210 },
-  { month: "Apr", conversions: 260 },
-  { month: "May", conversions: 310 },
-  { month: "Jun", conversions: 350 },
-];
-
-export const mockHealth = [
-  { name: "Stability", value: 80 },
-  { name: "Performance", value: 70 },
-  { name: "Security", value: 90 },
-  { name: "Scalability", value: 65 },
-];
-export const mockReportedContent = [
-  {
-    id: "rep-001",
-    type: "User Profile",
-    reason: "Fake identity",
-    status: "pending",
-    createdAt: "2025-12-04",
-    reporter: "Amit",
-    itemId: "usr-12",
-  },
-  {
-    id: "rep-002",
-    type: "Project Requirement",
-    reason: "Spam posting",
-    status: "resolved",
-    createdAt: "2025-11-20",
-    reporter: "Neha",
-    itemId: "req-88",
-  },
-  {
-    id: "rep-003",
-    type: "Provider Profile",
-    reason: "Misleading description",
-    status: "dismissed",
-    createdAt: "2025-12-02",
-    reporter: "Karan",
-    itemId: "pro-44",
-  },
-];
-

@@ -99,7 +99,7 @@ export default async function HomePage() {
       <HomeHero cms={cms} />
 
       {/* Features */}
-      <section className="py-8 px-4">
+      <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-4xl font-bold text-center mb-4">How Spark Works</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -117,23 +117,24 @@ export default async function HomePage() {
       </section>
 
       {/* Service Categories - CMS Driven */}
-      <section className="py-20 px-4"
-        style={{
-          backgroundImage: "url('/images/category-background.png')"
-        }}
-      >
-        <div className="max-w-6xl mx-auto flex justify-center flex-col">
+      <section className="py-20 px-4 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10"></div>
+        <div className="absolute top-10 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+        <div className="absolute bottom-10 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-1 rounded-full border border-orangeButton mb-2">
-              <span className="text-xs font-medium text-slate-600 capitalize">Service Categories</span>
+            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200 mb-6">
+              <Sparkles className="h-4 w-4 text-blue-600" />
+              <span className="text-sm font-medium text-slate-600 uppercase tracking-wide">Service Categories</span>
             </div>
-            <h2 className="stext-mediun uppercase font-extrabold text-black ">
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6 leading-tight">
               The perfect partner for{" "}
-              <span className="text-blueButton">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 any project
               </span>
             </h2>
-            <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
+            <p className="text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed">
               Whatever your business challenge, browse our most in-demand service categories to find top-ranked
               companies in over <span className="font-semibold text-blue-600">2,000 specialized service lines</span>.
             </p>
@@ -149,17 +150,19 @@ export default async function HomePage() {
 
               return (
                 <div
-                  key={category._id}
-                  className={`group bg-white/70 backdrop-blur-sm rounded-4xl px-6 py-6 border pl-12 ${colors.hover} hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
+                  key={category.id}
+                  className={`group bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-slate-200/50 ${colors.hover} hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
                 >
-                  <div className="flex items-center gap-2 mb-4">
-                    <img src={category?.icon || "/images/icon-1.png"} alt="" className="h-10" />
+                  <div className="flex items-center gap-4 mb-6">
+                    <div
+                      className={`w-16 h-16 bg-gradient-to-br ${colors.bg} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg`}
+                    >
+                      <IconComponent className={`h-8 w-8 ${colors.text}`} />
+                    </div>
                     <h3 className={`text-2xl font-bold text-slate-800 group-hover:${colors.text} transition-colors`}>
-                      {category.title}
+                      {category.name}
                     </h3>
                   </div>
-
-                  {/* Subcategories */}
                   <div className="space-y-3">
                     {(category.children.slice(0, 6)|| []).map((sub: any, index: number) => (
                       <p key={index} className={`block text-slate-500 text-sm hover:${colors.text} hover:translate-x-2 transition-all duration-200 font-medium`}>
@@ -172,17 +175,9 @@ export default async function HomePage() {
                       </p>
                     ))}
                   </div>
-
                 </div>
-              );
+              )
             })}
-
-          </div>
-          <div className="flex justify-center items-center">
-            <Link href="/services">
-              <Button className="rounded-full py-2 text-lg font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1]" size={"lg"}>
-                Browse all services →
-              </Button></Link>
           </div>
         </div>
       </section>
@@ -191,17 +186,7 @@ export default async function HomePage() {
       {projects.length > 0 && (
         <section className="py-16 px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-1 rounded-full border border-orangeButton mb-2">
-                <span className="text-xs font-medium text-slate-600 capitalize">Newly added</span>
-              </div>
-              <h2 className="stext-mediun uppercase font-extrabold text-black ">
-                Recent Requirements
-              </h2>
-              <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
-                Discover opportunities from businesses lookking for your services
-              </p>
-            </div>
+            <h2 className="text-3xl font-bold text-center mb-12">Recent Project Opportunities</h2>
             <div className="grid md:grid-cols-3 gap-6">
               {projects.map((project: any) => (
                 <div key={project._id} className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300">
@@ -211,27 +196,19 @@ export default async function HomePage() {
                       <Badge variant="outline" className="rounded-full px-2 bg-gray-100 font-semibold text-[10px]">{project.category}</Badge>
                       <span className="text-sm text-muted-foreground text-orangeButton font-semibold">{project.timeline}</span>
                     </div>
-                    <h3 className="text-lg px-8 capitalize">{project.title}</h3>
-                  </div>
-                  <div className="pb-10 px-8">
-                    <p className="text-sm text-gray-500 mb-4 line-clamp-2">{project.description}</p>
-                    <div className="flex flex-col gap-4">
-                      <span className="font-bold text-lg text-blueButton">{project.budget}</span>
-                      <div>
-                        <Button variant="outline" size="sm" asChild className="bg-black text-white rounded-full text-xs">
-                          <Link href="/login">View Details →</Link>
-                        </Button>
-                      </div>
+                    <CardTitle className="text-lg">{project.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{project.description}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-primary">{project.budget}</span>
+                      <Button variant="outline" size="sm" asChild>
+                        <Link href="/login">View Details</Link>
+                      </Button>
                     </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               ))}
-            </div>
-            <div className="flex justify-center items-center">
-              <Link href="/browse">
-                <Button className="rounded-full py-2 mt-8 text-lg font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1]" size={"lg"}>
-                  Browse all requirements →
-                </Button></Link>
             </div>
           </div>
         </section>
@@ -239,19 +216,9 @@ export default async function HomePage() {
 
       {/* Top Providers - From API */}
       {providers.length > 0 && (
-        <section className="py-16 px-4 bg-blueBackground">
+        <section className="py-16 px-4 bg-muted/30">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-1 rounded-full border border-orangeButton mb-2">
-                <span className="text-xs font-medium text-slate-600 capitalize">Top Agency</span>
-              </div>
-              <h2 className="stext-mediun uppercase font-extrabold text-black ">
-                Top Providers
-              </h2>
-              <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
-                Discover opportunities from businesses lookking for your services
-              </p>
-            </div>
+            <h2 className="text-3xl font-bold text-center mb-12">Featured Agencies</h2>
             <div className="grid md:grid-cols-3 gap-6">
               {providers.map((provider: any) => (
                 <div key={provider._id} className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300 bg-white">
@@ -298,49 +265,23 @@ export default async function HomePage() {
                         </span>
                       </div>
                     </div>
-
-                    <h3 className="text-lg px-8 font-bold capitalize">{provider.name}</h3>
-                  </div>
-                  <div className="pb-10 px-8">
-                    <p className="text-sm text-gray-500 mb-4 line-clamp-2">{provider.description}</p>
-                    <div className="flex flex-col gap-4">
-
-                      {/* SERVICES BADGES */}
-                      <div className="flex flex-wrap gap-2">
-                        {provider.services?.length > 0 ? (
-                          provider.services.slice(0, 4).map((service: string, idx: number) => (
-                            <span
-                              key={idx}
-                              className="bg-gray-100 text-black px-2 py-1 rounded-full text-xs font-semibold"
-                            >
-                              {service}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="text-xs text-gray-400 italic">No services listed</span>
-                        )}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="font-semibold">{provider.rating?.toFixed(1) || "New"}</span>
+                        <span className="text-sm text-muted-foreground">({provider.reviewCount || 0} reviews)</span>
                       </div>
-
-                      {/* VIEW DETAILS BUTTON */}
-                      <div>
-                        <Button
-                          variant="outline"
-                          size="default"
-                          asChild
-                          className="bg-blueButton text-white rounded-full text-xs"
-                        >
-                          <Link href={`/provider/${provider.id || provider._id}`}>View Details →</Link>
-                        </Button>
-                      </div>
+                      <Button variant="outline" size="sm" asChild>
+                        <Link href={`/provider/${provider.id}`}>View Profile</Link>
+                      </Button>
                     </div>
-
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
             <div className="text-center mt-8">
-              <Button variant="outline" className="rounded-full py-2 mt-8 text-lg font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] text-white" size={"lg"} asChild>
-                <Link href="/providers">View All Providers</Link>
+              <Button variant="outline" size="lg" asChild>
+                <Link href="/providers">View All Agencies</Link>
               </Button>
             </div>
           </div>
@@ -348,23 +289,23 @@ export default async function HomePage() {
       )}
 
       {/* CTA Section */}
-      <section className="py-20 px-4">
+      <section className="py-20 px-4 bg-slate-800 text-white">
         <div className="max-w-4xl mx-auto text-center">
-          <h3 className="text-2xl md:text-4xl font-extralight">{cms?.getStartedTitle}</h3>
-          <p className="text-base max-w-sm mx-auto text-slate-500">
-            {cms?.getStartedSubtitle}
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to find your perfect partner?</h2>
+          <p className="text-xl text-slate-300 mb-8">
+            Join thousands of businesses who have found their ideal service providers on Spark.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
-            <Button size="lg" className="bg-orangeButton font-semibold text-sm text-white rounded-full hover:bg-gray-100" asChild>
-              <Link href="/register">Post a requirement</Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" className="bg-white text-slate-800 hover:bg-gray-100" asChild>
+              <Link href="/register">Get Started Free</Link>
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="bg-blueButton font-semibold text-sm text-white rounded-full hover:bg-gray-100"
+              className="border-white text-white hover:bg-white/10 bg-transparent"
               asChild
             >
-              <Link href="/providers">Become a provider</Link>
+              <Link href="/providers">Browse Agencies</Link>
             </Button>
           </div>
         </div>
