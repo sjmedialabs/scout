@@ -13,10 +13,10 @@ import { cn } from "@/lib/utils";
 
 interface FiltersState {
   serviceType: string
-  location: string
+  status: string
   minRating: number
   budgetRange: [number, number]
-  skills: string[]
+  title: ""
 }
 
 interface FiltersPanelProps {
@@ -27,10 +27,10 @@ interface FiltersPanelProps {
 export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) {
   const [filters, setFilters] = useState<FiltersState>({
     serviceType: "",
-    location: "",
+    status: "",
     minRating: 0,
     budgetRange: [0, 100000],
-    skills: [],
+    title:"",
   })
   const [skillInput, setSkillInput] = useState("")
 
@@ -43,8 +43,9 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
     "Data Analysis",
     "Consulting",
   ]
+  
 
-  const locations = ["Remote", "New York, NY", "San Francisco, CA", "London, UK", "Toronto, CA", "Sydney, AU"]
+  const statues = ["Open", "Closed", "shortlisted", "negotation", "Allocated"]
 
   const handleFilterChange = (key: keyof FiltersState, value: any) => {
     const newFilters = { ...filters, [key]: value }
@@ -52,26 +53,26 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
     onFiltersChange(newFilters)
   }
 
-  const addSkill = () => {
-    if (skillInput.trim() && !filters.skills.includes(skillInput.trim())) {
-      const newSkills = [...filters.skills, skillInput.trim()]
-      handleFilterChange("skills", newSkills)
-      setSkillInput("")
-    }
-  }
+  // const addSkill = () => {
+  //   if (skillInput.trim() && !filters.skills.includes(skillInput.trim())) {
+  //     const newSkills = [...filters.skills, skillInput.trim()]
+  //     handleFilterChange("skills", newSkills)
+  //     setSkillInput("")
+  //   }
+  // }
 
-  const removeSkill = (skill: string) => {
-    const newSkills = filters.skills.filter((s) => s !== skill)
-    handleFilterChange("skills", newSkills)
-  }
+  // const removeSkill = (skill: string) => {
+  //   const newSkills = filters.skills.filter((s) => s !== skill)
+  //   handleFilterChange("skills", newSkills)
+  // }
 
   const clearFilters = () => {
     const clearedFilters: FiltersState = {
       serviceType: "",
-      location: "",
+      status: "",
       minRating: 0,
       budgetRange: [0, 100000],
-      skills: [],
+      title: "",
     }
     setFilters(clearedFilters)
     onFiltersChange(clearedFilters)
@@ -110,13 +111,13 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
 
         {/* Location */}
         <div className="space-y-2">
-          <Label className="text-[14px] mb-0 text-[#98A0B4] font-semibold">Location</Label>
-          <Select value={filters.location} onValueChange={(value) => handleFilterChange("location", value)}>
+          <Label className="text-[14px] mb-0 text-[#98A0B4] font-semibold">Status</Label>
+          <Select value={filters.status} onValueChange={(value) => handleFilterChange("status", value)}>
             <SelectTrigger className="border-2 data-[placeholder]:text-[#98A0B4] border-[#D0D5DD] rounded-full text-[12px]">
               <SelectValue placeholder="Select location" />
             </SelectTrigger>
             <SelectContent>
-              {locations.map((location) => (
+              {statues.map((location) => (
                 <SelectItem key={location} value={location}>
                   {location}
                 </SelectItem>
@@ -126,7 +127,7 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
         </div>
 
         {/* Rating */}
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           <Label className="text-[14px]  mb-2 text-[#98A0B4] font-semibold">Minimum Rating: <span className="text-end ml-auto text-[#2B67F6] text-[12px]">{filters.minRating}/5</span></Label>
           <Slider
             value={[filters.minRating]}
@@ -142,7 +143,7 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
               "[&_[data-radix-slider-thumb]]:focus:ring-[#2B67F6]" // optional: focus ring
             )}
           />
-        </div>
+        </div> */}
 
         {/* Budget Range */}
         <div className="space-y-2">
@@ -161,20 +162,20 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
 
         {/* Skills */}
         <div className="space-y-2">
-          <Label className="text-[14px]  mb-0 text-[#98A0B4] font-semibold">Skills</Label>
+          <Label className="text-[14px]  mb-0 text-[#98A0B4] font-semibold">Title</Label>
           <div className="flex gap-2">
             <Input
-              placeholder="Add skill..."
-              value={skillInput}
-              onChange={(e) => setSkillInput(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && addSkill()}
+              placeholder="Requirement title..."
+              value={filters.title}
+              onChange={(e) => handleFilterChange("title",e.target.value)}
+              // onKeyPress={(e) => e.key === "Enter" && addSkill()}
               className="border-2 border-[#D0D5DD] rounded-full placeholder:text-[#98A0B4]"
             />
-            <Button onClick={addSkill} size="sm" className="bg-[#F54A0C] rounded-full mt-1 hover:bg-[#F54A0C] active:[#F54A0C]">
+            {/* <Button onClick={addSkill} size="sm" className="bg-[#F54A0C] rounded-full mt-1 hover:bg-[#F54A0C] active:[#F54A0C]">
               Add
-            </Button>
+            </Button> */}
           </div>
-          {filters.skills.length > 0 && (
+          {/* {filters.skills.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {filters.skills.map((skill) => (
                 <Badge key={skill} variant="secondary" className="flex items-center gap-1">
@@ -183,7 +184,7 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
                 </Badge>
               ))}
             </div>
-          )}
+          )} */}
         </div>
       </CardContent>
     </Card>

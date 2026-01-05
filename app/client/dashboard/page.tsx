@@ -353,11 +353,12 @@ export default function ClientDashboard() {
   setFailed(false)
 
   try {
-    const [notificationsRes, vendorsRes, proposalsRes,reqRes] = await Promise.all([
+    const [notificationsRes, vendorsRes, proposalsRes,reqRes,shortlistVendorsRes] = await Promise.all([
       fetch("/api/notifications"),
       fetch("/api/providers"),
       fetch(`/api/proposals/${user?.id}`),
-      fetch(`/api/requirements/${user?.id}`)
+      fetch(`/api/requirements/${user?.id}`),
+      fetch("/api/wishlist"),
     ])
 
     //  If ANY request failed → throw error
@@ -365,10 +366,11 @@ export default function ClientDashboard() {
     //   throw new Error("One or more requests failed")
     // }
 
-    const [notificationsData, vendorsData,reqData] = await Promise.all([
+    const [notificationsData, vendorsData,reqData,shortlistVendorsData] = await Promise.all([
       notificationsRes.json(),
       vendorsRes.json(),
-      reqRes.json()
+      reqRes.json(),
+      shortlistVendorsRes.json()
     ])
     let proposalsData = { proposals: [] }
 
@@ -381,6 +383,7 @@ export default function ClientDashboard() {
       throw new Error("Failed to fetch proposals")
     }
 
+    console.log("Shortlisted vendors data:::::",shortlistVendorsData.data.length);
 
     setNotifications(
       notificationsData.data.filter((item: any) => !item.isRead)
@@ -412,7 +415,11 @@ export default function ClientDashboard() {
 
  
     
-    setStatsValues((prev)=>({...prev,matchedVendors:matchedVendors,proposalCount:proposalsData.proposals.length,avgProposalAmount:avgBudget}))
+    setStatsValues((prev)=>({...prev,
+      matchedVendors:matchedVendors,
+      proposalCount:proposalsData.proposals.length,
+      avgProposalAmount:avgBudget,
+      shorlistedVendors:shortlistVendorsData.data.length}))
 
     let proposalsLessThanFiveThousand=0;
     let proposalsLessThanTenThousand=0;

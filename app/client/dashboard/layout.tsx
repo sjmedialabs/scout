@@ -1,19 +1,53 @@
 "use client"
 
-import { useState } from "react"
+import { useState,useEffect } from "react"
 import { Menu } from "lucide-react"
 import ClientSidebar from "@/components/seeker/side-bar"
+import { useAuth } from "@/contexts/auth-context"
+import { useRouter } from "next/navigation"
 
 export default function ClientDashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+
+  // const loadUserDetails=async()=>{
+  //   try{
+  //      const res=await fetch(`/api/users/${user?.id}`)
+  //      const data=await res.json();
+       
+  //   }catch(error){
+  //     console.log(error)
+  //   }
+  // }
+
+ 
+  const { user, loading } = useAuth()
+  const router=useRouter();
+  console.log('Fetched user details for the side bar is:::',user)
+
+
+  
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const user = { name: "Client User" } // replace with real user
+  const[userDetais,setUserDetails]=useState();
+   const tempuser = { name: "Client User" } // replace with real user
+
+   useEffect(() => {
+      if (!loading && (!user || user.role !== "client")) {
+        router.push("/login")
+      }
+      // if(user && !loading){
+      //   loadUserDetails()
+      // }
+    }, [user, loading, router])
+  
+   
 
   return (
-    <div className="flex h-screen w-full overflow-hidden">
+    <>
+     {(!loading &&  user) &&(
+       <div className="flex h-screen w-full overflow-hidden">
       <ClientSidebar
         user={user}
         isOpen={sidebarOpen}
@@ -34,5 +68,7 @@ export default function ClientDashboardLayout({
         </main>
       </div>
     </div>
+     )}
+    </>
   )
 }

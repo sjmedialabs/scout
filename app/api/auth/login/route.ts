@@ -66,6 +66,7 @@ export async function POST(request: NextRequest) {
       name: user.name,
       role: user.role,
       company: user.company,
+      isActive:user.isActive,
       isVerified: user.isVerified,
       lastLogin: user.lastLogin,
       createdAt: user.createdAt,

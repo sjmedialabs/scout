@@ -76,8 +76,10 @@ import { CiCalendar } from "react-icons/ci";
 import { Content } from "next/font/google"
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { FaArrowRightLong } from "react-icons/fa6";
+import { toast } from "@/lib/toast"
 
 const WishListPage=()=>{
+    const router=useRouter();
     const[loading,setLoading]=useState(true);
     const[failed,setFailed]=useState(false)
     const[wishListData,setWishListData]=useState([]);
@@ -103,6 +105,22 @@ const WishListPage=()=>{
    useEffect(()=>{
     loadData();
    },[])
+   const handleRemove=async(recievedId:string)=>{
+      try{
+        const res=await fetch(`/api/wishlist/${recievedId}`,{
+            method:"DELETE",
+            headers:{"Content-Type":"application/json"},
+        })        
+        if(res.ok){
+            setWishListData((prev)=>prev.filter((eachItem)=>eachItem.agency._id!==recievedId))
+            toast.success("Successfully removed from the wishlist")
+        }
+ 
+      }catch(error){
+        console.log("Failed to delete the provider from")
+        // toast.error(`Failed to remove the provider ${error.message}`)
+      }
+   }
    console.log("Fetched Wish list data is:::",wishListData)
     return(
         <div  className="space-y-6 p-3 md:p-6">
@@ -111,7 +129,7 @@ const WishListPage=()=>{
               <p className="text-lg text-[#656565] my-custom-class mt-0">Compare vendors side-by-side to make informed decisions</p>
             </div>
 
-            {((wishListData).length===0 && !loading && !failed) && (
+            {((wishListData || []).length===0 && !loading && !failed) && (
                 <div>
                     <p className="text-xl text-[#6b6b6b] font-medium">No providers are added to wishlist</p>
                 </div>
@@ -131,7 +149,7 @@ const WishListPage=()=>{
             )}
 
             {
-                (wishListData.length!==0 && !loading && !failed) &&(
+                ((wishListData || []).length!==0 && !loading && !failed) &&(
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                     {wishListData.map((provider)=>(
                          <Card
@@ -215,11 +233,16 @@ const WishListPage=()=>{
                             </p>
     
                             <div className="mt-3 flex flex-col sm:flex-row gap-2">
-                                <Button className="w-full sm:w-[140px] bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white" onClick={()=>(handleViewProvider(provider.id))}>
+                                <a href={`/provider/${provider.agency._id}`} target="_blank">
+                                <Button className="w-full sm:w-[140px] bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white">
                                 View Profile
                                 </Button>
+                                </a>
                             <Button className="w-full sm:w-[160px] bg-[#4d4d4d] rounded-3xl text-white">
                                 Contact Provider
+                            </Button>
+                            <Button className="rounded-full bg-red-500 text-[#fff] hover:bg-red-500 active:bg-red-500" onClick={()=>handleRemove(provider.agency._id)}>
+                                Delete
                             </Button>
                             </div>
                         </div>
