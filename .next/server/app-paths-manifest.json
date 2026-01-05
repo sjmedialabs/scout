@@ -1,5 +1,4 @@
 {
-  "/search/page": "app/search/page.js",
-  "/providers/page": "app/providers/page.js",
-  "/provider/[id]/page": "app/provider/[id]/page.js"
+  "/reviews/respond/page": "app/reviews/respond/page.js",
+  "/reviews/page": "app/reviews/page.js"
 }

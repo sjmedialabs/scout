@@ -3,24 +3,18 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { RespondToReviewModal } from "@/components/provider/respond-to-review-modal"
+import RespondToReviewModal from "@/components/reviews/RespondToReviewModal"
 import { mockProviderReviews } from "@/lib/mock-data"
 import { toast } from "@/hooks/use-toast"
 import type { Review } from "@/lib/types"
 import StarRating from "@/components/ui/star-rating"
 import { MessageSquareText } from "lucide-react"
-import { useRouter } from "next/navigation"
 
 
 export default function ReviewsPage() {
   const [selectedReview, setSelectedReview] = useState<Review | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const router = useRouter()
-
-  const handleRespondClick = (review: Review) => {
-    setSelectedReview(review)
-    setIsModalOpen(true)
-  }
+  
 
   const handleSubmitResponse = () => {
     toast({
@@ -171,8 +165,11 @@ export default function ReviewsPage() {
 
       {/* ACTION */}
       <div className="flex justify-center sm:justify-start">
-  <button
-    onClick={() => router.push("/reviews/respond")}
+      <button
+        onClick={() => {
+      setSelectedReview(review)
+      setIsModalOpen(true)
+    }}
     className="flex w-fit items-center gap-2 px-4 py-2 text-sm rounded-full
                border border-slate-400 text-[#FF4D00] hover:bg-[#FFF1EB]"
   >
@@ -186,12 +183,21 @@ export default function ReviewsPage() {
       </div>
 
       {/* MODAL */}
+      {isModalOpen && selectedReview && (
       <RespondToReviewModal
-        review={selectedReview}
-        isOpen={isModalOpen}
+        open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSubmit={handleSubmitResponse}
+        review={{
+          clientName: "Anonymous Client",
+          date: new Date(selectedReview.createdAt).toLocaleDateString(),
+          reviewText: selectedReview.comment,
+          quality: selectedReview.rating,
+          value: selectedReview.rating,
+          timeline: selectedReview.rating,
+        }}
       />
+    )}
     </div>
   )
 }
+
