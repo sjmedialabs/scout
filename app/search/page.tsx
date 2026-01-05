@@ -16,8 +16,18 @@ export default function SearchPage() {
 
   const query = searchParams.get("q") || ""
   const [searchQuery, setSearchQuery] = useState(query)
-  const [results, setResults] = useState<any[]>([])
+ 
   const [loading, setLoading] = useState(false)
+
+  type SearchResults = {
+  services: any[]
+  agencies: any[]
+}
+
+const [results, setResults] = useState<SearchResults>({
+  services: [],
+  agencies: [],
+})
 
   
   useEffect(() => {
@@ -36,7 +46,7 @@ export default function SearchPage() {
       console.error("Search error:", error)
     } finally {
       setLoading(false)
-    }, 500)
+    }
   }
 
   const handleSearch = (e: React.FormEvent) => {
@@ -47,9 +57,9 @@ export default function SearchPage() {
   }
 
   const providers: Provider[] = [
-    ...results.services,
-    ...results.agencies,
-  ]
+  ...(Array.isArray(results.services) ? results.services : []),
+  ...(Array.isArray(results.agencies) ? results.agencies : []),
+]
 
 
   return (
