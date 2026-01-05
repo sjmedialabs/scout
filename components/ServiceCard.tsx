@@ -91,7 +91,7 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
 
                 {/* Tags */}
                 <div className="flex flex-wrap gap-2">
-                    {p.tags.map((tag) => (
+                    {Array.isArray(p.tags) && p.tags.map((tag) => (
                         <span 
                         key={tag} 
                         className="inline-flex items-center rounded-full
