@@ -7,70 +7,122 @@ import { getCurrentUser } from "@/lib/auth/jwt"
 import mongoose from "mongoose"
 import Requirement from "@/models/Requirement"
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  req: NextRequest
+) {
   try {
-    await connectToDatabase()
-
-    const { searchParams } = new URL(request.url)
-    const providerId = searchParams.get("providerId")
-    const limit = Number.parseInt(searchParams.get("limit") || "20")
-    const page = Number.parseInt(searchParams.get("page") || "1")
-
-    const query: any = { isPublic: true }
-
-    if (providerId && mongoose.Types.ObjectId.isValid(providerId)) {
-      query.providerId = providerId
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      )
     }
 
-    const skip = (page - 1) * limit
+    await connectToDatabase()
 
-    const [reviews, total] = await Promise.all([
-      Review.find(query)
-        .populate("clientId", "name company")
-        .populate("providerId", "name logo")
-        .populate("projectId", "title category")
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
-      Review.countDocuments(query),
+    const id  = user.userId
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { error: "Invalid provider ID" },
+        { status: 400 }
+      )
+    }
+
+    const providerObjectId = new mongoose.Types.ObjectId(id)
+
+    const reviews = await Review.aggregate([
+      {
+        $match: {
+          providerId: providerObjectId,
+          isPublic: true,
+        },
+      },
+
+      // 🔹 Join Seeker (client details)
+      {
+        $lookup: {
+          from: "seekers",
+          localField: "clientId",
+          foreignField: "userId",
+          as: "client",
+        },
+      },
+      {
+        $unwind: {
+          path: "$client",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      // 🔹 Join Requirement (project details)
+      {
+        $lookup: {
+          from: "requirements",
+          localField: "projectId",
+          foreignField: "_id",
+          as: "project",
+        },
+      },
+      {
+        $unwind: {
+          path: "$project",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      // 🔹 Shape final response
+      {
+        $project: {
+          rating: 1,
+          qualityRating: 1,
+          scheduleRating: 1,
+          costRating: 1,
+          willingToReferRating: 1,
+          title: 1,
+          content: 1,
+          pros: 1,
+          cons: 1,
+          keyHighLights: 1,
+          createdAt: 1,
+
+          client: {
+            name: "$client.name",
+            companyName: "$client.companyName",
+            industry: "$client.industry",
+            location: "$client.location",
+            companySize: "$client.companySize",
+            isVerified: "$client.isVerified",
+            position: "$client.position",
+          },
+
+          project: {
+            title: "$project.title",
+            category: "$project.category",
+            description: "$project.description",
+            budgetMin: "$project.budgetMin",
+            budgetMax: "$project.budgetMax",
+          },
+        },
+      },
+
+      {
+        $sort: { createdAt: -1 },
+      },
     ])
 
-    const formattedReviews = reviews.map((r: any) => ({
-      id: r._id.toString(),
-      providerId: r.providerId?._id?.toString(),
-      providerName: r.providerId?.name,
-      providerLogo: r.providerId?.logo,
-      clientName: r.clientId?.name || "Anonymous",
-      clientCompany: r.clientId?.company,
-      projectTitle: r.projectId?.title,
-      projectCategory: r.projectId?.category,
-      rating: r.rating,
-      qualityRating: r.qualityRating,
-      scheduleRating: r.scheduleRating,
-      costRating: r.costRating,
-      willingToReferRating: r.willingToReferRating,
-      title: r.title,
-      content: r.content,
-      pros: r.pros,
-      cons: r.cons,
-      isVerified: r.isVerified,
-      response: r.response,
-      createdAt: r.createdAt,
-    }))
-
     return NextResponse.json({
-      reviews: formattedReviews,
-      pagination: {
-        total,
-        page,
-        limit,
-        pages: Math.ceil(total / limit),
-      },
+      success: true,
+      count: reviews.length,
+      reviews,
     })
   } catch (error) {
-    console.error("Error fetching reviews:", error)
-    return NextResponse.json({ error: "Failed to fetch reviews" }, { status: 500 })
+    console.error("Error fetching provider reviews:", error)
+    return NextResponse.json(
+      { error: "Failed to fetch reviews" },
+      { status: 500 }
+    )
   }
 }
 
