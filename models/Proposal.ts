@@ -2,13 +2,12 @@ import mongoose, { Schema, type Document, type Model } from "mongoose"
 
 export interface IProposal extends Document {
   _id: mongoose.Types.ObjectId
-  clientId: mongoose.Types.ObjectId
-  agencyId: mongoose.Types.ObjectId
-  requirementId: mongoose.Types.ObjectId
+  projectId: mongoose.Types.ObjectId
+  providerId: mongoose.Types.ObjectId
+  userId: mongoose.Types.ObjectId
   coverLetter: string
   proposedBudget: number
   proposedTimeline: string
-  proposalDescription?:string
   milestones?: {
     title: string
     description: string
@@ -16,7 +15,7 @@ export interface IProposal extends Document {
     duration: string
   }[]
   attachments?: string[]
-  status: "pending" | "viewed" | "shortlisted" | "accepted" | "rejected" | "withdrawn" | "negotation"
+  status: "pending" | "viewed" | "shortlisted" | "accepted" | "rejected" | "withdrawn"
   clientViewed: boolean
   clientViewedAt?: Date
   clientResponded: boolean
@@ -41,18 +40,17 @@ const MilestoneSchema = new Schema({
 
 const ProposalSchema = new Schema<IProposal>(
   {
-    clientId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    agencyId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    requirementId: { type: Schema.Types.ObjectId, ref: "Requirement", required: true },
+    projectId: { type: Schema.Types.ObjectId, ref: "Project", required: true },
+    providerId: { type: Schema.Types.ObjectId, ref: "Provider", required: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     coverLetter: { type: String, required: true },
     proposedBudget: { type: Number, required: true },
-    proposalDescription:{type:String},
     proposedTimeline: { type: String, required: true },
     milestones: [MilestoneSchema],
     attachments: [{ type: String }],
     status: {
       type: String,
-      enum: ["pending", "viewed", "shortlisted", "accepted", "rejected", "withdrawn","negotation"],
+      enum: ["pending", "viewed", "shortlisted", "accepted", "rejected", "withdrawn"],
       default: "pending",
     },
     clientViewed: { type: Boolean, default: false },
