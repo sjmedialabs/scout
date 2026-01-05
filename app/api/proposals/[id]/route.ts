@@ -3,72 +3,142 @@ import { connectToDatabase } from "@/lib/mongodb"
 import Proposal from "@/models/Proposal"
 import Project from "@/models/Project"
 import Provider from "@/models/Provider"
+import Seeker from "@/models/Seeker"
 import { getCurrentUser } from "@/lib/auth/jwt"
 import mongoose from "mongoose"
+import Requirement from "@/models/Requirement"
+import Notification from "@/models/Notification"
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const user = await getCurrentUser()
     if (!user) {
-      return NextResponse.json({ error: "Authentication required" }, { status: 401 })
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      )
     }
 
     await connectToDatabase()
 
     const { id } = await params
 
+    // ✅ Validate ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json({ error: "Invalid proposal ID" }, { status: 400 })
+      return NextResponse.json(
+        { error: "Invalid ID" },
+        { status: 400 }
+      )
     }
 
-    const proposal = await Proposal.findById(id)
-      .populate("projectId", "title category budget clientId")
-      .populate("providerId", "name logo rating reviewCount location services")
-      .lean()
+    const objectId = new mongoose.Types.ObjectId(id)
+    console.log("Incoming ID:", id)
+console.log("Is valid ObjectId:", mongoose.Types.ObjectId.isValid(id));
 
-    if (!proposal) {
-      return NextResponse.json({ error: "Proposal not found" }, { status: 404 })
+    // ✅ Fetch ALL matching proposals
+   const proposals = await Proposal.find({
+  $or: [
+    { _id: objectId },
+    { requirementId: objectId },
+    { clientId: objectId },
+    { agencyId: objectId },
+  ],
+})
+  .populate({
+    path: "requirementId",
+    select:
+      "title category description budgetMin budgetMax timeline documentUrl status createdAt",
+  })
+  .lean()
+
+  if (!proposals.length) {
+      return NextResponse.json(
+        { error: "No proposals found" },
+        { status: 404 }
+      )
     }
 
-    // Mark as viewed if client is viewing
-    if (user.role === "client" && !(proposal as any).clientViewed) {
-      await Proposal.findByIdAndUpdate(id, {
-        clientViewed: true,
-        clientViewedAt: new Date(),
+//getting unique agency ids from proposals
+      const agencyUserIds = [
+      ...new Set(proposals.map((p) => p.agencyId.toString())),
+      ]
+
+      const providers = await Provider.find({
+        userId: { $in: agencyUserIds },
       })
+        .select(
+          "userId name logo coverImage rating reviewCount location services technologies"
+        )
+        .lean()
+
+      const providerMap = new Map(
+        providers.map((p) => [p.userId.toString(), p])
+      )
+
+
+    
+
+    // ✅ Mark proposals as viewed if client
+    if (user.role === "client") {
+      await Proposal.updateMany(
+        {
+          _id: { $in: proposals.map((p) => p._id) },
+          clientViewed: false,
+        },
+        {
+          $set: {
+            clientViewed: true,
+            clientViewedAt: new Date(),
+          },
+        }
+      )
     }
 
+    // ✅ Format response
     return NextResponse.json({
-      proposal: {
-        id: (proposal as any)._id.toString(),
-        projectId: (proposal as any).projectId?._id?.toString(),
-        projectTitle: (proposal as any).projectId?.title,
-        projectCategory: (proposal as any).projectId?.category,
-        projectBudget: (proposal as any).projectId?.budget,
-        providerId: (proposal as any).providerId?._id?.toString(),
-        providerName: (proposal as any).providerId?.name,
-        providerLogo: (proposal as any).providerId?.logo,
-        providerRating: (proposal as any).providerId?.rating,
-        providerLocation: (proposal as any).providerId?.location,
-        providerServices: (proposal as any).providerId?.services,
-        coverLetter: (proposal as any).coverLetter,
-        proposedBudget: (proposal as any).proposedBudget,
-        proposedTimeline: (proposal as any).proposedTimeline,
-        milestones: (proposal as any).milestones,
-        status: (proposal as any).status,
-        clientViewed: true,
-        clientViewedAt: (proposal as any).clientViewedAt || new Date(),
-        clientResponded: (proposal as any).clientResponded,
-        conversationStarted: (proposal as any).conversationStarted,
-        createdAt: (proposal as any).createdAt,
-        updatedAt: (proposal as any).updatedAt,
-      },
-    })
+  count: proposals.length,
+  proposals: proposals.map((p) => ({
+    // Proposal details
+    id: p._id.toString(),
+    coverLetter: p.coverLetter,
+    proposalDescription: p.proposalDescription,
+    proposedBudget: p.proposedBudget,
+    proposedTimeline: p.proposedTimeline,
+    milestones: p.milestones,
+    status: p.status,
+
+    createdAt: p.createdAt,
+    updatedAt: p.updatedAt,
+
+    // Requirement details
+    requirement: p.requirementId && {
+      id: p.requirementId._id.toString(),
+      title: p.requirementId.title,
+      category: p.requirementId.category,
+      description: p.requirementId.description,
+      budgetMin: p.requirementId.budgetMin,
+      budgetMax: p.requirementId.budgetMax,
+      timeline: p.requirementId.timeline,
+      documentUrl: p.requirementId.documentUrl,
+    },
+
+    // ✅ Provider details (joined manually)
+    agency: providerMap.get(p.agencyId.toString()) || null,
+  })),
+})
+
   } catch (error) {
-    console.error("Error fetching proposal:", error)
-    return NextResponse.json({ error: "Failed to fetch proposal" }, { status: 500 })
+    console.error("Error fetching proposals:", error)
+    return NextResponse.json(
+      { error: "Failed to fetch proposals" },
+      { status: 500 }
+    )
   }
 }
+
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -85,7 +155,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: "Invalid proposal ID" }, { status: 400 })
     }
 
-    const proposal = await Proposal.findById(id).populate("projectId", "clientId")
+    const proposal = await Proposal.findById(id).populate("requirementId", "clientId")
 
     if (!proposal) {
       return NextResponse.json({ error: "Proposal not found" }, { status: 404 })
@@ -97,7 +167,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     // Agency can update their proposal content
     if (user.role === "agency") {
       const provider = await Provider.findOne({ userId: user.userId })
-      if (!provider || proposal.providerId.toString() !== provider._id.toString()) {
+      if (!provider || proposal.agencyId.toString() !== user.userId) {
         return NextResponse.json({ error: "Not authorized" }, { status: 403 })
       }
 
@@ -110,7 +180,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     // Client can update proposal status
     if (user.role === "client") {
-      const project = proposal.projectId as any
+      const project = proposal.requirementId as any
       if (project.clientId.toString() !== user.userId) {
         return NextResponse.json({ error: "Not authorized" }, { status: 403 })
       }
@@ -119,6 +189,31 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         updates.status = body.status
         updates.clientResponded = true
         updates.clientRespondedAt = new Date()
+        //for the posted requirement status update
+        if(body.status.toLocaleLowerCase()==="shortlisted"){
+           await Requirement.findByIdAndUpdate(proposal.requirementId, {status:body.status}, { new: true })
+        }
+        if(body.status.toLocaleLowerCase()==="accepted"){
+          console.log("----Accepted proposal:::")
+          const requirementStaus=await Requirement.findById(proposal.requirementId)
+          if(requirementStaus?.status!=="Allocated"){
+              await Requirement.findByIdAndUpdate(proposal.requirementId, {status:"Allocated",allocatedToId:proposal.agencyId}, { new: true })
+          }
+          else{
+            return NextResponse.json({ error: "Requirement already allocated" }, { status: 400 })
+          }
+          
+          // await Proposal.updateMany(
+          //   {
+          //     requirementId:proposal.requirementId,
+          //     _id: { $ne:id } // exclude accepted proposal
+          //   },
+          //   {
+          //     $set: { status: "rejected" } 
+          //   }
+          // )
+
+        }
       }
 
       if (body.conversationStarted !== undefined) {
@@ -136,6 +231,27 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const updated = await Proposal.findByIdAndUpdate(id, updates, { new: true })
+     const seeker =user.role==="client"?await Seeker.findOne({ userId: user.userId }) : await Provider.findOne({ userId: user.userId });
+     const project=await Requirement.findById(proposal.requirementId)
+     console.log("----project in the put---",project)
+
+    //  if(user.role==="client"){
+    //   seeker= await Seeker.findOne({ userId: user.userId })
+    //  }
+    //  if(user.role==="agency"){
+    //   seeker=await Provider.findOne({ userId: user.userId })
+    //  }
+    //Notification creation
+     await Notification.create({
+          userId: proposal?.agencyId,                
+          triggeredBy: user.userId,         
+          title: "Proposal status update !",
+          message: `${seeker?.companyName || seeker?.name} ${body.status} your proposal for the ${project?.title} project.`,
+          type: "proposal_updated",
+          userRole: "client",
+          linkUrl: `/agency/dashboard/proposals`,
+          sourceId: proposal._id,
+        })
 
     return NextResponse.json({
       success: true,

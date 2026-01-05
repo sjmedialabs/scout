@@ -4,100 +4,91 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Edit, Check, X, CreditCard, PlusCircle } from "lucide-react";
-
-// ------------------------------
-// MOCK DATA (Replace with API)
-// ------------------------------
-const mockPlans = [
-  {
-    id: "plan-basic",
-    name: "Basic Plan",
-    price: 99,
-    duration: "Monthly",
-    features: ["Limited Access", "Email Support"],
-    status: "active",
-  },
-  {
-    id: "plan-pro",
-    name: "Pro Plan",
-    price: 199,
-    duration: "Monthly",
-    features: ["Full Access", "Priority Support", "Faster Matching"],
-    status: "active",
-  },
-  {
-    id: "plan-enterprise",
-    name: "Enterprise Plan",
-    price: 499,
-    duration: "Yearly",
-    features: ["Dedicated Manager", "API Access", "Unlimited Usage"],
-    status: "inactive",
-  },
-];
+import { Edit, Check, X, CreditCard, PlusCircle, Loader2 } from "lucide-react";
+import { ISubscription } from "@/lib/types";
 
 export default function SubscriptionPlansPage() {
-  const [plans, setPlans] = useState(mockPlans);
+  const [plans, setPlans] = useState<ISubscription[]>([]);
+  const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState(null);
   const [newPlan, setNewPlan] = useState({
-    name: "",
-    price: "",
-    duration: "Monthly",
+    title: "",
+    pricePerMonth: "",
+    pricePerYear: "",
+    description: "",
     features: "",
+    yearlySubscription: false,
   });
 
-  /*
-  ---------------------------------------------------
-  OPTIONAL: Fetch subscription plans from backend API
-  ---------------------------------------------------
   useEffect(() => {
-    async function loadPlans() {
-      const res = await fetch("/api/admin/subscription-plans");
-      const data = await res.json();
-      setPlans(data);
-    }
-    loadPlans();
+    fetchPlans();
   }, []);
-  */
+
+  const fetchPlans = async () => {
+    try {
+      const res = await fetch("/api/subscription");
+      if (res.ok) {
+        const data = await res.json();
+        setPlans(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch plans", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ------------------------------
   // ADD NEW PLAN
   // ------------------------------
-  const addPlan = () => {
-    if (!newPlan.name || !newPlan.price) return;
+  const addPlan = async () => {
+    if (!newPlan.title || !newPlan.pricePerMonth) return;
 
     const newData = {
-      id: "plan-" + Math.random().toString(36).substring(2, 8),
-      name: newPlan.name,
-      price: parseFloat(newPlan.price),
-      duration: newPlan.duration,
+      title: newPlan.title,
+      pricePerMonth: parseFloat(newPlan.pricePerMonth),
+      pricePerYear: parseFloat(newPlan.pricePerYear) || parseFloat(newPlan.pricePerMonth) * 12,
+      description: newPlan.description,
       features: newPlan.features.split(",").map((f) => f.trim()),
-      status: "active",
+      yearlySubscription: newPlan.yearlySubscription,
+      isActive: true,
     };
 
-    setPlans((prev) => [...prev, newData]);
-    setNewPlan({ name: "", price: "", duration: "Monthly", features: "" });
+    const res = await fetch("/api/subscription", {
+      method: "POST",
+      body: JSON.stringify(newData),
+    });
 
-    // Future API:
-    // await fetch("/api/admin/subscription-plans/add", { method: "POST", body: JSON.stringify(newData) });
+    if (res.ok) {
+      const created = await res.json();
+      setPlans((prev) => [...prev, created]);
+      setNewPlan({ title: "", pricePerMonth: "", pricePerYear: "", description: "", features: "", yearlySubscription: false });
+    }
   };
 
   // ------------------------------
   // EDIT PLAN
   // ------------------------------
-  const saveEdit = (id: string, updated: any) => {
-    setPlans((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, ...updated } : p))
-    );
-    setEditingId(null);
+  const saveEdit = async (id: string, updated: Partial<ISubscription>) => {
+    const res = await fetch(`/api/subscription/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updated),
+    });
+
+    if (res.ok) {
+      const result = await res.json();
+      // Map API response (id) back to frontend interface (_id)
+      const updatedPlan = { ...result.data, _id: result.data.id };
+      setPlans((prev) =>
+        prev.map((p) => (p._id === id ? updatedPlan : p))
+      );
+      setEditingId(null);
+    }
   };
 
-  const togglePlanStatus = (id: string) => {
-    setPlans((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, status: p.status === "active" ? "inactive" : "active" } : p
-      )
-    );
+  const togglePlanStatus = async (plan: ISubscription) => {
+    await saveEdit(plan._id, { isActive: !plan.isActive });
   };
 
   return (
@@ -117,29 +108,38 @@ export default function SubscriptionPlansPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Input
-            placeholder="Plan Name"
-            value={newPlan.name}
-            onChange={(e) => setNewPlan({ ...newPlan, name: e.target.value })}
+            placeholder="Plan Title"
+            value={newPlan.title}
+            onChange={(e) => setNewPlan({ ...newPlan, title: e.target.value })}
           />
           <Input
-            placeholder="Price (e.g. 199)"
-            value={newPlan.price}
-            onChange={(e) => setNewPlan({ ...newPlan, price: e.target.value })}
+            placeholder="Price/Month"
+            type="number"
+            value={newPlan.pricePerMonth}
+            onChange={(e) => setNewPlan({ ...newPlan, pricePerMonth: e.target.value })}
           />
-          <select
-            className="border rounded-lg px-3 py-2"
-            value={newPlan.duration}
-            onChange={(e) => setNewPlan({ ...newPlan, duration: e.target.value })}
-          >
-            <option>Monthly</option>
-            <option>Quarterly</option>
-            <option>Yearly</option>
-          </select>
+          <Input
+            placeholder="Price/Year"
+            type="number"
+            value={newPlan.pricePerYear}
+            onChange={(e) => setNewPlan({ ...newPlan, pricePerYear: e.target.value })}
+          />
           <Input
             placeholder="Features (comma separated)"
             value={newPlan.features}
             onChange={(e) => setNewPlan({ ...newPlan, features: e.target.value })}
           />
+        </div>
+        
+        <div className="flex items-center gap-2">
+            <input 
+                type="checkbox" 
+                id="yearlySub"
+                checked={newPlan.yearlySubscription}
+                onChange={(e) => setNewPlan({...newPlan, yearlySubscription: e.target.checked})}
+                className="w-4 h-4"
+            />
+            <label htmlFor="yearlySub" className="text-sm text-gray-700">Yearly Subscription Only?</label>
         </div>
 
         <Button className="bg-blue-600 hover:bg-blue-700" onClick={addPlan}>
@@ -148,10 +148,13 @@ export default function SubscriptionPlansPage() {
       </div>
 
       {/* Plans List */}
+      {loading ? (
+        <div className="flex justify-center p-10"><Loader2 className="animate-spin w-8 h-8 text-blue-600" /></div>
+      ) : (
       <div className="space-y-6">
         {plans.map((plan) => (
           <div
-            key={plan.id}
+            key={plan._id}
             className="p-6 bg-white border rounded-2xl shadow-sm hover:shadow-xl transition-all"
           >
             {/* Top: Plan Info */}
@@ -161,51 +164,64 @@ export default function SubscriptionPlansPage() {
                   <CreditCard className="w-6 h-6 text-purple-600" />
                 </div>
                 <div>
-                  {editingId === plan.id ? (
+                  {editingId === plan._id ? (
                     <Input
-                      value={plan.name}
+                      value={plan.title}
                       onChange={(e) =>
                         setPlans((prev) =>
                           prev.map((p) =>
-                            p.id === plan.id ? { ...p, name: e.target.value } : p
+                            p._id === plan._id ? { ...p, title: e.target.value } : p
                           )
                         )
                       }
                       className="font-semibold text-xl"
                     />
                   ) : (
-                    <h3 className="text-xl font-semibold">{plan.name}</h3>
+                    <h3 className="text-xl font-semibold">{plan.title}</h3>
                   )}
 
                   <p className="text-gray-600 mt-1">
-                    {editingId === plan.id ? (
+                    {editingId === plan._id ? (
+                      <div className="flex gap-2">
                       <Input
-                        value={plan.price}
+                        placeholder="Month"
+                        value={plan.pricePerMonth}
                         onChange={(e) =>
                           setPlans((prev) =>
                             prev.map((p) =>
-                              p.id === plan.id ? { ...p, price: e.target.value } : p
+                              p._id === plan._id ? { ...p, pricePerMonth: parseFloat(e.target.value) } : p
                             )
                           )
                         }
                       />
+                      <Input
+                        placeholder="Year"
+                        value={plan.pricePerYear}
+                        onChange={(e) =>
+                          setPlans((prev) =>
+                            prev.map((p) =>
+                              p._id === plan._id ? { ...p, pricePerYear: parseFloat(e.target.value) } : p
+                            )
+                          )
+                        }
+                      />
+                      </div>
                     ) : (
                       <span className="font-bold text-lg">
-                        ${plan.price.toLocaleString()}
+                        ${plan.pricePerMonth}/mo • ${plan.pricePerYear}/yr
                       </span>
                     )}
-                    {" "} / {plan.duration}
                   </p>
 
                   {/* Features */}
                   <div className="mt-2">
-                    {editingId === plan.id ? (
+                    {editingId === plan._id ? (
                       <Input
                         value={plan.features.join(", ")}
                         onChange={(e) =>
                           setPlans((prev) =>
                             prev.map((p) =>
-                              p.id === plan.id
+                              p._id === plan._id
                                 ? { ...p, features: e.target.value.split(",").map((f) => f.trim()) }
                                 : p
                             )
@@ -225,12 +241,12 @@ export default function SubscriptionPlansPage() {
                   <div className="mt-3">
                     <Badge
                       className={
-                        plan.status === "active"
+                        plan.isActive
                           ? "bg-green-100 text-green-700"
                           : "bg-red-100 text-red-700"
                       }
                     >
-                      {plan.status.toUpperCase()}
+                      {plan.isActive ? "ACTIVE" : "INACTIVE"}
                     </Badge>
                   </div>
                 </div>
@@ -238,11 +254,11 @@ export default function SubscriptionPlansPage() {
 
               {/* Actions */}
               <div className="flex flex-col gap-3">
-                {editingId === plan.id ? (
+                {editingId === plan._id ? (
                   <>
                     <Button
                       className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
-                      onClick={() => saveEdit(plan.id, plan)}
+                      onClick={() => saveEdit(plan._id, plan)}
                     >
                       <Check className="w-4 h-4" />
                       Save
@@ -261,7 +277,7 @@ export default function SubscriptionPlansPage() {
                   <Button
                     variant="outline"
                     className="flex items-center gap-2"
-                    onClick={() => setEditingId(plan.id)}
+                    onClick={() => setEditingId(plan._id)}
                   >
                     <Edit className="w-4 h-4" />
                     Edit
@@ -270,19 +286,20 @@ export default function SubscriptionPlansPage() {
 
                 <Button
                   className={
-                    plan.status === "active"
+                    plan.isActive
                       ? "bg-red-100 text-red-700 hover:bg-red-200"
                       : "bg-green-100 text-green-700 hover:bg-green-200"
                   }
-                  onClick={() => togglePlanStatus(plan.id)}
+                  onClick={() => togglePlanStatus(plan)}
                 >
-                  {plan.status === "active" ? "Disable" : "Activate"}
+                  {plan.isActive ? "Disable" : "Activate"}
                 </Button>
               </div>
             </div>
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 }

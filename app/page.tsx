@@ -1,48 +1,35 @@
-"use client"
-
-import type React from "react"
+import React from "react"
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
+import { headers } from "next/headers"
+import { HomeHero}  from "@/app/home-hero"
 import {
-  Search,
-  Star,
-  Users,
-  Zap,
-  Sparkles,
   Code,
   Palette,
   TrendingUp,
   Megaphone,
   Briefcase,
   Shield,
-  Divide,
 } from "lucide-react"
-import { match } from "assert"
 
-// CMS Content Types
-interface HeroContent {
-  headline: string
-  subheadline: string
-  ctaPrimary: { text: string; link: string }
-  ctaSecondary: { text: string; link: string }
-  searchPlaceholder: string
-  popularSearches: string[]
+interface ServiceChild {
+  _id: string;
+  title: string;
+  slug?: string;
 }
 
-interface ServiceCategory {
-  id: string
-  name: string
-  icon: string
-  color: string
-  services: string[]
-  order: number
+export interface ServiceCategory {
+  _id: string;
+  title: string;
+  slug?: string;
+  icon: string | null;
+  color: string;
+  order: number;
+  children: ServiceChild[];
 }
+
 
 // Icon mapping
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -64,238 +51,67 @@ const colorMap: Record<string, { bg: string; hover: string; text: string }> = {
   indigo: { bg: "from-indigo-100 to-indigo-200", hover: "hover:border-indigo-200", text: "text-indigo-600" },
 }
 
-export default function HomePage() {
-  const router = useRouter()
-  const [searchQuery, setSearchQuery] = useState("")
-  const [heroContent, setHeroContent] = useState<HeroContent | null>(null)
-  const [categories, setCategories] = useState<ServiceCategory[]>([])
-  const [providers, setProviders] = useState<any[]>([])
-  const [projects, setProjects] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [activeButton, setActiveButton] = useState<"match" | "browse" | null>(null);
-
-  // Fetch CMS content
-  useEffect(() => {
-    const fetchContent = async () => {
-      try {
-        const [heroRes, categoriesRes, providersRes, projectsRes] = await Promise.all([
-          fetch("/api/cms/hero"),
-          fetch("/api/cms/categories"),
-          fetch("/api/providers?featured=true"),
-          fetch("/api/projects?status=open"),
-        ])
-
-        if (heroRes.ok) {
-          const heroData = await heroRes.json()
-          setHeroContent(heroData.content)
-        }
-
-        if (categoriesRes.ok) {
-          const categoriesData = await categoriesRes.json()
-          setCategories(categoriesData.categories)
-        }
-
-        if (providersRes.ok) {
-          const providersData = await providersRes.json()
-          setProviders(providersData.providers?.slice(0, 3) || [])
-        }
-
-        if (projectsRes.ok) {
-          const projectsData = await projectsRes.json()
-          setProjects(projectsData.projects?.slice(0, 3) || [])
-        }
-      } catch (error) {
-        console.error("Failed to fetch CMS content:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchContent()
-  }, [])
-
-  const handleGetMatched = () => {
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
-    } else {
-      router.push("/register")
-    }
+async function getData() {
+  // 1. Dynamically determine the base URL to avoid port mismatches
+  let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+  if (!baseUrl) {
+    const headersList = headers();
+    const host = headersList.get("host") || "localhost:3000";
+    const protocol = host.includes("localhost") ? "http" : "https";
+    baseUrl = `${protocol}://${host}`;
   }
+// const options: RequestInit = { cache: "no-store" }; for instant changes
+  // 2. Use ISR with revalidation (e.g., every hour)
+  const REVALIDATE_TIME = Number(process.env.CMS_REVALIDATE_TIME) || 10;
+  const options = { next: { revalidate: REVALIDATE_TIME } }; 
 
-  const handleLetUsMatch = () => {
-    router.push(heroContent?.ctaPrimary.link || "/register?type=match")
+  try {
+    console.log(`[HomePage] Fetching data from: ${baseUrl}`);
+    const [cmsRes, providersRes, projectsRes, categoriesRes] = await Promise.all([
+      fetch(`${baseUrl}/api/cms`, options),
+      fetch(`${baseUrl}/api/providers?featured=true`, options),
+      fetch(`${baseUrl}/api/requirements`, options),
+      fetch(`${baseUrl}/api/service-categories`, options),
+    ]);
+
+    const cms = cmsRes.ok ? (await cmsRes.json()).data : null;
+    const providers = providersRes.ok ? (await providersRes.json()).providers?.slice(0, 3) : [];
+    
+    const projectsData = projectsRes.ok ? await projectsRes.json() : {};
+    // Try finding the array in 'requirements' OR 'data'
+    const projects = (projectsData.requirements || projectsData.data || []).slice(0, 3);
+    
+    const categories = categoriesRes.ok ? (await categoriesRes.json()).data : [];
+    
+    return { cms, providers, projects, categories };
+  } catch (error) {
+    // This log will appear in your VS Code TERMINAL, not the browser
+    console.error("[HomePage] Data Fetch Error:", error);
+    return { cms: null, providers: [], projects: [], categories: [] };
   }
+}
 
-  const handleBrowseOwn = () => {
-    router.push(heroContent?.ctaSecondary.link || "/browse")
-  }
-
-  const handlePopularSearch = (query: string) => {
-    router.push(`/search?q=${encodeURIComponent(query)}`)
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
-
+export default async function HomePage() {
+  const { cms, providers, projects, categories } = await getData();
   return (
     <div className="bg-background">
       {/* Hero Section */}
-      <section className="py-16 px-4 bg-gray-50"
-      style={{ 
-        backgroundImage: "url('/Banner.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat"
-        }}>
-        <div className="max-w-7xl mx-auto">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
-              {heroContent?.headline || "Connect with trusted companies for your next project."}
-            </h1>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-8 justify-center">
-              <div className="relative flex flex-col items-center">
-              <Button
-                size="lg"
-                className={`flex items-center gap-2 rounded-full transitation-all
-                ${
-                activeButton === "match"
-                ? "bg-[#F54A0C] text-white boder-[#F54A0C] shadow-lg"
-                : "bg-[#F54A0C] hover:bg-[#d93f0b] text-white"
-              } `}
-                onClick={() => {
-                  setActiveButton("match")
-                  handleLetUsMatch()
-              }}
-              >
-                {heroContent?.ctaPrimary.text || "Let us match you"}
-              </Button>
-              {activeButton === "match" && (
-                <div 
-                className="absolute -bottom-2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-[#F54A0C]"
-                       />
-              )}
-              </div>
-              <div className="relative flex flex-col items-center">
-              <Button
-                size="lg"
-                variant="outline"
-                className={`flex items-center gap-2 rounded-full px-6 py-3 border transition-all focus-visible:ring-0 focus-visible:ring-offset-0 active:scale-95
-                ${
-                activeButton === "browse"
-                ? "bg-white text-[#F54A0C] shadow-lg"
-                : "bg-white hover:bg-white/90 hover:text-[#F54A0C] text-[#F54A0C]"
-            }`}
-                onClick={()=> {
-                  setActiveButton("browse")
-                handleBrowseOwn()
-                }}
-              >
-                {heroContent?.ctaSecondary.text || "Browse on your own"}
-              </Button>
-              {activeButton === "browse" && (
-                <div
-                className = "absolute -bottom-2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white"
-                />
-              )}
-              </div>
-            </div>
-              
-
-            {/* Search Section */}
-            <div className="space-y-4 max-w-2xl mx-auto bg-white-50">
-              <div className="relative flex gap-2">
-                <Input
-                  placeholder={heroContent?.searchPlaceholder || "Search for Agency Name / Service Name?"}
-                  className="flex-1 h-12  text-white placeholder:text-white border-slate-300 bg-white/20 backdrop-blur-md shadow-inner rounded-full"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  
-                />
-                <Button 
-                onClick={handleGetMatched}
-                className="absolute top-1/2 right-2 -translate-y-1/2 
-               flex items-center justify-center 
-               h-10 w-10 rounded-full bg-[#F54A0C] hover:bg-[#d93f0b] 
-               shadow-md transition-all rotate-90">
-                <Search className="h-5 w-5 text-white" />
-                </Button>
-              </div>
-
-              {/* Popular Searches */}
-              <div className="space-y-2">
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {(
-                    heroContent?.popularSearches || [
-                      "Get more qualified leads",
-                      "Improve my SEO rankings",
-                      "Develop a content strategy",
-                    ]
-                  ).map((search, index) => (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      size="sm"
-                      className="text-white border-slate-300 hover:bg-white/30 bg-transparentr rounded-full"
-                      onClick={() => handlePopularSearch(search)}
-                    >
-                  
-                      {search}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HomeHero cms={cms} />
 
       {/* Features */}
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">How Spark Works</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card>
-              <CardHeader className="text-center">
-                <Search className="h-12 w-12 mx-auto mb-4 text-primary" />
-                <CardTitle>Post Requirements</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-center">
-                  Describe your project needs, budget, and timeline. Our platform matches you with relevant providers.
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="text-center">
-                <Users className="h-12 w-12 mx-auto mb-4 text-primary" />
-                <CardTitle>Receive Proposals</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-center">
-                  Get detailed proposals from verified providers. Compare costs, timelines, and approaches.
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="text-center">
-                <Zap className="h-12 w-12 mx-auto mb-4 text-primary" />
-                <CardTitle>Get Work Done</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-center">
-                  Choose the best provider, manage your project, and leave reviews to help the community.
-                </CardDescription>
-              </CardContent>
-            </Card>
+          <h2 className="text-4xl font-bold text-center mb-4">How Spark Works</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {cms?.homeWorkSection?.map((section: any, index: number) => (
+              <div key={index} className="flex flex-col gap-4 items-center text-center">
+                <img src={section.image} alt="" />
+                <div className="">
+                  <h3 className="text-2xl font-bold">{section.title}</h3>
+                  <p className="text-gray-500">{section.description}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -325,10 +141,12 @@ export default function HomePage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {categories.map((category) => {
-              const IconComponent = iconMap[category.icon] || Code
-              const colors = colorMap[category.color] || colorMap.blue
-              const serviceLink = `/services/${category.id}`
+            {(categories && categories.length > 0
+              ? categories
+              : []
+            ).map((category: any) => {
+              const colors = colorMap[category.color] || colorMap.blue;
+              const serviceLink = `/services/${category._id}`;
 
               return (
                 <div
@@ -346,14 +164,15 @@ export default function HomePage() {
                     </h3>
                   </div>
                   <div className="space-y-3">
-                    {(category.services || []).slice(0, 6).map((service, index) => (
-                      <Link
-                        key={index}
-                        href={serviceLink}
-                        className={`block text-slate-600 hover:${colors.text} hover:translate-x-2 transition-all duration-200 font-medium`}
-                      >
-                        → {service}
-                      </Link>
+                    {(category.children.slice(0, 6)|| []).map((sub: any, index: number) => (
+                      <p key={index} className={`block text-slate-500 text-sm hover:${colors.text} hover:translate-x-2 transition-all duration-200 font-medium`}>
+                        {/* <Link
+      key={index}
+      href={`/services/${category.slug}/${sub.slug}`}  // or your serviceLink
+    > */}
+                        → {sub.title}
+                        {/* </Link> */}
+                      </p>
                     ))}
                   </div>
                 </div>
@@ -370,11 +189,12 @@ export default function HomePage() {
             <h2 className="text-3xl font-bold text-center mb-12">Recent Project Opportunities</h2>
             <div className="grid md:grid-cols-3 gap-6">
               {projects.map((project: any) => (
-                <Card key={project.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-center justify-between mb-2">
-                      <Badge variant="outline">{project.category}</Badge>
-                      <span className="text-sm text-muted-foreground">{project.timeline}</span>
+                <div key={project._id} className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300">
+                  <div className="">
+                    <div className="text-lg"><img src={project.image} alt="" className="rounded-t-3xl" /></div>
+                    <div className="flex items-center justify-between mb-2 px-8 mt-4">
+                      <Badge variant="outline" className="rounded-full px-2 bg-gray-100 font-semibold text-[10px]">{project.category}</Badge>
+                      <span className="text-sm text-muted-foreground text-orangeButton font-semibold">{project.timeline}</span>
                     </div>
                     <CardTitle className="text-lg">{project.title}</CardTitle>
                   </CardHeader>
@@ -401,26 +221,49 @@ export default function HomePage() {
             <h2 className="text-3xl font-bold text-center mb-12">Featured Agencies</h2>
             <div className="grid md:grid-cols-3 gap-6">
               {providers.map((provider: any) => (
-                <Card key={provider.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-center justify-between mb-2">
-                      {provider.featured && <Badge className="bg-yellow-500">Featured</Badge>}
-                      {provider.verified && (
-                        <Badge variant="outline" className="text-green-600 border-green-600">
-                          Verified
-                        </Badge>
-                      )}
-                    </div>
-                    <CardTitle className="text-lg">{provider.name}</CardTitle>
-                    <CardDescription>{provider.tagline || provider.location}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {provider.services?.slice(0, 3).map((service: string, idx: number) => (
-                        <Badge key={idx} variant="secondary" className="text-xs">
-                          {service}
-                        </Badge>
-                      ))}
+                <div key={provider._id} className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300 bg-white">
+                  <div className="">
+                    <div className="text-lg"><img src={provider.coverImage} alt="" className="rounded-t-3xl" /></div>
+                    <div className="flex items-center justify-between mb-2 px-8 mt-4">
+
+                      {/* FEATURED & VERIFIED BADGES */}
+                      <div className="flex items-center gap-2">
+                        {provider.isVerified && (
+                          <Badge
+                            variant="outline"
+                            className="bg-blueButton text-white rounded-full px-3 py-0.5 text-[10px] font-semibold"
+                          >
+                            Verified
+                          </Badge>
+                        )}
+                        {provider.isFeatured && (
+                          <Badge className="bg-orangeButton text-white rounded-full px-3 py-0.5 text-[10px] font-semibold">
+                            Featured
+                          </Badge>
+                        )}
+                      </div>
+
+                      {/* ⭐ RATING STARS */}
+                      <div className="flex items-center justify-center gap-0.2">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <svg
+                            key={i}
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill={i < provider.rating ? "#F59E0B" : "#D1D5DB"} // yellow or gray
+                            className="w-4 h-4"
+                          >
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 
+        0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 
+        1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 
+        1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                          </svg>
+                        ))}
+
+                        <span className="text-xs font-semibold text-gray-700 ml-1">
+                          {provider.rating?.toFixed(1) || "0.0"}
+                        </span>
+                      </div>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1">

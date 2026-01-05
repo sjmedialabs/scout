@@ -3,8 +3,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Users, FileText, MessageSquare, DollarSign, TrendingUp, Star, Building2, CreditCard } from "lucide-react"
 import type { AdminStats, SubscriptionStats, Provider } from "@/lib/types"
+import { Star } from "lucide-react"
 
 interface AnalyticsDashboardProps {
   stats: AdminStats
@@ -17,63 +17,12 @@ export function AnalyticsDashboard({ stats, subscriptionStats, topProviders }: A
 
   return (
     <div className="space-y-6">
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalUsers.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-green-600">+{stats.monthlyGrowth}%</span> from last month
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${stats.totalRevenue.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              ${subscriptionStats.monthlyRecurring.toLocaleString()}/month recurring
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalProjects}</div>
-            <p className="text-xs text-muted-foreground">{stats.totalProposals} total proposals</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Requirements</CardTitle>
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalRequirements}</div>
-            <p className="text-xs text-muted-foreground">Active project requests</p>
-          </CardContent>
-        </Card>
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* User Distribution */}
-        <Card>
+        <Card className="rounded-2xl shadow-md">
           <CardHeader>
-            <CardTitle>User Distribution</CardTitle>
-            <CardDescription>Breakdown of user types on the platform</CardDescription>
+            <CardTitle className="text-2xl font-extrabold text-orangeButton">User Distribution</CardTitle>
+            <CardDescription className="text-gray-500 text-base">Breakdown of user types on the platform</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -83,7 +32,7 @@ export function AnalyticsDashboard({ stats, subscriptionStats, topProviders }: A
                   {stats.totalSeekers} ({Math.round((stats.totalSeekers / stats.totalUsers) * 100)}%)
                 </span>
               </div>
-              <Progress value={(stats.totalSeekers / stats.totalUsers) * 100} className="h-2" />
+              <Progress value={(stats.totalSeekers / stats.totalUsers) * 100} className="h-2 bg-blueBackground" />
             </div>
 
             <div className="space-y-2">
@@ -99,10 +48,10 @@ export function AnalyticsDashboard({ stats, subscriptionStats, topProviders }: A
         </Card>
 
         {/* Subscription Stats */}
-        <Card>
+        <Card className="rounded-2xl shadow-md">
           <CardHeader>
-            <CardTitle>Subscription Distribution</CardTitle>
-            <CardDescription>Revenue breakdown by subscription tier</CardDescription>
+            <CardTitle className="text-2xl font-extrabold text-orangeButton">Subscription Distribution</CardTitle>
+            <CardDescription className="text-gray-500 text-base">Revenue breakdown by subscription tier</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -141,37 +90,49 @@ export function AnalyticsDashboard({ stats, subscriptionStats, topProviders }: A
       {/* Top Providers */}
       <Card>
         <CardHeader>
-          <CardTitle>Top Performing Agencies</CardTitle>
-          <CardDescription>Highest rated and most active agencies</CardDescription>
+          <CardTitle className="text-2xl font-extrabold text-orangeButton">Top Performing Agencies</CardTitle>
+          <CardDescription className="text-gray-500 text-base">Highest rated and most active agencies</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="space-y-1">
             {topProviders.map((provider, index) => (
-              <div key={provider.id} className="flex items-center justify-between p-4 border rounded-lg">
+              <div key={provider.id} className="flex items-center justify-between p-4 border rounded-2xl shadow-md">
                 <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold">
+                  <div className="w-6 h-6 text-xs bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold">
                     {index + 1}
                   </div>
                   <div>
-                    <div className="font-medium">{provider.companyName}</div>
-                    <div className="text-sm text-muted-foreground">{provider.location}</div>
+                    <div className="font-bold text-orangeButton">{provider.companyName}</div>
+                    <div className="text-sm text-gray-500">{provider.location}</div>
                   </div>
                 </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="text-right">
+                                  <div className="text-right">
                     <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-medium">{provider.rating}</span>
-                      <span className="text-sm text-muted-foreground">({provider.reviewCount})</span>
-                    </div>
-                    <div className="text-sm text-muted-foreground">{provider.services.length} services</div>
-                  </div>
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-4 w-4 ${i < Math.round(provider.rating)
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-gray-300"
+                            }`}
+                        />
+                      ))}
 
+                      <span className="font-medium">{provider.rating}</span>
+                      <span className="text-sm text-muted-foreground">
+                        ({provider.reviewCount})
+                      </span>
+                    </div>
+
+                    <div className="text-sm text-muted-foreground">
+                      {provider.services.length} services
+                    </div>
+                  </div>
+                <div className="flex items-center gap-4">
                   <div className="flex gap-2">
-                    {provider.verified && <Badge variant="secondary">Verified</Badge>}
-                    {provider.featured && <Badge>Featured</Badge>}
-                    <Badge variant="outline">{provider.subscriptionTier}</Badge>
+                    {provider.verified && <Badge className="rounded-lg bg-[#1C96F4]">Verified</Badge>}
+                    {provider.featured && <Badge className="bg-[#39A935] rounded-lg">Featured</Badge>}
+                    <Badge className="bg-[#EA7E1F] rounded-lg">{provider.subscriptionTier}</Badge>
                   </div>
                 </div>
               </div>
@@ -179,42 +140,6 @@ export function AnalyticsDashboard({ stats, subscriptionStats, topProviders }: A
           </div>
         </CardContent>
       </Card>
-
-      {/* Revenue Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Monthly Recurring Revenue</CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${subscriptionStats.monthlyRecurring.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">From {subscriptionTotal} active subscriptions</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Revenue Per User</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${Math.round(subscriptionStats.totalRevenue / subscriptionTotal)}</div>
-            <p className="text-xs text-muted-foreground">Per paying user</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Platform Growth</CardTitle>
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">+{stats.monthlyGrowth}%</div>
-            <p className="text-xs text-muted-foreground">Month over month growth</p>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   )
 }

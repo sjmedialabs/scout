@@ -5,6 +5,8 @@ import Project from "@/models/Project"
 import Provider from "@/models/Provider"
 import { getCurrentUser } from "@/lib/auth/jwt"
 import mongoose from "mongoose"
+import Requirement from "@/models/Requirement"
+import Notification from "@/models/Notification"
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,7 +18,7 @@ export async function GET(request: NextRequest) {
     await connectToDatabase()
 
     const { searchParams } = new URL(request.url)
-    const projectId = searchParams.get("projectId")
+    const requirementId = searchParams.get("requirementId")
     const status = searchParams.get("status")
     const limit = Number.parseInt(searchParams.get("limit") || "50")
     const page = Number.parseInt(searchParams.get("page") || "1")
@@ -24,30 +26,26 @@ export async function GET(request: NextRequest) {
     const query: any = {}
     const skip = (page - 1) * limit
 
+    // -----------------------------
+    // Role-based filtering
+    // -----------------------------
     if (user.role === "agency") {
-      // Get provider's proposals
-      const provider = await Provider.findOne({ userId: user.userId })
-      if (provider) {
-        query.providerId = provider._id
-      } else {
-        return NextResponse.json({ proposals: [], pagination: { total: 0, page: 1, limit, pages: 0 } })
-      }
-    } else if (user.role === "client") {
-      // Get proposals for client's projects
-      if (projectId) {
-        query.projectId = projectId
-      } else {
-        const clientProjects = await Project.find({ clientId: user.userId }).select("_id")
-        query.projectId = { $in: clientProjects.map((p) => p._id) }
-      }
+      query.agencyId = user.userId
     }
 
+    if (user.role === "client") {
+      query.clientId = user.userId
+    }
+
+    if (requirementId) query.requirementId = requirementId
     if (status) query.status = status
 
+    // -----------------------------
+    // Fetch proposals
+    // -----------------------------
     const [proposals, total] = await Promise.all([
       Proposal.find(query)
-        .populate("projectId", "title category budget")
-        .populate("providerId", "name logo rating reviewCount location")
+        .populate("requirementId", "title category budgetMin budgetMax")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
@@ -55,18 +53,42 @@ export async function GET(request: NextRequest) {
       Proposal.countDocuments(query),
     ])
 
+    // -----------------------------
+    // Fetch agency details
+    // -----------------------------
+    const agencyUserIds = [
+      ...new Set(proposals.map((p: any) => p.agencyId.toString())),
+    ]
+
+    const agencies = await Provider.find({
+      userId: { $in: agencyUserIds },
+    })
+      .select(
+        "userId name logo location rating reviewCount services technologies coverImage"
+      )
+      .lean()
+
+    const agencyMap = new Map(
+      agencies.map((a: any) => [a.userId.toString(), a])
+    )
+
+    // -----------------------------
+    // Format response
+    // -----------------------------
     const formattedProposals = proposals.map((p: any) => ({
       id: p._id.toString(),
-      projectId: p.projectId?._id?.toString() || p.projectId,
-      projectTitle: p.projectId?.title || "Unknown Project",
-      projectCategory: p.projectId?.category || "",
-      projectBudget: p.projectId?.budget || "",
-      providerId: p.providerId?._id?.toString() || p.providerId,
-      providerName: p.providerId?.name || "Unknown Provider",
-      providerLogo: p.providerId?.logo || "",
-      providerRating: p.providerId?.rating || 0,
-      providerReviewCount: p.providerId?.reviewCount || 0,
-      providerLocation: p.providerId?.location || "",
+
+      requirement: {
+        id: p.requirementId?._id?.toString(),
+        title: p.requirementId?.title,
+        category: p.requirementId?.category,
+        budgetMin: p.requirementId?.budgetMin,
+        budgetMax: p.requirementId?.budgetMax,
+      },
+
+      agency: agencyMap.get(p.agencyId.toString()) || null,
+      agencyId:p.agencyId,
+
       coverLetter: p.coverLetter,
       proposedBudget: p.proposedBudget,
       proposedTimeline: p.proposedTimeline,
@@ -96,6 +118,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
+
 export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
@@ -111,17 +134,17 @@ export async function POST(request: NextRequest) {
     await connectToDatabase()
 
     const body = await request.json()
-    const { projectId, proposedBudget, proposedTimeline, coverLetter, milestones } = body
+     const { requirementId, proposalDescription, clientId, proposedBudget, proposedTimeline, coverLetter, milestones } = body
 
-    if (!projectId || !proposedBudget || !coverLetter) {
-      return NextResponse.json(
-        { error: "Missing required fields: projectId, proposedBudget, coverLetter" },
-        { status: 400 },
-      )
-    }
+    // if (!projectId || !proposedBudget || !coverLetter) {
+    //   return NextResponse.json(
+    //     { error: "Missing required fields: projectId, proposedBudget, coverLetter" },
+    //     { status: 400 },
+    //   )
+    // }
 
-    if (!mongoose.Types.ObjectId.isValid(projectId)) {
-      return NextResponse.json({ error: "Invalid project ID" }, { status: 400 })
+    if (!mongoose.Types.ObjectId.isValid(requirementId)) {
+      return NextResponse.json({ error: "Invalid requirement ID" }, { status: 400 })
     }
 
     // Get provider profile
@@ -134,19 +157,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if project exists and is open
-    const project = await Project.findById(projectId)
+    const project = await Requirement.findById(requirementId)
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 })
     }
 
-    if (project.status !== "open") {
+    if (project.status.toLocaleLowerCase() === "closed" || project.status.toLocaleLowerCase() === "Allocated") {
       return NextResponse.json({ error: "Project is not accepting proposals" }, { status: 400 })
     }
 
     // Check if already submitted proposal
     const existingProposal = await Proposal.findOne({
-      projectId,
-      providerId: provider._id,
+      requirementId,
+      agencyId: user.userId,
     })
 
     if (existingProposal) {
@@ -155,11 +178,12 @@ export async function POST(request: NextRequest) {
 
     // Create proposal
     const proposal = await Proposal.create({
-      projectId,
-      providerId: provider._id,
-      userId: user.userId,
+      requirementId,
+      clientId,
+      agencyId: user.userId,
       coverLetter,
       proposedBudget,
+      proposalDescription,
       proposedTimeline: proposedTimeline || "As discussed",
       milestones: milestones || [],
       status: "pending",
@@ -169,19 +193,23 @@ export async function POST(request: NextRequest) {
     })
 
     // Update project proposal count
-    await Project.findByIdAndUpdate(projectId, { $inc: { proposalCount: 1 } })
+     await Requirement.findByIdAndUpdate(requirementId, { $inc: { proposals: 1 } })
+
+     await Notification.create({
+          userId: clientId,                 //  RECEIVER (client)
+          triggeredBy: user.userId,          // AGENCY who submitted proposal
+          title: "New Proposal Received!",
+          message: `${provider.name} submitted a proposal for your ${project.title} project.`,
+          type: "proposal_submitted",
+          userRole: "client",
+          linkUrl: `/client/dashboard/projects/${requirementId}`,
+          sourceId: proposal._id,
+        })
+
 
     return NextResponse.json({
       success: true,
-      proposal: {
-        id: proposal._id.toString(),
-        projectId: proposal.projectId.toString(),
-        providerId: proposal.providerId.toString(),
-        proposedBudget: proposal.proposedBudget,
-        proposedTimeline: proposal.proposedTimeline,
-        status: proposal.status,
-        createdAt: proposal.createdAt,
-      },
+      proposal
     })
   } catch (error) {
     console.error("Error creating proposal:", error)

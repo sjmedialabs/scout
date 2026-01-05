@@ -14,6 +14,8 @@ export interface IUser extends Document {
   lastLogin?: Date
   createdAt: Date
   updatedAt: Date
+  resetPasswordToken?: string
+  resetPasswordExpires?: Date
 }
 
 const UserSchema = new Schema<IUser>(
@@ -28,11 +30,12 @@ const UserSchema = new Schema<IUser>(
     isVerified: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
     lastLogin: { type: Date },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
   },
   { timestamps: true },
 )
 
-UserSchema.index({ email: 1 })
 UserSchema.index({ role: 1 })
 
 const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>("User", UserSchema)

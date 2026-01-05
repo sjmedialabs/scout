@@ -1,12 +1,13 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
 import { CreditCard, Lock, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { getSubscriptionPlan } from "@/lib/subscription-plans"
+import { IoIosCheckmarkCircle } from "react-icons/io"
+
+
 
 interface SubscribePageProps {
   params: {
@@ -14,151 +15,160 @@ interface SubscribePageProps {
   }
 }
 
+
 export default function SubscribePage({ params }: SubscribePageProps) {
   const selectedPlan = getSubscriptionPlan(params.plan)
 
+  if (!selectedPlan) {
+    return(
+      <div className="py-20 text-center">
+        <p className="text-lg font-medium">
+          Plan Not Found
+          </p>
+          <Link href="/pricing" className="text-orange-500 underline">
+          Back to Pricing
+          </Link>
+      </div>
+    )
+  }
+
+  const visibleFeatures = selectedPlan.features.slice(0, 5)
+  const remainingCount = selectedPlan.features.length - visibleFeatures.length
+
   return (
-    <div className="bg-background">
-      <div className="py-8 px-4">
-        <div className="max-w-4xl mx-auto">
+    <div className="bg-background min-h-screen">
+      <div className="px-4 py-10">
+        <div className="max-w-5xl mx-auto">
+
           {/* Header */}
-          <div className="mb-8">
-            <Button variant="ghost" asChild className="mb-4">
-              <Link href="/pricing">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Pricing
-              </Link>
-            </Button>
-            <h1 className="text-3xl font-bold mb-2">Subscribe to {selectedPlan.name}</h1>
-            <p className="text-muted-foreground">
-              Complete your subscription to unlock all {selectedPlan.name} features
+          <div className="text-center mb-10">
+            <p className="text-orange-500 text-sm font-medium mb-2">
+              Subscribe to {selectedPlan.name}
             </p>
+            <h1 className="text-2xl sm:text-2xl font-medium">
+              Complet your subscription to unlock all {selectedPlan.name} features
+            </h1>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Order Summary */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Order Summary</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">{selectedPlan.name} Plan</span>
-                  <span className="font-bold">
-                    ${selectedPlan.price}/{selectedPlan.billingPeriod}
-                  </span>
+          {/* Order Summary Card*/}
+          <div className="flex justify-center">
+            <Card className="w-full max-w-md rounded-2xl shadow-md border border-slate-200 bg-white">
+              <CardContent className="p-5 pt-2 space-y-6">
+
+                <div className="flex items-center h-0 justify-between">
+                  <h2 className="text-orangeButton font-extrabold text-lg">
+                    Order Summary
+                  </h2>
                 </div>
 
-                <div className="border-t pt-4">
-                  <h4 className="font-medium mb-3">What's included:</h4>
-                  <ul className="space-y-2">
-                    {selectedPlan.features.slice(0, 5).map((feature, index) => (
-                      <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                        <div className="w-1 h-1 bg-primary rounded-full mt-2 flex-shrink-0" />
-                        {feature}
+                {/* Plan Row */}
+                <div className="flex items-center pt-7 justify-between border-b pb-4">
+                  {/* Left */}
+                  <p className="font-extrabold text-zinc-900">
+                    {selectedPlan.name} Plan
+                  </p>
+
+                  {/* Right */}
+                  <div className="flex items-center gap-3">
+                    <p className="font-extrabold text-zinc-900">
+                      ${selectedPlan.price}/{selectedPlan.billingPeriod}
+                    </p>
+                    <Link
+                      href="/pricing"
+                    >
+                      <button
+                        type="button"
+                        className="h-7 px-3 rounded-full text-xs font-medium
+                                  border border-zinc-300 bg-zinc-700
+                                  hover:bg-zinc-600 text-white
+                                  transition-colors"
+                      >
+                        Change
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Features */}
+                <div>
+                  <p className="font-extrabold text-md mb-3">
+                    What's included:
+                  </p>
+                  <ul className="space-y-3">
+                    {visibleFeatures.map((feature, index) => (
+                      <li
+                        key={index}
+                        className="flex items-startgap-3 text-sm text-zinc-700"
+                      >
+                        <IoIosCheckmarkCircle 
+                          className="h-4 w-5 text-orangeButton shrink-0 mt-px" 
+                        />
+                        <span>{feature}</span>
                       </li>
                     ))}
-                    {selectedPlan.features.length > 5 && (
-                      <li className="text-sm text-muted-foreground">
-                        + {selectedPlan.features.length - 5} more features
+                    {remainingCount > 0 && (
+                      <li className="text-sm text-zinc-700 underline cursor-pointer">
+                        + {remainingCount} more features
                       </li>
                     )}
                   </ul>
                 </div>
 
+                {/* Total*/}
                 <div className="border-t pt-4">
-                  <div className="flex justify-between items-center text-lg font-bold">
+                  <div className="flex items-center justify-between font-extrabold text-zinc-900">
                     <span>Total</span>
                     <span>
                       ${selectedPlan.price}/{selectedPlan.billingPeriod}
                     </span>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">14-day free trial • Cancel anytime</p>
+                  <p className="text-xs text-zinc-5000 mt-0">
+                    {(selectedPlan.trialDays ?? 14)}-day free trial · Cancel anytime
+                  </p>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-2 pt-1">
+                  {/* Proceed to pay */}
+                  <button
+                    type="button"
+                    className="h-9 px-8 rounded-full
+                              bg-orangeButton text-white text-[10px] font-medium
+                              hover:bg-orange-600
+                              transition-colors"
+                    onClick={() => {
+                      // BACKEND CHECKOUT HOOK (to be implemented)
+                    }}
+                  >
+                    Proceed to pay
+                  </button>
+
+                  {/* Cancel / Exit */}
+                  <Link href="/pricing">
+                    <button
+                      type="button"
+                      className="h-9 px-8 rounded-full
+                                bg-zinc-700 text-white text-[10px] font-medium
+                                hover:bg-zinc-800
+                                transition-colors"
+                    >
+                      Cancel/Exit
+                    </button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
+          </div>
 
-            {/* Payment Form */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CreditCard className="h-5 w-5" />
-                  Payment Information
-                </CardTitle>
-                <CardDescription>Your payment information is secure and encrypted</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input id="firstName" placeholder="John" />
-                  </div>
-                  <div>
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input id="lastName" placeholder="Doe" />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input id="email" type="email" placeholder="john@example.com" />
-                </div>
-
-                <div>
-                  <Label htmlFor="cardNumber">Card Number</Label>
-                  <Input id="cardNumber" placeholder="1234 5678 9012 3456" />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="expiry">Expiry Date</Label>
-                    <Input id="expiry" placeholder="MM/YY" />
-                  </div>
-                  <div>
-                    <Label htmlFor="cvc">CVC</Label>
-                    <Input id="cvc" placeholder="123" />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="country">Country</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select country" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="us">United States</SelectItem>
-                      <SelectItem value="ca">Canada</SelectItem>
-                      <SelectItem value="uk">United Kingdom</SelectItem>
-                      <SelectItem value="au">Australia</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="terms" />
-                  <Label htmlFor="terms" className="text-sm">
-                    I agree to the{" "}
-                    <Link href="#" className="text-primary hover:underline">
-                      Terms of Service
-                    </Link>{" "}
-                    and{" "}
-                    <Link href="#" className="text-primary hover:underline">
-                      Privacy Policy
-                    </Link>
-                  </Label>
-                </div>
-
-                <Button className="w-full" size="lg">
-                  <Lock className="h-4 w-4 mr-2" />
-                  Start Free Trial
-                </Button>
-
-                <p className="text-xs text-muted-foreground text-center">
-                  You won't be charged until your 14-day free trial ends. Cancel anytime during the trial period.
-                </p>
-              </CardContent>
-            </Card>
+          {/* Back Link */}
+          <div className="mt-8 text-center">
+            <Link
+              href="/pricing"
+              className="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-700"
+            >
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              Back to Pricing
+            </Link>
           </div>
         </div>
       </div>

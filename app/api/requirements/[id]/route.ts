@@ -66,3 +66,73 @@ export async function GET(
     )
   }
 }
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    await connectToDatabase()
+
+    const { id } = params
+    console.log("Updating requirement _id:", id)
+
+    // ✅ Validate MongoDB _id
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { success: false, error: "Invalid requirement ID" },
+        { status: 400 }
+      )
+    }
+
+    const body = await req.json()
+
+    // ✅ Allowed update fields
+    const updateData = {
+      title: body.title,
+      description: body.description,
+      category: body.category,
+      budgetMin: body.budgetMin,
+      budgetMax: body.budgetMax,
+      timeline: body.timeline,
+      documentUrl: body.documentUrl,
+      status: body.status,
+      image: body.image,
+    }
+
+    // Remove undefined fields
+    Object.keys(updateData).forEach(
+      (key) => updateData[key] === undefined && delete updateData[key]
+    )
+
+    if (Object.keys(updateData).length === 0) {
+      return NextResponse.json(
+        { success: false, error: "No fields to update" },
+        { status: 400 }
+      )
+    }
+
+    const updatedRequirement = await Requirement.findByIdAndUpdate(
+      id,                // 🔥 MongoDB _id from params
+      updateData,
+      { new: true, runValidators: true }
+    ).lean()
+
+    if (!updatedRequirement) {
+      return NextResponse.json(
+        { success: false, error: "Requirement not found" },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json({
+      success: true,
+      requirement: updatedRequirement,
+    })
+  } catch (error) {
+    console.error("PUT requirement error:", error)
+    return NextResponse.json(
+      { success: false, error: "Failed to update requirement" },
+      { status: 500 }
+    )
+  }
+}

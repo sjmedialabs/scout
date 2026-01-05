@@ -1,130 +1,165 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { useAuth } from "@/contexts/auth-context"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import type { UserRole } from "@/lib/auth"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [role, setRole] = useState<UserRole>("client")
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [role, setRole] = useState<"agency" | "client" | "admin">("client");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const { login } = useAuth()
-  const router = useRouter()
+  const { login } = useAuth();
+  const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    setLoading(true)
+  const handleSubmit = async () => {
+    setError("");
+    setLoading(true);
 
     try {
-      await login(email, password, role)
+      await login(email, password, role);
 
-      // Redirect based on role
-      switch (role) {
-        case "client":
-          router.push("/client/dashboard")
-          break
-        case "agency":
-          router.push("/agency/dashboard")
-          break
-        case "admin":
-          router.push("/admin/dashboard")
-          break
-      }
+      // Redirect based on role (EXACT OLD BEHAVIOR)
+      if (role === "client") router.push("/client/dashboard");
+      if (role === "agency") router.push("/agency/dashboard");
+      if (role === "admin") router.push("/admin/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed")
+      setError(err instanceof Error ? err.message : "Login failed");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="flex items-center justify-center py-12 px-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Sign In</CardTitle>
-            <CardDescription>Enter your credentials to access your account</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="role">Account Type</Label>
-                <Select value={role} onValueChange={(value: UserRole) => setRole(value)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="client">Client</SelectItem>
-                    <SelectItem value="agency">Agency</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+      <div className="relative w-full max-w-3xl h-[97vh] overflow-hidden rounded-3xl bg-white shadow-xl">
+        <div className="grid h-full grid-cols-1 lg:grid-cols-12">
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
+          {/* LEFT SECTION */}
+          <div
+            className="relative hidden lg:flex lg:col-span-6 h-full flex-col justify-between p-10 text-white bg-cover"
+            style={{
+              backgroundImage: "url('/images/Login-Image.png')",
+              backgroundPosition: "left bottom"
+            }}
+          >
+            <div className="relative z-10 max-w-sm">
+              <h2 className="text-2xl font-extrabold leading-tight">
+                Built to Accelerate <br /> Business Success
+              </h2>
+
+              <ul className="mt-2 space-y-2 text-[10px] text-white">
+                <li>owering Smarter Business Connections</li>
+                <li>700+ Categories. One Trusted Platform.</li>
+                <li>Quality Work. Accelerated Results.</li>
+                <li>Your Gateway to Global Talent & Businesses</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* RIGHT SECTION */}
+          <div className="lg:col-span-6 h-full overflow-y-auto p-8 sm:p-10">
+            <h3 className="text-lg font-semibold text-center">Sign in</h3>
+            <p className="mt-0.1 text-[10px] text-gray-400 text-center">
+              Enter your credentials to access your account
+            </p>
+
+            {/* Account Type */}
+            <div className="mt-2">
+              <label className="text-xs font-bold text-gray-700">
+                Account Type
+              </label>
+              <div className="mt-2 flex gap-4 text-[10px] text-gray-400">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    checked={role === "client"}
+                    onChange={() => setRole("client")}
+                  />
+                  Service seeker
+                </label>
+
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    checked={role === "agency"}
+                    onChange={() => setRole("agency")}
+                  />
+                  Service Provider
+                </label>
+
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    checked={role === "admin"}
+                    onChange={() => setRole("admin")}
+                  />
+                  Admin
+                </label>
+              </div>
+            </div>
+
+            {/* Inputs */}
+            <div className="mt-1 space-y-4">
+              <div>
+                <label className="text-xs font-bold text-gray-600">E-mail</label>
+                <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  required
+                  placeholder="Enter E-Mail"
+                  className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
+              <div>
+                <label className="text-xs font-bold text-gray-600">Password</label>
+                <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  required
+                  placeholder="Enter Password"
+                  className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
                 />
               </div>
+              <p
+                onClick={() => router.push("/forgot-password")}
+                className="mt-2 text-center text-xs  hover:text-blue-400 underline cursor-pointer"
+              >
+                Forgot password?
+              </p>
+            </div>
 
-              {error && <div className="text-destructive text-sm text-center">{error}</div>}
+            {error && (
+              <p className="mt-2 text-center text-[10px] text-red-500">
+                {error}
+              </p>
+            )}
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Signing In..." : "Sign In"}
-              </Button>
-            </form>
+            {/* Button */}
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="mt-4 w-full rounded-xl bg-black py-2 text-xs font-medium text-white hover:bg-gray-900 transition"
+            >
+              {loading ? "Signing In..." : "Sign in"}
+            </button>
 
-            <div className="mt-6 text-center text-sm">
-              <span className="text-muted-foreground">{"Don't have an account? "}</span>
-              <Link href="/register" className="text-primary hover:underline">
+            {/* Footer */}
+            <p className="mt-1 text-center text-xs text-black">
+              Don't have an account?
+              <span
+                onClick={() => router.push("/register")}
+                className="ml-1 cursor-pointer underline hover:text-blue-400 font-medium text-black"
+              >
                 Register here
-              </Link>
-            </div>
-
-            {/* Demo Credentials */}
-            <div className="mt-6 p-4 bg-muted rounded-lg">
-              <p className="text-sm font-medium mb-2">Demo Credentials:</p>
-              <div className="text-xs space-y-1 text-muted-foreground">
-                <div>Client: seeker@example.com</div>
-                <div>Agency: provider@example.com</div>
-                <div>Admin: admin@example.com</div>
-                <div>Password: any password</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              </span>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
-  )
+  );
 }

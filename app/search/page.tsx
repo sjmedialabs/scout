@@ -1,22 +1,25 @@
 "use client"
 
 import type React from "react"
-
-import { useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, Star, MapPin } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import ServiceCard from "@/components/ServiceCard"
+import type { Provider } from "@/components/types/service"
+import { Search } from "lucide-react"
+import Image from "next/image"
 
 export default function SearchPage() {
   const searchParams = useSearchParams()
+  const router = useRouter()
+
   const query = searchParams.get("q") || ""
   const [searchQuery, setSearchQuery] = useState(query)
   const [results, setResults] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
 
+  
   useEffect(() => {
     if (query) {
       performSearch(query)
@@ -24,48 +27,14 @@ export default function SearchPage() {
   }, [query])
 
   const performSearch = async (searchTerm: string) => {
-    setLoading(true)
-
-    // Mock search results - in real app, this would call an API
-    const mockResults = [
-      {
-        id: "1",
-        type: "provider",
-        name: "TechCraft Solutions",
-        description: "Full-stack development company specializing in modern web and mobile applications.",
-        rating: 4.9,
-        reviews: 127,
-        location: "San Francisco, CA",
-        services: ["Web Development", "Mobile Apps", "E-commerce"],
-      },
-      {
-        id: "2",
-        type: "requirement",
-        title: "E-commerce Website Development",
-        description: "Looking for a modern e-commerce platform with payment integration...",
-        budget: "$5,000 - $10,000",
-        category: "Web Development",
-        timeline: "3 months",
-      },
-      {
-        id: "3",
-        type: "provider",
-        name: "Digital Marketing Pro",
-        description: "Comprehensive digital marketing strategies for growing businesses.",
-        rating: 4.7,
-        reviews: 89,
-        location: "Austin, TX",
-        services: ["SEO", "Social Media", "Content Marketing"],
-      },
-    ].filter(
-      (item) =>
-        item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchTerm.toLowerCase()),
-    )
-
-    setTimeout(() => {
-      setResults(mockResults)
+    try {
+      setLoading(true)
+      const res = await fetch(`/api/search?q=${encodeURIComponent(searchTerm)}`)
+      const data = await res.json()
+      setResults(data)
+    } catch (error) {
+      console.error("Search error:", error)
+    } finally {
       setLoading(false)
     }, 500)
   }
@@ -77,103 +46,95 @@ export default function SearchPage() {
     }
   }
 
+  const providers: Provider[] = [
+    ...results.services,
+    ...results.agencies,
+  ]
+
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">Search Results</h1>
-        <form onSubmit={handleSearch} className="flex gap-2 max-w-2xl">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search for services, providers, or projects..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Button type="submit">Search</Button>
-        </form>
+    <div className="bg-white">
+
+      {/* HERO SEARCH SECTION */}
+      <section className="relative h-[280px] flex items-center justify-center overflow-hidden">
+      {/* Banner Image */}
+      <div className="absolute inset-0">
+        <Image
+          src="/images/Search-banner.jpg"
+          alt="Service Details Banner Image"
+          fill
+          priority
+          className="object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-white/10" />
       </div>
 
-      {loading ? (
-        <div className="text-center py-8">
-          <p className="text-muted-foreground">Searching...</p>
-        </div>
-      ) : (
-        <div className="space-y-6">
-          {query && (
-            <p className="text-muted-foreground">
-              Showing {results.length} results for "{query}"
-            </p>
-          )}
+      {/* Content */}
+      <div className="relative z-10 text-center w-full px-4">
+        <h1 className="text-orange-500 text-3xl font-semibold mb-6">
+          Search Results
+        </h1>
 
-          {results.length === 0 && query ? (
-            <Card>
-              <CardContent className="pt-6 text-center">
-                <p className="text-muted-foreground">No results found for "{query}"</p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Try different keywords or browse our service categories
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-4">
-              {results.map((result) => (
-                <Card key={result.id} className="hover:shadow-md transition-shadow">
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg">
-                          {result.type === "provider" ? result.name : result.title}
-                        </CardTitle>
-                        <p className="text-muted-foreground mt-1">{result.description}</p>
-                      </div>
-                      <Badge variant={result.type === "provider" ? "default" : "secondary"}>
-                        {result.type === "provider" ? "Provider" : "Project"}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    {result.type === "provider" ? (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                            <span>
-                              {result.rating} ({result.reviews} reviews)
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4" />
-                            <span>{result.location}</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {result.services.map((service: string) => (
-                            <Badge key={service} variant="outline">
-                              {service}
-                            </Badge>
-                          ))}
-                        </div>
-                        <Button variant="outline">View Profile</Button>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <Badge variant="outline">{result.category}</Badge>
-                          <span>Budget: {result.budget}</span>
-                          <span>Timeline: {result.timeline}</span>
-                        </div>
-                        <Button variant="outline">View Details</Button>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+        <form
+          onSubmit={handleSearch}
+          className="mx-auto max-w-3xl flex items-center bg-white rounded-full shadow-md overflow-hidden"
+        >
+          <Input
+            placeholder="Search for Agency name/service / Project name"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="border-0 h-14 px-6 text-sm focus-visible:ring-0"
+          />
+          <button
+            type="submit"
+            className="h-14 w-16 bg-orange-500 flex items-center justify-center"
+          >
+            <Search className="text-white h-5 w-5" />
+          </button>
+        </form>
+      </div>
+    </section>
+
+
+      {/* RESULTS HEADER */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="flex items-center justify-between mb-8">
+          <p className="text-lg text-gray-500">
+            Search Results{" "}
+            <span className="font-medium text-gray-700">
+              {providers.length > 0 && `1–${providers.length}`}
+            </span>
+          </p>
+
+          {/* SORT DROPDOWN (UI ONLY) */}
+          <select
+            className="border rounded-full px-4 py-2 text-sm text-gray-600"
+            defaultValue="rating"
+          >
+            <option value="rating">Highest Rating</option>
+            <option value="newest">Newest</option>
+            <option value="projects">Most Projects</option>
+          </select>
         </div>
-      )}
+
+        {/* STATES */}
+        {loading ? (
+          <div className="text-center py-16 text-gray-500">
+            Searching…
+          </div>
+        ) : providers.length === 0 ? (
+          <div className="text-center py-16 text-gray-500">
+            No results found for "{query}"
+          </div>
+        ) : (
+          /* CARDS GRID */
+          <div className="grid gap-8 md:grid-cols-2">
+            {providers.map((provider) => (
+              <ServiceCard key={provider.id} provider={provider} />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   )
 }

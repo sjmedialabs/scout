@@ -3,6 +3,8 @@ import { connectToDatabase } from "@/lib/mongodb"
 import User from "@/models/User"
 import { generateToken, setAuthCookie, verifyPassword } from "@/lib/auth/jwt"
 
+
+
 export async function POST(request: NextRequest) {
   try {
     await connectToDatabase()
@@ -33,9 +35,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
     }
 
+    console.log("PASSWORD CHECK:", {
+      plain: password,
+      hashed: user.password,
+      result: isValidPassword,
+    })
+
     // Check role if provided
     if (role && user.role !== role) {
-      return NextResponse.json({ error: "Role mismatch. Please select the correct account type." }, { status: 401 })
+    console.warn("Role mismatch:", {
+      selectedRole: role,
+      actualRole: user.role,
+    })
     }
 
     // Update last login
@@ -55,6 +66,7 @@ export async function POST(request: NextRequest) {
       name: user.name,
       role: user.role,
       company: user.company,
+      isActive:user.isActive,
       isVerified: user.isVerified,
       lastLogin: user.lastLogin,
       createdAt: user.createdAt,

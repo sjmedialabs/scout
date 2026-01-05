@@ -6,38 +6,16 @@ import { error } from "console"
 import mongoose from "mongoose"
 
 // GET Requirements
-
-
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(req: NextRequest) {
   try {
     await connectToDatabase()
-
-    const { id } = await params
-
-    console.log("---client Id:::",id);
-
-    // ✅ Validate ObjectId
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json(
-        { success: false, error: "Invalid client ID" },
-        { status: 400 }
-      )
-    }
-
-    const clientObjectId = new mongoose.Types.ObjectId(id)
 
     const search = req.nextUrl.searchParams.get("search") || ""
     const category = req.nextUrl.searchParams.get("category") || ""
     const minBudget = Number(req.nextUrl.searchParams.get("minBudget") || 0)
     const maxBudget = Number(req.nextUrl.searchParams.get("maxBudget") || 9999999)
 
-    // ✅ Build query
-    const query: any = {
-      clientId: clientObjectId, // ObjectId match
-    }
+    const query: any = {}
 
     if (search) {
       query.title = { $regex: search, $options: "i" }
@@ -52,6 +30,7 @@ export async function GET(
 
     const requirements = await Requirement.find(query)
       .sort({ createdAt: -1 })
+      .limit(6)
       .lean()
 
     return NextResponse.json({
@@ -66,8 +45,6 @@ export async function GET(
     )
   }
 }
-
-
 
 function formatPostedDate(date: Date) {
   const diff = (Date.now() - new Date(date).getTime()) / (1000 * 60 * 60 * 24)

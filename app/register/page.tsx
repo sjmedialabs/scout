@@ -1,146 +1,180 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { useAuth } from "@/contexts/auth-context"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import type { UserRole } from "@/lib/auth"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function RegisterPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [name, setName] = useState("")
-  const [companyName, setCompanyName] = useState("")
-  const [role, setRole] = useState<UserRole>("client")
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [role, setRole] = useState<"agency" | "client">("client");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [companyName, setCompanyName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const { register } = useAuth()
-  const router = useRouter()
+  const { register } = useAuth();
+  const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    setLoading(true)
+  const handleSubmit = async () => {
+    setError("");
+    setLoading(true);
 
     try {
-      await register(email, password, name, role, companyName || undefined)
+      await register(
+        email,
+        password,
+        name,
+        role,
+        role === "agency" ? companyName : undefined
+      );
 
-      // Redirect based on role
-      switch (role) {
-        case "client":
-          router.push("/client/dashboard")
-          break
-        case "agency":
-          router.push("/agency/dashboard")
-          break
-        case "admin":
-          router.push("/admin/dashboard")
-          break
-      }
+      if (role === "client") router.push("/client/dashboard");
+      if (role === "agency") router.push("/agency/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed")
+      setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="flex items-center justify-center py-12 px-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Create Account</CardTitle>
-            <CardDescription>Join Spark to connect with agencies or offer your services</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="role">Account Type</Label>
-                <Select value={role} onValueChange={(value: UserRole) => setRole(value)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="client">Client</SelectItem>
-                    <SelectItem value="agency">Agency</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+      {/* Modal Card */}
+      <div className="relative w-full max-w-3xl h-[97vh] overflow-hidden rounded-3xl bg-white shadow-xl">
+        <div className="grid h-full grid-cols-1 lg:grid-cols-12">
 
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
-                  type="text"
+          {/* LEFT SECTION */}
+          <div
+            className="relative hidden lg:flex lg:col-span-6 h-full flex-col justify-between p-10 text-white bg-cover"
+            style={{
+              backgroundImage: "url('/images/Login-Image.png')",
+              backgroundPosition: "left bottom"
+            }}
+          >
+            <div className="relative z-10 max-w-sm">
+              <h2 className="text-2xl font-extrabold leading-tight">
+                Built to Accelerate <br /> Business Success
+              </h2>
+
+              <ul className="mt-2 space-y-2 text-[10px] text-white">
+                <li>owering Smarter Business Connections</li>
+                <li>700+ Categories. One Trusted Platform.</li>
+                <li>Quality Work. Accelerated Results.</li>
+                <li>Your Gateway to Global Talent & Businesses</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* RIGHT SECTION */}
+          <div className="lg:col-span-6 h-full overflow-y-auto p-8 sm:p-10">
+            <h3 className="text-lg font-semibold text-center">Create Account</h3>
+            <p className="mt-0.1 text-[10px] text-gray-400 text-center">
+              Join Spark to connect with agencies or offer your services
+            </p>
+
+            {/* Account Type */}
+            <div className="mt-2">
+              <label className="text-xs font-bold text-gray-700">
+                Account Type
+              </label>
+              <div className="mt-2 flex gap-6 text-[10px] text-gray-400">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    checked={role === "agency"}
+                    onChange={() => setRole("agency")}
+                  />
+                  Service Provider
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    checked={role === "client"}
+                    onChange={() => setRole("client")}
+                  />
+                  Service seeker
+                </label>
+              </div>
+            </div>
+
+            {/* Inputs */}
+            <div className="mt-1 space-y-4">
+              <div>
+                <label className="text-xs font-bold text-gray-600">Full name</label>
+                <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter your full name"
-                  required
+                  placeholder="Enter Your Name"
+                  className="mt-0.1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
+              <div>
+                <label className="text-xs font-bold text-gray-600">E-mail</label>
+                <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  required
+                  placeholder="Enter E-Mail"
+                  className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
+              <div>
+                <label className="text-xs font-bold text-gray-600">Password</label>
+                <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Create a password"
-                  required
+                  placeholder="Enter Password"
+                  className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
                 />
               </div>
 
-              {(role === "client" || role === "agency") && (
-                <div className="space-y-2">
-                  <Label htmlFor="companyName">Company Name {role === "agency" ? "(Required)" : "(Optional)"}</Label>
-                  <Input
-                    id="companyName"
-                    type="text"
-                    value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                    placeholder="Enter your company name"
-                    required={role === "agency"}
-                  />
-                </div>
-              )}
-
-              {error && <div className="text-destructive text-sm text-center">{error}</div>}
-
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Creating Account..." : "Create Account"}
-              </Button>
-            </form>
-
-            <div className="mt-6 text-center text-sm">
-              <span className="text-muted-foreground">Already have an account? </span>
-              <Link href="/login" className="text-primary hover:underline">
-                Sign in here
-              </Link>
+              <div>
+                <label className="text-xs font-bold text-gray-600">
+                  Company Name {role === "agency" ? "(Required)" : "(Optional)"}
+                </label>
+                <input
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  placeholder="Enter your Company Name"
+                  required={role === "agency"}
+                  className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
+                />
+              </div>
             </div>
-          </CardContent>
-        </Card>
+
+            {error && (
+              <p className="mt-2 text-center text-[10px] text-red-500">
+                {error}
+              </p>
+            )}
+
+            {/* Button */}
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="mt-4 w-full rounded-xl bg-black py-2 text-xs font-medium text-white hover:bg-gray-900 transition"
+            >
+              {loading ? "Creating Account..." : "Create Account"}
+            </button>
+
+            {/* Footer */}
+            <p className="mt-1 text-center text-xs text-black">
+              Already have an account?
+              <span
+                onClick={() => router.push("/login")}
+                className="ml-1 cursor-pointer underline hover:text-blue-400 font-medium text-black"
+              >
+                Sign in here
+              </span>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
-  )
+  );
 }

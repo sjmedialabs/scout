@@ -3,6 +3,20 @@ export type ProposalStatus = "pending" | "shortlisted" | "accepted" | "rejected"
 export type ProjectStatus = "active" | "completed" | "cancelled"
 export type SubscriptionTier = "basic" | "standard" | "premium"
 
+export interface User {
+  _id: string
+  name: string
+  email: string
+  role: "client" | "agency" | "admin"
+  createdAt: Date
+  lastLogin?: Date
+  companyName?: string
+  subscriptionTier?: SubscriptionTier
+  isActive: boolean
+  isVerified: boolean
+  phone?: string
+  avatar?: string
+}
 export interface Requirement {
   id: string
   title: string
@@ -150,6 +164,7 @@ export interface SubscriptionStats {
   premium: number
   totalRevenue: number
   monthlyRecurring: number
+  totalSubscriptions: number
 }
 
 export interface SubscriptionPlan {
@@ -165,6 +180,7 @@ export interface SubscriptionPlan {
     supportLevel: "basic" | "priority" | "dedicated"
   }
   popular?: boolean
+  trialDays?: number
 }
 
 export interface UserSubscription {
@@ -188,4 +204,17 @@ export interface BillingHistory {
   status: "paid" | "pending" | "failed"
   invoiceUrl?: string
   createdAt: Date
+}
+
+export interface ISubscription {
+  _id: string
+  title: string
+  pricePerMonth: number
+  pricePerYear: number
+  yearlySubscription: boolean
+  description?: string
+  features: string[]
+  isActive: boolean
+  createdAt: Date
+  updatedAt: Date
 }
