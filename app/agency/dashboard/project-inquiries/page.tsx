@@ -84,9 +84,13 @@ const ProjectInquiriesPage=()=>{
         }
     return(
       <div className="space-y-6">
-            <div>
-            <h1 className="text-3xl font-bold mb-2">Project Inquiries</h1>
-            <p className="text-muted-foreground">Browse and respond to client requirements</p>
+            <div className="pb-4 border-b border-gray-200">
+              <h1 className="text-2xl font-semibold text-orangeButton">
+                Project Inquiries
+              </h1>
+              <p className="text-sm text-gray-500 mt-0">
+                Browse and respond to client requirements
+              </p>
             </div>
             {/* REMOVED SubscriptionGate */}
             <BrowseRequirements
