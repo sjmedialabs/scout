@@ -21,6 +21,7 @@ export interface Requirement {
   id: string
   title: string
   description: string
+  location?: string
   category: string
   budgetMin: number
   budgetMax: number

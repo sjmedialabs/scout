@@ -1,12 +1,17 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { CiCalendar } from "react-icons/ci"
+import { CiFilter } from "react-icons/ci"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { AiOutlineDollar } from "react-icons/ai"
+import { VscSend } from "react-icons/vsc"
 import { Input } from "@/components/ui/input"
+import { FaArrowRightLong } from "react-icons/fa6"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, DollarSign, Calendar, Lock, Eye } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { DollarSign, Calendar, Eye, Lock } from "lucide-react"
 import type { Requirement } from "@/lib/types"
 import { categories } from "@/lib/mock-data"
 
@@ -24,14 +29,26 @@ export function BrowseRequirements({
   onSubmitProposal,
 }: BrowseRequirementsProps) {
   const [searchTerm, setSearchTerm] = useState("")
+  const [locationOpen, setLocationOpen] = useState(false)
   const [categoryFilter, setCategoryFilter] = useState("all")
+  const [ratingFilter, setRatingFilter] = useState("any")
   const [budgetFilter, setBudgetFilter] = useState("all")
+
+  const handleSearch = () => {
+  console.log("Search triggered with:", {
+    location: searchTerm,
+    category: categoryFilter,
+    rating: ratingFilter,
+  })
+}
 
   const filteredRequirements = requirements.filter((req) => {
     const matchesSearch =
       req.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       req.description.toLowerCase().includes(searchTerm.toLowerCase())
+
     const matchesCategory = categoryFilter === "all" || req.category === categoryFilter
+
     const matchesBudget =
       budgetFilter === "all" ||
       (budgetFilter === "low" && req.budgetMax <= 2000) ||
@@ -41,154 +58,272 @@ export function BrowseRequirements({
     return matchesSearch && matchesCategory && matchesBudget && req.status === "open"
   })
 
-  const canViewFullDetails = (requirement: Requirement) => {
-    if (subscriptionTier === "basic") {
-      return false
-    }
-    return true
-  }
+  const canViewFullDetails = () => subscriptionTier !== "basic"
 
-  const formatBudget = (min: number, max: number) => {
-    return `$${min.toLocaleString()} - $${max.toLocaleString()}`
-  }
+  const formatBudget = (min: number, max: number) =>
+    `$${min.toLocaleString()} - $${max.toLocaleString()}`
 
   return (
-    <div className="space-y-6">
-      {/* Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Browse Requirements</CardTitle>
-          <CardDescription>Find projects that match your expertise</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search requirements..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+    <div className="space-y-8">
+
+      {/* FILTER BAR */}
+      <div className="border border-gray-200 rounded-4xl px-6 py-6">
+        <div className="grid grid-cols-1 md:grid-cols-[1.3fr_1.5fr_1.2fr_auto] gap-6 items-center">
+
+          {/* Location */}
+          <div className="flex flex-col gap-2 mt-0 leading-none">
+            <span className="text-sm font-bold text-[#98A0B4]">
+              Location
+            </span>
+
+            <Select
+              value={searchTerm}
+              onValueChange={(value) => setSearchTerm(value)}
+            >
+              <SelectTrigger
+                  className="
+                    h-12 rounded-xl border border-gray-300
+                    focus:border-orange-500 focus:ring-0 flex items-center
+                  "
+                >
+                {searchTerm ? (
+                <span className="text-gray-700">{searchTerm}</span>
+              ) : (
+                <span className="text-gray-400 text-xs">Enter City/ State</span>
+              )}
+              </SelectTrigger>
+
+              <SelectContent>
+                {/* Search inside dropdown */}
+                <div className="p-2">
+                  <Input
+                    placeholder="Enter City/ State"
+                    value={searchTerm}
+                    autoFocus
+                    onKeyDown={(e) => e.stopPropagation()}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="h-9 border border-gray-300 placeholder:text-gray-400 focus:border-orange-500 focus:ring-0"
+                  />
+
+                </div>
+
+                {[
+                  "Hyderabad",
+                  "Bangalore",
+                  "Chennai",
+                  "Delhi",
+                  "Mumbai",
+                  "Pune",
+                ]
+                  .filter((city) =>
+                    city.toLowerCase().includes(searchTerm.toLowerCase())
+                  )
+                  .map((city) => (
+                    <SelectItem key={city} value={city}>
+                      {city}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Technologies / Services */}
+          <div className="flex flex-col gap-2">
+            <span className="text-sm font-bold text-[#98A0B4]">
+              Technologies/Services
+            </span>
 
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="All Categories" />
+              <SelectTrigger
+                className="
+                  h-12 rounded-xl border border-gray-300
+                  focus:border-orange-500 focus:ring-0
+                  flex items-center
+                "
+              >
+                {categoryFilter !== "all" ? (
+                  <span className="text-gray-700">{categoryFilter}</span>
+                ) : (
+                  <span className="text-gray-400 text-xs">All Technologies</span>
+                )}
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                {categories.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category}
+                <SelectItem value="all">All Technologies</SelectItem>
+                {categories.map((cat) => (
+                  <SelectItem key={cat} value={cat}>
+                    {cat}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+          </div>
 
-            <Select value={budgetFilter} onValueChange={setBudgetFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Budget Range" />
+          {/* Minimum Rating */}
+          <div className="flex flex-col gap-2">
+            <span className="text-sm font-bold text-[#98A0B4]">
+              Minimum Rating
+            </span>
+
+            <Select
+              value={ratingFilter}
+              onValueChange={setRatingFilter}
+            >
+              <SelectTrigger
+                className="
+                  h-12 rounded-xl border border-gray-300
+                  focus:border-orange-500 focus:ring-0
+                  flex items-center
+                "
+              >
+                {ratingFilter !== "any" ? (
+                  <span className="text-gray-700">{ratingFilter}+</span>
+                ) : (
+                  <span className="text-gray-400 text-xs">Any Rating</span>
+                )}
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Budgets</SelectItem>
-                <SelectItem value="low">Under $2,000</SelectItem>
-                <SelectItem value="medium">$2,000 - $10,000</SelectItem>
-                <SelectItem value="high">Over $10,000</SelectItem>
+                <SelectItem value="any">Any Rating</SelectItem>
+                <SelectItem value="4">4+</SelectItem>
+                <SelectItem value="4.5">4.5+</SelectItem>
+                <SelectItem value="5">5</SelectItem>
               </SelectContent>
             </Select>
+          </div>
 
-            <Button
-              variant="outline"
-              onClick={() => {
-                setSearchTerm("")
-                setCategoryFilter("all")
-                setBudgetFilter("all")
-              }}
-            >
-              Clear Filters
+          {/* Search Button */}
+          <div className="flex items-end pt-6">
+            <Button className="px-8 py-4 rounded-full bg-orange-600 hover:bg-orange-500 text-white flex gap-2"
+            onClick={handleSearch}>
+              <CiFilter 
+              className="h-4 w-4"
+              />
+              Search
             </Button>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Subscription Gate for Basic Users */}
+        </div>
+      </div>
+
+
+
+      {/* SUBSCRIPTION WARNING */}
       {subscriptionTier === "basic" && (
         <Card className="border-yellow-200 bg-yellow-50">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <Lock className="h-5 w-5 text-yellow-600" />
-              <div>
-                <h3 className="font-medium text-yellow-800">Upgrade to View Full Details</h3>
-                <p className="text-sm text-yellow-700">
-                  Upgrade to Standard or Premium plan to view full requirement details and submit proposals.
-                </p>
-              </div>
-              <Button className="ml-auto">Upgrade Now</Button>
+          <CardContent className="p-4 flex items-center gap-3">
+            <Lock className="h-5 w-5 text-yellow-600" />
+            <div className="text-sm text-yellow-800">
+              Upgrade your plan to view full project details and submit proposals.
             </div>
+            <Button className="ml-auto">Upgrade Now</Button>
           </CardContent>
         </Card>
       )}
 
-      {/* Requirements List */}
-      <div className="space-y-4">
-        {filteredRequirements.map((requirement) => (
-          <Card key={requirement.id} className="hover:shadow-md transition-shadow">
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <CardTitle className="text-lg">{requirement.title}</CardTitle>
-                  <CardDescription className="mt-1">
-                    {canViewFullDetails(requirement)
-                      ? requirement.description.substring(0, 150) + "..."
-                      : "Upgrade your subscription to view full project details."}
-                  </CardDescription>
-                </div>
-                <Badge variant="outline">{requirement.category}</Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-                <div className="flex items-center gap-2 text-sm">
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
-                  {canViewFullDetails(requirement)
-                    ? formatBudget(requirement.budgetMin, requirement.budgetMax)
-                    : "Budget hidden"}
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  {canViewFullDetails(requirement) ? requirement.timeline : "Timeline hidden"}
-                </div>
-                <div className="text-sm text-muted-foreground">Posted {requirement.createdAt.toLocaleDateString()}</div>
+      {/* REQUIREMENTS LIST */}
+      <div className="space-y-6">
+        {filteredRequirements.map((req) => (
+          <Card
+          key={req.id}
+          className="rounded-4xl border border-gray-200 bg-white"
+        >
+          <CardContent className="px-10 pb-8 space-y-7">
+
+            {/* HEADER */}
+            <div className="flex items-start justify-between gap-6">
+              <div className="space-y-2 max-w-[85%]">
+                <h3 className="text-[22px] font-extrabold text-[#2c34a1]">
+                  {req.title}
+                </h3>
+
+                <p className="text-[15px] text-[#898383]">
+                  {canViewFullDetails()
+                    ? req.description
+                    : "Upgrade your subscription to view full project details."}
+                </p>
               </div>
 
-              <div className="flex gap-2">
-                {canViewFullDetails(requirement) ? (
-                  <>
-                    <Button variant="outline" size="sm" onClick={() => onViewDetails(requirement.id)}>
-                      <Eye className="h-4 w-4 mr-2" />
-                      View Details
-                    </Button>
-                    <Button size="sm" onClick={() => onSubmitProposal(requirement.id)}>
-                      Submit Proposal
-                    </Button>
-                  </>
-                ) : (
-                  <Button variant="outline" size="sm" disabled>
-                    <Lock className="h-4 w-4 mr-2" />
-                    Upgrade to Submit Proposal
-                  </Button>
-                )}
+              {/* Category pill */}
+              <span className="shrink-0 rounded-full bg-[#e0e0e0] px-4 py-2 text-xs font-medium">
+                {req.category}
+              </span>
+            </div>
+
+            {/* META ROW */}
+            <div className="flex items-center gap-10 text-[15px] text-gray-800">
+
+              {/* Budget */}
+              <div className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-orangeButton">
+                  <AiOutlineDollar className="h-5 w-5 text-white" />
+                </span>
+                <span className="font-extrabold">
+                  {canViewFullDetails()
+                    ? formatBudget(req.budgetMin, req.budgetMax)
+                    : "Budget hidden"}
+                </span>
               </div>
-            </CardContent>
-          </Card>
+
+              {/* Duration (UI only) */}
+              <div className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-orangeButton">
+                  <CiCalendar className="h-5 w-5 text-white" />
+                </span>
+                <span className="font-extrabold">{req.timeline}</span>
+              </div>
+
+              {/* Posted Date */}
+              <div className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-orangeButton">
+                  <VscSend className="h-5 w-5 text-white" />
+                </span>
+                <span className="font-extrabold">
+                  Posted: {req.createdAt.toLocaleDateString()}
+                </span>
+              </div>
+
+            </div>
+
+            {/* ACTION BUTTONS */}
+            <div className="flex gap-5 pt-4">
+              <Button
+                className="h-[50px] px-8 font-bold rounded-full bg-[#2c34a1] text-white hover:bg-indigo-700 flex items-center gap-2"
+                onClick={() => onViewDetails(req.id)}
+              >
+                View Details
+                 <FaArrowRightLong className="text-sm" />
+              </Button>
+
+              {canViewFullDetails() ? (
+                <Button
+                  className="h-[50px] px-8 font-bold rounded-full bg-black text-white hover:bg-black/90 flex items-center gap-2"
+                  onClick={() => onSubmitProposal(req.id)}
+                >
+                  Submit Proposal
+                  <FaArrowRightLong className="text-sm" />
+                </Button>
+              ) : (
+                <Button
+                  disabled
+                  className="h-[46px] px-8 rounded-full"
+                >
+                  Upgrade to Submit
+                </Button>
+              )}
+            </div>
+
+          </CardContent>
+        </Card>
+
+
+
         ))}
       </div>
 
+      {/* EMPTY STATE */}
       {filteredRequirements.length === 0 && (
         <Card>
-          <CardContent className="pt-6 text-center">
-            <p className="text-muted-foreground">No requirements found matching your filters.</p>
+          <CardContent className="p-8 text-center text-muted-foreground">
+            No requirements found matching your filters.
           </CardContent>
         </Card>
       )}
