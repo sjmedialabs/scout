@@ -86,6 +86,7 @@ export async function GET(
           cons: 1,
           keyHighLights: 1,
           createdAt: 1,
+          response: { $ifNull: ["$response", {}] },
 
           client: {
             name: "$client.name",
