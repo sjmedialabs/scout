@@ -16,7 +16,7 @@ export default function AgencyDashboardLayout({ children }) {
       <Sidebar user={user} provider={provider} />
 
       {/* Main Content */}
-      <div className="flex-1  p-6">
+      <div className="flex-1 ml-80 p-6">
         {children}
       </div>
     </div>

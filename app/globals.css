@@ -181,6 +181,10 @@
 .bg-sidebarMain {
   background-color: var(--sidebarMain);
 }
+.my-custom-class {
+  font-family: 'Plus Jakarta Sans', sans-serif; /* Fallback to sans-serif */
+}
+
 @font-face {
   font-family: "CabinetGrotesk";
   src: url("/fonts/CabinetGrotesk-Bold.otf") format("opentype");
@@ -238,4 +242,6 @@
 .font-cabinet-thin {
   font-family: "CabinetGrotesk8", sans-serif;
 }
-
+.font-inter{
+  font-family: "Inter",sans-serif;
+}

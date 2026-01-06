@@ -531,117 +531,13 @@ export default function AgencyDashboard() {
 
   return (
     <div>
-      <div className="fixed left-0 top-0 h-full w-80 bg-card border-r border-border flex flex-col z-10">
-        <div className="p-6 border-b border-border">
-          <h2 className="text-xl font-bold">Agency Dashboard</h2>
-          <p className="text-sm text-muted-foreground">Welcome back, {user.name}</p>
-          <div className="flex items-center gap-2 mt-3">
-            <Badge
-              className={
-                provider.subscriptionTier === "basic"
-                  ? "bg-gray-100 text-gray-800"
-                  : provider.subscriptionTier === "standard"
-                    ? "bg-blue-100 text-blue-800"
-                    : "bg-purple-100 text-purple-800"
-              }
-            >
-              {provider.subscriptionTier === "basic"
-                ? "Basic"
-                : provider.subscriptionTier === "standard"
-                  ? "Standard"
-                  : "Premium"}
-              Plan
-            </Badge>
-            {provider.isVerified && <Badge variant="secondary">Verified</Badge>}
-            {provider.isFeatured && <Badge>Featured</Badge>}
-          </div>
-        </div>
+      
 
-        {/* Navigation Menu */}
-        <div className="flex-1 overflow-y-auto p-4">
-          <nav className="space-y-2">
-            {menuItems.map((section) => (
-              <div key={section.id}>
-                <button
-                  onClick={() => toggleSection(section.id)}
-                  className="w-full flex items-center justify-between p-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <section.icon className="h-4 w-4" />
-                    {section.label}
-                  </div>
-                  {section.children &&
-                    (expandedSections.includes(section.id) ? (
-                      <ChevronDown className="h-4 w-4" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4" />
-                    ))}
-                </button>
-
-                {section.children && expandedSections.includes(section.id) && (
-                  <div className="ml-4 mt-2 space-y-1">
-                    {section.children.map((item) => (
-                      <div key={item.id}>
-                        <button
-                          onClick={() => handleMenuClick(item.id, section.id)}
-                          className={`w-full flex items-center justify-between p-2 text-sm rounded-lg transition-colors ${
-                            activeSection === item.id
-                              ? "bg-primary text-primary-foreground"
-                              : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <item.icon className="h-4 w-4" />
-                            {item.label}
-                          </div>
-                          {item.children &&
-                            (expandedSections.includes(item.id) ? (
-                              <ChevronDown className="h-4 w-4" />
-                            ) : (
-                              <ChevronRight className="h-4 w-4" />
-                            ))}
-                        </button>
-
-                        {item.children && expandedSections.includes(item.id) && (
-                          <div className="ml-6 mt-1 space-y-1">
-                            {item.children.map((subItem) => (
-                              <button
-                                key={subItem.id}
-                                onClick={() => handleMenuClick(subItem.id, item.id)}
-                                className={`w-full flex items-center gap-3 p-2 text-sm rounded-lg transition-colors ${
-                                  activeSubSection === subItem.id
-                                    ? "bg-primary text-primary-foreground"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                                }`}
-                              >
-                                <subItem.icon className="h-4 w-4" />
-                                {subItem.label}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </nav>
-        </div>
-
-        <div className="p-4 border-t border-border">
-          <Button variant="outline" size="sm" onClick={() => router.push("/pricing")} className="w-full">
-            <Settings className="h-4 w-4 mr-2" />
-            Upgrade Plan
-          </Button>
-        </div>
-      </div>
-
-      <div className="ml-80 min-h-screen">
+      <div className="min-h-screen">
         <div className="min-h-screen">
           <div className="p-8">
-            {activeSection === "dashboard" && (
-              <div className="space-y-6">
+
+            <div className="space-y-6">
                 <div>
                   <h1 className="text-3xl font-bold mb-2">Dashboard Overview</h1>
                   <p className="text-muted-foreground">Quick stats and recent activity</p>
@@ -805,7 +701,6 @@ export default function AgencyDashboard() {
                   </div>
                 </div>
               </div>
-            )}
 
             {activeSection === "performance-analytics" && (
               <div className="space-y-6">

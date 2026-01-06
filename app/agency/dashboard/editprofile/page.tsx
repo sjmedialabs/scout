@@ -100,8 +100,9 @@ const EditProfile = () => {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold mb-2">Edit Profile</h1>
-                <p className="text-muted-foreground">Manage your company information and profile details</p>
+                <h1 className="text-3xl font-bold text-[#F4561C] my-custom-class mb-0">Edit Profile</h1>
+                <p className="text-[#656565] font-normal my-custom-class text-lg">Manage your company information and profile details</p>
+                <hr className="w-full mt-5 border-1 border-[#707070]"/>
             </div>
 
              {providerDetails && (<CompanyProfileEditor provider={providerDetails} onSave={handleSaveProfile} />)}
