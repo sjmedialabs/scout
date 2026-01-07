@@ -82,20 +82,20 @@ console.log("Is valid ObjectId:", mongoose.Types.ObjectId.isValid(id));
     
 
     // ✅ Mark proposals as viewed if client
-    if (user.role === "client") {
-      await Proposal.updateMany(
-        {
-          _id: { $in: proposals.map((p) => p._id) },
-          clientViewed: false,
-        },
-        {
-          $set: {
-            clientViewed: true,
-            clientViewedAt: new Date(),
-          },
-        }
-      )
-    }
+    // if (user.role === "client") {
+    //   await Proposal.updateMany(
+    //     {
+    //       _id: { $in: proposals.map((p) => p._id) },
+    //       clientViewed: false,
+    //     },
+    //     {
+    //       $set: {
+    //         clientViewed: true,
+    //         clientViewedAt: new Date(),
+    //       },
+    //     }
+    //   )
+    // }
 
     // ✅ Format response
     return NextResponse.json({
@@ -214,10 +214,20 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
           // )
 
         }
+        
       }
 
       if (body.conversationStarted !== undefined) {
+
         updates.conversationStarted = body.conversationStarted
+      }
+
+       
+
+      if (body.clientViewed !== undefined) {
+        console.log("-------Entered---------")
+      updates.clientViewed = body.clientViewed
+      updates.clientViewedAt = new Date()
       }
 
       if (body.rating) {
@@ -230,10 +240,13 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       Object.assign(updates, body)
     }
 
+   
+
     const updated = await Proposal.findByIdAndUpdate(id, updates, { new: true })
+    // console.log("--------updated proposal:::",updated)
      const seeker =user.role==="client"?await Seeker.findOne({ userId: user.userId }) : await Provider.findOne({ userId: user.userId });
      const project=await Requirement.findById(proposal.requirementId)
-     console.log("----project in the put---",project)
+    //  console.log("----project in the put---",project)
 
     //  if(user.role==="client"){
     //   seeker= await Seeker.findOne({ userId: user.userId })
