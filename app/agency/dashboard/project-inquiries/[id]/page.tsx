@@ -7,20 +7,63 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { mockRequirements } from "@/lib/mock-data"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
+import { Proposal, Requirement } from "@/lib/types"
+import { useAuth } from "@/contexts/auth-context"
 
 export default function SubmitProposalPage() {
+  const { user, loading } = useAuth()
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
   const { toast } = useToast()
   const [success, setSuccess] = useState(false)
 
+  const[resLoading,setResLoading]=useState(false);
+  const[failed,setFailed]=useState(false);
+  const[requirement,setRequirement]=useState<Requirement[]>([])
+  //if alreadybthe agency provided the proposal for this project dont show the form
+  const[showForm,setShowForm]=useState(true);
+
+  const loadData=async()=>{
+    setResLoading(true);
+    setFailed(false);
+    try{
+      const res=await fetch(`/api/requirements/${id}`)
+      const proposalRes=await fetch("/api/proposals");
+      if(res.ok && proposalRes.ok){
+         const data=await res.json();
+         const proposalData=await proposalRes.json();
+        
+        setFailed(false);
+        setRequirement(data.requirements[0])
+        console.log("proposals data:::::",proposalData.proposals)
+        const proposalsCount=(proposalData.proposals || []).filter((eachItem)=>id===eachItem.requirement.id && eachItem.agencyId===user?.id).length
+        setShowForm(proposalsCount===0)
+
+        // setProposals(proposalData.proposals.filter((eachItem)=>id===eachItem.requirement.id && eachItem.agencyId===user?.id))
+      }
+
+    }catch(error){
+      console.log("Failed to fetch project details::::",error);
+      setFailed(true);
+    }finally{
+      setResLoading(false);
+    }
+  }
+  
+
+  // useEffect(()=>{
+  //   loadData();
+  // },[])
 
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const[proposals,setProposals]=useState<Proposal[]>([]);
+  const[formResponse,setFormResponse]=useState("");
+  // console.log("proposals are:::::::",proposals);
 
   const buildPayload = () => ({
   requirementId: requirement.id,
@@ -31,6 +74,7 @@ export default function SubmitProposalPage() {
   milestones: milestones.filter((m) => m.trim() !== ""),
 })
 
+console.log("Form status:::::",showForm)
 
   const handleSubmitProposal = async () => {
   if (!validateForm()) return
@@ -39,19 +83,47 @@ export default function SubmitProposalPage() {
   setSuccess(false)
 
   try {
-    await new Promise((resolve) => setTimeout(resolve, 1200))
+   
+    // const tempmilestons=milestones.map((eachItem)=>({title:eachItem}))
 
-    setSuccess(true)
-    setErrors({
-      cost: false,
-      timeline: false,
-      approach: false,
-      form: false,
+   
+      const payload={
+        requirementId:requirement._id,
+        clientId:requirement.clientId,
+        proposedBudget:cost,
+        proposedTimeline:timeline,
+        proposalDescription:approach,
+        coverLetter:coverLetter,
+        milestones:milestones.map((eachItem)=>({title:eachItem}))
+      }
+
+       console.log("Payload to send:::::::",payload)
+      const res=await fetch("/api/proposals",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(payload)
     })
+    console.log("Post form response:::",res)
+    if(res.ok){
+      setSuccess(true)
+      setErrors({
+        cost: false,
+        timeline: false,
+        approach: false,
+        form: false,
+      })
+
+    }
+    else if(res.status===409){
+      setFormResponse("You already submitted the proposal for this project")
+    }
+    else{
+      setFormResponse("failed to submit the proposal please try again")
+    }
 
     setTimeout(() => {
       router.push("/agency/dashboard/project-inquiries")
-    }, 1500)
+    }, 4500)
 
   } catch {
     setErrors({
@@ -66,7 +138,7 @@ export default function SubmitProposalPage() {
 }
   
 
-  const requirement = mockRequirements.find((r) => r.id === id)
+  // const requirement = mockRequirements.find((r) => r.id === id)
 
   const [errors, setErrors] = useState<{
     cost: boolean
@@ -104,9 +176,36 @@ export default function SubmitProposalPage() {
   const [milestones, setMilestones] = useState([""])
   const [coverLetter, setCoverLetter] = useState("")
 
-  if (!requirement) {
+  useEffect(() => {
+  if (loading) return   // ⛔ wait until auth finishes
+
+  if (!user) {
+    router.replace("/login")
+    return
+  }
+
+  if (user.role !== "agency") {
+    router.replace("/login")
+  }
+  if(user && !loading && user.role==="agency"){
+    loadData()
+  }
+}, [user, loading, router])
+
+    console.log("fetched User Details are:::",user)
+
+  if (failed) {
     return <div className="p-6">Project not found</div>
   }
+
+  if(resLoading || loading){
+    return(
+             <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+        )
+  }
+
 
   return (
     <div className="space-y-8">
@@ -137,7 +236,7 @@ export default function SubmitProposalPage() {
             <span className="text-gray-900">
               <span className="font-semibold">Budget:</span>{" "}
               <span className="text-gray-500">
-                ${requirement.budgetMin.toLocaleString()} – ${requirement.budgetMax.toLocaleString()}
+                ${requirement.budgetMin} – ${requirement.budgetMax}
               </span>
             </span>
 
@@ -158,7 +257,9 @@ export default function SubmitProposalPage() {
 
 
       {/* PROPOSAL FORM */}
-      <Card className="rounded-[36px] border border-gray-300 bg-white">
+      {
+        showForm? 
+        <Card className="rounded-[36px] border border-gray-300 bg-white">
         <CardContent className="px-12 py-10 space-y-10">
 
           {/* COST + TIMELINE */}
@@ -186,7 +287,7 @@ export default function SubmitProposalPage() {
               />
 
               <p className="text-[12px] text-gray-300">
-                Client budget: ${requirement.budgetMin.toLocaleString()} – ${requirement.budgetMax.toLocaleString()}
+                Client budget: ${requirement.budgetMin} – ${requirement.budgetMax}
               </p>
             </div>
 
@@ -339,6 +440,13 @@ export default function SubmitProposalPage() {
               Please enter the required fields
             </p>
           )}
+          {
+            formResponse &&(
+             <p className="text-[14px] font-medium text-red-500">
+              {formResponse}
+            </p>
+            )
+          }
 
           {success && (
             <p className="text-green-600 font-medium">
@@ -350,6 +458,11 @@ export default function SubmitProposalPage() {
         </CardContent>
       </Card>
 
+        :
+        <div>
+          <p className="text-center mt-5 text-2xl">You submitted the proposal already for this requirement</p>
+        </div>
+      }
     </div>
   )
 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { connectToDatabase } from "@/lib/mongodb"
 import Requirement from "@/models/Requirement"
 import { getCurrentUser } from "@/lib/auth/jwt"   // <-- IMPORTANT
+import Seeker from "@/models/Seeker"
 import { error } from "console"
 import mongoose from "mongoose"
 
@@ -28,14 +29,38 @@ export async function GET(req: NextRequest) {
     query.budgetMin = { $lte: maxBudget }
     query.budgetMax = { $gte: minBudget }
 
+
     const requirements = await Requirement.find(query)
       .sort({ createdAt: -1 })
       .limit(6)
       .lean()
 
+        // -----------------------------
+        // Fetch client (Seeker) details
+        // -----------------------------
+        const clientUserIds = [
+          ...new Set(requirements.map((r: any) => r.clientId.toString())),
+        ]
+
+        const clients = await Seeker.find({
+          userId: { $in: clientUserIds },
+        })
+          .select("userId location")
+          .lean()
+
+        const clientMap = new Map(
+          clients.map((c: any) => [c.userId.toString(), c])
+        )
+        const formattedRequirements = requirements.map((r: any) => ({
+          ...r,
+
+          // ✅ NEW (non-breaking addition)
+          client: clientMap.get(r.clientId.toString()) || null,
+        }))
+
     return NextResponse.json({
       success: true,
-      requirements,
+      requirements:formattedRequirements,
     })
   } catch (error) {
     console.error(error)
