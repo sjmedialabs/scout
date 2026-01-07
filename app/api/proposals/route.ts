@@ -3,6 +3,7 @@ import { connectToDatabase } from "@/lib/mongodb"
 import Proposal from "@/models/Proposal"
 import Project from "@/models/Project"
 import Provider from "@/models/Provider"
+import Seeker from "@/models/Seeker"
 import { getCurrentUser } from "@/lib/auth/jwt"
 import mongoose from "mongoose"
 import Requirement from "@/models/Requirement"
@@ -73,6 +74,23 @@ export async function GET(request: NextRequest) {
     )
 
     // -----------------------------
+      // Fetch client details
+      // -----------------------------
+      const clientUserIds = [
+        ...new Set(proposals.map((p: any) => p.clientId.toString())),
+      ]
+
+      const clients = await Seeker.find({
+        userId: { $in: clientUserIds },
+      })
+        .select("userId name companyName")
+        .lean()
+
+      const clientMap = new Map(
+        clients.map((c: any) => [c.userId.toString(), c])
+      )
+
+    // -----------------------------
     // Format response
     // -----------------------------
     const formattedProposals = proposals.map((p: any) => ({
@@ -87,6 +105,8 @@ export async function GET(request: NextRequest) {
       },
 
       agency: agencyMap.get(p.agencyId.toString()) || null,
+      client: clientMap.get(p.clientId.toString()) || null,
+
       agencyId:p.agencyId,
 
       coverLetter: p.coverLetter,
