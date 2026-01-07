@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { CiCalendar } from "react-icons/ci"
 import { CiFilter } from "react-icons/ci"
 import { Card, CardContent } from "@/components/ui/card"
@@ -28,6 +29,7 @@ export function BrowseRequirements({
   onViewDetails,
   onSubmitProposal,
 }: BrowseRequirementsProps) {
+  const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
   const [locationOpen, setLocationOpen] = useState(false)
   const [categoryFilter, setCategoryFilter] = useState("all")
@@ -259,7 +261,7 @@ export function BrowseRequirements({
                 <span className="font-extrabold">
                   {canViewFullDetails()
                     ? formatBudget(req.budgetMin, req.budgetMax)
-                    : "Budget hidden"}
+                    : "Budget hidden"} 
                 </span>
               </div>
 
@@ -287,7 +289,9 @@ export function BrowseRequirements({
             <div className="flex gap-5 pt-4">
               <Button
                 className="h-[50px] px-8 font-bold rounded-full bg-[#2c34a1] text-white hover:bg-indigo-700 flex items-center gap-2"
-                onClick={() => onViewDetails(req.id)}
+                onClick={() =>
+                  router.push(`/agency/dashboard/project-inquiries/${req.id}`)
+                }
               >
                 View Details
                  <FaArrowRightLong className="text-sm" />
