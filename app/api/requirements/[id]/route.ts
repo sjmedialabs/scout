@@ -27,17 +27,25 @@ export async function GET(
       )
     }
 
-    const clientObjectId = new mongoose.Types.ObjectId(id)
+    const objectId = new mongoose.Types.ObjectId(id)
 
     const search = req.nextUrl.searchParams.get("search") || ""
     const category = req.nextUrl.searchParams.get("category") || ""
     const minBudget = Number(req.nextUrl.searchParams.get("minBudget") || 0)
     const maxBudget = Number(req.nextUrl.searchParams.get("maxBudget") || 9999999)
 
-    // ✅ Build query
-    const query: any = {
-      clientId: clientObjectId, // ObjectId match
-    }
+      // Try to find a requirement by _id first
+      const requirementById = await Requirement.findById(objectId).lean()
+
+      let query: any = {}
+
+      if (requirementById) {
+        // ✅ Case 1: id is requirement _id
+        query._id = objectId
+      } else {
+        // ✅ Case 2: id is clientId (existing behavior)
+        query.clientId = objectId
+      }
 
     if (search) {
       query.title = { $regex: search, $options: "i" }
