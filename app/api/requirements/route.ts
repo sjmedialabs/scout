@@ -5,6 +5,8 @@ import { getCurrentUser } from "@/lib/auth/jwt"   // <-- IMPORTANT
 import Seeker from "@/models/Seeker"
 import { error } from "console"
 import mongoose from "mongoose"
+import Notification from "@/models/Notification"
+import  Provider  from "@/models/Provider"
 
 // GET Requirements
 export async function GET(req: NextRequest) {
@@ -32,7 +34,6 @@ export async function GET(req: NextRequest) {
 
     const requirements = await Requirement.find(query)
       .sort({ createdAt: -1 })
-      .limit(6)
       .lean()
 
         // -----------------------------
@@ -83,11 +84,11 @@ export async function POST(req: NextRequest) {
 
     const user = await getCurrentUser()
 
-    // ❌ Not logged in
+    //  Not logged in
     if (!user) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
     }
-    // ❌ Only client can post requirements
+    //  Only client can post requirements
     if (user.role !== "client") {
       return NextResponse.json(
         { error: "Only clients can post requirements" },
@@ -108,7 +109,36 @@ export async function POST(req: NextRequest) {
       documentUrl:body.documentUrl,
       clientId: user.userId, // 👈 IMPORTANT: logged-in client
     })
+
     console.log("newReq",newReq)
+
+    // Fetch only providers whose services match the category
+    const providersMatchedServices = await Provider.find(
+      {
+        services: { $in: [newReq.category] }, //  array match
+      },
+      { userId: 1 }
+    ).lean()
+
+    // Create notifications
+    if (providersMatchedServices.length > 0) {
+      const notifications = providersMatchedServices.map((provider) => ({
+        userId: provider.userId,          //  RECEIVER (agency)
+        triggeredBy: user.userId,          //  Client who posted
+        title: "New Requirement Posted",
+        message: `A new requirement matching your services (${newReq.category}) has been posted.`,
+        type: "NEW_REQUIREMENT",
+        userRole: "agency",
+        linkUrl: `/agency/dashboard/project-inquiries/${newReq._id}`,
+        sourceId: newReq._id,
+        isRead: false,
+      }))
+
+      await Notification.insertMany(notifications)
+    }
+
+
+
     return NextResponse.json({ success: true,   requirement: {
     ...newReq.toObject(),
     createdAt: newReq.createdAt,

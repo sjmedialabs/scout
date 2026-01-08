@@ -9,7 +9,7 @@ import type { Notification } from "@/lib/types"
 
 interface NotificationsWidgetProps {
   notifications: Notification[]
-  onMarkAsRead: (notificationId: string) => void
+  onMarkAsRead: (notificationId: string,redirectingUr:String) => void
   onDismiss: (notificationId: string) => void
 }
 
@@ -20,7 +20,7 @@ export function NotificationsWidget({ notifications, onMarkAsRead, onDismiss }: 
   const displayNotifications = showAll ? notifications : notifications.slice(0, 5)
 
   const getNotificationColor = (type: string) => {
-    switch (type) {
+    switch (type.toLowerCase()) {
       case "shortlisted":
         return "bg-green-100 text-green-800"
       case "accepted":
@@ -30,7 +30,7 @@ export function NotificationsWidget({ notifications, onMarkAsRead, onDismiss }: 
       case "revision_requested":
         return "bg-yellow-100 text-yellow-800"
       case "new_requirement":
-        return "bg-purple-100 text-purple-800"
+        return "bg-[#D1D6FF] text-[#5B1F6C]"
       default:
         return "bg-gray-100 text-gray-800"
     }
@@ -63,7 +63,7 @@ export function NotificationsWidget({ notifications, onMarkAsRead, onDismiss }: 
           <div className="space-y-3">
             {displayNotifications.map((notification) => (
               <div
-                key={notification.id}
+                key={notification._id}
                 className={`p-3 rounded-lg border ${notification.read ? "bg-background" : "bg-muted/50"}`}
               >
                 <div className="flex justify-between items-start gap-2">
@@ -73,7 +73,7 @@ export function NotificationsWidget({ notifications, onMarkAsRead, onDismiss }: 
                         {notification.type.replace("_", " ")}
                       </Badge>
                       <span className="text-xs text-muted-foreground">
-                        {notification.createdAt.toLocaleDateString()}
+                        {new Date(notification.createdAt).toLocaleDateString()}
                       </span>
                     </div>
                     <h4 className="font-medium text-sm">{notification.title}</h4>
@@ -81,11 +81,11 @@ export function NotificationsWidget({ notifications, onMarkAsRead, onDismiss }: 
                   </div>
                   <div className="flex gap-1">
                     {!notification.read && (
-                      <Button variant="ghost" size="sm" onClick={() => onMarkAsRead(notification.id)}>
+                      <Button variant="ghost" size="sm" onClick={() => onMarkAsRead(notification._id,notification.linkUrl)}>
                         <Check className="h-3 w-3" />
                       </Button>
                     )}
-                    <Button variant="ghost" size="sm" onClick={() => onDismiss(notification.id)}>
+                    <Button variant="ghost" size="sm" onClick={() => onDismiss(notification._id)}>
                       <X className="h-3 w-3" />
                     </Button>
                   </div>

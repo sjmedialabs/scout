@@ -45,8 +45,9 @@ export interface IProvider extends Document {
   willingToReferRating?:number
   projectsCompleted: number
   hourlyRate?: string
-  minProjectSize?: string
+  minProjectSize?: number
   teamSize?: string
+  focusArea?:string
   foundedYear?: number
   portfolio: IPortfolioItem[]
   testimonials: ITestimonial[]
@@ -69,6 +70,9 @@ export interface IProvider extends Document {
   minAmount?:number
   minTimeLine?:String
   keyHighlights:String[]
+  currentMonthProfileViews?: Number,
+  currentMonthWebsiteClicks?:Number,
+  currentMonthKey?:String
 }
 
 const PortfolioItemSchema = new Schema({
@@ -102,6 +106,7 @@ const ProviderSchema = new Schema<IProvider>(
     location: { type: String, required: true },
     website: { type: String },
     email: { type: String, required: true },
+    focusArea:{type:String},
     salesEmail: { type: String },
     phone: { type: String },
     adminContactPhone: { type: String },
@@ -116,7 +121,8 @@ const ProviderSchema = new Schema<IProvider>(
     reviewCount: { type: Number, default: 0 },
     projectsCompleted: { type: Number, default: 0 },
     hourlyRate: { type: String },
-    minProjectSize: { type: String },
+    minProjectSize: { type: Number,default:0 },
+
     teamSize: { type: String },
     foundedYear: { type: Number },
     portfolio: [PortfolioItemSchema],
@@ -129,7 +135,11 @@ const ProviderSchema = new Schema<IProvider>(
       facebook: { type: String },
       instagram: { type: String },
     },
-    isFeatured: { type: Boolean, default: false },
+    currentMonthProfileViews: { type: Number, default: 0 },
+    currentMonthWebsiteClicks: { type: Number, default: 0 },
+    currentMonthKey: { type: String }, // "2026-01"
+
+    isFeatured: { type: Boolean, default: false }, 
     isVerified: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
     profileViews: { type: Number, default: 0 },

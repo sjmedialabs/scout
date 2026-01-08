@@ -258,9 +258,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
      await Notification.create({
           userId: proposal?.agencyId,                
           triggeredBy: user.userId,         
-          title: "Proposal status update !",
+          title: `Proposal ${body.status}`,
           message: `${seeker?.companyName || seeker?.name} ${body.status} your proposal for the ${project?.title} project.`,
-          type: "proposal_updated",
+          type: body.status,
           userRole: "client",
           linkUrl: `/agency/dashboard/proposals`,
           sourceId: proposal._id,
