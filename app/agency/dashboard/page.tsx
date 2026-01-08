@@ -52,7 +52,7 @@ import {
   Handshake,
 } from "lucide-react"
 import { mockNotifications, mockProviderProjects, mockProviderReviews, mockRequirements } from "@/lib/mock-data"
-import type { Provider, Requirement, Notification, Project, Review } from "@/lib/types"
+import { type Provider, type Requirement, type Notification, type Project, type Review, Proposal } from "@/lib/types"
 
 interface MenuItem {
   id: string
@@ -123,13 +123,7 @@ export default function AgencyDashboard() {
   const router = useRouter()
   // Changed initial activeSection state to "overview"
   const [activeSection, setActiveSection] = useState("overview")
-  const [activeSubSection, setActiveSubSection] = useState("")
-  const [expandedSections, setExpandedSections] = useState<string[]>(["overview"])
-  // Added selectedProposalId and selectedCompanyId states
-  const [selectedProposalId, setSelectedProposalId] = useState<string | null>(null)
-  const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null)
-  const [showCompanyProfile, setShowCompanyProfile] = useState(false)
-  const [showCompanyPortfolio, setShowCompanyPortfolio] = useState(false)
+  
   const [projectTab, setProjectTab] = useState<"active" | "completed" | "invitations">("active")
   const [provider, setProvider] = useState<Provider>({
     id: "1",
@@ -156,8 +150,7 @@ export default function AgencyDashboard() {
   const [reviews, setReviews] = useState<Review[]>(mockProviderReviews)
   const [selectedRequirement, setSelectedRequirement] = useState<Requirement | null>(null)
   const [showProposalForm, setShowProposalForm] = useState(false)
-  const [showEditProfile, setShowEditProfile] = useState(false)
-  const [showRespondToReview, setShowRespondToReview] = useState(false)
+  
   const [selectedReview, setSelectedReview] = useState<Review | null>(null)
 
   const [selectedConversation, setSelectedConversation] = useState<string>("john-doe")
@@ -292,6 +285,86 @@ export default function AgencyDashboard() {
     },
   ])
 
+  const[providerDetails,setProviderDetails]=useState<Provider[]>();
+  const[proposals,setProposals]=useState<Proposal[]>([]);
+  const[requirements,setRequirements]=useState<Requirement[]>([]);
+  const[dynamicStats,setDynamicStats]=useState({
+      profileViews:0,
+      profileViewsPercentage:0,
+      websiteClicks:0,
+      websiteClicksPercentage:0,
+      proposals:0,
+      proposalResponses:0,
+      conversionPercentage:0,
+      leadsPercentage:0,
+      leads:0
+  })
+  const[activeProjects,setActiveProjects]=useState<Requirement[]>([]);
+  const[dynamicNotifications,setDynamicNotifications]=useState<Notification[]>([])
+  const[resLoading,setResLoading]=useState(false);
+  const loadData=async()=>{
+    setResLoading(true);
+    try{
+      const [providerDetailRes, proposalRes, requirementRes,notificationRes] = await Promise.all([
+        fetch(`/api/providers/${user?.id}`),
+        fetch("/api/proposals"),
+        fetch("/api/requirements"),
+        fetch("/api/notifications")
+      ]);
+      if(providerDetailRes.ok && proposalRes.ok && requirementRes.ok && notificationRes.ok){
+         const[providerDetailsData,proposalData,requirementData,notificationsData]=await Promise.all([
+        providerDetailRes.json(),
+        proposalRes.json(),
+        requirementRes.json(),
+        notificationRes.json()
+
+        ])
+        console.log("Provider Details Data::::",providerDetailsData);
+        console.log("Proposals Data:::",proposalData);
+        console.log("Requirements Data::::",requirementData)
+        console.log("fetched Notifications:::::",notificationsData);
+        let profileViewPercentage=providerDetailsData.provider.currentMonthProfileViews>0?Math.round((providerDetailsData.provider.currentMonthProfileViews/providerDetailsData.provider.profileViews)*100) :0;
+        let websiteClicksPercentage=providerDetailsData.provider.currentMonthWebsiteClicks>0?Math.round((providerDetailsData.provider.currentMonthWebsiteClicks/providerDetailsData.provider.websiteClicks)*100) :0;
+        let responsesCount=proposalData.proposals.filter((eachItem)=>eachItem.status!="pending").length
+        let totalProjectsDone=requirementData.requirements.filter((eachItem)=>eachItem?.allocatedToId===user?.id);
+        let conversionPercentage=proposalData.proposals.length>0?Math.round((totalProjectsDone.length/proposalData.proposals.length)*100):0;
+        
+        console.log("percntage of profile views",profileViewPercentage)
+        console.log("percntage of website clicks",websiteClicksPercentage)
+        console.log("response Count is::::",responsesCount);
+        console.log("total Project allocated::::",totalProjectsDone);
+        console.log("conversion percentage is:::",conversionPercentage)
+
+        setDynamicStats({
+          profileViews:providerDetailsData.provider.profileViews,
+          profileViewsPercentage:profileViewPercentage,
+          websiteClicks:providerDetailsData.provider.websiteClicks,
+          websiteClicksPercentage:websiteClicksPercentage,
+          proposals:proposalData.proposals.length,
+          proposalResponses:responsesCount,
+          conversionPercentage:conversionPercentage,
+          leadsPercentage:0,
+          leads:totalProjectsDone.length,
+        })
+
+        setActiveProjects(totalProjectsDone)
+        //unread notifications
+        setDynamicNotifications(notificationsData.data.filter((eachitem)=>!eachitem.isRead))
+
+
+
+
+      }
+      else{
+        throw new Error();
+      }
+    }catch(error){
+      console.log("Failed to fetch the data:::")
+    }finally{
+      setResLoading(false)
+    }
+  }
+
   const handleConversationSelect = (conversationId: string) => {
     setSelectedConversation(conversationId)
     // Mark conversation as read
@@ -365,8 +438,22 @@ export default function AgencyDashboard() {
     setSelectedRequirement(null)
   }
 
-  const handleMarkNotificationAsRead = (notificationId: string) => {
-    // Placeholder for handleMarkNotificationAsRead logic
+  const handleMarkNotificationAsRead = async(notificationId: string,redirectionUrl:string) => {
+    try{
+        const res=await fetch(`/api/notifications/${notificationId}`,{
+          method:"PUT",
+          headers:{
+            "Content-Type":"application/json"
+          }
+        })
+        console.log("response of the mark as read::",res)
+        if(res.ok){
+            setDynamicNotifications((prev)=>prev.filter((eachItem)=>eachItem._id!==notificationId))
+        }
+     }catch(error){
+       console.log("Failed to update the status of the notification::",error)
+     }
+    router.push(redirectionUrl)
   }
 
   const handleDismissNotification = (notificationId: string) => {
@@ -392,39 +479,19 @@ export default function AgencyDashboard() {
     }
   }
 
-  const handleSubmitReviewResponse = (response: string) => {
-    if (selectedReview) {
-      const updatedReviews = reviews.map((r) =>
-        r.id === selectedReview.id ? { ...r, providerResponse: response, responseDate: new Date() } : r,
-      )
-      setReviews(updatedReviews)
-      setShowRespondToReview(false)
-      setSelectedReview(null)
-    }
-  }
+ 
 
   useEffect(() => {
     if (!loading && (!user || user.role !== "agency")) {
       router.push("/login")
     }
+    if(user && user.role === "agency"){
+       loadData()
+    }
   }, [user, loading, router])
 
-  const toggleSection = (sectionId: string) => {
-    setExpandedSections((prev) =>
-      prev.includes(sectionId) ? prev.filter((id) => id !== sectionId) : [...prev, sectionId],
-    )
-  }
-
-  const handleMenuClick = (itemId: string, parentId?: string) => {
-    setActiveSection(itemId)
-    if (parentId) {
-      setActiveSubSection(itemId)
-    } else {
-      setActiveSubSection("")
-    }
-  }
-
-  if (loading) {
+  
+  if (loading || resLoading) {
     return <div className="min-h-screen bg-background flex items-center justify-center">Loading...</div>
   }
 
@@ -555,12 +622,12 @@ export default function AgencyDashboard() {
                             <Eye className="h-4 w-4 text-muted-foreground" />
                           </CardHeader>
                           <CardContent>
-                            <div className="text-2xl font-bold">{analyticsData.profileViews}</div>
-                            <p className="text-xs text-green-600">+{analyticsData.profileViewsChange}% this month</p>
+                            <div className="text-2xl font-bold">{dynamicStats.profileViews}</div>
+                            <p className="text-xs text-green-600">+{dynamicStats.profileViewsPercentage}% this month</p>
                           </CardContent>
                         </Card>
 
-                        <Card>
+                        {/* <Card>
                           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Impressions</CardTitle>
                             <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -569,7 +636,7 @@ export default function AgencyDashboard() {
                             <div className="text-2xl font-bold">{analyticsData.impressions}</div>
                             <p className="text-xs text-green-600">+{analyticsData.impressionsChange}% this month</p>
                           </CardContent>
-                        </Card>
+                        </Card> */}
 
                         <Card>
                           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -577,11 +644,11 @@ export default function AgencyDashboard() {
                             <MessageSquare className="h-4 w-4 text-muted-foreground" />
                           </CardHeader>
                           <CardContent>
-                            <div className="text-2xl font-bold">{analyticsData.clicksToWebsite}</div>
-                            <p className="text-xs text-green-600">+{analyticsData.clicksChange}% this month</p>
+                            <div className="text-2xl font-bold">{dynamicStats.websiteClicks}</div>
+                            <p className="text-xs text-green-600">+{dynamicStats.websiteClicksPercentage}% this month</p>
                           </CardContent>
                         </Card>
-
+{/* 
                         <Card>
                           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Invitations</CardTitle>
@@ -591,7 +658,7 @@ export default function AgencyDashboard() {
                             <div className="text-2xl font-bold">{analyticsData.projectInvitations}</div>
                             <p className="text-xs text-green-600">+{analyticsData.invitationsChange} this month</p>
                           </CardContent>
-                        </Card>
+                        </Card> */}
                       </div>
                     </div>
 
@@ -605,8 +672,8 @@ export default function AgencyDashboard() {
                             <FileText className="h-4 w-4 text-muted-foreground" />
                           </CardHeader>
                           <CardContent>
-                            <div className="text-2xl font-bold">{analyticsData.proposalSubmissions}</div>
-                            <p className="text-xs text-muted-foreground">{analyticsData.proposalResponses} responses</p>
+                            <div className="text-2xl font-bold">{dynamicStats.proposals}</div>
+                            <p className="text-xs text-muted-foreground">{dynamicStats.proposalResponses} responses</p>
                           </CardContent>
                         </Card>
 
@@ -616,7 +683,7 @@ export default function AgencyDashboard() {
                             <TrendingUp className="h-4 w-4 text-muted-foreground" />
                           </CardHeader>
                           <CardContent>
-                            <div className="text-2xl font-bold">{analyticsData.conversionRate}%</div>
+                            <div className="text-2xl font-bold">{dynamicStats.conversionPercentage}%</div>
                             <p className="text-xs text-muted-foreground">Proposal to project</p>
                           </CardContent>
                         </Card>
@@ -627,12 +694,12 @@ export default function AgencyDashboard() {
                             <Users className="h-4 w-4 text-muted-foreground" />
                           </CardHeader>
                           <CardContent>
-                            <div className="text-2xl font-bold">{analyticsData.leadsGenerated}</div>
+                            <div className="text-2xl font-bold">{dynamicStats.leads}</div>
                             <p className="text-xs text-green-600">+{analyticsData.leadsChange}% this month</p>
                           </CardContent>
                         </Card>
 
-                        <Card>
+                        {/* <Card>
                           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Client Rate</CardTitle>
                             <Award className="h-4 w-4 text-muted-foreground" />
@@ -641,7 +708,7 @@ export default function AgencyDashboard() {
                             <div className="text-2xl font-bold">{analyticsData.leadToClientRate}%</div>
                             <p className="text-xs text-muted-foreground">Lead to client</p>
                           </CardContent>
-                        </Card>
+                        </Card> */}
                       </div>
                     </div>
 
@@ -694,7 +761,7 @@ export default function AgencyDashboard() {
 
                   <div>
                     <NotificationsWidget
-                      notifications={notifications}
+                      notifications={dynamicNotifications}
                       onMarkAsRead={handleMarkNotificationAsRead}
                       onDismiss={handleDismissNotification}
                     />

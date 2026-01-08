@@ -124,7 +124,7 @@ export default function Sidebar({ user, provider }: SidebarProps) {
         <p className="text-sm text-muted-foreground">Welcome back, {user.name}</p>
 
         <div className="flex items-center gap-2 mt-3">
-          <Badge
+          {/* <Badge
             className={
               provider.subscriptionTier === "basic"
                 ? "bg-gray-100 text-gray-800"
@@ -139,10 +139,10 @@ export default function Sidebar({ user, provider }: SidebarProps) {
                 ? "Standard"
                 : "Premium"}
             &nbsp;Plan
-          </Badge>
+          </Badge> */}
 
-          {provider.isVerified && <Badge variant="secondary">Verified</Badge>}
-          {provider.isFeatured && <Badge>Featured</Badge>}
+          {user.isVerified && <Badge variant="secondary" className="bg-red-500">Verified</Badge>}
+          {user.isActive && <Badge className="bg-green-500">Active</Badge>}
         </div>
       </div>
 
