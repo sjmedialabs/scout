@@ -33,37 +33,53 @@ export function BrowseRequirements({
   const [searchTerm, setSearchTerm] = useState("")
   const [locationOpen, setLocationOpen] = useState(false)
   const [categoryFilter, setCategoryFilter] = useState("all")
-  const [ratingFilter, setRatingFilter] = useState("any")
+  // const [ratingFilter, setRatingFilter] = useState("any")
   const [budgetFilter, setBudgetFilter] = useState("all")
+
+  // const[locationFilter,setLocationFilter]=useState("");
+  const[serviceFilter,setServiceFilter]=useState("all");
+  const[ratingFilter,setRatingFilter]=useState("any");
+  const[filteredRequirements,setFilteredRequirements]=useState<Requirement[]>(requirements)
 
   const handleSearch = () => {
   console.log("Search triggered with:", {
     location: searchTerm,
-    category: categoryFilter,
+    service: serviceFilter,
     rating: ratingFilter,
   })
+  let tempFilteredRequirements=[...requirements];
+  if(searchTerm){
+    tempFilteredRequirements=tempFilteredRequirements.filter((eachItem)=>eachItem?.client?.location?.trim().toLowerCase().includes(searchTerm.toLowerCase()));
+  }
+  if(serviceFilter && serviceFilter.toLowerCase()!=="all"){
+    tempFilteredRequirements=tempFilteredRequirements.filter((eachItem)=>eachItem.category.toLowerCase()===serviceFilter.toLowerCase())
+  }
+  setFilteredRequirements(tempFilteredRequirements)
+
 }
 
-  const filteredRequirements = requirements.filter((req) => {
-    const matchesSearch =
-      req.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      req.description.toLowerCase().includes(searchTerm.toLowerCase())
+  // const filteredRequirements = requirements.filter((req) => {
+  //   const matchesSearch =
+  //     req.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     req.description.toLowerCase().includes(searchTerm.toLowerCase())
 
-    const matchesCategory = categoryFilter === "all" || req.category === categoryFilter
+  //   const matchesCategory = categoryFilter === "all" || req.category === categoryFilter
 
-    const matchesBudget =
-      budgetFilter === "all" ||
-      (budgetFilter === "low" && req.budgetMax <= 2000) ||
-      (budgetFilter === "medium" && req.budgetMax > 2000 && req.budgetMax <= 10000) ||
-      (budgetFilter === "high" && req.budgetMax > 10000)
+  //   const matchesBudget =
+  //     budgetFilter === "all" ||
+  //     (budgetFilter === "low" && req.budgetMax <= 2000) ||
+  //     (budgetFilter === "medium" && req.budgetMax > 2000 && req.budgetMax <= 10000) ||
+  //     (budgetFilter === "high" && req.budgetMax > 10000)
 
-    return matchesSearch && matchesCategory && matchesBudget && req.status === "open"
-  })
+  //   return matchesSearch && matchesCategory && matchesBudget && req.status === "open"
+  // })
 
   const canViewFullDetails = () => subscriptionTier !== "basic"
 
   const formatBudget = (min: number, max: number) =>
     `$${min.toLocaleString()} - $${max.toLocaleString()}`
+
+  console.log("Receved prop requirements::::",requirements)
 
   return (
     <div className="space-y-8">
@@ -135,7 +151,7 @@ export function BrowseRequirements({
               Technologies/Services
             </span>
 
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <Select value={serviceFilter} onValueChange={setServiceFilter}>
               <SelectTrigger
                 className="
                   h-12 rounded-xl border border-gray-300
@@ -143,8 +159,8 @@ export function BrowseRequirements({
                   flex items-center
                 "
               >
-                {categoryFilter !== "all" ? (
-                  <span className="text-gray-700">{categoryFilter}</span>
+                {serviceFilter !== "all" ? (
+                  <span className="text-gray-700">{serviceFilter}</span>
                 ) : (
                   <span className="text-gray-400 text-xs">All Technologies</span>
                 )}
@@ -161,7 +177,7 @@ export function BrowseRequirements({
           </div>
 
           {/* Minimum Rating */}
-          <div className="flex flex-col gap-2">
+          {/* <div className="flex flex-col gap-2">
             <span className="text-sm font-bold text-[#98A0B4]">
               Minimum Rating
             </span>
@@ -186,11 +202,12 @@ export function BrowseRequirements({
               <SelectContent>
                 <SelectItem value="any">Any Rating</SelectItem>
                 <SelectItem value="4">4+</SelectItem>
-                <SelectItem value="4.5">4.5+</SelectItem>
-                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="3">3+</SelectItem>
+                <SelectItem value="2">2+</SelectItem>
+                <SelectItem value="1">1+</SelectItem>
               </SelectContent>
             </Select>
-          </div>
+          </div> */}
 
           {/* Search Button */}
           <div className="flex items-end pt-6">
@@ -225,7 +242,7 @@ export function BrowseRequirements({
       <div className="space-y-6">
         {filteredRequirements.map((req) => (
           <Card
-          key={req.id}
+          key={req._id}
           className="rounded-4xl border border-gray-200 bg-white"
         >
           <CardContent className="px-10 pb-8 space-y-7">
@@ -279,7 +296,7 @@ export function BrowseRequirements({
                   <VscSend className="h-5 w-5 text-white" />
                 </span>
                 <span className="font-extrabold">
-                  Posted: {req.createdAt.toLocaleDateString()}
+                  Posted:  {new Date(req.createdAt).toLocaleDateString()}
                 </span>
               </div>
 
@@ -287,17 +304,26 @@ export function BrowseRequirements({
 
             {/* ACTION BUTTONS */}
             <div className="flex gap-5 pt-4">
-              <Button
+              {/* <Button
                 className="h-[50px] px-8 font-bold rounded-full bg-[#2c34a1] text-white hover:bg-indigo-700 flex items-center gap-2"
                 onClick={() =>
-                  router.push(`/agency/dashboard/project-inquiries/${req.id}`)
+                  router.push(`/agency/dashboard/project-inquiries/${req._id}`)
                 }
               >
                 View Details
                  <FaArrowRightLong className="text-sm" />
-              </Button>
+              </Button> */}
 
-              {canViewFullDetails() ? (
+              <Button
+                  className="h-[50px] px-8 font-bold rounded-full bg-black text-white hover:bg-black/90 flex items-center gap-2"
+                  onClick={() =>
+                  router.push(`/agency/dashboard/project-inquiries/${req._id}`)}
+                >
+                  Submit Proposal
+                  <FaArrowRightLong className="text-sm" />
+                </Button>
+
+              {/* {canViewFullDetails() ? (
                 <Button
                   className="h-[50px] px-8 font-bold rounded-full bg-black text-white hover:bg-black/90 flex items-center gap-2"
                   onClick={() => onSubmitProposal(req.id)}
@@ -312,7 +338,7 @@ export function BrowseRequirements({
                 >
                   Upgrade to Submit
                 </Button>
-              )}
+              )} */}
             </div>
 
           </CardContent>

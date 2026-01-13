@@ -4,6 +4,7 @@ import Provider from "@/models/Provider"
 import Review from "@/models/Review"
 import { getCurrentUser } from "@/lib/auth/jwt"
 import mongoose from "mongoose"
+import dayjs from "dayjs";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -23,17 +24,31 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         { _id: id },         // match provider's _id
         { userId: id },      // match provider's userId
       ],
-    }).lean()
+    })
 
     if (!provider) {
       return NextResponse.json({ error: "Provider not found" }, { status: 404 })
     }
 
     // Increment profile views
-    await Provider.updateOne(
-      { _id: provider._id },
-      { $inc: { profileViews: 1 } }
-    )
+    // await Provider.updateOne(
+    //   { _id: provider._id },
+    //   { $inc: { profileViews: 1 } }
+    // )
+
+    // const monthKey = dayjs().format("YYYY-MM");
+    // // Reset if month changed
+    // if (provider.currentMonthKey !== monthKey) {
+    //   provider.currentMonthKey = monthKey;
+    //   provider.currentMonthProfileViews = 0;
+    //   provider.currentMonthWebsiteClicks = 0;
+    // }
+
+    // // Example: profile view
+    // provider.profileViews += 1;
+    // provider.currentMonthProfileViews += 1;
+
+    await provider.save();
 
     const reviews = await Review.find({ providerId: provider._id.toString(), isPublic: true })
 
@@ -78,6 +93,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         projectsCompleted: provider.projectsCompleted,
         hourlyRate: provider.hourlyRate,
         minProjectSize: provider.minProjectSize,
+        websiteClicks:provider.websiteClicks,
         teamSize: provider.teamSize,
         foundedYear: provider.foundedYear,
         portfolio: provider.portfolio,
@@ -87,7 +103,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         socialLinks: provider.socialLinks,
         isFeatured: provider.isFeatured,
         isVerified: provider.isVerified,
-        profileViews: (provider.profileViews || 0) + 1,
+        profileViews: (provider.profileViews || 0),
+        currentMonthProfileViews:provider.currentMonthProfileViews,
+        currentMonthWebsiteClicks:provider.currentMonthWebsiteClicks,
+        focusArea:provider.focusArea,
         createdAt: provider.createdAt,
       },
       reviews: formattedReviews,
@@ -127,9 +146,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: "Provider not found" }, { status: 404 })
     }
 
-    if (provider.userId.toString() !== user.userId && user.role !== "admin") {
-      return NextResponse.json({ error: "Not authorized" }, { status: 403 })
-    }
+    // if (provider.userId.toString() !== user.userId && user.role !== "admin") {
+    //   return NextResponse.json({ error: "Not authorized" }, { status: 403 })
+    // }
 
     const body = await request.json()
     const allowedUpdates = [
@@ -150,19 +169,26 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       "industries",
       "hourlyRate",
       "minProjectSize",
+      "focusArea",
       "teamSize",
       "foundedYear",
       "portfolio",
       "testimonials",
       "certifications",
+      "websiteClicks",
+      "profileViews",
+      "currentMonthProfileViews",
+      "currentMonthWebsiteClicks",
+      "currentMonthKey",
       "awards",
       "socialLinks",
     ]
 
     const updates: any = {}
+    
     for (const key of allowedUpdates) {
       if (body[key] !== undefined) {
-        updates[key] = body[key]
+        updates[key] = body[key]        
       }
     }
 
@@ -173,7 +199,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       if (body.isActive !== undefined) updates.isActive = body.isActive
     }
 
-    const updated = await Provider.findOneAndUpdate({ userId: id }, updates, { new: true })
+    // const updated = await Provider.findOneAndUpdate({ userId: id }, updates, { new: true })
+
+    // Apply updates using resolved _id
+    const updated = await Provider.findByIdAndUpdate(
+      provider._id,
+      updates,
+      { new: true }
+    )
 
     return NextResponse.json({
       success: true,

@@ -198,6 +198,22 @@ console.log("Providers Details are :::",providerDetails);
   setFilteredReviews(tempFilteredReviews)
 }, [serviceFilter, sortByFilter, reviews])
 
+
+ const webisteClickHandle = async (e, id) => {
+  e.preventDefault();
+  console.log(providerDetails.websiteClicks+1)
+
+  try {
+    await fetch(`/api/providers/${id}/website-clicks`, {
+      method: "POST"
+    });
+  } catch (err) {
+    console.error("Failed to update click count", err);
+  }
+
+  window.open(providerDetails.website, "_blank");
+};
+
  
   if(loading){
     return(
@@ -283,16 +299,21 @@ console.log("Providers Details are :::",providerDetails);
                 Contact Provider
               </Button>
               </a>
-              <a href={`${providerDetails.website}`} target="_blank">
+              {
+                providerDetails.website && (
+                  <a href={`${providerDetails.website}`} target="_blank">
               <Button
                 size="lg"
                 variant="outline"
                 className="border-white rounded-3xl mt-2 font-semibold text-white hover:bg-white/10 bg-transparent  active:bg-transparent"
+                onClick={(e)=>webisteClickHandle(e,id)}
               >
                   <ExternalLink className="mr-0.5"  height={16} width={16}/>
                 View Website
               </Button>
               </a>
+                )
+              }
             </div>
           </div>
         </div>

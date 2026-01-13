@@ -70,6 +70,8 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
     coverImage:provider.coverImage || "",
     location:provider.location || "",
     projectsCompleted:provider.projectsCompleted || "",
+    minProjectSize:provider?.minProjectSize || 0,
+    focusArea:provider.focusArea || "",
     hourlyRate:provider.hourlyRate || "",
     website: provider.website || "",
     salesEmail: provider.salesEmail || "",
@@ -175,43 +177,46 @@ const [selectedLanguage, setSelectedLanguage] = useState<string>("")
 
     if (Object.keys(newErrors).length === 0) {
       console.log("Calling save Profile:::")
+
       const payload = {
-  name: formData.companyName,          // schema: name
-  tagline: formData.tagline,
-  description: formData.description,
-  logo: formData.logo,
-  coverImage: formData.coverImage,
-  location: formData.location,
-  website: formData.website,
-  email: formData.email,
-  salesEmail: formData.salesEmail,
-  phone: formData.phone,
-  adminContactPhone: formData.adminContactPhone,
+          name: formData.companyName,          // schema: name
+          tagline: formData.tagline,
+          description: formData.description,
+          logo: formData.logo,
+          coverImage: formData.coverImage,
+          location: formData.location,
+          website: formData.website,
+          email: formData.email,
+          salesEmail: formData.salesEmail,
+          phone: formData.phone,
+          adminContactPhone: formData.adminContactPhone,
+          minProjectSize:formData.minProjectSize,
+          focusArea:formData.focusArea,
 
-  services: formData.services || [],
-  technologies: formData.technologies || [],
-  industries: formData.industries || [],
+          services: formData.services || [],
+          technologies: formData.technologies || [],
+          industries: formData.industries || [],
 
-  foundedYear: formData.foundedYear,
-  teamSize: formData.totalEmployees,   // OR map to teamSize if needed
-  portfolio: formData.portfolio || [],
-  
-  certifications: formData.certifications|| [],
-  awards: formData.awards || [],
+          foundedYear: formData.foundedYear,
+          teamSize: formData.totalEmployees,   // OR map to teamSize if needed
+          portfolio: formData.portfolio || [],
+          
+          certifications: formData.certifications|| [],
+          awards: formData.awards || [],
 
-  
-  projectsCompleted:parseInt(formData.projectsCompleted),
-  hourlyRate:formData.hourlyRate,
+          
+          projectsCompleted:parseInt(formData.projectsCompleted),
+          hourlyRate:formData.hourlyRate,
 
-  testimonials:formData.testimonials,
+          testimonials:formData.testimonials,
 
-  socialLinks: {
-    linkedin: formData.socialLinks.linkedin || "",
-    twitter: formData.socialLinks.twitter || "",
-    facebook: formData.socialLinks.facebook || "",
-    instagram: formData.socialLinks.instagram || "",
-  },
-}
+          socialLinks: {
+            linkedin: formData.socialLinks.linkedin || "",
+            twitter: formData.socialLinks.twitter || "",
+            facebook: formData.socialLinks.facebook || "",
+            instagram: formData.socialLinks.instagram || "",
+          },
+    }
 
       onSave(payload)
     }
@@ -816,7 +821,26 @@ const removeTestimonialItem = (id: string) => {
                 </Badge>
               ))}
             </div>
-          </div>
+             </div>
+             <div className="space-y-2">
+              <Label htmlFor="min-project-size" className="text-sm font-inter text-[#98A0B4] font-semibold">
+                Min Project Size
+               
+              </Label>
+              <Input
+                id="min-project-size"
+                value={formData.minProjectSize}
+                type="number"
+
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, minProjectSize: e.target.value }))
+                  
+                }}
+                className={`placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+                placeholder="200"
+              />
+             
+            </div>
           </div>
 
         
@@ -835,6 +859,21 @@ const removeTestimonialItem = (id: string) => {
               placeholder="about company"
             />
             {errors.description && <p className="text-sm text-red-500">{errors.description}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="focus-area" className="text-sm font-inter text-[#98A0B4] font-semibold">Focus Area</Label>
+            <Textarea
+              id="focus-area"
+              value={formData.focusArea || ""}
+              onChange={(e) => {
+                setFormData((prev) => ({ ...prev, focusArea: e.target.value }))
+                
+              }}
+              rows={6}
+              className={` placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+              placeholder="Focus areas about the company"
+            />
+            
           </div>
       </div>
      

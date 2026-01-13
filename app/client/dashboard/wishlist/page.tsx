@@ -121,6 +121,20 @@ const WishListPage=()=>{
         // toast.error(`Failed to remove the provider ${error.message}`)
       }
    }
+   const handleViewProfile = async (providerId: string) => {
+  try {
+    // fire analytics update
+    await fetch(`/api/providers/${providerId}/profile-view`, {
+      method: "POST",
+    });
+  } catch (err) {
+    console.error("Failed to update profile view", err);
+  }
+
+  // open profile page
+  window.open(`/provider/${providerId}`, "_blank");
+};
+
    console.log("Fetched Wish list data is:::",wishListData)
     return(
         <div  className="space-y-6 p-3 md:p-6">
@@ -233,11 +247,13 @@ const WishListPage=()=>{
                             </p>
     
                             <div className="mt-3 flex flex-col sm:flex-row gap-2">
-                                <a href={`/provider/${provider.agency._id}`} target="_blank">
-                                <Button className="w-full sm:w-[140px] bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white">
-                                View Profile
-                                </Button>
-                                </a>
+                                <Button
+  className="w-full sm:w-[140px] bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white"
+  onClick={() => handleViewProfile(provider.agency._id)}
+>
+  View Profile
+</Button>
+
                             <Button className="w-full sm:w-[160px] bg-[#4d4d4d] rounded-3xl text-white">
                                 Contact Provider
                             </Button>

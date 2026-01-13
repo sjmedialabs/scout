@@ -34,10 +34,10 @@ export interface IProposal extends Document {
 }
 
 const MilestoneSchema = new Schema({
-  title: { type: String, required: true },
+  title: { type: String},
   description: { type: String },
-  amount: { type: Number, required: true },
-  duration: { type: String, required: true },
+  amount: { type: Number},
+  duration: { type: String},
 })
 
 const ProposalSchema = new Schema<IProposal>(
