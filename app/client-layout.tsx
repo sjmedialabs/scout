@@ -19,17 +19,17 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     pathname.startsWith("/agency") ||
     pathname.startsWith("/client");
 
-  return (
+ return (
     <AuthProvider>
-      {/* HEADER (only when allowed) */}
+      {/* HEADER */}
       {!hideUI && <Navigation />}
 
       {/* PAGE CONTENT */}
-      <div className={`min-h-screen flex flex-col${!hideUI ? " pt-36" : ""}`}>
+      <main className="min-h-screen flex flex-col">
         <Suspense fallback={null}>{children}</Suspense>
-      </div>
+      </main>
 
-      {/* FOOTER (only when allowed) */}
+      {/* FOOTER */}
       {!hideUI && <Footer />}
     </AuthProvider>
   );
