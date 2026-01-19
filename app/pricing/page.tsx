@@ -25,12 +25,23 @@ export default function PricingPage() {
   const [isAnnual, setIsAnnual] = useState(true)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [cmsFeatures, setCmsFeatures] = useState<Record<string, string[]>>({})
+  const[subscriptions, setSubscriptions]= useState<CmsPlan[]>([])
+
+  const[loading,setLoading]=useState(false);
+  const[failed,setFailed]=useState(false);
 
   useEffect(() => {
     const fetchCmsFeatures = async () => {
+      
+      setLoading(true);
+      setFailed(false);
       try {
         const res = await fetch("/api/subscription")
-        const data: CmsPlan[] = await res.json()
+
+        if(res.ok){
+           const data: CmsPlan[] = await res.json()
+        console.log("Fetched CMS subscription plans:", data);
+        setSubscriptions(data)
 
         const featureMap: Record<string, string[]> = {}
 
@@ -45,8 +56,14 @@ export default function PricingPage() {
         })
 
         setCmsFeatures(featureMap)
+          setFailed(false);
+        }
+       
       } catch (error) {
         console.error("Failed to fetch CMS features", error)
+        setFailed(true);
+      }finally{
+        setLoading(false);
       }
     }
 
@@ -127,21 +144,23 @@ export default function PricingPage() {
           </div>
   
           {/* Pricing Cards */}
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
-            {subscriptionPlans.map((plan) => {
-              const selected = selectedId === plan.id
+          {
+            !loading && !failed && subscriptions.length > 0 && (
+              <div className="grid md:grid-cols-3 gap-8 mb-12">
+            {subscriptions.map((plan) => {
+              const selected = selectedId === plan._id
               const {price, label } = getDisplayPrice(plan)
-              const isFeatured = plan.id === "standard" || plan.popular
+              // const isFeatured = plan._id === "standard" || plan.popular
 
               return (
                 <Card
-                  key={plan.id}
+                  key={plan._id}
                   role="button"
                   tabIndex={0}
-                  onClick={() => setSelectedId(plan.id)}                  
+                  onClick={() => setSelectedId(plan._id)}                  
                   onKeyDown={(e) => 
                     (e.key === "Enter" || e.key === " ") && 
-                    setSelectedId(plan.id)}
+                    setSelectedId(plan._id)}
                   className={[
                    "group relative cursor-pointer transition-all duration-500 ease-out",
                    "border border-slate-50 bg-neutral-10 shadow-[0_1px_3px_rgb(0,0,0,0.03)]",
@@ -163,14 +182,14 @@ export default function PricingPage() {
                   <CardHeader className="text-left pb-4">
                     <CardTitle className="text-3xl font-semibold tracking-tight text-zinc-900"
                     style={{ fontFamily: 'sans-serif'}}>
-                      {plan.name}
+                      {plan.title}
                       </CardTitle>
 
                     <div className="mt-2 flex items-baseline gap-1">
                       <span className="text-4xl font-semibold tracking-tight text-zinc-900"
                       style={{ fontFamily: "sans-serif" }}
                       >
-                        ${price}
+                        ${isAnnual? plan.pricePerYear: plan.pricePerMonth}
                       </span>
                       <span className="text-[14px] text-zinc-900 font-medium"
                       style={{ fontFamily: "sans-serif" }}
@@ -181,18 +200,13 @@ export default function PricingPage() {
                     <CardDescription className="mt-1 text-[15px] text-zinc-400 leading-relaxed"
                     style={{ fontFamily: "sans-serif" }}
                     >
-                      {plan.id === "basic" && 
-                       "Perfect for individuals or occasional sellers looking to list a few properties"}
-                      {plan.id === "standard" && 
-                       "Ideal for Agents seeking enhanced listings and priority placement"}
-                      {plan.id === "premium" && 
-                        "Designed for agencies to manage multiple agents and listings"}
+                      {plan.description}
                     </CardDescription>
                   </CardHeader>
 
                   <CardContent>
                     <ul className="space-y-4 mb-8">
-                      {(cmsFeatures[plan.id] || plan.features).map(
+                      { (plan.features || []).map(
                           (feature, index) => (
                         <li key={index} className="flex items-start gap-3">
                            <span className="grid place-items-center h-7 w-7 rounded-full bg-blue-100 flex-shrink-0">
@@ -225,15 +239,11 @@ export default function PricingPage() {
                       variant="outline"
                       asChild
                     >
-                      <Link href={
-                        plan.id === "basic" 
-                        ? "/register" 
-                        : `/subscribe/${plan.id}?billing=${isAnnual ? "yearly" : "monthly"}`
-                        }
+                      <Link href={`/subscribe/${plan._id}?billing=${isAnnual ? "yearly" : "monthly"}`}
                       >
                         {plan.id === "basic" 
                         ? "Get Started Free" 
-                        : `Choose ${plan.name}`}
+                        : `Choose ${plan.title}`}
                       </Link>
                     </Button>
                   </div>
@@ -241,6 +251,16 @@ export default function PricingPage() {
               )
             })}
           </div>
+            )
+          }
+
+          {
+            loading && (
+              <div className="mt-40 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            )
+          }
 
           
           {/* FAQ Section */}
