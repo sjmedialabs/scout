@@ -1,422 +1,446 @@
 "use client"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+
+import { useEffect, useState } from "react"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
-  Building2,
   FileText,
-  Star,
-  TrendingUp,
+  MessageSquare,
+  Users,
+  Award,
   DollarSign,
   Calendar,
-  MessageSquare,
-  Award,
-  Edit,
-  Settings,
-  BarChart3,
-  Users,
-  Megaphone,
-  CreditCard,
-  Bell,
-  UserPlus,
-  ChevronDown,
-  ChevronRight,
-  Home,
-  User,
-  Briefcase,
-  MessageCircle,
-  FileSearch,
   Eye,
-  GitCompare,
-  Download,
-  Phone,
-  Video,
-  Paperclip,
-  Send,
-  Mail,
-  Clock,
-  CheckCircle,
-  X,
-  Target,
-  Handshake,
+  Edit,
 } from "lucide-react"
-import { mockNotifications, mockProviderProjects, mockProviderReviews, mockRequirements } from "@/lib/mock-data"
-import { type Provider, type Requirement, type Notification, type Project, type Review, Proposal } from "@/lib/types"
-import { useState,useEffect } from "react"
-import { AiFillWechatWork } from "react-icons/ai"
-import { stat } from "fs"
+import type { Proposal } from "@/lib/types"
 
-const ProposalsPage=()=>{
-    const[proposals,setProposals]=useState<Proposal[]>([]);
-    const[loading,setLoading]=useState(false);
-    const[failed,setFailed]=useState(false);
-    const[stats,setStats]=useState({
-        submissions:0,
-        lastWeekSubmissions:0,
-        clientResponse:0,
-        clientResponsePercentage:0,
-        accepted:0,
-        acceptedPercentage:0,
-        totalValue:0,
-        shortlisted:0,
-        shortlistedPercentage:0,
-        clientViewed:0,
-        clientViewedPercentage:0,
+const ProposalsPage = () => {
+  const [proposals, setProposals] = useState<Proposal[]>([])
+  const [loading, setLoading] = useState(false)
+  const [failed, setFailed] = useState(false)
 
-    })
+  const [stats, setStats] = useState({
+    submissions: 0,
+    lastWeekSubmissions: 0,
+    clientResponse: 0,
+    clientResponsePercentage: 0,
+    clientViewed: 0,
+    clientViewedPercentage: 0,
+    activeConversations: 0,
+    activeConversationsPercentage: 0,
+    shortlisted: 0,
+    shortlistedPercentage: 0,
+    accepted: 0,
+    acceptedPercentage: 0,
+    totalValue: 0,
+  })
 
-    const loadData=async()=>{
-        setLoading(true);
-        setFailed(false);
-        try{
-           const res=await fetch("/api/proposals");
-           if(res.ok){
-              const data=await res.json();
-              console.log("Fetched Proposals::::",data);
-              let submissionCount = (data.proposals || []).length;
+  const getStatusBadgeClass = (status?: string) => {
+  switch (status?.toLowerCase()) {
+    case "pending":
+      return "bg-[#F3D5B5] text-[#8A4B08]"
+    case "shortlisted":
+      return "bg-[#2F80ED] text-white"
+    case "accepted":
+      return "bg-[#27AE60] text-white"
+    case "rejected":
+      return "bg-[#EB5757] text-white"
+    default:
+      return "bg-gray-200 text-gray-700"
+  }
+}
 
-              let countClientResponse=0;
-              let acceptedCount=0;
-              let totalValue=0;
-              let lastWeekSubmissionCount=0;
-              let shortlistedCount=0;
-              let clientViewedCount=0
-              //  Calculate last week date range
-                const now = new Date();
-                const lastWeek = new Date();
-                lastWeek.setDate(now.getDate() - 7);
 
-                (data.proposals || []).forEach((eachItem) => {
-                // Client response count
-                if (eachItem.status?.toLowerCase() !== "pending") {
-                    countClientResponse++;
-                }
+  const loadData = async () => {
+    setLoading(true)
+    setFailed(false)
 
-                // Accepted proposals
-                if (eachItem.status?.toLowerCase() === "accepted") {
-                    acceptedCount++;
-                    totalValue += eachItem.proposedBudget || 0;
-                }
-               //Shortliseted proposal
-                if(eachItem.status?.toLowerCase()==="shortlisted"){
-                    shortlistedCount++
-                }
+    try {
+      const res = await fetch("/api/proposals")
+      if (!res.ok) throw new Error("Failed")
 
-                //viewed proposal
+      const data = await res.json()
+      const list = data.proposals || []
 
-                if(eachItem.clientViewed){
-                    clientViewedCount++;
-                }
+      let submissionCount = list.length
+      let countClientResponse = 0
+      let acceptedCount = 0
+      let totalValue = 0
+      let lastWeekSubmissionCount = 0
+      let shortlistedCount = 0
+      let clientViewedCount = 0
+      let activeConversationCount = 0
 
-                //  Last week submissions
-                const createdDate = new Date(eachItem.createdAt);
-                if (createdDate >= lastWeek && createdDate <= now) {
-                    lastWeekSubmissionCount++;
-                }
-                });
+      const now = new Date()
+      const lastWeek = new Date()
+      lastWeek.setDate(now.getDate() - 7)
 
-             
-             const totalSubmissions = submissionCount || 0;
-
-                const clientResponsePercentage =
-                totalSubmissions > 0
-                    ? Math.round((countClientResponse / totalSubmissions) * 100)
-                    : 0;
-
-                const acceptedPercentage =
-                totalSubmissions > 0
-                    ? Math.round((acceptedCount / totalSubmissions) * 100)
-                    : 0;
-
-                const shortlistedPercentage=totalSubmissions>0?Math.round((shortlistedCount / totalSubmissions) * 100):0;
-                const clientViewedPercentage=totalSubmissions>0?Math.round((clientViewedCount / totalSubmissions) * 100):0;
-
-             setStats({
-                submissions:submissionCount,
-                lastWeekSubmissions:lastWeekSubmissionCount,
-                clientResponse:countClientResponse,
-                clientResponsePercentage:clientResponsePercentage,
-                accepted:acceptedCount,
-                acceptedPercentage:acceptedPercentage,
-                totalValue:totalValue,
-                shortlisted:shortlistedCount,
-                shortlistedPercentage:shortlistedPercentage,
-                clientViewed:clientViewedCount,
-                clientViewedPercentage:clientViewedPercentage,
-             })
-             console.log("Total submissions:", submissionCount);
-            console.log("Client responses:", countClientResponse);
-            console.log("Accepted count:", acceptedCount);
-            console.log("Total accepted value:", totalValue);
-            console.log("Last week submissions:", lastWeekSubmissionCount);
-             setProposals(data.proposals)
-           }
-
-        }catch(error){
-            console.log("Failed to fetch the data::",error);
-            setFailed(true)
-        }finally{
-            setLoading(false)
+      list.forEach((p: any) => {
+        if (p.status?.toLowerCase() !== "pending") countClientResponse++
+        if (p.status?.toLowerCase() === "accepted") {
+          acceptedCount++
+          totalValue += p.proposedBudget || 0
         }
-    }
+        if (p.status?.toLowerCase() === "shortlisted") shortlistedCount++
+        if (p.clientViewed) clientViewedCount++
+        if (p.conversationStarted) activeConversationCount++
 
-    useEffect(()=>{
-        loadData()
-    },[])
+        const created = new Date(p.createdAt)
+        if (created >= lastWeek && created <= now) lastWeekSubmissionCount++
+      })
 
-    if(loading){
-        return(
-             <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-        )
+      const pct = (v: number) =>
+        submissionCount > 0 ? Math.round((v / submissionCount) * 100) : 0
+
+      setStats({
+        submissions: submissionCount,
+        lastWeekSubmissions: lastWeekSubmissionCount,
+        clientResponse: countClientResponse,
+        clientResponsePercentage: pct(countClientResponse),
+        clientViewed: clientViewedCount,
+        clientViewedPercentage: pct(clientViewedCount),
+        activeConversations: activeConversationCount,
+        activeConversationsPercentage: pct(activeConversationCount),
+        shortlisted: shortlistedCount,
+        shortlistedPercentage: pct(shortlistedCount),
+        accepted: acceptedCount,
+        acceptedPercentage: pct(acceptedCount),
+        totalValue,
+      })
+
+      setProposals(list)
+    } catch (err) {
+      setFailed(true)
+    } finally {
+      setLoading(false)
     }
-    return(
-     <div className="space-y-6">
-        <div>
-        <h1 className="text-3xl font-bold mb-2">My Proposals</h1>
-        <p className="text-muted-foreground">Track all proposals you've submitted to clients</p>
+  }
+
+  useEffect(() => {
+    loadData()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin h-8 w-8 rounded-full border-b-2 border-primary" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* HEADER */}
+      <div>
+        <h1 className="text-[20px] font-semibold text-orangeButton my-custom-class">
+          My Proposals
+        </h1>
+        <p className="text-[13px] text-gray-500 my-custom-class">
+          Track all proposals you've submitted to clients
+        </p>
+      </div>
+
+    {/* STATS */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+    {/* Total Submissions */}
+    <div className="relative rounded-2xl bg-white pr-14 p-4 shadow-md border border-gray-100">
+        <div className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#eef7fe]">
+        <FileText className="h-4 w-4 text-orangeButton" />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {/* Stats Cards */}
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-            <div className="text-2xl font-bold">{stats.submissions}</div>
-            <p className="text-xs text-muted-foreground">+{stats.lastWeekSubmissions} from last week</p>
-            </CardContent>
-        </Card>
+        <p className="text-[12px] font-semibold h-8 leading-[1.3] my-custom-class">
+        Total Submissions
+        </p>
 
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Client Responses</CardTitle>
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-            <div className="text-2xl font-bold">{stats.clientResponse}</div>
-            <p className="text-xs text-muted-foreground">{stats.clientResponsePercentage}% response rate</p>
-            </CardContent>
-        </Card>
+        <h3 className="mt-2 text-[22px] h-6 font-semibold my-custom-class">
+        {stats.submissions}
+        </h3>
 
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Conversations</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-            <div className="text-2xl font-bold">9</div>
-            <p className="text-xs text-muted-foreground">60% conversion rate</p>
-            </CardContent>
-        </Card>
+        <p className="mt-1 text-[10px] my-custom-class">
+        +{stats.lastWeekSubmissions} from last week
+        </p>
+    </div>
 
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Accepted</CardTitle>
-            <Award className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-            <div className="text-2xl font-bold">{stats.accepted}</div>
-            <p className="text-xs text-muted-foreground">{stats.acceptedPercentage}% acceptance rate</p>
-            </CardContent>
-        </Card>
-
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Value</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-            <div className="text-2xl font-bold">${stats.totalValue>1000?`${(stats.totalValue/1000).toFixed(0)}k`:stats.totalValue}</div>
-            <p className="text-xs text-muted-foreground">Proposed project value</p>
-            </CardContent>
-        </Card>
+    {/* Client Responses */}
+    <div className="relative rounded-2xl bg-white pr-12 p-5 shadow-md border border-gray-100">
+        <div className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#eef7fe]">
+        <MessageSquare className="h-4 w-4 text-orangeButton" />
         </div>
 
-        <Card>
-        <CardHeader>
-            <CardTitle>Proposal to Conversation Funnel</CardTitle>
-            <CardDescription>Track how your proposals convert into client conversations</CardDescription>
+        <p className="text-[12px] font-semibold h-8 leading-[1.3] my-custom-class">
+        Client Responses
+        </p>
+
+        <h3 className="mt-2 text-[22px] h-6 font-semibold my-custom-class">
+        {stats.clientResponse}
+        </h3>
+
+        <p className="mt-1 text-[10px] my-custom-class">
+        {stats.clientResponsePercentage}% response rate
+        </p>
+    </div>
+
+    {/* Conversations */}
+    <div className="relative rounded-2xl bg-white pr-12 p-5 shadow-md border border-gray-100">
+        <div className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#eef7fe]">
+        <Users className="h-4 w-4 text-orangeButton" />
+        </div>
+
+        <p className="text-[12px] font-semibold h-8 leading-[1.3] my-custom-class">
+        Conversations
+        </p>
+
+        <h3 className="mt-2 text-[22px] h-6 font-semibold my-custom-class">
+        {stats.activeConversations}
+        </h3>
+
+        <p className="mt-1 text-[10px] my-custom-class">
+        {stats.activeConversationsPercentage}% conversion rate
+        </p>
+    </div>
+
+    {/* Accepted */}
+    <div className="relative rounded-2xl bg-white pr-10 p-5 shadow-md border border-gray-100">
+        <div className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#eef7fe]">
+        <Award className="h-4 w-4 text-orangeButton" />
+        </div>
+
+        <p className="text-[12px] font-semibold h-8 leading-[1.3] my-custom-class">
+        Accepted
+        </p>
+
+        <h3 className="mt-2 text-[22px] h-6 font-semibold my-custom-class">
+        {stats.accepted}
+        </h3>
+
+        <p className="mt-1 text-[10px] my-custom-class">
+        {stats.acceptedPercentage}% acceptance rate
+        </p>
+    </div>
+
+    {/* Total Value */}
+    <div className="relative rounded-2xl bg-white p-5 shadow-md border border-gray-100">
+        <div className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#eef7fe]">
+        <DollarSign className="h-4 w-4 text-orangeButton" />
+        </div>
+
+        <p className="text-[12px] font-semibold h-8 leading-[1.3] my-custom-class">
+        Total Value
+        </p>
+
+        <h3 className="mt-2 text-[22px] h-6 font-semibold my-custom-class">
+        $
+        {stats.totalValue > 1000
+            ? `${(stats.totalValue / 1000).toFixed(0)}K`
+            : stats.totalValue}
+        </h3>
+
+        <p className="mt-1 text-[10px] my-custom-class">
+        Proposed project value
+        </p>
+    </div>
+    </div>
+
+
+
+      {/* FUNNEL */}
+      <Card className="rounded-2xl border border-gray-200 bg-white">
+        <CardHeader className="pb-6">
+            <CardTitle className="text-[15px] h-4 font-semibold">
+            Proposal to Conversation Funnel
+            </CardTitle>
+            <CardDescription className="text-[13px] h-1 text-gray-500">
+            Track how your proposals convert into client conversations
+            </CardDescription>
         </CardHeader>
-        <CardContent>
-            <div className="space-y-4">
-            <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                <span className="font-medium">Proposals Submitted</span>
-                <span className="text-muted-foreground">{stats.submissions}(100%)</span>
-                </div>
-                <div className="h-3 bg-muted rounded-full overflow-hidden">
-                <div className="h-full bg-blue-500" style={{ width: "100%" }} />
-                </div>
-            </div>
 
-            <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                <span className="font-medium">Client Viewed</span>
-                <span className="text-muted-foreground">{stats.clientViewed} {`(${stats.clientViewedPercentage}%)`}</span>
+        <CardContent className="space-y-5">
+            {[
+            ["Proposals Submitted", stats.submissions, 100, "bg-blue-500"],
+            ["Client Viewed", stats.clientViewed, stats.clientViewedPercentage, "bg-indigo-500"],
+            ["Client Responded", stats.clientResponse, stats.clientResponsePercentage, "bg-purple-500"],
+            ["Active Conversations", stats.activeConversations, stats.activeConversationsPercentage, "bg-violet-500"],
+            ["Shortlisted", stats.shortlisted, stats.shortlistedPercentage, "bg-pink-500"],
+            ["Accepted", stats.accepted, stats.acceptedPercentage, "bg-green-500"],
+            ].map(([label, count, pct, color], i) => (
+            <div key={i} className="space-y-2">
+                {/* Label + Value Row */}
+                <div className="flex items-center justify-between">
+                <span className="text-[12px] font-bold my-custom-class h-1 text-gray-900">
+                    {label}
+                </span>
+                <span className="text-[12px] text-gray-500">
+                    {count} ({pct}%)
+                </span>
                 </div>
-                <div className="h-3 bg-muted rounded-full overflow-hidden">
-                <div className="h-full bg-indigo-500" style={{ width: `${stats.clientViewedPercentage}%` }} />
-                </div>
-            </div>
 
-            <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                <span className="font-medium">Client Responded</span>
-                <span className="text-muted-foreground">{stats.clientResponse} {`(${stats.clientResponsePercentage}%)`}</span>
-                </div>
-                <div className="h-3 bg-muted rounded-full overflow-hidden">
-                <div className="h-full bg-purple-500" style={{ width: `${stats.clientResponsePercentage}%` }} />
-                </div>
-            </div>
-
-            <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                <span className="font-medium">Accepted</span>
-                <span className="text-muted-foreground">{stats.accepted} {`(${stats.acceptedPercentage}%)`}</span>
-                </div>
-                <div className="h-3 bg-muted rounded-full overflow-hidden">
-                <div className="h-full bg-violet-500" style={{ width: `${stats.acceptedPercentage}%` }} />
+                {/* Progress Bar */}
+                <div className="h-[8px] w-full rounded-full bg-gray-100 overflow-hidden">
+                <div
+                    className={`h-full rounded-full ${color}`}
+                    style={{ width: `${Math.max(pct, 2)}%` }}
+                />
                 </div>
             </div>
-
-            <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                <span className="font-medium">Shortlisted</span>
-                <span className="text-muted-foreground">{stats.shortlisted} {`(${stats.shortlistedPercentage}%)`}</span>
-                </div>
-                <div className="h-3 bg-muted rounded-full overflow-hidden">
-                <div className="h-full bg-pink-500" style={{ width: `${stats.shortlistedPercentage}%` }} />
-                </div>
-            </div>
-
-            {/* <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                <span className="font-medium">Accepted</span>
-                <span className="text-muted-foreground">5 (33%)</span>
-                </div>
-                <div className="h-3 bg-muted rounded-full overflow-hidden">
-                <div className="h-full bg-green-500" style={{ width: "33%" }} />
-                </div>
-            </div> */}
-            </div>
+            ))}
         </CardContent>
-        </Card>
+      </Card>
 
-        {/* Proposals List */}
-        <Card>
+
+      {/* PROPOSALS LIST */}
+      <Card className="rounded-2xl pt-2border bg-white border-gray-200">
         <CardHeader>
-            <CardTitle>All Proposals</CardTitle>
-            <CardDescription>View and manage your submitted proposals</CardDescription>
+            <CardTitle className="text-[15px] h-3 font-semibold">
+            All Proposals
+            </CardTitle>
+            <CardDescription className="text-[13px] h-2 text-gray-500">
+            View and manage your submitted proposals
+            </CardDescription>
         </CardHeader>
+
         <CardContent className="space-y-4">
-            {
-                (proposals.length!==0 && !loading && !failed)?
-                <div>
-                 {
-                    (proposals || []).map((proposal) => (
-            <Card key={proposal.id} className="hover:shadow-md transition-shadow mb-4">
-                <CardContent className="pt-6">
-                <div className="flex justify-between items-start mb-4">
-                    <div className="flex-1">
-                    <h3 className="font-semibold text-lg mb-1">{proposal.requirement.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-2">
-                        {proposal.client.name} • {proposal.client.companyName}
-                    </p>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
-                        <div className="flex items-center gap-1">
-                        <DollarSign className="h-4 w-4" />${proposal.proposedBudget.toLocaleString()}
-                        </div>
-                        <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        {proposal.proposedTimeline}
-                        </div>
-                        <div>Submitted {new Date(proposal.createdAt).toLocaleDateString()}</div>
-                    </div>
+            {proposals.length === 0 ? (
+            <p className="text-center text-gray-500 text-[14px] py-6">
+                No Proposals yet
+            </p>
+            ) : (
+            proposals.map((proposal) => (
+                <Card
+                key={proposal.id}
+                className="rounded-2xl border p-1 border-gray-200 bg-white shadow-sm"
+                >
+                <CardContent className="p-4 space-y-3">
+                    <div className="flex flex-col md:flex-row md:justify-between gap-4">
+                    {/* LEFT */}
+                    <div>
+                        <h3 className="text-[20px] font-semibold text-[#2C34A1]">
+                        {proposal.requirement?.title ?? "Untitled Requirement"}
+                        </h3>
 
-                    <div className="flex items-center gap-3 text-sm">
-                        {proposal.clientViewed && (
-                        <div className="flex items-center gap-1 text-blue-600">
-                            <Eye className="h-4 w-4" />
-                            <span>Viewed by client</span>
-                        </div>
-                        )}
-                        {proposal.clientResponded && (
-                        <div className="flex items-center gap-1 text-green-600">
-                            <MessageSquare className="h-4 w-4" />
-                            <span>Client responded</span>
-                        </div>
-                        )}
-                        {proposal.conversationStarted && (
-                        <div className="flex items-center gap-1 text-purple-600">
-                            <Users className="h-4 w-4" />
-                            <span>Active conversation</span>
-                        </div>
-                        )}
-                    </div>
-
-                    {/* {proposal.hasResponse && proposal.lastMessage && (
-                        <div className="mt-3 p-3 bg-muted rounded-lg">
-                        <p className="text-xs text-muted-foreground mb-1">
-                            Last message ({new Date(proposal.responseDate!).toLocaleDateString()}):
+                        <p className="text-[11px] text-gray-500">
+                        {proposal.client?.name ?? "Unknown Client"}
+                        {proposal.client?.companyName
+                            ? ` • ${proposal.client.companyName}`
+                            : ""}
                         </p>
-                        <p className="text-sm">{proposal.lastMessage}</p>
-                        </div>
-                    )} */}
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
-                    <Badge
-                        variant={
-                        proposal.status === "accepted"
-                            ? "default"
-                            : proposal.status === "shortlisted"
-                            ? "secondary"
-                            : proposal.status === "rejected"
-                                ? "destructive"
-                                : "outline"
-                        }
-                    >
-                        {proposal.status === "shortlisted" ? "Shortlisted" : proposal.status}
-                    </Badge>
-                    <Badge variant="outline">{proposal.requirement.category}</Badge>
-                    </div>
-                </div>
-                <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
-                    <Eye className="h-4 w-4 mr-2" />
-                    View Details
-                    </Button>
-                    {proposal.hasConversation && (
-                    <Button variant="default" size="sm">
-                        <MessageSquare className="h-4 w-4 mr-2" />
-                        View Conversation
-                    </Button>
-                    )}
-                    {proposal.status === "pending" && !proposal.hasResponse && (
-                    <Button variant="outline" size="sm">
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit Proposal
-                    </Button>
-                    )}
-                </div>
-                </CardContent>
-            </Card>
-            ))
-                 }
-                </div>
-                :
-                <div>
-                    <p className="text-center text-[#000] text-2xl mt-5">No Proposals yet</p>
-                </div>
-            }
 
+                        <div className="flex flex-wrap items-center gap-8 mt-2">
+                            {/* Budget */}
+                            <div className="flex items-center gap-3">
+                                <div className="h-6 w-6 rounded-full bg-[#F4561C] flex items-center justify-center shrink-0">
+                                <DollarSign className="h-3 w-3 text-white" />
+                                </div>
+                                <span className="text-[13px] font-semibold text-black">
+                                {proposal.proposedBudget
+                                    ? `$${proposal.proposedBudget.toLocaleString()}`
+                                    : "N/A"}
+                                </span>
+                            </div>
+
+                            {/* Timeline */}
+                            <div className="flex items-center gap-3">
+                                <div className="h-6 w-6 rounded-full bg-[#F4561C] flex items-center justify-center shrink-0">
+                                <Calendar className="h-3 w-3 text-white" />
+                                </div>
+                                <span className="text-[13px] font-semibold text-black">
+                                {proposal.proposedTimeline ?? "N/A"}
+                                </span>
+                            </div>
+
+                            {/* Submitted Date */}
+                            <div className="flex items-center gap-3">
+                                <div className="h-6 w-6 rounded-full bg-[#F4561C] flex items-center justify-center shrink-0">
+                                <FileText className="h-3 w-3 text-white" />
+                                </div>
+                                <span className="text-[13px] font-semibold text-black">
+                                Submitted{" "}
+                                {proposal.createdAt
+                                    ? new Date(proposal.createdAt).toLocaleDateString()
+                                    : "N/A"}
+                                </span>
+                            </div>
+                        </div>
+
+
+                        <div className="flex gap-3 mt-2 text-[11px]">
+                        {proposal.clientViewed && (
+                            <span className="text-blue-600 flex items-center gap-1">
+                            <Eye className="h-4 w-4" /> Viewed
+                            </span>
+                        )}
+
+                        {proposal.clientResponded && (
+                            <span className="text-green-600 flex items-center gap-1">
+                            <MessageSquare className="h-4 w-4" /> Responded
+                            </span>
+                        )}
+
+                        {proposal.conversationStarted && (
+                            <span className="text-violet-600 flex items-center gap-1">
+                            <Users className="h-4 w-4" /> Active conversation
+                            </span>
+                        )}
+                        </div>
+                    </div>
+
+                    {/* RIGHT */}
+                    <div className="flex flex-row md:flex-col gap-2 items-start md:items-end">
+                        
+                        {proposal.requirement?.category && (
+                        <Badge className="text-[11px] px-3 py-2 rounded-full bg-[#e0e0e0] text-black">
+                            {proposal.requirement.category}
+                        </Badge>
+                        )}
+
+                        <Badge
+                        className={`text-[11px] px-4 py-2 rounded-full font-medium capitalize ${getStatusBadgeClass(
+                            proposal.status
+                        )}`}
+                        >
+                        {proposal.status ?? "pending"}
+                        </Badge>
+
+                    </div>
+                    </div>
+
+                    {/* ACTIONS */}
+                    <div className="flex flex-wrap gap-3 mt-3">
+                    {/* View Details – ALWAYS */}
+                    <Button
+                        className="h-10 px-6 rounded-full bg-[#2C34A1] text-white hover:bg-[#232A8F]"
+                    >
+                        View Details →
+                    </Button>
+
+                    {/* Conditional Second Button */}
+                    {proposal.hasConversation ? (
+                        <Button className="h-10 px-6 rounded-full bg-black text-white hover:bg-black/90">
+                        View Conversation →
+                        </Button>
+                    ) : proposal.status === "pending" ? (
+                        <Button className="h-10 px-6 rounded-full bg-black text-white hover:bg-black/90">
+                        Edit Proposal →
+                        </Button>
+                    ) : null}
+                    </div>
+
+                    
+                </CardContent>
+                </Card>
+            ))
+            )}
         </CardContent>
         </Card>
     </div>
-    )
+  )
 }
-export default ProposalsPage;
+
+export default ProposalsPage
