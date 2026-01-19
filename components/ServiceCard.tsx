@@ -6,20 +6,21 @@ import Link from "next/link"
 
 export default function ServiceCard({ provider }: { provider: Provider }) {
     const p = provider
+    console.log("prop provider:::",p)
     return (
         <div className="overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:shadow-md flex flex-col h-full">
             <div className="aspect-16/10 w-full overflow-hidden">
-                <img src={p.cover} alt={p.name} className="h-full w-full object-cover"/>
+                <img src={p.coverImage} alt={p.name} className="h-full w-full object-cover"/>
             </div>
             <div className="flex flex-col flex-1 sm:p-6 p-5 justify-between">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-wrap items-center gap-3">
-                    {p.verified && (
+                    {p.isVerified && (
                        <span className="inline-flex items-center rounded-full border bg-[#32359a] px-4 py-1 sm:text-xs font-medium text-white text-bold">
                             Verified
                         </span>
                     )}
-                    {p.featured && (
+                    {p.isFeatured && (
                         <span className="inline-flex items-center rounded-full border bg-[#e84816] px-4 py-1 sm:text-xs font-medium text-white text-bold">
                             Featured
                         </span>
@@ -66,8 +67,8 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
          <span className="text-[14px] sm:text-[14px] font-semibold text-[#0E0E0E]">
          {p.rating.toFixed(1)}
         </span>
-         {p.reviews && (
-         <span className="text-[14px] sm:text-[15px] text-[#7C7C7C]">({p.reviews})</span>
+         {p.rating && (
+         <span className="text-[14px] sm:text-[15px] text-[#7C7C7C]">({p.reviewCount})</span>
          )}
         </div>
         </div>
@@ -84,7 +85,7 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
                         <p className="py-1 text-sm font-bold text-[#adb0b3] leading-[1.2] -mt-0.5"
                         style={{fontFamily: "CabinetGrotesk2"}}
                         >
-                            {p.desc}
+                            {p.description}
                         </p>    
                     </div>
                 </div>
@@ -117,7 +118,7 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
                         alt="Projects"
                         className="h-5 w-5 sm:h-6 sm:w-6 object-contain"
                         />
-                        {p.projects} projects
+                        {p.projectsCompleted} projects
                         </span>
                     <span className="inline-flex items-center gap-2">
                          <img
@@ -125,7 +126,7 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
                         alt="Time"
                         className="h-5 w-5 sm:h-6 sm:w-6 object-contain"
                         />
-                        Response: {p.response}
+                        Response: {p?.response || "2 hrs"}
                         </span>
                 </div>
                     
@@ -133,7 +134,7 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-1 py-3">
                     <div className="text-xl  text-[#616161] font-bold">
                         From 
-                        <span className="font-bold"> {p.rate}</span>
+                        <span className="font-bold"> {p.hourlyRate}</span>
                     </div>
                 </div>
 
