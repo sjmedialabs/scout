@@ -29,20 +29,20 @@ export function AnalyticsDashboard({ stats, subscriptionStats, topProviders }: A
               <div className="flex justify-between text-sm">
                 <span>Clients</span>
                 <span>
-                  {stats.totalSeekers} ({Math.round((stats.totalSeekers / stats.totalUsers) * 100)}%)
+                  {stats.clientsCount} ({stats.clientsCountPercentage}%)
                 </span>
               </div>
-              <Progress value={(stats.totalSeekers / stats.totalUsers) * 100} className="h-2 bg-blueBackground" />
+              <Progress value={stats.clientsCountPercentage} className="h-2 bg-blueBackground" />
             </div>
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Agencies</span>
                 <span>
-                  {stats.totalProviders} ({Math.round((stats.totalProviders / stats.totalUsers) * 100)}%)
+                  {stats.agenciesCount} ({stats.agenciesCountPercentage}%)
                 </span>
               </div>
-              <Progress value={(stats.totalProviders / stats.totalUsers) * 100} className="h-2" />
+              <Progress value={stats.agenciesCountPercentage} className="h-2" />
             </div>
           </CardContent>
         </Card>
@@ -102,7 +102,7 @@ export function AnalyticsDashboard({ stats, subscriptionStats, topProviders }: A
                     {index + 1}
                   </div>
                   <div>
-                    <div className="font-bold text-orangeButton">{provider.companyName}</div>
+                    <div className="font-bold text-orangeButton">{provider.name}</div>
                     <div className="text-sm text-gray-500">{provider.location}</div>
                   </div>
                 </div>
@@ -130,8 +130,8 @@ export function AnalyticsDashboard({ stats, subscriptionStats, topProviders }: A
                   </div>
                 <div className="flex items-center gap-4">
                   <div className="flex gap-2">
-                    {provider.verified && <Badge className="rounded-lg bg-[#1C96F4]">Verified</Badge>}
-                    {provider.featured && <Badge className="bg-[#39A935] rounded-lg">Featured</Badge>}
+                    {provider.isVerified && <Badge className="rounded-lg bg-[#1C96F4]">Verified</Badge>}
+                    {provider.isFeatured && <Badge className="bg-[#39A935] rounded-lg">Featured</Badge>}
                     <Badge className="bg-[#EA7E1F] rounded-lg">{provider.subscriptionTier}</Badge>
                   </div>
                 </div>
