@@ -8,15 +8,14 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import ServiceCard from "@/components/ServiceCard"
 import type { Provider } from "@/components/types/service"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Search } from "lucide-react"
 import Image from "next/image"
-
+import { categories } from "@/lib/mock-data"
 
 const options = [
-  "Highest Rating",
-  "Newest",
-  "Oldest",
-  "Most Reviews",
+  "High to Low Rating",
+  "Low to High Rating",
 ]
 
 export default function SearchPage() {
@@ -25,6 +24,10 @@ export default function SearchPage() {
 
   const query = searchParams.get("q") || ""
   const [searchQuery, setSearchQuery] = useState(query)
+  const[dynamicProviders,setDynamicProviders]=useState<Provider[]>([])
+  const[filteredDynamicProviders,setDynamicFilteredProviders]=useState<Provider[]>([])
+  console.log("search param is:::",query)
+
  
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
@@ -48,29 +51,76 @@ const [results, setResults] = useState<SearchResults>({
   }, [query])
 
   const performSearch = async (searchTerm: string) => {
-    try {
-      setLoading(true)
-      const res = await fetch(`/api/search?q=${encodeURIComponent(searchTerm)}`)
-      const data = await res.json()
-      setResults(data)
-    } catch (error) {
-      console.error("Search error:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  try {
+    setLoading(true)
 
+    const res = await fetch("/api/providers")
+    const data = await res.json()
+
+    setDynamicProviders(data.providers)
+    console.log("Fetched providers::::",data.providers)
+
+    if (searchTerm.trim()) {
+      console.log('Entered to if')
+      const filtered = data.providers.filter((eachItem: Provider) =>
+        eachItem.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        eachItem.services?.some(service =>
+          service.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      )
+       console.log("dynamic filtered queris are:::",filtered)
+      setDynamicFilteredProviders(filtered)
+    } else {
+      setDynamicFilteredProviders(data.providers)
+    }
+
+  } catch (error) {
+    console.error("Search error:", error)
+  } finally {
+    setLoading(false)
+  }
+}
+
+
+ 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
-    }
+     if (searchQuery.trim()) {
+      console.log('Entered to if')
+      const filtered = dynamicProviders.filter((eachItem: Provider) =>
+        eachItem.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        eachItem.services?.some(service =>
+          service.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      )
+       console.log("dynamic filtered queris are:::",filtered)
+      setDynamicFilteredProviders(filtered)
+  }}
+ const handleHighestRating = (value: string) => {
+  let sortedData = [...filteredDynamicProviders];
+
+  if (value === "high-to-low") {
+    sortedData.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+  } 
+  else if (value === "low-to-high") {
+    sortedData.sort((a, b) => (a.rating ?? 0) - (b.rating ?? 0));
+  } 
+  else {
+    // reset to original filtered data
+    setDynamicFilteredProviders(filteredDynamicProviders);
+    return;
   }
+
+  setDynamicFilteredProviders(sortedData);
+};
+
 
   const providers: Provider[] = [
   ...(Array.isArray(results.services) ? results.services : []),
   ...(Array.isArray(results.agencies) ? results.agencies : []),
 ]
+
+
 
 
   return (
@@ -129,59 +179,34 @@ const [results, setResults] = useState<SearchResults>({
           </p>
 
           {/* SORT DROPDOWN (UI ONLY) */}
-          <div className="relative inline-flex">
-            {/* Trigger */}
-            <button
-              onClick={() => setOpen(!open)}
+         <div className="flex justify-between my-8">
+          
+          <Select onValueChange={handleHighestRating}>
+            <SelectTrigger
               className="
-                flex items-center justify-between
-                min-w-[200px]
-                bg-[#f2f2f2]
-                border border-[#e5e5e5]
+                bg-[#f5f5f5]
+                h-12
+                w-[180px]
                 rounded-full
-                px-6 py-3
-                text-xs font-medium text-black
+                shadow-none
+                border border-[#e5e5e5]
+                text-[#555]
+                px-4
+                focus:outline-none
+                focus:ring-0
+                focus:ring-offset-0
+                focus:border-[#e5e5e5]
               "
             >
-              <span className="text-left">{value}</span>
-              <ChevronDown className="h-5 w-5" />
-            </button>
+              <SelectValue placeholder="Highest Rating" />
+            </SelectTrigger>
 
-            {/* Dropdown */}
-            {open && (
-              <div
-                className="
-                  absolute left-0 top-full mt-2
-                  w-full
-                  rounded-xl
-                  border border-[#e5e5e5]
-                  bg-white
-                  shadow-sm
-                  z-50
-                  overflow-hidden
-                "
-              >
-                {options.map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => {
-                      setValue(option)
-                      setOpen(false)
-                    }}
-                    className="
-                      w-full
-                      px-6 py-3
-                      text-left
-                      text-xs
-                      hover:bg-[#f2f2f2]
-                    "
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+            <SelectContent>
+              <SelectItem value="high-to-low">High to Low</SelectItem>
+              <SelectItem value="low-to-high">Low to High</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
          </div> 
 
         {/* STATES */}
@@ -189,14 +214,14 @@ const [results, setResults] = useState<SearchResults>({
           <div className="text-center py-16 text-gray-500">
             Searching…
           </div>
-        ) : providers.length === 0 ? (
+        ) : filteredDynamicProviders.length === 0 ? (
           <div className="text-center py-16 text-gray-500">
             No results found for "{query}"
           </div>
         ) : (
           /* CARDS GRID */
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {providers.map((provider) => (
+          {filteredDynamicProviders.map((provider) => (
             <ServiceCard
               key={provider.id ?? provider._id ?? provider.name}
               provider={provider}
