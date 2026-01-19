@@ -1,68 +1,66 @@
-import { Star } from "lucide-react"
+"use client"
 
-export default function Testimonials() {
-  const reviews = [
-    {
-      name: "Alex Morgan",
-      company: "DTC Brand",
-      rating: 5,
-      review:
-        "The team consistently delivered high-quality creative and performance improvements. Our ROAS improved significantly within the first 60 days.",
-    },
-    {
-      name: "Sarah Lee",
-      company: "SaaS Startup",
-      rating: 4,
-      review:
-        "Great communication and strong execution. Their strategic approach helped us scale lead generation efficiently.",
-    },
-    {
-      name: "James Carter",
-      company: "E-commerce Company",
-      rating: 5,
-      review:
-        "Professional, data-driven, and reliable. They became a true extension of our internal growth team.",
-    },
-  ]
+type Testimonial = {
+  clientName: string
+  company: string
+  rating: number
+  text: string
+}
+
+export default function Testimonials({
+  testimonials = [],
+}: {
+  testimonials?: Testimonial[]
+}) {
+  if (!testimonials.length) return null
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-6 space-y-4">
-      <h3 className="text-[14px] font-semibold text-orange-500">
-        What Clients Are Saying
-      </h3>
+    <div className="shadow-md rounded-2xl border border-orange-100 bg-white p-6 space-y-4">
+      {/* Header */}
+      <div>
+        <h3 className="text-[16px] font-semibold h-5 text-orangeButton my-custom-class">
+          What Clients Are Saying
+        </h3>
+        <p className="text-[12px] text-gray-500 my-custom-class">
+          Trusted by leaders from various industries
+        </p>
+      </div>
 
+      {/* Testimonials Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {reviews.map((review, index) => (
+        {testimonials.map((item, index) => (
           <div
             key={index}
-            className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3"
+            className="rounded-xl border border-gray-200 bg-white p-4 flex flex-col"
           >
-            {/* Stars */}
+
+            {/* Rating */}
             <div className="flex items-center gap-1">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star
+                <span
                   key={i}
-                  className={`h-4 w-4 ${
-                    i < review.rating
-                      ? "fill-orange-400 text-orange-400"
-                      : "text-gray-300"
+                  className={`text-[14px] ${
+                    i < item.rating ? "text-[#E0AA12]" : "text-gray-300"
                   }`}
-                />
+                >
+                  ★
+                </span>
               ))}
             </div>
 
             {/* Review text */}
-            <p className="text-[13px] leading-[1.6] text-gray-600">
-              {review.review}
+            <p className="text-[12px] leading-normal italic text-gray-500 my-custom-class">
+
+              “{item.text}”
             </p>
 
-            {/* Author */}
-            <div className="pt-1">
-              <p className="text-[13px] font-medium text-gray-800">
-                {review.name}
+         
+            <div className="mt-auto pt-3">
+              <p className="text-[12px] font-semibold text-gray-900 my-custom-class">
+                {item.clientName}
               </p>
-              <p className="text-[12px] text-gray-500">
-                {review.company}
+              <p className="text-[11px] text-gray-500 my-custom-class">
+                {item.company}
               </p>
             </div>
           </div>

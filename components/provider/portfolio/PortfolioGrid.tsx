@@ -59,16 +59,23 @@ export default function PortfolioGrid({ provider }: PortfolioGridProps) {
           </p>
         </div>
 
+        <div className="flex items-center gap-2">
+        <span className="text-[12px] text-gray-600 my-custom-class">
+          show:
+        </span>
+
         <Select value={filter} onValueChange={(v) => setFilter(v as any)}>
-          <SelectTrigger className="h-8 w-[90px] text-[12px]">
+          <SelectTrigger className="h-8 w-[90px] text-[12px] rounded-md border border-gray-200">
             <SelectValue />
           </SelectTrigger>
+
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
             <SelectItem value="portfolio">Portfolio</SelectItem>
             <SelectItem value="awards">Awards</SelectItem>
           </SelectContent>
         </Select>
+      </div>
       </div>
 
       {/* Grid */}

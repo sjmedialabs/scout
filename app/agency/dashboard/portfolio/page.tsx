@@ -79,7 +79,7 @@ export default function ProviderPortfolioPage() {
           <ServiceLines provider={provider} />
           <PricingSnapshot provider={provider} />
           <PortfolioGrid provider={provider} />
-          <Testimonials provider={provider} />
+          <Testimonials testimonials={provider.testimonials} />
         </div>
 
         {/* Sidebar */}
