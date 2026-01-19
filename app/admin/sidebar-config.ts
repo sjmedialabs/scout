@@ -22,9 +22,9 @@ export const adminMenu = [
     icon: Users,
     children: [
       { id: "users", label: "All Users", icon: Users },
-      { id: "role-management", label: "Role Management", icon: Shield },
-      { id: "user-verification", label: "User Verification", icon: UserCheck },
-      { id: "user-activity", label: "User Activity", icon: Activity },
+      // { id: "role-management", label: "Role Management", icon: Shield },
+      // { id: "user-verification", label: "User Verification", icon: UserCheck },
+      // { id: "user-activity", label: "User Activity", icon: Activity },
     ],
   },
   {
@@ -35,7 +35,7 @@ export const adminMenu = [
       { id: "subscribers", label: "Subscribers Management", icon: Users },
       { id: "subscription-plans", label: "Subscription Plans", icon: CreditCard },
       { id: "billing", label: "Billing & Invoices", icon: FileText },
-      { id: "payment-methods", label: "Payment Methods", icon: DollarSign },
+      // { id: "payment-methods", label: "Payment Methods", icon: DollarSign },
     ],
   },
   {

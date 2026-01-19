@@ -32,11 +32,11 @@ export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
         transition-all duration-300
         ${collapsed ? "w-20 items-center" : "w-64"}
         bg-sidebarMain text-white border-r
-        flex flex-col justify-between
+        flex flex-col justify-between overflow-hidden
       `}
     >
       {/* HEADER (CLICK TO TOGGLE) */}
-      <div>
+      <div className="w-full flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <button
           onClick={onToggle}
           className="w-full p-5 border-b flex items-center justify-between hover:bg-white/10"
@@ -72,7 +72,7 @@ export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
 
               {open.includes(section.label) && (
                 <div className={` mt-2 space-y-1 ${collapsed ? "ml-0" : "ml-8"}`}>
-                  {section.children.map(item => {
+                  {section.children?.map(item => {
                     const active = current === item.id;
                     return (
                       <Link
@@ -98,7 +98,7 @@ export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
       </div>
 
       {/* FOOTER */}
-      <div className="p-3">
+      <div className="w-full">
         <Button className="bg-blueButton text-white w-full flex gap-2 justify-start">
           <Settings className="w-4 h-4" />
           {!collapsed && "System Settings"}
