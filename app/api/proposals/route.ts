@@ -119,6 +119,7 @@ export async function GET(request: NextRequest) {
       clientResponded: p.clientResponded,
       clientRespondedAt: p.clientRespondedAt,
       conversationStarted: p.conversationStarted,
+      proposalDescription: p.proposalDescription,
       createdAt: p.createdAt,
       updatedAt: p.updatedAt,
     }))

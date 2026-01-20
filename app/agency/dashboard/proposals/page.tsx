@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { toast } from "@/lib/toast"
 import {
   FileText,
   MessageSquare,
@@ -21,11 +22,67 @@ import {
   Edit,
 } from "lucide-react"
 import type { Proposal } from "@/lib/types"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Loader2 } from "lucide-react"
+import { setTimeout } from "timers/promises"
+import { useRouter } from "next/navigation"
 
 const ProposalsPage = () => {
   const [proposals, setProposals] = useState<Proposal[]>([])
   const [loading, setLoading] = useState(false)
   const [failed, setFailed] = useState(false)
+  const router = useRouter();
+
+  const[showEditDialog, setShowEditDialog]=useState(false);
+  const[selectedProposal, setSelectedProposal]=useState<Proposal|null>(null);
+  const [errors, setErrors] = useState<{
+    cost: boolean
+    timeline: boolean
+    approach: boolean
+    form: boolean
+  }>({
+    cost: false,
+    timeline: false,
+    approach: false,
+    form: false,
+  })
+
+  const validateForm = () => {
+    const hasCostError = !cost.trim() || Number(cost) <= 0
+    const hasTimelineError = !timeline.trim()
+    const hasApproachError = !approach.trim()
+
+    const hasError = hasCostError || hasTimelineError || hasApproachError
+
+    setErrors({
+      cost: hasCostError,
+      timeline: hasTimelineError,
+      approach: hasApproachError,
+      form: hasError,
+    })
+
+    return !hasError
+  }
+
+  const [cost, setCost] = useState("")
+    const [timeline, setTimeline] = useState("")
+    const [approach, setApproach] = useState("")
+    const [milestones, setMilestones] = useState([""])
+    const [coverLetter, setCoverLetter] = useState("")
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const[formResponse,setFormResponse]=useState("");
+    const [success, setSuccess] = useState(false)
 
   const [stats, setStats] = useState({
     submissions: 0,
@@ -60,7 +117,7 @@ const ProposalsPage = () => {
 
 
   const loadData = async () => {
-    setLoading(true)
+    setLoading(true) 
     setFailed(false)
 
     try {
@@ -136,6 +193,93 @@ const ProposalsPage = () => {
     )
   }
 
+   const handleUpdateProposal = async () => {
+  if (!validateForm()) return
+
+  setIsSubmitting(true)
+  setSuccess(false)
+
+  try {
+   
+    // const tempmilestons=milestones.map((eachItem)=>({title:eachItem}))
+
+   
+      const payload={
+        proposedBudget:cost,
+        proposedTimeline:timeline,
+        proposalDescription:approach,
+        coverLetter:coverLetter,
+        milestones:milestones.map((eachItem)=>({title:eachItem}))
+      }
+
+       console.log("Payload to send:::::::",payload)
+      const res=await fetch(`/api/proposals/${selectedProposal?.id}`,{
+      method:"PUT",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(payload)
+    })
+    console.log("update response proposal:::",res)
+    if(res.ok){
+      setSuccess(true)
+      setErrors({
+        cost: false,
+        timeline: false,
+        approach: false,
+        form: false,
+      })
+   
+      setShowEditDialog(false);
+       toast.success("Successfully updated the proposal details")
+       loadData();
+
+
+    }
+    else{
+      setFormResponse("failed to update the proposal please try again")
+    }
+
+    // setTimeout(() => {
+    //   router.push("/agency/dashboard/project-inquiries")
+    // }, 4500)
+
+  } catch {
+    setErrors({
+      cost: false,
+      timeline: false,
+      approach: false,
+      form: true,
+    })
+  } finally {
+    setIsSubmitting(false)
+  }
+}
+const handleEditProposal=(proposalId:string)=>{
+    const proposalToEdit=proposals.find((p)=>p.id===proposalId)
+    console.log("Proposal to edit::::",proposalToEdit)
+    if(proposalToEdit){
+        setSelectedProposal(proposalToEdit);
+        setCost(proposalToEdit.proposedBudget.toString()||"");
+        setTimeline(proposalToEdit.proposedTimeline||"");
+        setApproach(proposalToEdit?.proposalDescription||"");
+        setMilestones(
+          proposalToEdit.milestones && proposalToEdit.milestones.length>0
+          ? proposalToEdit.milestones.map((m)=>m.title)
+          : [""]
+        )
+        setCoverLetter(proposalToEdit.coverLetter||"");
+        setShowEditDialog(true);
+        setSuccess(false);
+        setErrors({
+          cost: false,
+          timeline: false,
+          approach: false,
+          form: false,
+        })
+    }else{
+        console.error("Proposal not found")
+    }
+
+}
   return (
     <div className="space-y-6">
       {/* HEADER */}
@@ -415,7 +559,7 @@ const ProposalsPage = () => {
                     <div className="flex flex-wrap gap-3 mt-3">
                     {/* View Details – ALWAYS */}
                     <Button
-                        className="h-10 px-6 rounded-full bg-[#2C34A1] text-white hover:bg-[#232A8F]"
+                        className="h-10 px-6 rounded-full bg-[#2C34A1] text-white hover:bg-[#232A8F]" onClick={()=>router.push(`/agency/dashboard/proposals/${proposal.id}`)}
                     >
                         View Details →
                     </Button>
@@ -426,7 +570,7 @@ const ProposalsPage = () => {
                         View Conversation →
                         </Button>
                     ) : proposal.status === "pending" ? (
-                        <Button className="h-10 px-6 rounded-full bg-black text-white hover:bg-black/90">
+                        <Button className="h-10 px-6 rounded-full bg-black text-white hover:bg-black/90" onClick={()=>handleEditProposal(proposal.id)}>
                         Edit Proposal →
                         </Button>
                     ) : null}
@@ -439,6 +583,200 @@ const ProposalsPage = () => {
             )}
         </CardContent>
         </Card>
+
+        {showEditDialog&& (
+              <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+               <DialogContent className=" md:max-w-xl rounded-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-[#F4561C]">
+                Edit Proposal
+              </DialogTitle>
+            </DialogHeader>
+
+            
+          {/* COST + TIMELINE */}
+          <div className="grid grid-cols-1 h-18 md:grid-cols-2 gap-10">
+            {/* Proposed Cost */}
+            <div className="space-y-2">
+              <label className="text-[14px] font-bold text-[#98A0B4]">
+                Proposed cost ($)
+              </label>
+
+              <Input
+                value={cost}
+                onChange={(e) => {
+                  const value = e.target.value
+                  if (!/^\d*$/.test(value)) return
+                  setCost(value)
+                  if (errors.cost || errors.form) {
+                    setErrors({ ...errors, cost: false, form: false })
+                  }
+                }}
+                placeholder="Enter Proposed Cost"
+                className={`h-10 rounded-xl placeholder:text-[12px] placeholder:text-[#98A0B4]
+                  ${errors.cost ? "border-red-500" : "border-gray-200"}
+                  `}
+              />
+
+              
+            </div>
+
+            {/* Estimated Timeline */}
+            <div className="space-y-2">
+              <label className="text-[15px] font-bold text-[#98A0B4]">
+                Estimated Timeline
+              </label>
+
+              <Input
+                value={timeline}
+                onChange={(e) => {
+                  setTimeline(e.target.value)
+                  if (errors.timeline || errors.form) {
+                    setErrors({ ...errors, timeline: false, form: false })
+                  }
+                }}
+
+                placeholder="Enter Estimated Timeline"
+                className={`
+                  h-10 rounded-xl text-[16px] placeholder:text-[12px] placeholder:text-[#98A0B4]
+                  ${errors.timeline ? "border-red-500" : "border-gray-200"}
+                `}
+              />
+
+              
+            </div>
+          </div>
+
+          {/* WORK APPROACH */}
+          <div className="space-y-3 h-20">
+            <label className="text-[14px] font-bold text-[#98A0B4]">
+              Work Approach
+            </label>
+
+            <Textarea
+              value={approach}
+              onChange={(e) => {
+                setApproach(e.target.value)
+                if (errors.approach || errors.form) {
+                  setErrors({ ...errors, approach: false, form: false })
+                }
+              }}
+
+              rows={6}
+              placeholder="Describe your methodology, Technologies you will use, and how you will approach this project...."
+              className={`rounded-xl text-[16px] leading-[1.6] placeholder:text-[12px] placeholder:text-[#98A0B4]
+                  ${errors.approach ? "border-red-500" : "border-gray-200"}
+              `}    
+            />
+          </div>
+
+          <div className="space-y-3 mt-5 h-22">
+            <label className="text-[14px] font-bold text-[#98A0B4]">
+              Cover Letter
+            </label>
+
+            <Textarea
+              value={coverLetter}
+              onChange={(e) => setCoverLetter(e.target.value)}
+              rows={6}
+              placeholder="Describe your methodology, Technologies you will use, and how you will approach this project...."
+              className="rounded-xl border-gray-200 text-[16px] leading-[1.6] placeholder:text-[12px] placeholder:text-[#98A0B4]"
+            />
+          </div>
+
+          {/* MILESTONES */}
+          <div className="space-y-4 mt-5">
+            <div className="flex items-center justify-between">
+              <label className="text-[14px] font-bold text-[#98A0B4]">
+                Project milestones
+              </label>
+
+              <Button
+                type="button"
+                className="h-8 rounded-lg bg-black px-4 text-[14px] font-medium text-white flex items-center gap-2 hover:bg-black/80"
+                onClick={() => setMilestones([...milestones, ""])}
+              >
+                + Add Milestone
+              </Button>
+            </div>
+
+            {milestones.map((milestone, index) => (
+              <div key={index} className="relative">
+              <Input
+                value={milestone}
+                onChange={(e) => {
+                  const updated = [...milestones]
+                  updated[index] = e.target.value
+                  setMilestones(updated)
+                }}
+                placeholder={`Milestone -${index + 1}`}
+                className="h-10 border border-gray-200 rounded-xl text-[16px] placeholder:text-[#98A0B4]"
+              />
+
+              {/* Remove button */}
+              {milestones.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setMilestones(milestones.filter((_, i) => i !== index))
+                  }
+                  className="
+                    absolute right-3 top-1/2 -translate-y-1/2
+                    text-gray-400 hover:text-red-500
+                    text-sm font-medium
+                  "
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+            ))}
+          </div>
+
+          {/* PROPOSAL TIPS */}
+          
+
+          <div>
+          <Button
+            className="h-12 rounded-full hover:bg-orange-400 bg-orangeButton px-8 text-white flex items-center justify-center gap-2"
+            disabled={isSubmitting}
+            onClick={handleUpdateProposal}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Updating...
+              </>
+            ) : (
+              "Update Proposal"
+            )}
+          </Button>
+
+          {errors.form && (
+            <p className="text-[14px] font-medium text-red-500">
+              Please enter the required fields
+            </p>
+          )}
+          {
+            formResponse &&(
+             <p className="text-[14px] font-medium text-red-500">
+              {formResponse}
+            </p>
+            )
+          }
+
+          {success && (
+            <p className="text-green-600 font-medium">
+              Proposal updated successfully
+            </p>
+          )}
+          </div>
+
+        
+                    </DialogContent>
+                  </Dialog>
+               
+            )}
     </div>
   )
 }
