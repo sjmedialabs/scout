@@ -1,52 +1,16 @@
 "use client"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import {
-  Building2,
-  FileText,
-  Star,
-  TrendingUp,
-  DollarSign,
-  Calendar,
-  MessageSquare,
-  Award,
-  Edit,
-  Settings,
-  BarChart3,
-  Users,
-  Megaphone,
-  CreditCard,
-  Bell,
-  UserPlus,
-  ChevronDown,
-  ChevronRight,
-  Home,
-  User,
-  Briefcase,
-  MessageCircle,
-  FileSearch,
-  Eye,
-  GitCompare,
-  Download,
-  Phone,
-  Video,
-  Paperclip,
-  Send,
-  Mail,
-  Clock,
-  CheckCircle,
-  X,
-  Target,
-  Handshake,
-} from "lucide-react"
-import { mockNotifications, mockProviderProjects, mockProviderReviews, mockRequirements } from "@/lib/mock-data"
-import type { Provider, Requirement, Notification, Project, Review } from "@/lib/types"
-import { useState } from "react"
 
-const CompetitorComparisonPage=()=>{
-    const monthlyReport = {
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Star } from "lucide-react"
+
+const CompetitorComparisonPage = () => {
+  const monthlyReport = {
     profileImpressions: 5680,
     profileViews: 1247,
     categoryRanking: {
@@ -57,252 +21,315 @@ const CompetitorComparisonPage=()=>{
     leadsGenerated: {
       inquiries: 34,
       proposals: 15,
-      total: 49,
+      total: 55,
     },
     conversionFunnel: {
       views: 1247,
       contacts: 89,
-      proposals: 15,
-      won: 5,
+      proposals: 25,
+      won: 10,
     },
     reviewsAdded: 3,
     ratingsDistribution: {
-      5: 12,
-      4: 5,
-      3: 2,
-      2: 0,
-      1: 0,
+      5: 57,
+      4: 102,
+      3: 86,
+      2: 32,
+      1: 27,
     },
   }
-    return(
-     <div className="space-y-6">
-        <div>
-        <h1 className="text-3xl font-bold mb-2">Monthly Performance Report</h1>
-        <p className="text-muted-foreground">Comprehensive overview of your agency's monthly performance</p>
-        </div>
 
-        {/* Profile Performance */}
-        <Card>
+  const totalRatings = Object.values(
+    monthlyReport.ratingsDistribution,
+  ).reduce((a, b) => a + b, 0)
+
+  return (
+    <div className="space-y-5">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl h-8 font-bold text-orangeButton my-custom-class">
+          Monthly Performance Report
+        </h1>
+        <p className="text-gray-500">
+          Comprehensive overview of your agency&apos;s monthly performance
+        </p>
+      </div>
+
+      {/* Profile Performance */}
+      <Card className="rounded-3xl bg-white">
         <CardHeader>
-            <CardTitle>Profile Performance</CardTitle>
+          <CardTitle className="h-2">Profile Performance</CardTitle>
         </CardHeader>
         <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-                <div className="text-sm text-muted-foreground mb-1">Profile Impressions</div>
-                <div className="text-3xl font-bold">{monthlyReport.profileImpressions}</div>
+              <p className="text-sm text-gray-500">
+                Profile Impressions
+              </p>
+              <p className="text-2xl font-bold">
+                {monthlyReport.profileImpressions}
+              </p>
             </div>
             <div>
-                <div className="text-sm text-muted-foreground mb-1">Profile Views</div>
-                <div className="text-3xl font-bold">{monthlyReport.profileViews}</div>
+              <p className="text-sm text-gray-500">
+                Profile Views
+              </p>
+              <p className="text-2xl font-bold">
+                {monthlyReport.profileViews}
+              </p>
             </div>
             <div>
-                <div className="text-sm text-muted-foreground mb-1">View Rate</div>
-                <div className="text-3xl font-bold">
-                {((monthlyReport.profileViews / monthlyReport.profileImpressions) * 100).toFixed(1)}%
-                </div>
+              <p className="text-sm text-gray-500">
+                View Rate
+              </p>
+              <p className="text-2xl font-bold">
+                {(
+                  (monthlyReport.profileViews /
+                    monthlyReport.profileImpressions) *
+                  100
+                ).toFixed(1)}
+                %
+              </p>
             </div>
-            </div>
+          </div>
         </CardContent>
-        </Card>
+      </Card>
 
-        {/* Category Ranking */}
-        <Card>
+      {/* Category Ranking Trend */}
+      <Card className="rounded-3xl bg-white">
         <CardHeader>
-            <CardTitle>Category Ranking Trend</CardTitle>
+          <CardTitle className="h-2">Category Ranking Trend</CardTitle>
         </CardHeader>
-        <CardContent>
-            <div className="flex items-center justify-between p-4 border rounded-lg">
+        <CardContent className="space-y-4">
+          {/* Web Development */}
+          <div className="flex items-center py-2 justify-between p-4 border rounded-2xl">
             <div>
-                <p className="text-sm text-muted-foreground mb-1">{monthlyReport.categoryRanking.category}</p>
-                <p className="text-2xl font-bold">Rank #{monthlyReport.categoryRanking.current}</p>
+              <p className="text-sm font-bold">
+                Web Development
+              </p>
+              <p className="text-2xl font-bold">
+                Rank #{monthlyReport.categoryRanking.current}
+              </p>
             </div>
             <div className="text-right">
-                <Badge variant="default" className="bg-green-500">
-                ↑ {monthlyReport.categoryRanking.previous - monthlyReport.categoryRanking.current} positions
-                </Badge>
-                <p className="text-sm text-muted-foreground mt-1">
+              <span className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-bold">
+                ↑{" "}
+                {monthlyReport.categoryRanking.previous -
+                  monthlyReport.categoryRanking.current}{" "}
+                positions
+              </span>
+              <p className="text-xs text-center text-gray-500 mt-1">
                 Previous: #{monthlyReport.categoryRanking.previous}
-                </p>
+              </p>
             </div>
-            </div>
-        </CardContent>
-        </Card>
+          </div>
 
-        {/* Leads Generated */}
-        <Card>
-        <CardHeader>
-            <CardTitle>Leads Generated</CardTitle>
-        </CardHeader>
-        <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-4 border rounded-lg">
-                <div className="text-3xl font-bold">{monthlyReport.leadsGenerated.inquiries}</div>
-                <p className="text-sm text-muted-foreground mt-2">Inquiries</p>
-            </div>
-            <div className="text-center p-4 border rounded-lg">
-                <div className="text-3xl font-bold">{monthlyReport.leadsGenerated.proposals}</div>
-                <p className="text-sm text-muted-foreground mt-2">Proposals</p>
-            </div>
-            <div className="text-center p-4 border rounded-lg">
-                <div className="text-3xl font-bold text-primary">{monthlyReport.leadsGenerated.total}</div>
-                <p className="text-sm text-muted-foreground mt-2">Total Leads</p>
-            </div>
-            </div>
-        </CardContent>
-        </Card>
-
-        {/* Conversion Funnel */}
-        <Card>
-        <CardHeader>
-            <CardTitle>Conversion Funnel</CardTitle>
-            <CardDescription>View → Contact → Proposal → Won</CardDescription>
-        </CardHeader>
-        <CardContent>
-            <div className="space-y-4">
-            <div className="flex items-center gap-4">
-                <div className="w-24 text-sm font-medium">Views</div>
-                <div className="flex-1">
-                <div className="w-full bg-muted rounded-full h-8">
-                    <div
-                    className="bg-blue-500 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
-                    style={{ width: "100%" }}
-                    >
-                    {monthlyReport.conversionFunnel.views}
-                    </div>
-                </div>
-                </div>
-                <div className="w-16 text-sm text-muted-foreground">100%</div>
-            </div>
-            <div className="flex items-center gap-4">
-                <div className="w-24 text-sm font-medium">Contacts</div>
-                <div className="flex-1">
-                <div className="w-full bg-muted rounded-full h-8">
-                    <div
-                    className="bg-teal-500 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
-                    style={{
-                        width: `${
-                        (monthlyReport.conversionFunnel.contacts / monthlyReport.conversionFunnel.views) * 100
-                        }%`,
-                    }}
-                    >
-                    {monthlyReport.conversionFunnel.contacts}
-                    </div>
-                </div>
-                </div>
-                <div className="w-16 text-sm text-muted-foreground">
-                {(
-                    (monthlyReport.conversionFunnel.contacts / monthlyReport.conversionFunnel.views) *
-                    100
-                ).toFixed(1)}
-                %
-                </div>
-            </div>
-            <div className="flex items-center gap-4">
-                <div className="w-24 text-sm font-medium">Proposals</div>
-                <div className="flex-1">
-                <div className="w-full bg-muted rounded-full h-8">
-                    <div
-                    className="bg-purple-500 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
-                    style={{
-                        width: `${
-                        (monthlyReport.conversionFunnel.proposals / monthlyReport.conversionFunnel.views) *
-                        100
-                        }%`,
-                    }}
-                    >
-                    {monthlyReport.conversionFunnel.proposals}
-                    </div>
-                </div>
-                </div>
-                <div className="w-16 text-sm text-muted-foreground">
-                {(
-                    (monthlyReport.conversionFunnel.proposals / monthlyReport.conversionFunnel.views) *
-                    100
-                ).toFixed(1)}
-                %
-                </div>
-            </div>
-            <div className="flex items-center gap-4">
-                <div className="w-24 text-sm font-medium">Won</div>
-                <div className="flex-1">
-                <div className="w-full bg-muted rounded-full h-8">
-                    <div
-                    className="bg-green-500 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
-                    style={{
-                        width: `${
-                        (monthlyReport.conversionFunnel.won / monthlyReport.conversionFunnel.views) * 100
-                        }%`,
-                    }}
-                    >
-                    {monthlyReport.conversionFunnel.won}
-                    </div>
-                </div>
-                </div>
-                <div className="w-16 text-sm text-muted-foreground">
-                {((monthlyReport.conversionFunnel.won / monthlyReport.conversionFunnel.views) * 100).toFixed(
-                    1,
-                )}
-                %
-                </div>
-            </div>
-            </div>
-        </CardContent>
-        </Card>
-
-        {/* Reviews & Ratings */}
-        <Card>
-        <CardHeader>
-            <CardTitle>Reviews Added & Ratings Distribution</CardTitle>
-        </CardHeader>
-        <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Digital Marketing (static like screenshot) */}
+          <div className="flex items-center py-2 justify-between p-4 border rounded-2xl">
             <div>
-                <div className="text-center p-6 border rounded-lg">
-                <div className="text-4xl font-bold text-primary">{monthlyReport.reviewsAdded}</div>
-                <p className="text-sm text-muted-foreground mt-2">New Reviews This Month</p>
+              <p className="text-sm font-bold">
+                Digital Marketing
+              </p>
+              <p className="text-2xl font-bold">Rank #10</p>
+            </div>
+            <div className="text-right">
+              <span className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-bold">
+                ↑ 3 positions
+              </span>
+              <p className="text-xs text-center text-gray-500 mt-1">
+                Previous: #12
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Leads Generated */}
+      <Card className="rounded-3xl bg-white">
+        <CardHeader>
+          <CardTitle className="h-1">Leads Generated</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="p-2 h-16 border rounded-2xl text-center">
+              <p className="text-2xl font-bold h-6">
+                {monthlyReport.leadsGenerated.inquiries}
+              </p>
+              <p className="text-sm text-gray-500">
+                Inquiries
+              </p>
+            </div>
+            <div className="p-2 h-16 border rounded-2xl text-center">
+              <p className="text-2xl font-bold h-6">
+                {monthlyReport.leadsGenerated.proposals}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Proposals
+              </p>
+            </div>
+            <div className="p-2 h-16 border rounded-2xl text-center">
+              <p className="text-2xl font-bold h-6">
+                {monthlyReport.leadsGenerated.total}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Total Leads
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Conversion Funnel */}
+      <Card className="rounded-3xl bg-white">
+        <CardHeader>
+          <CardTitle>Conversion Funnel</CardTitle>
+          <CardDescription className="text-gray-500 h-4">
+            View → Contact → Proposal → Won
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-2">
+        {[
+            {
+            label: "Views",
+            value: monthlyReport.conversionFunnel.views,
+            percent: 100,
+            color: "bg-green-600",
+            showValue: true,
+            },
+            {
+            label: "Contacts",
+            value: monthlyReport.conversionFunnel.contacts,
+            percent:
+                (monthlyReport.conversionFunnel.contacts /
+                monthlyReport.conversionFunnel.views) *
+                100,
+            color: "bg-blue-500",
+            showValue: true,
+            },
+            {
+            label: "Proposals",
+            value: monthlyReport.conversionFunnel.proposals,
+            percent:
+                (monthlyReport.conversionFunnel.proposals /
+                monthlyReport.conversionFunnel.views) *
+                100,
+            color: "bg-teal-400",
+            showValue: true,
+            },
+            {
+            label: "Won",
+            value: monthlyReport.conversionFunnel.won,
+            percent:
+                (monthlyReport.conversionFunnel.won /
+                monthlyReport.conversionFunnel.views) *
+                100,
+            color: "bg-purple-500",
+            showValue: true,
+            },
+        ].map((item) => (
+            <div
+            key={item.label}
+            className="flex items-center gap-6 p-4 border rounded-2xl"
+            >
+            {/* Label */}
+            <div className="w-20 font-semibold">
+                {item.label}
+            </div>
+
+            {/* Bar */}
+            <div className="flex-1">
+                <div className="w-full bg-muted h-4 rounded-full">
+                <div
+                className={`${item.color} h-4 rounded-full flex items-center justify-center 
+                            text-white text-[10px] font-medium px-3 whitespace-nowrap`}
+                style={{
+                    width: `${item.percent}%`,
+                    minWidth: "56px",
+                }}
+                >
+                {item.value}
+                </div>
+
                 </div>
             </div>
-            <div>
-                <h4 className="font-semibold mb-3">Ratings Distribution</h4>
-                <div className="space-y-2">
-                {[5, 4, 3, 2, 1].map((rating) => (
-                    <div key={rating} className="flex items-center gap-3">
-                    <div className="flex items-center gap-1 w-16">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span className="text-sm">{rating}</span>
+
+            {/* Percentage */}
+            <div className="w-16 text-right font-semibold">
+                {item.percent.toFixed(1)}%
+            </div>
+            </div>
+        ))}
+        </CardContent>
+
+      </Card>
+
+      {/* Reviews & Ratings */}
+      <Card className="rounded-3xl bg-white">
+        <CardHeader>
+          <CardTitle className="h-2">
+            Reviews Added & Ratings Distribution
+          </CardTitle>    
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 items-start">
+            <div className="border rounded-2xl 
+                px-6 py-4 
+                max-w-xs 
+                h-40
+                flex flex-col items-center justify-center
+                text-center">
+              <p className="text-4xl font-bold mb-2">
+                {monthlyReport.reviewsAdded}
+              </p>
+              <p className="text-sm text-gray-500 leading-tight">
+                New Reviews This Month
+              </p>
+            </div>
+
+            
+
+            <div className="space-y-2">
+            {[5, 4, 3, 2, 1].map((rating) => {
+                const value =
+                monthlyReport.ratingsDistribution[
+                    rating as keyof typeof monthlyReport.ratingsDistribution
+                ]
+
+                const percent = (value / totalRatings) * 100
+
+                return (
+                <div
+                    key={rating}
+                    className="grid grid-cols-[36px_1fr_30px] items-center gap-4"
+                >
+                    {/* Rating */}
+                    <div className="flex items-center gap-1 text-[#f5a30c] font-medium">
+                    <span>{rating}</span>
+                    <Star className="h-4 w-4 fill-[#f5a30c] text-[#f5a30c]" />
                     </div>
-                    <div className="flex-1">
-                        <div className="w-full bg-muted rounded-full h-2">
-                        <div
-                            className="bg-yellow-400 h-2 rounded-full"
-                            style={{
-                            width: `${
-                                (monthlyReport.ratingsDistribution[
-                                rating as keyof typeof monthlyReport.ratingsDistribution
-                                ] /
-                                Object.values(monthlyReport.ratingsDistribution).reduce((a, b) => a + b, 0)) *
-                                100
-                            }%`,
-                            }}
-                        />
-                        </div>
+
+                    {/* Bar */}
+                    <div className="w-full h-2 bg-gray-300 rounded-full overflow-hidden">
+                    <div
+                        className="h-3 bg-[#f9c666] rounded-full"
+                        style={{ width: `${percent}%` }}
+                    />
                     </div>
-                    <span className="text-sm text-muted-foreground w-8">
-                        {
-                        monthlyReport.ratingsDistribution[
-                            rating as keyof typeof monthlyReport.ratingsDistribution
-                        ]
-                        }
-                    </span>
+
+                    {/* Count */}
+                    <div className="text-right text-sm text-muted-foreground">
+                    {value}
                     </div>
-                ))}
                 </div>
+                
+                )
+            })}
             </div>
             </div>
         </CardContent>
-        </Card>
+      </Card>
     </div>
-    )
+  )
 }
-export default CompetitorComparisonPage;
+
+export default CompetitorComparisonPage
