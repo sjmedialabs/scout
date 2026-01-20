@@ -10,6 +10,7 @@ import {
   MessageSquare,
   Eye,
   Edit,
+  X,
 } from "lucide-react"
 
 const ProjectsPage = () => {
@@ -396,7 +397,7 @@ const ProjectsPage = () => {
                   {inv.client} • {inv.company}
                 </p>
 
-                <div className="flex flex-wrap gap-6">
+                <div className="flex flex-wrap gap-6 h-4">
                   <div className="flex items-center gap-2">
                     <DollarSign className="text-orangeButton" />
                     ${inv.budgetMin.toLocaleString()} – $
@@ -409,13 +410,13 @@ const ProjectsPage = () => {
                   </div>
                 </div>
 
-                <div>
-                  <h4 className="font-bold">Project Description</h4>
-                  <p className="text-gray-600">{inv.description}</p>
+                <div className="h-10">
+                  <h4 className="font-bold text-[22px]">Project Description</h4>
+                  <p className="text-gray-600 text-[12px]">{inv.description}</p>
                 </div>
 
                 <div>
-                  <h4 className="font-bold mb-2">Required Skills</h4>
+                  <h4 className="font-bold mb-2 text-[22px]">Required Skills</h4>
                   <div className="flex flex-wrap gap-2">
                     {inv.skills.map((s, i) => (
                       <span
@@ -432,17 +433,20 @@ const ProjectsPage = () => {
                   <h4 className="font-bold text-blueButton">
                     Why you were invited
                   </h4>
-                  <p className="text-blue-700">{inv.reason}</p>
+                  <p className="text-blueButton">{inv.reason}</p>
                 </div>
 
                 <div className="flex flex-wrap gap-3">
                   <Button className="rounded-full bg-[#2C34A1]">
+                    <MessageSquare className="h-3 w-3" />
                     Submit Proposal
                   </Button>
                   <Button variant="outline" className="rounded-full">
+                     <Eye className="h-4 w-4" />
                     View full details
                   </Button>
                   <Button className="rounded-full bg-red-500 text-white">
+                    <X className="h-4 w-4" />
                     Decline
                   </Button>
                 </div>
