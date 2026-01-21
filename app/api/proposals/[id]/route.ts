@@ -175,7 +175,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       if (body.proposedBudget) updates.proposedBudget = body.proposedBudget
       if (body.proposedTimeline) updates.proposedTimeline = body.proposedTimeline
       if (body.milestones) updates.milestones = body.milestones
+      if (body.proposalDescription) updates.proposalDescription = body.proposalDescription
       if (body.status === "withdrawn") updates.status = "withdrawn"
+      console.log("----Agency updates::",updates)
     }
 
     // Client can update proposal status
@@ -214,7 +216,17 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
           // )
 
         }
-        
+        //Notification creation
+     await Notification.create({
+          userId: proposal?.agencyId,                
+          triggeredBy: user.userId,         
+          title: `Proposal ${body.status}`,
+          message: `${seeker?.companyName || seeker?.name} ${body.status} your proposal for the ${project?.title} project.`,
+          type: body.status,
+          userRole: "client",
+          linkUrl: `/agency/dashboard/proposals`,
+          sourceId: proposal._id,
+        })
       }
 
       if (body.conversationStarted !== undefined) {
@@ -254,17 +266,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     //  if(user.role==="agency"){
     //   seeker=await Provider.findOne({ userId: user.userId })
     //  }
-    //Notification creation
-     await Notification.create({
-          userId: proposal?.agencyId,                
-          triggeredBy: user.userId,         
-          title: `Proposal ${body.status}`,
-          message: `${seeker?.companyName || seeker?.name} ${body.status} your proposal for the ${project?.title} project.`,
-          type: body.status,
-          userRole: "client",
-          linkUrl: `/agency/dashboard/proposals`,
-          sourceId: proposal._id,
-        })
+    
 
     return NextResponse.json({
       success: true,
