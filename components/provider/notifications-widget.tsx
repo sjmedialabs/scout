@@ -37,14 +37,14 @@ export function NotificationsWidget({ notifications, onMarkAsRead, onDismiss }: 
   }
 
   return (
-    <Card>
+    <Card className="bg-white rounded-2xl">
       <CardHeader>
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 h-2">
             <Bell className="h-5 w-5" />
             <CardTitle>Notifications</CardTitle>
             {unreadNotifications.length > 0 && (
-              <Badge variant="destructive" className="text-xs">
+              <Badge variant="destructive" className="text-xs rounded-full">
                 {unreadNotifications.length}
               </Badge>
             )}
@@ -60,11 +60,11 @@ export function NotificationsWidget({ notifications, onMarkAsRead, onDismiss }: 
         {displayNotifications.length === 0 ? (
           <p className="text-muted-foreground text-center py-4">No notifications</p>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-1">
             {displayNotifications.map((notification) => (
               <div
                 key={notification._id}
-                className={`p-3 rounded-lg border ${notification.read ? "bg-background" : "bg-muted/50"}`}
+                className={`p-3 rounded-2xl bg-white border ${notification.read ? "bg-background" : "bg-muted/50"}`}
               >
                 <div className="flex justify-between items-start gap-2">
                   <div className="flex-1">
@@ -76,7 +76,7 @@ export function NotificationsWidget({ notifications, onMarkAsRead, onDismiss }: 
                         {new Date(notification.createdAt).toLocaleDateString()}
                       </span>
                     </div>
-                    <h4 className="font-medium text-sm">{notification.title}</h4>
+                    <h4 className="font-bold text-sm">{notification.title}</h4>
                     <p className="text-sm text-muted-foreground">{notification.message}</p>
                   </div>
                   <div className="flex gap-1">
