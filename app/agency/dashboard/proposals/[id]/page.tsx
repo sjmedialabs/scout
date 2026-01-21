@@ -8,6 +8,7 @@ import { useEffect, useState } from "react"
 import { Loader2 } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import type { Proposal } from "@/lib/types"
+import { Badge } from "@/components/ui/badge"
 
 export default function ProposalViewDetailsPage() {
   const { id } = useParams<{ id: string }>()
@@ -131,6 +132,10 @@ const textareaClass =
       {/* PROPOSAL DETAILS */}
       <Card className="rounded-[36px] border border-gray-300 bg-white">
   <CardContent className="px-12 py-10 space-y-10">
+
+    <div className="flex justify-end">
+      <Badge className="rounded-full bg-green-500 text-sm h-[30px]">{proposal.status}</Badge>
+    </div>
 
     {/* COST & TIMELINE */}
     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">

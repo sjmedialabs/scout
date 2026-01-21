@@ -54,7 +54,7 @@ const ProposalSchema = new Schema<IProposal>(
     attachments: [{ type: String }],
     status: {
       type: String,
-     enum: ["pending", "viewed", "shortlisted", "accepted", "rejected", "withdrawn","negotation"],
+     enum: ["pending", "viewed", "shortlisted", "accepted", "rejected", "withdrawn","negotation","completed"],
       default: "pending",
     },
     clientViewed: { type: Boolean, default: false },

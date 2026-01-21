@@ -32,12 +32,14 @@ export async function POST(
 
   if (provider.currentMonthKey !== monthKey) {
     provider.currentMonthKey = monthKey;
+    provider.lastMonthProfileViews = provider.currentMonthProfileViews || 0;
     provider.currentMonthProfileViews = 0;
     provider.currentMonthWebsiteClicks = 0;
   }
 
   provider.profileViews += 1;
   provider.currentMonthProfileViews += 1;
+  // provider.lastMonthProfileViews = provider.currentMonthProfileViews || 0;
 
   await provider.save();
 

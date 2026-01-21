@@ -105,6 +105,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         isVerified: provider.isVerified,
         profileViews: (provider.profileViews || 0),
         currentMonthProfileViews:provider.currentMonthProfileViews,
+        lastMonthProfileViews:provider.lastMonthProfileViews,
         currentMonthWebsiteClicks:provider.currentMonthWebsiteClicks,
         focusArea:provider.focusArea,
         createdAt: provider.createdAt,
@@ -162,6 +163,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       "email",
       "salesEmail",
        "projectsCompleted",
+       "lastMonthProfileViews",
       "phone",
       "adminContactPhone",
       "services",
@@ -188,7 +190,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     
     for (const key of allowedUpdates) {
       if (body[key] !== undefined) {
-        updates[key] = body[key]        
+        updates[key] = body[key] 
+           
       }
     }
 
@@ -202,11 +205,16 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     // const updated = await Provider.findOneAndUpdate({ userId: id }, updates, { new: true })
 
     // Apply updates using resolved _id
-    const updated = await Provider.findByIdAndUpdate(
-      provider._id,
-      updates,
-      { new: true }
-    )
+    console.log("Updating provider with ID:", updates);
+   const updated = await Provider.findByIdAndUpdate(
+  provider._id,
+  { $set: updates },           // ✅ FORCE FIELD CREATION
+  {
+    new: true,
+    runValidators: true,       // ✅ ensure schema validation
+  }
+)
+
 
     return NextResponse.json({
       success: true,
