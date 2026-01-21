@@ -2,6 +2,13 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Clock, DollarSign, CalendarDays, Inbox } from "lucide-react"
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from "@/components/ui/tooltip"
+
 interface ProposalCardProps {
   category: string
   title: string
@@ -89,12 +96,28 @@ export function ProposalCard({
             View Details →
           </Button>
 
-          <Button
+          {/* <Button
             onClick={onSubmit}
             className="rounded-full bg-black hover:bg-black px-6"
           >
             Submit Proposal
-          </Button>
+          </Button> */}
+         <TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <Button
+        onClick={onSubmit}
+        className="rounded-full bg-black hover:bg-black px-6"
+      >
+        Submit Proposal
+      </Button>
+    </TooltipTrigger>
+
+    <TooltipContent>
+      <p>Login to dashboard</p>
+    </TooltipContent>
+  </Tooltip>
+</TooltipProvider>
         </div>
       </div>
     

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
+import { categories } from "@/lib/mock-data"
 
 interface HomeHeroProps {
   cms: any
@@ -114,7 +115,7 @@ export function HomeHero({ cms }: HomeHeroProps) {
             {/* Popular Searches */}
             <div className="space-y-3 sm:space-y-2">
               <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
-                {["Get more qualified leads", "Improve my SEO rankings", "Develop a content strategy"].map((search, index) => (
+                {categories.map((search, index) => (
                   <Button key={index} variant="outline" size="sm" className="text-white border-slate-300 hover:bg-white/30 bg-transparentr rounded-full px-3 sm:px-4 text-xs sm:text-sm" onClick={() => handlePopularSearch(search)}>
                     {search}
                   </Button>

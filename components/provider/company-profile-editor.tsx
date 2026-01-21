@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState,useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -113,6 +113,23 @@ export function CompanyProfileEditor({ provider, onSave }: CompanyProfileEditorP
 const [showTestimonialForm, setShowTestimonialForm] = useState(false);
 const [editTestimonialId, setEditTestimonialId] = useState<string | null>(null);
 const [selectedLanguage, setSelectedLanguage] = useState<string>("")
+
+const [categories, setCategories] = useState<any[]>([])
+const [selectedCategory, setSelectedCategory] = useState<any>(null)
+const [selectedChild, setSelectedChild] = useState<any>(null)
+const loadData = async () => {
+  try {
+    const response = await fetch('/api/service-categories');
+    const data = await response.json();
+    setCategories(data.data);
+  }catch (error) {
+    console.error("Error fetching categories:", error);
+  }
+}
+
+useEffect(() => {
+ loadData();
+}, [])
   
 
   const handleSave = () => {
@@ -895,7 +912,7 @@ const removeTestimonialItem = (id: string) => {
             ))}
           </div>
 
-          <div className="flex gap-2 w-[50%]">
+          {/* <div className="flex gap-2 w-[50%]">
             <Select value={newService} onValueChange={setNewService}>
               <SelectTrigger className="flex-1 placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] rounded-[6px] h-[100px]">
                 <SelectValue placeholder="Select a service to add" />
@@ -913,7 +930,82 @@ const removeTestimonialItem = (id: string) => {
             <Button onClick={addService}  className="bg-[#F54A0C] h-[36px] w-[70px] mt-1">
               <Plus className="h-4 w-4" />
             </Button>
-          </div>
+          </div> */}
+          {/* Step 1: Main Category */}
+<Select
+  onValueChange={(title) => {
+    const cat = categories.find((c) => c.title === title)
+    setSelectedCategory(cat)
+    setSelectedChild(null)
+  }}
+>
+  <SelectTrigger className="w-[50%] mt-1">
+    <SelectValue placeholder="Select category" />
+  </SelectTrigger>
+  <SelectContent>
+    {categories.map((cat) => (
+      <SelectItem key={cat._id} value={cat.title}>
+        {cat.title}
+      </SelectItem>
+    ))}
+  </SelectContent>
+</Select>
+
+{/* Step 2: Sub Category */}
+{selectedCategory && (
+  <Select
+    onValueChange={(title) => {
+      const child = selectedCategory.children.find(
+        (c: any) => c.title === title
+      )
+      setSelectedChild(child)
+    }}
+  >
+    <SelectTrigger className="w-[50%] mt-1">
+      <SelectValue placeholder="Select sub category" />
+    </SelectTrigger>
+    <SelectContent>
+      {selectedCategory.children.map((child: any) => (
+        <SelectItem key={child.title} value={child.title}>
+          {child.title}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+)}
+
+
+{/* Step 3: Service Items (Checkboxes) */}
+{selectedChild && (
+  <div className="flex flex-col gap-2 mt-3">
+    {selectedChild.items.map((item: any) => {
+      const checked = (formData.services || []).includes(item.title)
+
+      return (
+        <label
+          key={item.title}
+          className="flex items-center gap-2 text-sm"
+        >
+          <input
+            type="checkbox"
+            checked={checked}
+            onChange={() => {
+              setFormData((prev) => ({
+                ...prev,
+                services: checked
+                  ? prev.services.filter((s: string) => s !== item.title)
+                  : [...(prev.services || []), item.title],
+              }))
+            }}
+          />
+          {item.title}
+        </label>
+      )
+    })}
+  </div>
+)}
+
+
         </CardContent>
       </Card>
       </div>

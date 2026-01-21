@@ -38,6 +38,7 @@ const MilestoneSchema = new Schema({
   description: { type: String },
   amount: { type: Number},
   duration: { type: String},
+  completed: { type: Boolean, default: false },
 })
 
 const ProposalSchema = new Schema<IProposal>(
