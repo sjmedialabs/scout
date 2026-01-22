@@ -16,9 +16,30 @@ export function HomeHero({ cms }: HomeHeroProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [activeButton, setActiveButton] = useState<"match" | "browse" | null>(null)
 
-  const handleGetMatched = () => {
+  const handleGetMatched = async() => {
     if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+      try{
+
+        console.log("Tracking search keyword:", searchQuery.trim())
+        const response = await fetch("/api/search/track", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ keyword: searchQuery.trim() }),
+
+        })
+        console.log("Track response:", response)
+
+        if (!response.ok) {
+          console.error("Failed to track search keyword")
+          throw new Error("Failed to track search keyword")
+        }
+       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+      }catch(err){
+        console.error("Error tracking search keyword:", err)
+      }
+      
     } else {
       router.push("/register")
     }

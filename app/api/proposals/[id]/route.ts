@@ -78,8 +78,7 @@ console.log("Is valid ObjectId:", mongoose.Types.ObjectId.isValid(id));
         providers.map((p) => [p.userId.toString(), p])
       )
 
-
-    
+ 
 
     // ✅ Mark proposals as viewed if client
     // if (user.role === "client") {
@@ -127,6 +126,8 @@ console.log("Is valid ObjectId:", mongoose.Types.ObjectId.isValid(id));
 
     // ✅ Provider details (joined manually)
     agency: providerMap.get(p.agencyId.toString()) || null,
+
+   
   })),
 })
 
@@ -164,6 +165,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const body = await request.json()
     const updates: any = {}
 
+     const seeker =user.role==="client"?await Seeker.findOne({ userId: user.userId }) : await Provider.findOne({ userId: user.userId });
+     const project=await Requirement.findById(proposal.requirementId)
+
     // Agency can update their proposal content
     if (user.role === "agency") {
       const provider = await Provider.findOne({ userId: user.userId })
@@ -177,6 +181,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       if (body.milestones) updates.milestones = body.milestones
       if (body.proposalDescription) updates.proposalDescription = body.proposalDescription
       if (body.status === "withdrawn") updates.status = "withdrawn"
+      if (body.status === "completed"){
+        updates.status="completed"
+        //for the posted requirement status update
+        await Requirement.findByIdAndUpdate(proposal.requirementId, {status:"Closed"}, { new: true })
+      }
       console.log("----Agency updates::",updates)
     }
 
@@ -256,8 +265,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     const updated = await Proposal.findByIdAndUpdate(id, updates, { new: true })
     // console.log("--------updated proposal:::",updated)
-     const seeker =user.role==="client"?await Seeker.findOne({ userId: user.userId }) : await Provider.findOne({ userId: user.userId });
-     const project=await Requirement.findById(proposal.requirementId)
+    
     //  console.log("----project in the put---",project)
 
     //  if(user.role==="client"){
