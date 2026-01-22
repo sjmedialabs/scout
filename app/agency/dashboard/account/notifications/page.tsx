@@ -163,7 +163,7 @@ useEffect(()=>{
                     {item.message}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
-                    {item.time}
+                     {new Date(item.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               </div>
