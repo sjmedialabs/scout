@@ -166,7 +166,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const updates: any = {}
 
      const seeker =user.role==="client"?await Seeker.findOne({ userId: user.userId }) : await Provider.findOne({ userId: user.userId });
-     const project=await Requirement.findById(proposal.requirementId)
+     const projectClient=await Requirement.findById(proposal.requirementId)
 
     // Agency can update their proposal content
     if (user.role === "agency") {
@@ -230,7 +230,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
           userId: proposal?.agencyId,                
           triggeredBy: user.userId,         
           title: `Proposal ${body.status}`,
-          message: `${seeker?.companyName || seeker?.name} ${body.status} your proposal for the ${project?.title} project.`,
+          message: `${seeker?.companyName || seeker?.name} ${body.status} your proposal for the ${projectClient?.title} project.`,
           type: body.status,
           userRole: "client",
           linkUrl: `/agency/dashboard/proposals`,

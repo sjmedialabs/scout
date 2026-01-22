@@ -3,10 +3,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Bell } from "lucide-react"
+import {useState, useEffect} from "react";
+import { useRouter } from "next/navigation";
+
 
 /* ----------------------------------
    BACKEND / CMS READY DATA
----------------------------------- */
+---------------------------------- */ 
 
 const notifications = [
   {
@@ -61,7 +64,51 @@ const notifications = [
    PAGE
 ---------------------------------- */
 
+
 export default function NotificationsPage() {
+const router = useRouter();
+  const[dynamicNotifications,setDynamicNotifications]=useState<any[]>([]);
+const[resLoading,setResLoading]=useState(false);
+const[failed,setFailed]=useState(false);
+
+const loadData=async()=>{
+  setResLoading(true);
+  setFailed(false);
+  try{
+    const response=await fetch('/api/notifications');
+    const data=await response.json();
+    const notificationsData=(data.data || []).filter((item:any)=>item.isRead===false);
+    console.log("Fetched notifications data:",notificationsData);
+    setDynamicNotifications(notificationsData);
+
+  }catch(err){
+    setFailed(true);
+    console.log("Error loading notifications data:",err);
+  }finally{
+    setResLoading(false);
+  }
+}
+useEffect(()=>{
+  loadData();
+},[]);
+
+ const handleMarkNotificationAsRead = async(notificationId: string,redirectionUrl:string) => {
+    try{
+        const res=await fetch(`/api/notifications/${notificationId}`,{
+          method:"PUT",
+          headers:{
+            "Content-Type":"application/json"
+          }
+        })
+        console.log("response of the mark as read::",res)
+        if(res.ok){
+            setDynamicNotifications((prev)=>prev.filter((eachItem)=>eachItem._id!==notificationId))
+        }
+     }catch(error){
+       console.log("Failed to update the status of the notification::",error)
+     }
+    router.push(redirectionUrl)
+  }
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -75,7 +122,10 @@ export default function NotificationsPage() {
       </div>
 
       {/* Notifications Card */}
-      <Card className="rounded-xl bg-[#f7f7f7]">
+      {
+        !resLoading && !failed && dynamicNotifications.length!==0?
+        (
+          <Card className="rounded-xl bg-[#f7f7f7]">
         <CardHeader>
           <CardTitle className="text-xl my-custom-class font-semibold">
             Notifications
@@ -83,16 +133,16 @@ export default function NotificationsPage() {
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {notifications.map((item) => (
+          {dynamicNotifications.map((item) => (
             <div
-              key={item.id}
+              key={item._id}
               className="flex items-center justify-between gap-4 bg-white rounded-xl px-4 py-4"
             >
               {/* Left */}
               <div className="flex items-start gap-3">
-                {item.type === "user" ? (
+                {/* {item.type === "user" ? (
                   <img
-                    src={item.avatar}
+                    src={item.image}
                     alt="avatar"
                     className="h-8 w-8 rounded-full object-cover"
                   />
@@ -100,7 +150,13 @@ export default function NotificationsPage() {
                   <div className="h-8 w-8 rounded-full border flex items-center justify-center">
                     <Bell className="h-4 w-4 text-gray-400" />
                   </div>
-                )}
+
+                )} */}
+                <img
+                    src={item.image}
+                    alt="avatar"
+                    className="h-8 w-8 rounded-full object-cover"
+                  />
 
                 <div>
                   <p className="text-sm font-medium leading-snug">
@@ -116,13 +172,33 @@ export default function NotificationsPage() {
               <Button
                 variant="secondary"
                 className="rounded-xl text-sm text-black font-medium bg-[#f7f7f7]"
+                onClick={() => handleMarkNotificationAsRead(item._id,item.linkUrl)}
               >
-                {item.action}
+                {"view"}
               </Button>
             </div>
           ))}
         </CardContent>
       </Card>
+        )
+        :
+        (
+          <div className="text-center">
+           {
+            !resLoading && !failed && dynamicNotifications.length===0 && (
+               <p className="text-gray-500 text-xl">No Notifications Yet</p>
+            )
+           }
+            </div>
+        )
+      }
+      {
+        resLoading && (
+           <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+        )
+      }
     </div>
   )
 }

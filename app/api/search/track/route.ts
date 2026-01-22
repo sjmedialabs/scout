@@ -75,8 +75,7 @@ export async function GET() {
     await connectToDatabase()
 
     const trending = await SearchKeyword.find()
-      .sort({ searchCount: -1 })
-      .limit(5)   // 🔥 TOP 5 only
+      .sort({ searchCount: -1 })   
       .lean()
 
     return NextResponse.json({ success: true, trending })
