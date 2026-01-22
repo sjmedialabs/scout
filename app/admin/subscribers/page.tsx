@@ -1,181 +1,337 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Badge } from "@/components/ui/badge";
+import { LabelList } from "recharts";
+import { ArrowRight } from "lucide-react";
+import { PiUsersThreeBold } from "react-icons/pi";
+import { RiExchangeDollarLine } from "react-icons/ri";
+import Link from "next/link";
+import { LuTrendingUpDown } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search, Users, CreditCard, XCircle } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Users,
+  DollarSign,
+  TrendingDown,
+  AlertTriangle,
+} from "lucide-react";
 
-// ------------------------------
-// MOCK SUBSCRIBERS (Replace with API)
-// ------------------------------
-const mockSubscribers = [
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from "recharts";
+
+
+const stats = [
   {
-    id: "sub-001",
-    name: "John Doe",
-    email: "john@example.com",
-    plan: "Pro Plan",
-    status: "active",
-    renewal: "2025-12-12",
+    title: "Total Subscribers",
+    value: "820",
+    sub: "+15 new this month",
+    icon: <PiUsersThreeBold className="h-4 w-4"/>,
   },
   {
-    id: "sub-002",
-    name: "Sarah Miller",
-    email: "sarah@example.com",
-    plan: "Enterprise",
-    status: "active",
-    renewal: "2025-12-08",
+    title: "Monthly Revenue",
+    value: "$18,500",
+    sub: "+8% increase",
+    icon: <RiExchangeDollarLine className="h-4 w-4"/>,
   },
   {
-    id: "sub-003",
-    name: "Michael Brown",
-    email: "michael@example.com",
-    plan: "Basic Plan",
-    status: "cancelled",
-    renewal: "-",
+    title: "Cancellation Rate",
+    value: "1.4%",
+    sub: "Improved from 1.8%",
+    icon: <LuTrendingUpDown className="h-4 w-4"/>,
   },
   {
-    id: "sub-004",
-    name: "Anita Sharma",
-    email: "anita@example.com",
-    plan: "Pro Plan",
-    status: "pending",
-    renewal: "2025-12-15",
+    title: "Pending Invoices",
+    value: "13",
+    sub: "$4,200 outstanding",
+    icon: <AlertTriangle className="h-4 w-4"/>,
   },
 ];
 
-export default function SubscribersPage() {
-  const [subscribers, setSubscribers] = useState(mockSubscribers);
-  const [search, setSearch] = useState("");
+const weeklyRevenue = [
+  { day: "Mon", value: 60000 },
+  { day: "Tue", value: 70000 },
+  { day: "Wed", value: 30000 },
+  { day: "Thu", value: 50000 },
+  { day: "Fri", value: 62000 },
+  { day: "Sat", value: 54000 },
+  { day: "Sun", value: 38000 },
+];
 
-  /*
-  ------------------------------------------------------
-  OPTIONAL: Fetch subscribers from backend API
-  ------------------------------------------------------
-  useEffect(() => {
-    async function loadSubscribers() {
-      const res = await fetch("/api/admin/subscribers");
-      const data = await res.json();
-      setSubscribers(data);
-    }
-    loadSubscribers();
-  }, []);
-  */
+const subscriberGrowth = [
+  { week: "Week-1", value: 40 },
+  { week: "Week-2", value: 92 },
+  { week: "Week-3", value: 38 },
+  { week: "Week-4", value: 96 },
+  { week: "Week-5", value: 22 },
+];
 
-  const cancelSubscription = (id: string) => {
-    console.log("Cancel subscription for:", id);
+const cancellations = [
+  { month: "Jan", a: 47.25, b: 47.8, c: 62.75 },
+  { month: "Feb", a: 72.75, b: 22.25, c: 38.13 },
+  { month: "Mar", a: 81.28, b: 14.98, c: 63.62 },
+  { month: "Apr", a: 34.78, b: 62.02, c: 50.75 },
+  { month: "May", a: 97.04, b: 83.59, c: 23.29 },
+  { month: "Jun", a: 62.48, b: 28.52, c: 61.74 },
+  { month: "Jul", a: 37.7, b: 43.33, c: 80.37 },
+  { month: "Aug", a: 10.33, b: 87.23, c: 18.2 },
+  { month: "Sep", a: 71.6, b: 44.94, c: 59.67 },
+  { month: "Oct", a: 84.82, b: 72.07, c: 57.05 },
+  { month: "Nov", a: 69.89, b: 40.03, c: 64 },
+  { month: "Dec", a: 71.89, b: 23.94, c: 48.68 },
+];
 
-    setSubscribers((prev) =>
-      prev.map((s) =>
-        s.id === id ? { ...s, status: "cancelled" } : s
-      )
-    );
-
-    // Future API:
-    // await fetch("/api/admin/subscribers/cancel", { method: "POST", body: JSON.stringify({ id }) });
-  };
-
-  const filteredSubscribers = subscribers.filter((sub) =>
-    sub.name.toLowerCase().includes(search.toLowerCase()) ||
-    sub.email.toLowerCase().includes(search.toLowerCase()) ||
-    sub.plan.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const statusBadge = (status: string) => {
-    switch (status) {
-      case "active":
-        return <Badge className="bg-green-100 text-green-700">Active</Badge>;
-      case "pending":
-        return <Badge className="bg-yellow-100 text-yellow-700">Pending</Badge>;
-      case "cancelled":
-        return <Badge className="bg-red-100 text-red-700">Cancelled</Badge>;
-      default:
-        return <Badge>Unknown</Badge>;
-    }
-  };
-
+export default function SubscribersManagementPage() {
   return (
-    <div className="space-y-10">
-      {/* Header */}
+    <div className="mx-auto max-w-7xl space-y-4 px-4 sm:px-6 lg:px-2">
+      {/* HEADER */}
+      <div className="flex items-start justify-between gap-4">
       <div>
-        <h1 className="text-3xl font-bold">Subscribers Management</h1>
-        <p className="text-gray-500">View and manage all subscription users.</p>
+        <h1 className="text-3xl font-bold my-custom-class h-8 text-orangeButton">
+          Subscribers Management
+        </h1>
+        <p className="text-gray-500 my-custom-class">
+          Welcome back to your B2B management console
+        </p>
       </div>
+       <Link href="/admin/subscribers/all-subscribers">
+        <Button className="bg-orangeButton rounded-2xl hover:bg-orangeButton/90">
+          All Subscribers 
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      </Link>
+    </div>
 
-      {/* Search Bar */}
-      <div className="bg-white p-4 rounded-xl shadow border flex items-center gap-3">
-        <Search className="w-5 h-5 text-gray-500" />
-        <Input
-          placeholder="Search subscribers by name, email, plan..."
-          className="w-full"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
-
-      {/* Subscribers List */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border space-y-6">
-        <h2 className="text-xl font-semibold">All Subscribers</h2>
-
-        {filteredSubscribers.length === 0 && (
-          <p className="text-gray-400 text-center py-8 text-lg">
-            No subscribers found.
-          </p>
-        )}
-
-        {filteredSubscribers.map((sub) => (
-          <div
-            key={sub.id}
-            className="p-5 border rounded-xl flex flex-col md:flex-row justify-between hover:shadow-lg transition"
-          >
-            {/* Left Section */}
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                <Users className="w-6 h-6 text-blue-700" />
+      {/* KPI CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+        {stats.map((item) => (
+          <Card key={item.title} className="relative bg-white rounded-3xl py-2 pb-0 shadow-lg border-none">
+            <CardHeader className="flex flex-row h-2 items-start justify-between">
+              <CardTitle className="text-sm font-bold my-custom-class">
+                {item.title}
+              </CardTitle>
+              <div className="absolute right-3 top-1 p-2 rounded-full bg-[#eef7fe] text-orange-500">
+                {item.icon}
               </div>
-
-              <div>
-                <h3 className="font-semibold text-lg">{sub.name}</h3>
-                <p className="text-gray-500 text-sm">{sub.email}</p>
-
-                <p className="mt-2 text-gray-700 flex items-center gap-2">
-                  <CreditCard className="w-4 h-4" />
-                  <span className="font-medium">{sub.plan}</span>
-                </p>
-
-                <p className="text-sm text-gray-400 mt-1">
-                  Renewal Date:{" "}
-                  <span className="font-medium text-gray-600">
-                    {sub.renewal}
-                  </span>
-                </p>
-
-                <div className="mt-2">{statusBadge(sub.status)}</div>
-              </div>
-            </div>
-
-            {/* Right Section */}
-            <div className="flex flex-col items-end justify-center mt-4 md:mt-0 gap-3">
-              {sub.status === "active" && (
-                <Button
-                  variant="destructive"
-                  className="flex items-center gap-2"
-                  onClick={() => cancelSubscription(sub.id)}
-                >
-                  <XCircle className="w-4 h-4" />
-                  Cancel Subscription
-                </Button>
-              )}
-
-              {sub.status !== "active" && (
-                <Button variant="outline" disabled>
-                  No Actions Available
-                </Button>
-              )}
-            </div>
-          </div>
+            </CardHeader>
+            <CardContent className="pt-2 pb-6">
+              <div className="text-2xl font-bold my-custom-class">{item.value}</div>
+              <p className="mt-2 my-custom-class text-xs text-green-600">
+                {item.sub}
+              </p>
+            </CardContent>
+          </Card>
         ))}
       </div>
+
+      {/* CHARTS ROW */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        {/* WEEKLY REVENUE */}
+        <DashboardCard title="Weekly Revenue">
+          <ResponsiveContainer width="100%" height={300}>
+        <BarChart data={weeklyRevenue} barSize={14}>
+          <defs>
+            <linearGradient id="weeklyGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#ec4899" />
+              <stop offset="100%" stopColor="#7c3aed" />
+            </linearGradient>
+          </defs>
+
+          <CartesianGrid
+            strokeDasharray="3 3"
+            vertical={false}
+            stroke="#e5e7eb"
+          />
+
+          <XAxis
+            dataKey="day"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#6b7280", fontSize: 12 }}
+          />
+
+          <YAxis
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#6b7280", fontSize: 12 }}
+          />
+
+          <Tooltip />
+
+          <Bar
+            dataKey="value"
+            radius={[8, 8, 0, 0]}
+            fill="url(#weeklyGrad)"
+          />
+        </BarChart>
+      </ResponsiveContainer>
+
+        </DashboardCard>
+
+        {/* SUBSCRIBER GROWTH */}
+        <DashboardCard title="Subscriber Growth">
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={subscriberGrowth}>
+              <defs>
+                <linearGradient id="growthFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#7c7cff" stopOpacity={0.35} />
+                  <stop offset="100%" stopColor="#7c7cff" stopOpacity={0.05} />
+                </linearGradient>
+              </defs>
+
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                stroke="#e5e7eb"
+              />
+
+              <XAxis
+                dataKey="week"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#6b7280", fontSize: 12 }}
+              />
+
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#6b7280", fontSize: 12 }}
+              />
+
+              <Tooltip />
+
+              <Area
+                type="monotone"
+                dataKey="value"
+                stroke="#7c7cff"
+                strokeWidth={2.5}
+                fill="url(#growthFill)"
+                dot={{
+                  r: 4,
+                  fill: "#ffffff",
+                  stroke: "#7c7cff",
+                  strokeWidth: 2,
+                }}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+
+        </DashboardCard>
+      </div>
+
+      {/* CANCELLATIONS */}
+
+      <DashboardCard title="Cancellations Trend (Last 12 Months)">
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart data={cancellations} barSize={9}>
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+              stroke="#e5e7eb"
+            />
+
+            <XAxis
+              dataKey="month"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#6b7280", fontSize: 12 }}
+            />
+
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#6b7280", fontSize: 12 }}
+            />
+
+            <Tooltip />
+
+            {/* BAR A */}
+            <Bar dataKey="a" fill="#9f9cff" radius={[6, 6, 0, 0]}>
+              <LabelList
+                dataKey="a"
+                position="top"
+                fill="#6b7280"
+                fontSize={11}
+              />
+            </Bar>
+
+            {/* BAR B */}
+            <Bar dataKey="b" fill="#ffb4a2" radius={[6, 6, 0, 0]}>
+              <LabelList
+                dataKey="b"
+                position="top"
+                fill="#6b7280"
+                fontSize={11}
+              />
+            </Bar>
+
+            {/* BAR C */}
+            <Bar dataKey="c" fill="#67d1e8" radius={[6, 6, 0, 0]}>
+              <LabelList
+                dataKey="c"
+                position="top"
+                fill="#6b7280"
+                fontSize={11}
+              />
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </DashboardCard>
+
     </div>
   );
 }
+
+
+
+function DashboardCard({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Card className="rounded-3xl bg-white p-0 shadow-lg">
+      <CardHeader className="flex flex-row items-center justify-between px-10 pt-4 pb-4">
+        <CardTitle className="text-[22px] font-semibold text-orangeButton my-custom-class">
+          {title}
+        </CardTitle>
+
+        <Select defaultValue="weekly">
+          <SelectTrigger className="h-12 w-40 rounded-xl border-gray-200 text-sm">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="weekly">Weekly</SelectItem>
+            <SelectItem value="monthly">Monthly</SelectItem>
+          </SelectContent>
+        </Select>
+      </CardHeader>
+
+      <CardContent className="px-2">
+        {children}
+      </CardContent>
+    </Card>
+  );
+}
+
