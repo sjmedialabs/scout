@@ -10,6 +10,7 @@ import RatingStars from "@/components/rating-star";
 import { FaLocationDot } from "react-icons/fa6";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation";
 
 export default function ProvidersPage() {
   const providers = [
@@ -118,6 +119,22 @@ export default function ProvidersPage() {
   const[providersData,setProvidersData]=useState([])
   const[loading,setLoading]=useState(true)
   const[Failed,setFailed]=useState(false)
+  const router = useRouter()
+
+  const handleViewProfile = async (recivedId) => {
+    try {
+      // 1️⃣ Track profile view
+      await fetch(`/api/providers/${recivedId}/profile-view`, {
+        method: "POST",
+      })
+    } catch (error) {
+      console.error("Profile view tracking failed", error)
+    }
+
+    // 2️⃣ Navigate to profile
+    router.push(`/provider/${recivedId}`)
+  }
+
   useEffect(()=>{
     loadData();
   },[])
@@ -434,11 +451,11 @@ export default function ProvidersPage() {
     </p>
 
     <div className="mt-3 flex flex-col sm:flex-row gap-2">
-      <Link href={`/provider/${provider.id}`} className="flex">
-        <Button className="w-full sm:w-[140px] bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white">
+      
+        <Button className="w-full sm:w-[140px] bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white" onClick={()=>handleViewProfile(provider.id)}>
           View Profile
         </Button>
-      </Link>
+    
       <Button className="w-full sm:w-[160px] bg-[#4d4d4d] rounded-3xl text-white">
         Contact Provider
       </Button>

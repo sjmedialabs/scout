@@ -71,6 +71,7 @@ export interface IProvider extends Document {
   minTimeLine?:String
   keyHighlights:String[]
   currentMonthProfileViews?: Number,
+  lastMonthProfileViews?:Number,
   currentMonthWebsiteClicks?:Number,
   currentMonthKey?:String
 }
@@ -136,6 +137,7 @@ const ProviderSchema = new Schema<IProvider>(
       instagram: { type: String },
     },
     currentMonthProfileViews: { type: Number, default: 0 },
+    lastMonthProfileViews: { type: Number, default: 0 },
     currentMonthWebsiteClicks: { type: Number, default: 0 },
     currentMonthKey: { type: String }, // "2026-01"
 

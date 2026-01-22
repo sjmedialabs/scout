@@ -8,14 +8,30 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { mockProviderProjects, mockProviderReviews } from "@/lib/mock-data"
 import type { Project, Review } from "@/lib/types"
+import { useAuth } from "@/contexts/auth-context"
+import { useRouter } from "next/navigation"
+
 
 const AnalyticsPage = () => {
+  const { user, loading } = useAuth()
+    const router = useRouter()
   const [projects] = useState<Project[]>(mockProviderProjects)
   const [reviews] = useState<Review[]>(mockProviderReviews)
+  const [resLoading, setResLoading] = useState(false)
+  const[failed,setFailed]=useState(false)
+  const[topSearches,setTopSearches]=useState<{keyword:string,count:number}[]>([])
+  const[proposals,setProposals]=useState<any[]>([])
+  const[proposalStats,setProposalStats]=useState({
+    submissions:0,
+    responses:0,
+    responsePercentage:0,
+    wins:0,
+    winsPercentage:0,
+  })
 
   const analyticsData = {
     profileViews: 1247,
@@ -51,6 +67,65 @@ const AnalyticsPage = () => {
     { keyword: "Digital Marketing", count: 98, trend: "down" },
   ]
 
+  const loadData=async()=>{
+    setResLoading(true)
+    setFailed(false)
+    try{
+
+      const[searchRes,proposalRes,providerDetails]=await Promise.all([
+        fetch("/api/search/track"),
+        fetch('/api/proposals'),
+        fetch(`/api/providers/${user?.id}`)
+      ])
+      if(!searchRes.ok || !proposalRes.ok){
+        throw new Error("Failed to load data")
+      }
+      const searchData=await searchRes.json()
+      const proposalData=await proposalRes.json()
+      const providerData=await providerDetails.json()
+
+      setTopSearches(searchData.trending)
+
+      let proposalResponses=proposalData.proposals.filter((p:any)=>p.status.toLowerCase()!=="pending").length;
+      let proposalWins=proposalData.proposals.filter((p:any)=>p.status.toLowerCase()==="completed" || p.status.toLowerCase()==="accepted" ).length;
+      setProposalStats({
+        submissions:proposalData.proposals.length,
+        responses:proposalResponses,
+        responsePercentage: proposalData.proposals.length ? Math.round((proposalResponses / proposalData.proposals.length) * 100) : 0,
+        wins:proposalWins,
+        winsPercentage: proposalData.proposals.length ? Math.round((proposalWins / proposalData.proposals.length) * 100) : 0,
+      })
+      console.log("Proposal Wins:", proposalWins);
+      console.log("Proposal Responses:", proposalResponses);
+      console.log("Total Proposals:", proposalData.proposals.length);
+      setProposals(proposalData.proposals)
+
+      console.log("Provider Details:", providerData);
+
+    }catch(err){
+      setFailed(true)
+      console.error("Failed to load analytics data:",err)
+    }finally{
+      setResLoading(false)
+    }
+  }
+ useEffect(() => {
+     if (!loading && (!user || user.role !== "agency")) {
+       router.push("/login")
+     }
+     if(user && user.role === "agency"){
+        loadData()
+     }
+   }, [user, loading, router])
+
+  if(resLoading){
+     return(
+             <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+        )
+  }
+
   return (
     <div className="space-y-10">
       {/* Page Header */}
@@ -73,10 +148,10 @@ const AnalyticsPage = () => {
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {searchQueries.map((query, index) => (
+          {(topSearches || []).map((query, index) => (
             <div
               key={index}
-              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 border shadow rounded-xl"
+              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 py-8 border shadow rounded-xl"
             >
               <div className="flex items-center gap-4 h-2">
                 <div className="text-2xl font-bold text-muted-foreground">
@@ -85,12 +160,12 @@ const AnalyticsPage = () => {
                 <div>
                   <p className="font-bold">{query.keyword}</p>
                   <p className="text-sm text-gray-500">
-                    {query.count} searches
+                    {query.searchCount} searches
                   </p>
                 </div>
               </div>
 
-              <Badge
+              {/* <Badge
                 className={`
                     px-4 py-2 text-sm font-medium rounded-lg text-white
                     ${
@@ -105,7 +180,7 @@ const AnalyticsPage = () => {
                 {query.trend === "up" && "↑ UP"}
                 {query.trend === "stable" && "→ Stable"}
                 {query.trend === "down" && "↓ DOWN"}
-              </Badge>
+              </Badge> */}
             </div>
           ))}
         </CardContent>
@@ -127,7 +202,7 @@ const AnalyticsPage = () => {
             <div className="flex-1">
             <div className="w-full bg-muted rounded-full h-10">
                 <div className="h-7 rounded-full bg-green-600 flex items-center justify-center text-white font-semibold">
-                {analyticsData.proposalSubmissions} Proposals
+                {proposalStats.submissions} Proposals
                 </div>
             </div>
             </div>
@@ -141,14 +216,10 @@ const AnalyticsPage = () => {
                 <div
                 className="h-7 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold"
                 style={{
-                    width: `${
-                    (analyticsData.proposalResponses /
-                        analyticsData.proposalSubmissions) *
-                    100
-                    }%`,
+                    width: `${proposalStats.responsePercentage}%`,
                 }}
                 >
-                {analyticsData.proposalResponses} responses
+                {proposalStats.responses} responses
                 </div>
             </div>
             </div>
@@ -163,11 +234,11 @@ const AnalyticsPage = () => {
                 className="h-7 rounded-full bg-teal-400 flex items-center justify-center 
                             text-white font-semibold whitespace-nowrap px-4"
                 style={{
-                    width: `${(stats.activeProjects / analyticsData.proposalSubmissions) * 100}%`,
+                    width: `${proposalStats.winsPercentage}%`,
                     minWidth: "140px",
                 }}
                 >
-                {stats.activeProjects} Projects
+                {proposalStats.wins} Projects
                 </div>
 
             </div>
