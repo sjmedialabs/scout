@@ -40,9 +40,7 @@ export function HomeHero({ cms }: HomeHeroProps) {
         console.error("Error tracking search keyword:", err)
       }
       
-    } else {
-      router.push("/register")
-    }
+    } 
   }
 
   const handleLetUsMatch = () => {
@@ -85,7 +83,8 @@ export function HomeHero({ cms }: HomeHeroProps) {
                 } `}
                 onClick={() => {
                   setActiveButton("match")
-                  handleLetUsMatch()
+                  router.push("/login")
+                  // handleLetUsMatch()
                 }}
               >
                 Let us match you

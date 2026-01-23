@@ -189,10 +189,10 @@ export default function MessagesPage() {
   }
 
   useEffect(() => {
-      if (!loading && (!user || user.role !== "agency")) {
+      if (!loading && (!user || user.role !== "client")) {
         router.push("/login")
       }
-      if(user && user.role === "agency"){
+      if(user && user.role === "client"){
          loadData()
       }
     }, [user, loading, router])

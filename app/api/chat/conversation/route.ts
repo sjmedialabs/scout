@@ -110,6 +110,7 @@ export async function GET() {
           lastMessageAt: c.lastMessageAt,
           unreadCount: c.unreadCount?.[user.userId.toString()] ?? 0,
           participant: userMap.get(otherUserId?.toString()),
+          participantsAre:c.participants
         }
       }),
     })

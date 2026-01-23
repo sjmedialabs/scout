@@ -49,6 +49,7 @@ const menuItems: MenuItem[] = [
       { id: "proposals", label: "Proposals", icon: MessageSquare, path: "/client/dashboard/proposals" },
       { id: "projects", label: "Projects", icon: Briefcase, path: "/client/dashboard/projects" },
       { id: "providers", label: "Find Agencies", icon: Users, path: "/client/dashboard/providers" },
+      { id: "messages", label: "Messages", icon:  MessageSquare, path: "/client/dashboard/message" },
     ],
   },
   {
