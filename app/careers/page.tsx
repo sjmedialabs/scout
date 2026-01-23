@@ -1,42 +1,18 @@
 "use client"
 
-const jobs = [
-  {
-    title: "Account Manager",
-    category: "Enterprise Hiring Partnerships (B2B / Revenue Role)",
-    mode: "Hybrid",
-    location: "Washington, District of Columbia (Hybrid)",
-    role: "Account Management",
-    type: "Full-Time",
-  },
-  {
-    title: "Sales Executive",
-    category: "Enterprise Hiring Partnerships (B2B / Revenue Role)",
-    mode: "WFO",
-    location: "Washington, District of Columbia (Hybrid)",
-    role: "Sales Executive",
-    type: "Full-Time",
-  },
-  {
-    title: "Business Development Manager",
-    category: "Enterprise Hiring Partnerships (B2B / Revenue Role)",
-    mode: "WFH",
-    location: "Washington, District of Columbia (Hybrid)",
-    role: "BDM",
-    type: "Full-Time",
-  },
-  {
-    title: "Marketing Executive",
-    category: "Enterprise Hiring Partnerships (B2B / Revenue Role)",
-    mode: "WHO",
-    location: "Washington, District of Columbia (Hybrid)",
-    role: "Marketing Executive",
-    type: "Full-Time",
-  },
-]
+import Link from "next/link"
+import { jobs } from "@/lib/jobs"
+import { useState } from "react"
+import ApplyJobModal from "@/components/ApplyJobModal"
+
 
 export default function CareersPage() {
+
+const [open, setOpen] = useState(false)
+const [selectedJob, setSelectedJob] = useState("")
+
   return (
+    <>
     <section className="max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="text-center mb-10">
@@ -50,9 +26,13 @@ export default function CareersPage() {
 
       {/* Job Cards */}
       <div className="space-y-6 w-6xl">
-        {jobs.map((job, index) => (
+        {jobs.map((job) => (
+          <Link
+            key={job.slug}
+            href={`/careers/${job.slug}`}
+            className="block"
+          >
           <div
-            key={index}
             className="border border-gray-400 rounded-3xl px-6 py-6 md:px-10 md:py-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
           >
             {/* Left */}
@@ -87,13 +67,28 @@ export default function CareersPage() {
 
             {/* CTA */}
             <div className="lg:w-auto">
-              <button className="bg-orange-600 hover:bg-orange-500 transition text-white text-xs font-medium px-6 py-3 rounded-full">
+              <button 
+              onClick={(e) => {
+                e.preventDefault()
+                setSelectedJob(job.title)
+                setOpen(true)
+              }}
+              className="bg-orange-600 hover:bg-orange-500 transition text-white text-xs font-medium px-6 py-3 rounded-full">
                 Apply Now
               </button>
             </div>
           </div>
+          </Link>
         ))}
       </div>
     </section>
+
+    <ApplyJobModal
+  isOpen={open}
+  onClose={() => setOpen(false)}
+  jobTitle={selectedJob}
+/>
+</>
   )
 }
+
