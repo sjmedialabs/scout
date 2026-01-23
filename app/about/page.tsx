@@ -4,13 +4,13 @@ import Link from "next/link"
 import { headers } from "next/headers"
 
 async function getAboutData() {
-  let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
-  if (!baseUrl) {
-    const headersList = headers();
-    const host = headersList.get("host") || "localhost:3000";
-    const protocol = host.includes("localhost") ? "http" : "https";
-    baseUrl = `${protocol}://${host}`;
-  }
+  let baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+  // if (!baseUrl) {
+  //   const headersList = headers();
+  //   const host = headersList.get("host") || "localhost:3000";
+  //   const protocol = host.includes("localhost") ? "http" : "https";
+  //   baseUrl = `${protocol}://${host}`;
+  // }
 
   const REVALIDATE_TIME = Number(process.env.CMS_REVALIDATE_TIME) || 10;
   const options = { next: { revalidate: REVALIDATE_TIME } };

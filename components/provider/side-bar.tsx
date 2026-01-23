@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import {
   Home,
@@ -95,6 +97,14 @@ interface SidebarProps {
 
 export default function Sidebar({ user, provider }: SidebarProps) {
   const router = useRouter();
+
+  const { logout } = useAuth()
+
+const handleLogout = async () => {
+  await logout();
+  router.replace("/login");
+};
+
 
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
   const [activeSection, setActiveSection] = useState<string | null>(null);
@@ -226,15 +236,30 @@ export default function Sidebar({ user, provider }: SidebarProps) {
       </div>
 
       {/* Footer Button */}
-      <div className="p-4 border-t border-border">
+      <div className="p-4 border-border flex gap-2">
         <Button
           variant="outline"
           size="sm"
           onClick={() => router.push("/pricing")}
-          className="w-full"
+          className="flex-1 bg-blueButton text-white flex gap-0 rounded-2xl justify-start"
         >
           <Settings className="h-4 w-4 mr-2" />
           Upgrade Plan
+        </Button>
+
+         <Button
+          variant="outline"
+          size="sm"
+          onClick={handleLogout}
+          className="flex-1 flex gap-2 justify-start
+           text-white bg-orange-600
+            hover:bg-orange-600 hover:text-white 
+            rounded-2xl border-none active:bg-orange-500
+            active:text-white
+          "
+        >
+          <LogOut className="h-4 w-4 mr-2" />
+          Logout
         </Button>
       </div>
     </div>

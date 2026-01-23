@@ -1,6 +1,9 @@
 "use client"
 
 import { useState } from "react"
+import { LogOut} from "lucide-react"
+import { useAuth } from "@/contexts/auth-context"
+
 import { useRouter, usePathname } from "next/navigation"
 import {
   ChevronDown,
@@ -102,6 +105,14 @@ export default function ClientSidebar({
     onClose() // close sidebar on mobile
   }
 
+  const { logout } = useAuth()
+
+const handleLogout = async () => {
+  await logout()
+  router.replace("/login")
+}
+
+
   return (
     <>
       {/* Overlay (mobile only) */}
@@ -188,9 +199,17 @@ export default function ClientSidebar({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t bg-[#3C3A3E] border-border">
+        <div className="p-4 border-none bg-[#3C3A3E] flex gap-2">
           <Button
-            className="w-full bg-[#2C34A1] text-[#fff]"
+          size="sm"
+          className="
+            flex-1 rounded-2xl
+            bg-[#2C34A1] text-white
+            border-none
+            hover:bg-[#232a85]
+            focus-visible:ring-0
+            focus-visible:ring-offset-0"
+
             onClick={() => {
               router.push("/client/dashboard/post-requirement")
               onClose()
@@ -198,6 +217,27 @@ export default function ClientSidebar({
           >
             <Plus className="h-4 w-4 mr-2" />
             Post New Requirement
+          </Button>
+
+          {/* Logout */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleLogout}
+            className="
+              flex-1
+              text-white
+               rounded-2xl
+               bg-orangeButton border-none
+              hover:bg-red-500/10
+              active:bg-red-500
+               active:text-white
+              focus-visible:ring-0
+              focus-visible:ring-offset-0
+            "
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Logout
           </Button>
         </div>
       </aside>
