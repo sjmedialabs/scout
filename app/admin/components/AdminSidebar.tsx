@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/auth-context";
 import { usePathname } from "next/navigation";
 import { adminMenu } from "../sidebar-config";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import { Settings, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface SidebarProps {
@@ -12,10 +15,20 @@ interface SidebarProps {
   onToggle: () => void;
 }
 
+
 export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
   const pathname = usePathname();
   const current = pathname.split("/")[2];
   const [open, setOpen] = useState<string[]>(["dashboard"]);
+
+  const { logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/login");
+    // router.replace("/login");
+  };
 
   const toggleSection = (label: string) => {
     setOpen(prev =>
@@ -98,10 +111,26 @@ export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
       </div>
 
       {/* FOOTER */}
-      <div className="w-full">
-        <Button className="bg-blueButton text-white w-full flex gap-2 justify-start">
+      <div className="w-10 pl-1 flex gap-1 mb-3">
+        {/* System Settings */}
+        <Button className="bg-blueButton text-white flex-1 flex gap-0 rounded-2xl justify-start">
           <Settings className="w-4 h-4" />
           {!collapsed && "System Settings"}
+        </Button>
+
+        {/* Logout */}
+        <Button
+          variant="outline"
+          className="flex-1 flex gap-2 justify-start
+           text-white bg-orange-600
+            hover:bg-orange-600 hover:text-white 
+            rounded-2xl border-none active:bg-orange-500
+            active:text-white
+          "
+          onClick={handleLogout}
+        >
+          <LogOut className="w-4 h-4" />
+          {!collapsed && "Logout"}
         </Button>
       </div>
     </aside>
