@@ -33,6 +33,12 @@ const AnalyticsPage = () => {
     winsPercentage:0,
   })
 
+  const[bottomStats,setBottomStats]=useState({
+    visbillityIncrease:0,
+    moreProfileViews:0,
+    higherConversion:0,
+  })
+
   const analyticsData = {
     profileViews: 1247,
     profileViewsChange: 12,
@@ -100,7 +106,21 @@ const AnalyticsPage = () => {
       console.log("Total Proposals:", proposalData.proposals.length);
       setProposals(proposalData.proposals)
 
-      console.log("Provider Details:", providerData);
+      let visibilityIncrease=providerData.provider.currentMonthProfileViews-(providerData.provider?.lastMonthProfileViews || 0);
+      let moreProfileViews=(providerData.provider?.lastMonthProfileViews !==0)
+      ?
+      ((providerData.provider.currentMonthProfileViews - providerData.provider?.lastMonthProfileViews)/providerData.provider?.lastMonthProfileViews).toFixed(1) as unknown as number
+      :
+      0;
+      let higherConversion=proposalData.proposals.length!==0?(proposalWins/proposalData.proposals.length).toFixed(1) as unknown as number:0;
+      setBottomStats({
+        visbillityIncrease:visibilityIncrease,
+        moreProfileViews:moreProfileViews,
+        higherConversion:higherConversion,
+      })
+
+      console.log("Provider Details:", providerData.provider);
+      
 
     }catch(err){
       setFailed(true)
@@ -148,7 +168,7 @@ const AnalyticsPage = () => {
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {(topSearches || []).map((query, index) => (
+          {(topSearches || []).slice(0,5).map((query, index) => (
             <div
               key={index}
               className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 py-8 border shadow rounded-xl"
@@ -261,7 +281,7 @@ const AnalyticsPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="p-6 border shadow rounded-2xl text-center">
               <p className="text-4xl h-6 font-bold text-green-600">
-                +{analyticsData.premiumImpact}
+                {bottomStats.visbillityIncrease}
               </p>
               <p className="text-sm font-bold mt-2">
                 Visibility Increase
@@ -269,14 +289,14 @@ const AnalyticsPage = () => {
             </div>
 
             <div className="p-6 border shadow rounded-2xl text-center">
-              <p className="text-4xl h-6 font-bold text-blue-600">2.3x</p>
+              <p className="text-4xl h-6 font-bold text-blue-600">{bottomStats.moreProfileViews}x</p>
               <p className="text-sm font-bold mt-2">
                 More Profile Views
               </p>
             </div>
 
             <div className="p-6 border rounded-2xl text-center">
-              <p className="text-4xl h-6 font-bold text-purple-600">1.8x</p>
+              <p className="text-4xl h-6 font-bold text-purple-600">{bottomStats.higherConversion}x</p>
               <p className="text-sm font-bold mt-2">
                 Higher Conversion
               </p>
