@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 
 export default function LoginPage() {
-  const [role, setRole] = useState<"agency" | "client" | "admin">("client");
+  // const [role, setRole] = useState<"agency" | "client" | "admin">("client");
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,22 +16,48 @@ export default function LoginPage() {
   const router = useRouter();
 
   const handleSubmit = async () => {
-    setError("");
-    setLoading(true);
+  setError("");
+  setLoading(true);
 
-    try {
-      await login(email, password, role);
+  try {
+    const user = await login(email, password);
 
-      // Redirect based on role (EXACT OLD BEHAVIOR)
-      if (role === "client") router.push("/client/dashboard");
-      if (role === "agency") router.push("/agency/dashboard");
-      if (role === "admin") router.push("/admin/dashboard");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
-    } finally {
-      setLoading(false);
+    if (user.role === "client") {
+      router.push("/client/dashboard");
+    } else if (user.role === "agency") {
+      router.push("/agency/dashboard");
+    } else if (user.role === "admin") {
+      router.push("/admin/dashboard");
+    } else {
+      throw new Error("Invalid user role");
     }
-  };
+  } catch (err) {
+    setError(err instanceof Error ? err.message : "Login failed");
+  } finally {
+    setLoading(false);
+  }
+};
+
+//  try {[]
+//       // 🔑 Backend decides the role
+//       const user = await login(email, password, role);
+
+//       // ✅ Redirect based on role from backend
+//       if (user.role === "client") {
+//         router.push("/client/dashboard");
+//       } else if (user.role === "agency") {
+//         router.push("/agency/dashboard");
+//       } else if (user.role === "admin") {
+//         router.push("/admin/dashboard");
+//       } else {
+//         throw new Error("Invalid user role");
+//       }
+//     } catch (err) {
+//       setError(err instanceof Error ? err.message : "Login failed");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
@@ -67,7 +94,7 @@ export default function LoginPage() {
             </p>
 
             {/* Account Type */}
-            <div className="mt-2">
+            {/* <div className="mt-2">
               <label className="text-xs font-bold text-gray-700">
                 Account Type
               </label>
@@ -99,7 +126,7 @@ export default function LoginPage() {
                   Admin
                 </label>
               </div>
-            </div>
+            </div> */}
 
             {/* Inputs */}
             <div className="mt-1 space-y-4">

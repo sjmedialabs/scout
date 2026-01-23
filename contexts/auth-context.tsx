@@ -5,7 +5,9 @@ import { createContext, useContext, useState, useEffect, useCallback } from "rea
 
 export type UserRole = "client" | "agency" | "admin"
 
-export interface User {
+
+
+interface User {
   id: string
   email: string
   name: string
@@ -16,10 +18,25 @@ export interface User {
   avatar?: string
 }
 
-export interface AuthContextType {
+// interface AuthContextType {
+//   user: User | null
+//   login: (email: string, password: string) => Promise<void>
+//   register: (email: string, password: string, name: string, role: UserRole, companyName?: string) => Promise<void>
+//   logout: () => Promise<void>
+//   loading: boolean
+//   isAuthenticated: boolean
+// }
+
+interface AuthContextType {
   user: User | null
-  login: (email: string, password: string, role: UserRole) => Promise<void>
-  register: (email: string, password: string, name: string, role: UserRole, companyName?: string) => Promise<void>
+  login: (email: string, password: string) => Promise<User>
+  register: (
+    email: string,
+    password: string,
+    name: string,
+    role: UserRole,
+    companyName?: string
+  ) => Promise<void>
   logout: () => Promise<void>
   loading: boolean
   isAuthenticated: boolean
@@ -50,26 +67,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkAuth()
   }, [checkAuth])
 
-  const login = async (email: string, password: string, role: UserRole) => {
-    setLoading(true)
-    try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, role }),
-      })
+  // const login = async (email: string, password: string) => {
+  //   setLoading(true)
+  //   try {
+  //     const response = await fetch("/api/auth/login", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ email, password}),
+  //     })
 
-      const data = await response.json()
+  //     const data = await response.json()
 
-      if (!response.ok) {
-        throw new Error(data.error || "Login failed")
-      }
+  //     if (!response.ok) {
+  //       throw new Error(data.error || "Login failed")
+  //     }
 
-      setUser(data.user)
-    } finally {
-      setLoading(false)
-    }
+  //     setUser(data.user)
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
+
+ const login = async (
+  email: string,
+  password: string
+): Promise<User> => {
+  const res = await fetch("/api/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Invalid credentials");
   }
+
+  const data = await res.json();
+
+  setUser(data.user);
+  return data.user;
+};
+
+
 
   const register = async (email: string, password: string, name: string, role: UserRole, companyName?: string) => {
     setLoading(true)
