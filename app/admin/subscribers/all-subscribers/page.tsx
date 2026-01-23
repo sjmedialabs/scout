@@ -1,5 +1,6 @@
 "use client";
 
+import EditSubscriberModal from "@/components/EditSubscriberModal";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
@@ -86,19 +87,19 @@ export default function AllSubscribersPage() {
   const [status, setStatus] = useState("all");
 
  
-  useEffect(() => {
-    async function loadSubscribers() {
-      try {
-        const res = await fetch("/api/admin/subscribers");
-        if (!res.ok) throw new Error();
-        const data = await res.json();
-        setSubscribers(data);
-      } catch {
+//   useEffect(() => {
+//     async function loadSubscribers() {
+//       try {
+//         const res = await fetch("/api/admin/subscribers");
+//         if (!res.ok) throw new Error();
+//         const data = await res.json();
+//         setSubscribers(data);
+//       } catch {
       
-      }
-    }
-    loadSubscribers();
-  }, []);
+//       }
+//     }
+//     loadSubscribers();
+//   }, []);
 
   const filtered = subscribers.filter((s) => {
     const matchesSearch =
@@ -222,8 +223,9 @@ export default function AllSubscribersPage() {
 
                 <td className="p-4">
                 <div className="flex items-center gap-3">
-                    <Pencil className="h-4 w-4 cursor-pointer text-gray-700 hover:text-black" />
-                    <UserX className="h-4 w-4 cursor-pointer text-gray-700 hover:text-black" />
+                    <EditSubscriberModal subscriber={sub} />
+                    <UserX className="h-4 w-4 cursor-pointer text-gray-700 hover:text-black" 
+                    />
                 </div>
                 </td>
               </tr>
