@@ -7,6 +7,8 @@ export interface IMessage extends Document {
   receiverId: mongoose.Types.ObjectId
   content: string
   attachments?: string[]
+  senderType:string
+  messageType:string
   isRead: boolean
   readAt?: Date
   createdAt: Date
@@ -29,20 +31,31 @@ export interface IConversation extends Document {
 const MessageSchema = new Schema<IMessage>(
   {
     conversationId: { type: Schema.Types.ObjectId, ref: "Conversation", required: true },
-    senderId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    receiverId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    content: { type: String, required: true },
+
+    senderId: { type: Schema.Types.ObjectId, required: true },
+    senderType: { type: String, enum: ["PROVIDER", "SEEKER"], required: true },
+
+    receiverId: { type: Schema.Types.ObjectId, required: true },
+
+    content: { type: String },
+    messageType: {
+      type: String,
+      enum: ["TEXT", "IMAGE", "FILE"],
+      default: "TEXT",
+    },
+
     attachments: [{ type: String }],
     isRead: { type: Boolean, default: false },
     readAt: { type: Date },
   },
-  { timestamps: true },
+  { timestamps: true }
 )
+
 
 const ConversationSchema = new Schema<IConversation>(
   {
     participants: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
-    projectId: { type: Schema.Types.ObjectId, ref: "Project" },
+    projectId: { type: Schema.Types.ObjectId, ref: "Requirement" },
     proposalId: { type: Schema.Types.ObjectId, ref: "Proposal" },
     lastMessage: { type: String },
     lastMessageAt: { type: Date },

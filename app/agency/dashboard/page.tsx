@@ -349,7 +349,10 @@ export default function AgencyDashboard() {
           leads:totalProjectsDone.length,
         })
 
-        setActiveProjects(totalProjectsDone)
+        let currentActiveProjects=proposalData.proposals.filter((eachItem:any)=>eachItem.status==="accepted" );
+        console.log("current active projects::::",currentActiveProjects)
+
+        setActiveProjects(currentActiveProjects)
         //unread notifications
         setDynamicNotifications(notificationsData.data.filter((eachitem)=>!eachitem.isRead))
 
@@ -597,6 +600,15 @@ export default function AgencyDashboard() {
       </div>
     )
   }
+   const calculateProgress = (milestones = []) => {
+  if (!milestones.length) return 0
+
+  const completedCount = milestones.filter(
+    (milestone) => milestone.completed === true
+  ).length
+
+  return Math.round((completedCount / milestones.length) * 100)
+}
 
   return (
     <div>
@@ -756,24 +768,51 @@ export default function AgencyDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {projects.map((project) => (
-                    <div key={project.id} className="shadow-md rounded-2xl pt-1 p-5">
+                  {activeProjects.length !== 0 ?
+                  (
+                    <div>
+                       {activeProjects.map((project) => (
+                    <div key={project.id} className="shadow-md rounded-2xl pt-1 mb-4 p-5">
                       <div className="flex justify-between mb-2">
-                        <h4 className="font-bold my-custom-class">Project #{project.id}</h4>
-                        <Badge className="bg-[#cae5c0] text-green-500" variant="outline">{project.status}</Badge>
+                        <h4 className="font-bold my-custom-class">{project.requirement.title}</h4>
+                        <Badge className="bg-[#cae5c0] text-green-500" variant="outline">active</Badge>
                       </div>
                       <div className="flex gap-6 text-sm text-muted-foreground">
                         <div className="flex items-center gap-2 text-gray-500">
                           <DollarSign className="h-4 w-4 text-orangeButton" />
-                          ${project.budget.toLocaleString()}
+                          {project.proposedBudget.toLocaleString()}
                         </div>
                         <div className="flex items-center gap-2 text-gray-500">
                           <Calendar className="h-4 w-4 text-orangeButton" />
-                          Started {project.startDate.toLocaleDateString()}
+                           {project.proposedTimeline}
                         </div>
                       </div>
+                      {/* PROGRESS */}
+                <div>
+                  <div className="flex justify-between h-5 text-sm mb-1">
+                    <span>{`progress ${project.milestones.filter((eachItem)=>eachItem.completed).length}/${project.milestones.length}`} </span>
+                    <span>{calculateProgress(project.milestones) || 0}% Complete</span>
+                  </div>
+                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-blue-500 rounded-full"
+                      style={{ width: `${calculateProgress(project.milestones) || 0}%` }}
+                    />
+                  </div>
+                </div>
                     </div>
                   ))}
+                    </div>
+                  )
+                  :
+                  (
+                    <div className="text-center">
+                      <p className="text-gray-500 mt-4 text-xl"> No active projects </p>
+                    </div>
+                  )
+                
+                }
+
                 </div>
               </CardContent>
             </Card>
