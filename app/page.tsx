@@ -53,13 +53,13 @@ const colorMap: Record<string, { bg: string; hover: string; text: string }> = {
 
 async function getData() {
   // 1. Dynamically determine the base URL to avoid port mismatches
-  let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
-  if (!baseUrl) {
-    const headersList = headers();
-    const host = headersList.get("host") || "localhost:3000";
-    const protocol = host.includes("localhost") ? "http" : "https";
-    baseUrl = `${protocol}://${host}`;
-  }
+  let baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+  // if (!baseUrl) {
+  //   const headersList = headers();
+  //   const host = headersList.get("host") || "localhost:3000";
+  //   const protocol = host.includes("localhost") ? "http" : "https";
+  //   baseUrl = `${protocol}://${host}`;
+  // }
 // const options: RequestInit = { cache: "no-store" }; for instant changes
   // 2. Use ISR with revalidation (e.g., every hour)
   const REVALIDATE_TIME = Number(process.env.CMS_REVALIDATE_TIME) || 10;
