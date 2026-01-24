@@ -151,7 +151,7 @@ export default function ServicesPage() {
                 className="flex justify-between items-center cursor-pointer px-4 py-4"
               >
                 <div className="flex items-center gap-3">
-                <img src={cat.icon} alt="" className="h-10 w-10"/>
+                <img src={cat.icon || "/uploads/44eaa969-97bd-41fe-8a4b-cff26356de06-Group%20208.jpg"} alt="" className="h-10 w-10"/>
                   <span className="font-bold text-2xl text-blueButton">{cat.title}</span>
                 </div>
 
@@ -170,7 +170,7 @@ export default function ServicesPage() {
               {isOpen && cat.children.length > 0 && (
                 <div className="mt-3 pl-10 space-y-2 transition-all flex flex-wrap gap-12 font-semibold">
                   {cat.children.map((sub: any, i: number) => (
-                    <div key={i} className="text-gray-500 hover:text-black cursor-pointer">
+                    <div key={i} className="text-gray-500 hover:text-black ">
                      <span> → {sub.title}</span>
                                            {/* Inner items */}
                       {sub.items?.length > 0 && (

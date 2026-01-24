@@ -160,11 +160,11 @@ console.log("Providers Details are :::",providerDetails);
 };
 
   const stats = [
-    { label: "Year founded", value: providerDetails.foundedYear },
-    { label: "Team Size", value: providerDetails.teamSize },
-    { label: "Projects", value: providerDetails.projectsCompleted },
+    { label: "Year founded", value: providerDetails.foundedYear || "N/A" },
+    { label: "Team Size", value: providerDetails.teamSize || 0 },
+    { label: "Projects", value: providerDetails.projectsCompleted || 0 },
     { label: "Response Time", value: "45 min" },
-    { label: "Hourly rate", value: providerDetails.hourlyRate },
+    { label: "Hourly rate", value: providerDetails.hourlyRate || 0 },
     { label: "Success Rate", value: "98%" },
   ];
 
@@ -354,8 +354,13 @@ console.log("Providers Details are :::",providerDetails);
                 <h1 className="text-2xl font-bold mb-1">Services Offered</h1>
               
             
-                <div className="flex flex-row flex-wrap gap-3">
-                  {providerDetails.services.map((service, index) => (
+                <div>
+                  
+                  {
+                    providerDetails.services.length !=0?
+                    (
+                      <div className="flex flex-row flex-wrap gap-3">
+                        {providerDetails.services.map((service, index) => (
                     <div
                       key={index}
                       className="p-3 text-center rounded-xl bg-[#d9e4f6]"
@@ -363,6 +368,15 @@ console.log("Providers Details are :::",providerDetails);
                       <span className="font-medium text-sm">{service}</span>
                     </div>
                   ))}
+                      </div>
+                    )
+                    :
+                    (
+                      <div className="text-center">
+                        <p className="text-gray-500 text-xl my-10">No Services Offered</p>
+                      </div>
+                    )
+                  }
                 </div>
             
 
@@ -412,6 +426,7 @@ console.log("Providers Details are :::",providerDetails);
                       </div>
                     </div>
                   ))}
+                  
                 </div>
              
 
@@ -505,8 +520,12 @@ console.log("Providers Details are :::",providerDetails);
                 <hr className="border-[1px] w-full"/>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {providerDetails.technologies.map((tech, index) => (
+                <div >
+                  {
+                    providerDetails.technologies.length!=0?
+                    (
+                      <div className="flex flex-wrap gap-2">
+                        {providerDetails.technologies.map((tech, index) => (
                     <Badge
                       key={index}
                       variant="secondary"
@@ -515,6 +534,15 @@ console.log("Providers Details are :::",providerDetails);
                       {tech}
                     </Badge>
                   ))}
+                      </div>
+                    )
+                    :
+                    (
+                      <div className="text-center">
+                        <p className="text-gray-500 text-xl">No Technologies</p>
+                      </div>
+                    )
+                  }
                 </div>
               </CardContent>
             </Card>

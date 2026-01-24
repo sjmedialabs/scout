@@ -364,7 +364,7 @@ export default async function HomePage() {
               className="bg-blueButton font-semibold text-sm text-white rounded-full hover:bg-gray-100"
               asChild
             >
-              <Link href="/providers">Become a provider</Link>
+              <Link href="/register">Become a provider</Link>
             </Button>
           </div>
         </div>

@@ -63,6 +63,7 @@ useEffect(() => {
     e.preventDefault()
     if (searchQuery.trim()) {
       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+      setSearchQuery("")
     }
   }
 
@@ -114,7 +115,7 @@ useEffect(() => {
                   placeholder="Search for agency name/service name"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-transparent border-slate-300 rounded-full placeholder:text-gray-200 py-0 placeholder:text-xs focus:bg-slate-500"
+                  className="pl-10 bg-transparent border-slate-300 rounded-full placeholder:text-gray-500 py-0 placeholder:text-xs focus:bg-slate-100"
                 />
               </form>
             </div>
@@ -138,7 +139,7 @@ useEffect(() => {
 
       <nav className="border-b border-border">
         <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${isAgencyDashboard ? "ml-80" : ""}`}>
-          <div className="flex justify-between lg:justify-around items-center h-16">
+          <div className="flex justify-center lg:justify-around items-center h-16">
           <div className="flex items-center rounded-full flex-1 max-w-md lg:hidden">
               <form onSubmit={handleSearch} className="relative w-full">
                 <div className="absolute right-4 top-[25%] flex items-center justify-center pr-3 gap-2">
@@ -182,7 +183,7 @@ useEffect(() => {
                 Social Media
               </Link>
             </div> */}
-        <div className="hidden lg:flex justify-between items-center space-x-8 text-xs xl:text-sm font-medium">
+        <div className="hidden lg:flex justify-between  items-center space-x-8 text-xs xl:text-sm font-medium">
   {serviceCategories.map((category) => (
     <DropdownMenu key={category.slug}>
       <DropdownMenuTrigger asChild>
@@ -247,25 +248,25 @@ useEffect(() => {
     href="/about" 
     className="text-xs text-gray-500 hover:text-slate-900"
   >
-    Resources
+    About us
   </Link>
 
   {/* ... other static links ... */}
 
   
 
-  <Link href="/pricing"className="text-xs text-gray-500 hover:text-slate-900" >
+  {/* <Link href="/pricing"className="text-xs text-gray-500 hover:text-slate-900" >
     Videos,Images
   </Link>
 
   <Link href="/about"  className="text-xs text-gray-500 hover:text-slate-900">
     Social Media
-  </Link>
+  </Link> */}
 </div>
 
 
             {/* Post a Project Button */}
-            <div className="hidden lg:block rounded-full">
+            <div className="hidden lg:block rounded-full ml-auto">
               <Button className="bg-orangeButton hover:bg-[#f54607] text-white rounded-full" asChild>
                 <Link href={user ? "/client/dashboard?section=projects" : "/register"}>Post A Project</Link>
               </Button>
