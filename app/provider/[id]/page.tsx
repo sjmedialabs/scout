@@ -642,6 +642,7 @@ console.log("Providers Details are :::",providerDetails);
                 rounded-full
                 shadow-none
                 border border-[#e5e5e5]
+                cursor-pointer
                 text-[#555]
                 px-4
                 focus:outline-none
@@ -672,6 +673,7 @@ console.log("Providers Details are :::",providerDetails);
                 bg-[#f5f5f5]
                 h-14
                 w-[160px]
+                cursor-pointer
                 rounded-full
                 shadow-none
                 border border-[#e5e5e5]

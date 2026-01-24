@@ -141,6 +141,7 @@ export default function BrowsePage() {
         setSelectedRequirement(requirement||null);
         setShowDetailsModal(true);
   }
+  console.log("Filtered Requirements::::",filteredRequirements);
   return (
     <div className="bg-background">
 
@@ -196,6 +197,7 @@ export default function BrowsePage() {
                 border-0 border-b border-[#dcdcdc] rounded-none px-0 pb-2
                 text-[15px] font-normal
                 focus-visible:ring-0 focus-visible:ring-offset-0
+                cursor-pointer
 
                 [&_span]:text-[#9b9b9b]
                 [&_span]:text-[15px]
@@ -220,6 +222,7 @@ export default function BrowsePage() {
                 border-0 border-b border-[#dcdcdc] rounded-none px-0 pb-2
                 text-[15px] font-normal
                 focus-visible:ring-0 focus-visible:ring-offset-0
+                cursor-pointer
 
                 [&_span]:text-[#9b9b9b]
                 [&_span]:text-[15px]
@@ -252,7 +255,7 @@ export default function BrowsePage() {
   </div>
 </section>
 
-      {(!resLoading && filteredRequirements.length!==0 && !failed)&& <div className="px-4 py-10">
+      {(!resLoading  && !failed)&& <div className="px-4 py-10">
         <div className="max-w-6xl mx-auto">
 
           {/* Header */}
@@ -262,25 +265,32 @@ export default function BrowsePage() {
 
           {/* Cards */}
           <div className="space-y-8">
-            {filteredRequirements?.map((item) => (
-              <ProposalCard
-                key={item.id}
-                category={item.category}
-                title={item.title}
-                description={item.description}
-                budget={`${item.budgetMin} - ${item.budgetMax}`}
-                timeline={item.timeline}
-                location={item.client?.location || "Remote"}
-                
-                postedAgo={item.createdAt}
-                onView={() => handleViewDetails(item.id)}
-                onSubmit={() =>router.push("/login?to=project-enquiries")}
-              />
-            ))}
-          </div>
+  {(filteredRequirements || []).length === 0 ? (
+    <div className="text-center py-10 text-gray-500">
+      No requirements found.
+    </div>
+  ) : (
+    filteredRequirements?.map((item) => (
+      <ProposalCard
+        key={item.id}
+        category={item.category}
+        title={item.title}
+        description={item.description}
+        budget={`${item.budgetMin} - ${item.budgetMax}`}
+        timeline={item.timeline}
+        location={item.client?.location || "Remote"}
+        postedAgo={item.createdAt}
+        onView={() => handleViewDetails(item.id)}
+        onSubmit={() => router.push("/login?to=project-enquiries")}
+      />
+    ))
+  )}
+</div>
+
 
         </div>
       </div>}
+
       {resLoading &&(
         <div className=" mt-20 flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
