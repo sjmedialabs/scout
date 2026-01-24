@@ -281,7 +281,7 @@ const [open, setOpen] = useState(false);
                           <SelectTrigger
                         className="
                           mt-1 border-0 border-b-2 border-b-[#b2b2b2]
-                          rounded-none shadow-none focus:outline-none
+                          rounded-none shadow-none focus:outline-none cursor-pointer
                           px-0 w-full text-sm md:text-base h-12
                         "
                       >
@@ -344,6 +344,7 @@ const [open, setOpen] = useState(false);
                               shadow-none
                               focus:outline-none
                               focus:ring-0 
+                              cursor-pointer
                               focus:ring-offset-0
                               px-0
                               w-full text-sm md:text-base h-12
@@ -391,6 +392,7 @@ const [open, setOpen] = useState(false);
                 border border-[#e5e5e5]
                 text-[#555]
                 px-4
+                cursor-pointer
                 focus:outline-none
                 focus:ring-0
                 focus:ring-offset-0
@@ -535,14 +537,14 @@ const [open, setOpen] = useState(false);
 
       <div className="flex flex-col sm:flex-row gap-2">
         <Button
-          className="w-full sm:w-[140px] bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white"
+          className="w-full sm:w-[140px] cursor-pointer bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white"
           onClick={() => handleViewProfile(provider.id)}
         >
           View Profile
         </Button>
 
         <Button
-        className="w-full sm:w-[160px] bg-[#4d4d4d] rounded-3xl text-white"
+        className="w-full sm:w-[160px] bg-[#4d4d4d] cursor-pointer rounded-3xl text-white"
         onClick={() => {
           window.location.href = `mailto:${provider.email}?subject=Service Inquiry&body=Hi ${provider.name},%0D%0A%0D%0AI am interested in your services.`
         }}
