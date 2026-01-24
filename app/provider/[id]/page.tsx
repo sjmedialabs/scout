@@ -385,49 +385,62 @@ console.log("Providers Details are :::",providerDetails);
                 <h1 className="text-2xl font-bold">Portfolio & Awards</h1>
               
                 <div className="grid sm:grid-cols-2 gap-6">
-                  {providerDetails.portfolio.map((item) => (
-                    <div
-                      key={item.id}
-                      className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300"
-                    >
-                      <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100">
-                        <img
-                          src={
-                            item.image ||
-                            `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(item.title) || "/placeholder.svg"}`
-                          }
-                          alt={item.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                        />
-                      </div>
-                      <div className="p-4">
-                        <Badge variant="outline" className="mb-2 bg-[#ebecee] rounded-2xl text-[12px] text-[#000]">
-                          {item.category}
-                        </Badge>
-                        <h4 className="font-semibold text-md mb-1">{item.title}</h4>
-                        <p className="text-sm text-[#b2b2b2] line-clamp-2 mb-3">{item.description}</p>
-                        <div className="flex flex-wrap gap-1 mb-3">
-                          {item.technologies.slice(0, 3).map((tech, idx) => (
-                            <Badge key={idx} variant="secondary" className="text-xs bg-[#d9e4f6] text-[#000] rounded-2xl">
-                              {tech}
-                            </Badge>
-                          ))}
-                        </div>
-                        {/* {item.projectUrl && (
-                          <a
-                            href={item.projectUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
-                          >
-                            View Project <ExternalLink className="h-3 w-3" />
-                          </a>
-                        )} */}
-                      </div>
-                    </div>
-                  ))}
-                  
-                </div>
+  {providerDetails?.portfolio?.length > 0 ? (
+    providerDetails.portfolio.map((item) => (
+      <div
+        key={item.id}
+        className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300"
+      >
+        <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100">
+          <img
+            src={
+              item.image ||
+              `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(item.title)}`
+            }
+            alt={item.title}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+          />
+        </div>
+
+        <div className="p-4">
+          <Badge
+            variant="outline"
+            className="mb-2 bg-[#ebecee] rounded-2xl text-[12px] text-[#000]"
+          >
+            {item.category}
+          </Badge>
+
+          <h4 className="font-semibold text-md mb-1">{item.title}</h4>
+          <p className="text-sm text-[#b2b2b2] line-clamp-2 mb-3">
+            {item.description}
+          </p>
+
+          <div className="flex flex-wrap gap-1 mb-3">
+            {item.technologies.slice(0, 3).map((tech, idx) => (
+              <Badge
+                key={idx}
+                variant="secondary"
+                className="text-xs bg-[#d9e4f6] text-[#000] rounded-2xl"
+              >
+                {tech}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      </div>
+    ))
+  ) : (
+    <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
+      <p className="text-lg font-semibold text-gray-600">
+        No Portfolio & Awards
+      </p>
+      <p className="text-sm text-gray-400 mt-1">
+        This provider hasn’t added any portfolio items yet.
+      </p>
+    </div>
+  )}
+</div>
+
              
 
             {/* Client Testimonials */}

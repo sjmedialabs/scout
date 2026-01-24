@@ -65,11 +65,11 @@ export default function BrowsePage() {
         const data =await res.json()
         console.log("data from api", data.requirements)
         if (res.ok) {
-          const mapped =data.requirements.filter((eachItem)=>eachItem.status.toLowerCase()==="open")
+          const mapped =data.requirements.filter((eachItem)=>eachItem.status.toLowerCase()!="closed" || eachItem.status.toLowerCase()!="allocated")
           setRequriments(mapped)
           setFilteredRequirements(mapped)
           setFailed(false)
-          setResLoading(false)
+          setResLoading(false) 
         }
       } catch (e) {
         console.log("failed to fetch the data",e)
@@ -270,10 +270,11 @@ export default function BrowsePage() {
                 description={item.description}
                 budget={`${item.budgetMin} - ${item.budgetMax}`}
                 timeline={item.timeline}
-                proposalsCount={item.proposalsCount}
-                postedAgo={item.postedAgo}
+                location={item.client?.location || "Remote"}
+                
+                postedAgo={item.createdAt}
                 onView={() => handleViewDetails(item.id)}
-                onSubmit={() =>router.push('/login')}
+                onSubmit={() =>router.push("/login?to=project-enquiries")}
               />
             ))}
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter,useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 
 export default function LoginPage() {
@@ -11,6 +11,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("to");
 
   const { login } = useAuth();
   const router = useRouter();
@@ -25,7 +28,7 @@ export default function LoginPage() {
     if (user.role === "client") {
       router.push("/client/dashboard");
     } else if (user.role === "agency") {
-      router.push("/agency/dashboard");
+       redirectTo ==="project-enquiries"?router.push("/agency/dashboard/project-inquiries"):router.push("/agency/dashboard");
     } else if (user.role === "admin") {
       router.push("/admin/dashboard");
     } else {

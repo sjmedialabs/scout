@@ -22,13 +22,14 @@ export function Navigation() {
   const isAgencyDashboard = pathname?.startsWith("/agency/dashboard")
 
   const [serviceCategories, setServiceCategories] = useState<any[]>([])
-const [activeMenu, setActiveMenu] = useState<string | null>(null)
+const [openMenu, setOpenMenu] = useState<string | null>(null)
+
 const isActive = (slug: string) => {
   return pathname === `/services/${slug}` ||
          pathname?.startsWith(`/services/${slug}/`)
 }
 
-console.log("Active Menu:", activeMenu)
+// console.log("Active Menu:", activeMenu)
 
 useEffect(() => {
   const fetchCategories = async () => {
@@ -94,6 +95,10 @@ useEffect(() => {
     await logout()
     router.push("/")
   }
+
+  useEffect(() => {
+  setOpenMenu(null)
+}, [pathname])
 
   return (
     <div className="bg-background">
@@ -183,58 +188,55 @@ useEffect(() => {
                 Social Media
               </Link>
             </div> */}
-        <div className="hidden lg:flex justify-between  items-center space-x-8 text-xs xl:text-sm font-medium">
-  {serviceCategories.map((category) => (
-    <DropdownMenu key={category.slug}>
-      <DropdownMenuTrigger asChild>
-        <button
-
-         onClick={() => setActiveMenu(category.slug)}           // ← highlight on click
-        className={`relative pb-4 mt-4 transition whitespace-nowrap ${
-          activeMenu === category.slug
+        <div className="hidden lg:flex  justify-between  items-center space-x-8 text-xs xl:text-sm font-medium">
+ {serviceCategories.map((category) => (
+  <DropdownMenu
+    key={category.slug}
+    open={openMenu === category.slug}
+    onOpenChange={(open) =>
+      setOpenMenu(open ? category.slug : null)
+    }
+  >
+    <DropdownMenuTrigger asChild>
+      <button
+        className={`relative pb-4 mt-4 cursor-pointer transition whitespace-nowrap ${
+          openMenu === category.slug
             ? "text-[#F4561C] after:absolute after:left-0 after:-bottom-2 after:h-[2px] after:w-full after:bg-[#F4561C]"
             : "text-gray-500 hover:text-slate-900"
         }`}
-        >
-          {category.title}
-        </button>
-      </DropdownMenuTrigger>
+      >
+        {category.title}
+      </button>
+    </DropdownMenuTrigger>
 
-      {category.children?.length > 0 && (
-        <DropdownMenuContent 
-          className="w-[900px] p-6 ml-20 mt-3"
-          // Important: closes dropdown after navigation inside it
-          onCloseAutoFocus={(e) => {
-            // Optional: prevent focusing trigger again if you don't want it
-            e.preventDefault()
-          }}
-        >
-          <div className="grid grid-cols-5 gap-6">
-            {category.children.map((parent: any) => (
-              <div key={parent.title}>
-                <p className="font-semibold text-sm mb-2 text-slate-900">
-                  {parent.title}
-                </p>
-                <ul className="space-y-1">
-                  {parent.items?.map((child: any) => (
-                    <li key={child.slug}>
-                      <Link
-                        href={`/services/${child.slug}`}
-                        className="text-xs text-gray-500 hover:text-slate-900"
-                        // Dropdown closes automatically on <Link> navigation in Next.js App Router
-                      >
-                        {child.title}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </DropdownMenuContent>
-      )}
-    </DropdownMenu>
-  ))}
+    {category.children?.length > 0 && (
+      <DropdownMenuContent className="w-[900px] p-6 ml-20 mt-3 rounded-2xl">
+        <div className="grid grid-cols-5 gap-6">
+          {category.children.map((parent: any) => (
+            <div key={parent.title}>
+              <p className="font-semibold text-sm mb-2 text-slate-900">
+                {parent.title}
+              </p>
+              <ul className="space-y-1">
+                {parent.items?.map((child: any) => (
+                  <li key={child.slug}>
+                    <Link
+                      href={`/services/${child.slug}`}
+                      className="text-xs text-gray-500 hover:text-slate-900"
+                    >
+                      {child.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </DropdownMenuContent>
+    )}
+  </DropdownMenu>
+))}
+
 
   {/* Static links – apply same active style if needed */}
   <Link 

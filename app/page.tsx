@@ -79,7 +79,7 @@ async function getData() {
     
     const projectsData = projectsRes.ok ? await projectsRes.json() : {};
     // Try finding the array in 'requirements' OR 'data'
-    const projects = (projectsData.requirements || projectsData.data || []).slice(0, 3);
+    const projects = (projectsData.requirements || projectsData.data || []).filter((eachItem:any)=>eachItem.status.toLowerCase()==="open").slice(0, 3);
     
     const categories = categoriesRes.ok ? (await categoriesRes.json()).data : [];
     
@@ -217,13 +217,14 @@ export default async function HomePage() {
                     <p className="text-sm text-gray-500 mb-4 line-clamp-2">{project.description}</p>
                     <div className="flex flex-col gap-4">
                       <span className="font-bold text-lg text-blueButton">{project.budget}</span>
-                      <div>
-                        <Button variant="outline" size="sm" asChild className="bg-black text-white rounded-full text-xs">
-                          <Link href="/login">View Details →</Link>
-                        </Button>
-                      </div>
+                     
                     </div>
                   </div>
+                   <div className="pb-10 px-6">
+                        <Button variant="outline" size="sm" asChild className="bg-black text-white rounded-full text-xs">
+                          <Link href="/login?to=project-enquiries">Submit Proposal →</Link>
+                        </Button>
+                      </div>
                 </div>
               ))}
             </div>
@@ -356,16 +357,19 @@ export default async function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
             <Button size="lg" className="bg-orangeButton font-semibold text-sm text-white rounded-full hover:bg-gray-100" asChild>
-              <Link href="/register">Post a requirement</Link>
+              <Link href="/register?type=seeker">Post a requirement</Link>
             </Button>
             <Button
-              size="lg"
-              variant="outline"
-              className="bg-blueButton font-semibold text-sm text-white rounded-full hover:bg-gray-100"
-              asChild
-            >
-              <Link href="/register">Become a provider</Link>
-            </Button>
+            size="lg"
+            variant="outline"
+            className="bg-blueButton font-semibold text-sm text-white rounded-full hover:bg-gray-100"
+            asChild
+          >
+            <Link href="/register?type=provider">
+              Become a provider
+            </Link>
+          </Button>
+
           </div>
         </div>
       </section>
