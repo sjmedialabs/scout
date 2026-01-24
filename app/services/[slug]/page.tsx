@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import ServiceCard from "@/components/ServiceCard";
+import { useRouter } from "next/navigation";
 
 interface PageProps {
   params: {
@@ -45,6 +46,7 @@ const  providers= [
 
 export default function ServicePage({ params }: PageProps) {
   const slug = params.slug
+  const router=useRouter()
 
   const[loading, setLoading]= useState<boolean>(false);
   const[failed, setFailed]= useState<boolean>(false);
@@ -129,6 +131,7 @@ export default function ServicePage({ params }: PageProps) {
        {/* Button */}
         <div className="flex items-start justify-start">
          <button
+         onClick={()=>router.push("/register")}
            className="h-12 px-10 md:px-6 rounded-full 
                       bg-[#2c34a1] hover:bg-[#2B34C3] 
                       text-white text-[12px] font-semibold 

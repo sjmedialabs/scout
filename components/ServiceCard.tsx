@@ -12,7 +12,7 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
     return (
         <div className="overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:shadow-md flex flex-col h-full">
             <div className="aspect-16/10 w-full overflow-hidden">
-                <img src={p.coverImage} alt={p.name} className="h-full w-full object-cover"/>
+                <img src={p?.coverImage || "/uploads/15ac2d8f-31f9-48ac-aadd-b67ba9f4d860-Artificial-intelligence-platforms-copy.jpg"} alt={p.name} className="h-full w-full object-cover"/>
             </div>
             <div className="flex flex-col flex-1 sm:p-6 p-5 justify-between">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">

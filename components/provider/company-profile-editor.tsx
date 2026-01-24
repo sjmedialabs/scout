@@ -1192,20 +1192,20 @@ const removeTestimonialItem = (id: string) => {
                   <div className="space-y-2">
                     <Label className="text-sm font-inter text-[#98A0B4] font-semibold">Category</Label>
                     <Select
-                      value={portfolioForm.category || ""}
-                      onValueChange={(value) => setPortfolioForm((prev) => ({ ...prev, category: value }))}
-                    >
-                      <SelectTrigger className="border-[#D0D5DD] border-1 rounded-[6px] font-inter h-[100px]">
-                        <SelectValue placeholder="Select category" className=" placeholder:text-[#b2b2b2]" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category} value={category}>
-                            {category}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+  value={portfolioForm.category ?? undefined}
+  onValueChange={(value) => setPortfolioForm((prev) => ({ ...prev, category: value }))}
+>
+  <SelectTrigger className="border-[#D0D5DD] rounded-[6px] font-inter">
+    <SelectValue placeholder="Select category" />
+  </SelectTrigger>
+  <SelectContent>
+    {categories.map((cat) => (
+      <SelectItem key={cat.title ?? cat} value={cat.title ?? cat}>
+        {cat.title ?? cat}
+      </SelectItem>
+    ))}
+  </SelectContent>
+</Select>
                   </div>
                 </div>
 
@@ -1233,11 +1233,19 @@ const removeTestimonialItem = (id: string) => {
                   <div className="space-y-2">
                     <Label className="text-sm font-inter text-[#98A0B4] font-semibold">Completion Date</Label>
                     <Input
-                      type="date"
-                      value={portfolioForm.completedAt?.toISOString().split("T")[0] || ""}
-                      onChange={(e) => setPortfolioForm((prev) => ({ ...prev, completedAt: new Date(e.target.value) }))}
-                      className=" placeholder:text-[#b2b2b2] border-[#D0D5DD] border-1 rounded-[6px] font-inter"
-                    />
+  type="date"
+  value={
+    portfolioForm.completedAt instanceof Date
+      ? portfolioForm.completedAt.toISOString().split("T")[0]
+      : ""
+  }
+  onChange={(e) =>
+    setPortfolioForm((prev) => ({
+      ...prev,
+      completedAt: e.target.value ? new Date(e.target.value) : undefined,
+    }))
+  }
+/>
                   </div>
                 </div>
 

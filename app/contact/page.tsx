@@ -66,6 +66,7 @@ export default function ContactPage() {
 
         return
       }
+      console.log("Contact us form response::::",res)
 
       setFormError("")
 

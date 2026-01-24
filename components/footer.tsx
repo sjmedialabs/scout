@@ -87,7 +87,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/register" className=" hover:text-foreground">
+                <Link href="/register?type=provider" className=" hover:text-foreground">
                   Become an Agency
                 </Link>
               </li>
@@ -113,11 +113,11 @@ export function Footer() {
                   Careers
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="/press" className=" hover:text-foreground">
                   Press
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
 
@@ -126,12 +126,12 @@ export function Footer() {
             <h4 className="font-semibold mb-4 text-orangeButton text-2xl">Support</h4>
             <ul className="space-y-2 text-lg text-white">
               <li>
-                <Link href="/help" className=" hover:text-foreground">
+                <Link href="/help-center" className=" hover:text-foreground">
                   Help Center
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className=" hover:text-foreground">
+                <Link href="/privacy-policy" className=" hover:text-foreground">
                   Privacy Policy
                 </Link>
               </li>
@@ -140,11 +140,11 @@ export function Footer() {
                   Terms of Service
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="/cookies" className=" hover:text-foreground">
                   Cookie Policy
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
 

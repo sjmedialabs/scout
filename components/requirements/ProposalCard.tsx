@@ -8,6 +8,7 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "@/components/ui/tooltip"
+import { MdLocationPin } from "react-icons/md";
 
 interface ProposalCardProps {
   category: string
@@ -15,7 +16,7 @@ interface ProposalCardProps {
   description: string
   budget: string
   timeline: string
-  proposalsCount: number
+  location: string
   postedAgo: string
   onView?: () => void
   onSubmit?: () => void
@@ -27,7 +28,7 @@ export function ProposalCard({
   description,
   budget,
   timeline,
-  proposalsCount,
+  location,
   postedAgo,
   onView,
   onSubmit,
@@ -47,8 +48,9 @@ export function ProposalCard({
           </Badge>
 
           <div className="absolute top-6 right-6 flex items-center gap-1 text-xs font-medium text-[#ff4d00] whitespace-nowrap">
-             <Clock className="h-3.5 w-3.5" />
-              {postedAgo}
+             
+             <CalendarDays className="h-4 w-4 text-[#ff4d00]" />
+              {new Date(postedAgo).toLocaleDateString()}
           </div>
           </div>
 
@@ -75,26 +77,27 @@ export function ProposalCard({
           </div>
 
           <div className="flex items-center gap-2">
-            <CalendarDays className="h-4 w-4 text-[#ff4d00]" />
+            <Clock className="h-4 w-4 text-[#ff4d00]" />
             <span className="font-semibold">{timeline}</span>
           </div>
 
           <div className="flex items-center gap-2">
-            <Inbox className="h-4 w-4 text-[#ff4d00]" />
+           
+            <MdLocationPin className="h-4 w-4 text-[#ff4d00]"/>
             <span className="font-semibold">
-              {proposalsCount} proposals received
+              {location}
               </span>
           </div>
         </div>
         </div>
         {/* Actions */}
         <div className="flex flex-col gap-3 m-4 sm:flex-row sm:gap-2">
-          <Button
+          {/* <Button
             onClick={onView}
             className="rounded-full bg-[#2c34a1] hover:bg-[#2c34a1] px-6"
           >
             View Details →
-          </Button>
+          </Button> */}
 
           {/* <Button
             onClick={onSubmit}
@@ -108,6 +111,7 @@ export function ProposalCard({
       <Button
         onClick={onSubmit}
         className="rounded-full bg-black hover:bg-black px-6"
+        
       >
         Submit Proposal
       </Button>
