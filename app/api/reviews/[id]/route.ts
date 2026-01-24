@@ -11,12 +11,12 @@ export async function GET(
 ) {
   try {
     const user = await getCurrentUser()
-    if (!user) {
-      return NextResponse.json(
-        { error: "Authentication required" },
-        { status: 401 }
-      )
-    }
+    // if (!user) {
+    //   return NextResponse.json(
+    //     { error: "Authentication required" },
+    //     { status: 401 }
+    //   )
+    // }
 
     await connectToDatabase()
 

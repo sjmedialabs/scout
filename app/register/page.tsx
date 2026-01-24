@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState,useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 
 export default function RegisterPage() {
@@ -16,6 +16,9 @@ export default function RegisterPage() {
 
   const { register } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const type = searchParams.get("type");
+  console.log("Query paraameter is:::::",type)
 
   const handleSubmit = async () => {
     setError("");
@@ -38,6 +41,11 @@ export default function RegisterPage() {
       setLoading(false);
     }
   };
+ useEffect(()=>{
+    if(type){
+    type==="provider"?setRole("agency"):setRole("client")
+  }
+ },[])
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">

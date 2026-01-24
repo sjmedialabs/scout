@@ -120,6 +120,22 @@ export default function ProvidersPage() {
   const[loading,setLoading]=useState(true)
   const[Failed,setFailed]=useState(false)
   const router = useRouter()
+  const[uniqueLocations,setUniqueLocations]=useState([]);
+
+  //dropdown search for the services offered 
+  const[serviceCategories,setServiceCategories]=useState([]);
+  const [activeSubCategory, setActiveSubCategory] = useState(null);
+  const [selectedService, setSelectedService] = useState("");
+
+const [open, setOpen] = useState(false);
+
+
+  const [selectedSubCategory, setSelectedSubCategory] = useState(null);
+  const [items, setItems] = useState([]);
+  const subCategories = (serviceCategories || []).flatMap(category =>
+  category?.children
+);
+
 
   const handleViewProfile = async (recivedId) => {
     try {
@@ -147,6 +163,20 @@ export default function ProvidersPage() {
          const data=await response.json();
          console.log("Fetched  Data:::",data)
          setProvidersData(data.providers)
+         const uniqueLocations = [
+        ...new Set(
+          data.providers
+            .map(p => p.location)
+            .filter(loc => loc && !/not\s*specified/i.test(loc))
+        ),"All"
+         ];
+         setUniqueLocations(uniqueLocations);
+          const res = await fetch("/api/service-categories")
+      const servicData = await res.json()
+      setServiceCategories(servicData.data || [])
+
+          console.log("Unique locations are::::",uniqueLocations)
+
          setFilteredData(data.providers)
          setFailed(false)
      }catch(error){
@@ -169,14 +199,14 @@ export default function ProvidersPage() {
       item.tagline?.toLowerCase().includes(searchFilter.toLowerCase())
     );
     }
-    if (serviceFilter !== "all") {
+    if (serviceFilter.toLowerCase() !== "all") {
     tempFilteredData = tempFilteredData.filter((eachItem) =>
       eachItem.services.some((service) =>
         service.toLowerCase().includes(serviceFilter.toLowerCase())
       )
     );
     }
-    if(locationFilter !="all"){
+    if(locationFilter.toLowerCase() !="all"){
       tempFilteredData=tempFilteredData.filter((eachItem)=>eachItem.location.toLocaleLowerCase().includes(locationFilter.toLocaleLowerCase()));
     }
     setFilteredData(tempFilteredData);
@@ -195,11 +225,11 @@ export default function ProvidersPage() {
       break;
 
     case "price-low":
-      sortedData.sort((a, b) => parseInt(a.startingPrice) - parseInt(b.startingPrice));
+      sortedData.sort((a, b) => parseInt(a?.hourlyRate || 0) - parseInt(b?.hourlyRate || 0));
       break;
 
     case "price-high":
-      sortedData.sort((a, b) => parseInt(b.startingPrice) - parseInt(a.startingPrice));
+      sortedData.sort((a, b) => parseInt(b?.hourlyRate || 0) - parseInt(a?.hourlyRate || 0));
       break;
 
     default:
@@ -242,41 +272,67 @@ export default function ProvidersPage() {
                         bg-transparent rounded-none shadow-none focus:outline-none focus:ring-0 focus:border-[#F54A0C]"  
                         onChange={(e)=>setSearchFilter(e.target.value)}/>
                       </div>
-
                       <div className="w-full min-w-0">
-                        <Select onValueChange={(value)=>setServiceFilter(value)}>
+                        <Select
+                          open={open}
+                          onOpenChange={setOpen}
+                          value={serviceFilter}
+                        >
                           <SelectTrigger
-                            className="
-                              mt-1
-                              border-0
-                              border-b-2
-                              border-b-[#b2b2b2]
-                              rounded-none
-                              shadow-none
-                              focus:outline-none
-                              focus:ring-0 
-                              focus:ring-offset-0
-                              placeholder:text-[#b2b2b2]
-                              px-0
-                              w-full
-                              h-12
-                              text-sm
-                              md:text-base
-                            "
-                          >
-                            <SelectValue placeholder="Service Category" className="text-[#b2b2b2]"/>
-                          </SelectTrigger>
+                        className="
+                          mt-1 border-0 border-b-2 border-b-[#b2b2b2]
+                          rounded-none shadow-none focus:outline-none
+                          px-0 w-full text-sm md:text-base h-12
+                        "
+                      >
+                        <span className="text-sm md:text-base text-gray-900">
+                          {serviceFilter || "Select Service"}
+                        </span>
+                      </SelectTrigger>
 
-                          <SelectContent>
-                            <SelectItem value="all">All Services</SelectItem>
-                            <SelectItem value="development">Development</SelectItem>
-                            <SelectItem value="design">Design</SelectItem>
-                            <SelectItem value="marketing">Marketing</SelectItem>
-                            <SelectItem value="consulting">Consulting</SelectItem>
+
+                          <SelectContent
+                            side="bottom"
+                            align="start"
+                            sideOffset={8}
+                            className="p-0 rounded-2xl"
+                          >
+                            <div className="flex">
+                              {/* LEFT: Subcategories */}
+                              <div className="min-w-[220px] border-r">
+                                {subCategories.map((sub) => (
+                                  <div
+                                    key={sub.slug}
+                                    onMouseEnter={() => setActiveSubCategory(sub)}
+                                    className="px-4 py-2 cursor-pointer  text-sm hover:bg-gray-100"
+                                  >
+                                    {sub.title}
+                                  </div>
+                                ))}
+                              </div>
+
+                              {/* RIGHT: Items */}
+                              {activeSubCategory && (
+                                <div className="min-w-[240px]">
+                                  {activeSubCategory.items.map((item) => (
+                                    <div
+                                      key={item.slug}
+                                      onClick={() => {
+                                        setSelectedService(item.title);   // ✅ SHOW IN FIELD
+                                        setServiceFilter(item.title);     // your filter logic
+                                        setOpen(false);                    // ✅ close dropdown
+                                      }}
+                                      className="px-4 py-2 cursor-pointer text-sm hover:bg-gray-100"
+                                    >
+                                      {item.title}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
                           </SelectContent>
                         </Select>
-                        </div>
-
+                      </div>
                       <div className="w-full min-w-0">
                       <Select onValueChange={(value)=>setLocationFilter(value)}>
                         <SelectTrigger className="
@@ -294,12 +350,13 @@ export default function ProvidersPage() {
                             ">
                           <SelectValue placeholder="Location" />
                         </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Locations</SelectItem>
-                          <SelectItem value="us">United States</SelectItem>
-                          <SelectItem value="ca">Canada</SelectItem>
-                          <SelectItem value="uk">United Kingdom</SelectItem>
-                          <SelectItem value="remote">Remote Only</SelectItem>
+                        <SelectContent className="rounded-xl">
+                         {
+                          (uniqueLocations || []).map((eachItem,index)=>(
+                             <SelectItem value={eachItem} key={index} >{eachItem}</SelectItem>
+                          
+                          ))
+                         }
                         </SelectContent>
                       </Select>
                       </div>
@@ -372,7 +429,7 @@ export default function ProvidersPage() {
 
      <Card
   key={provider.id}
-  className="rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col"
+  className="rounded-2xl py-0 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col"
 >
   {/* Image */}
   <div className="w-full">
@@ -444,6 +501,11 @@ export default function ProvidersPage() {
 </div>
 
 
+      
+    </div>
+
+    {/* 🔽 BOTTOM CONTENT (sticks to bottom) */}
+    <div className="mt-auto">
       {/* Info row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-xs sm:text-sm">
         <div className="flex items-center gap-2">
@@ -467,12 +529,8 @@ export default function ProvidersPage() {
           </span>
         </div>
       </div>
-    </div>
-
-    {/* 🔽 BOTTOM CONTENT (sticks to bottom) */}
-    <div className="mt-auto">
       <p className="text-[#808080] text-sm sm:text-base font-semibold mb-3">
-        From: {provider.hourlyRate}/hour
+        From: {provider?.hourlyRate || 0}/hour
       </p>
 
       <div className="flex flex-col sm:flex-row gap-2">
