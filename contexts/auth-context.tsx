@@ -126,6 +126,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       setUser(data.user)
+       return data.user
     } finally {
       setLoading(false)
     }

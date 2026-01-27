@@ -143,12 +143,12 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
                 {/*Buttons*/}
                 <div className="flex sm:flex-row sm:items-center sm:justify-between pt-3">
                     <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                    <button className="mt-auto rounded-full bg-[#2c34a1] px-4 py-3 text-sm font-bold text-white hover:bg-[#3f437e]" onClick={()=>router.push(`/provider/${provider.id}`)}>
+                    <button className="mt-auto rounded-full bg-[#2c34a1] cursor-pointer px-4 py-3 text-sm font-bold text-white hover:bg-[#3f437e]" onClick={()=>router.push(`/provider/${provider.id}`)}>
                          View Profile  →
                     
                     </button>
                      <button
-        className="w-full sm:w-[160px] bg-[#4d4d4d] rounded-3xl text-white"
+        className="w-full sm:w-[160px] bg-[#4d4d4d] cursor-pointer rounded-3xl text-white"
         onClick={() => {
           window.location.href = `mailto:${provider.email}?subject=Service Inquiry&body=Hi ${provider.name},%0D%0A%0D%0AI am interested in your services.`
         }}

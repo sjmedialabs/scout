@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter,useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   // const [role, setRole] = useState<"agency" | "client" | "admin">("client");
@@ -11,6 +12,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("to");
@@ -19,6 +22,7 @@ export default function LoginPage() {
   const router = useRouter();
 
   const handleSubmit = async () => {
+    if(loading) return
   setError("");
   setLoading(true);
 
@@ -146,13 +150,24 @@ export default function LoginPage() {
 
               <div>
                 <label className="text-xs font-bold text-gray-600">Password</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter Password"
-                  className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
-                />
+               <div className="relative">
+  <input
+    type={showPassword ? "text" : "password"}
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    placeholder="Enter Password"
+    className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 pr-10 text-[10px]"
+  />
+
+  <button
+    type="button"
+    onClick={() => setShowPassword(!showPassword)}
+    className="absolute right-3 cursor-pointer top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+  >
+    {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+  </button>
+</div>
+
               </div>
               <p
                 onClick={() => router.push("/forgot-password")}
@@ -172,7 +187,7 @@ export default function LoginPage() {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="mt-4 w-full rounded-xl bg-black py-2 text-xs font-medium text-white hover:bg-gray-900 transition"
+              className="mt-4 w-full cursor-pointer rounded-xl bg-black py-2 text-xs font-medium text-white hover:bg-gray-900 transition"
             >
               {loading ? "Signing In..." : "Sign in"}
             </button>

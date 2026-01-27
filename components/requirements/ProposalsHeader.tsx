@@ -31,7 +31,7 @@ export function ProposalsHeader({
       <Select onValueChange={onSortChange}>
         <SelectTrigger
           className="h-11 w-[200px] rounded-full bg-[#f6f3f2] 
-                     border border-[#e5e5e5] text-sm text-[#444]"
+                     border border-[#e5e5e5] text-sm text-[#444] cursor-pointer"
         >
           <SelectValue placeholder="All" />
         </SelectTrigger>

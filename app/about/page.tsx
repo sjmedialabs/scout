@@ -250,11 +250,11 @@ export default async function AboutPage() {
 {cms?.aboutTeamSubtitle}
 </h5>
 
-          <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center items-start mx-auto mt-[30px]">
+          <div className="flex  gap-10 justify-center items-start  mt-[30px]">
             {cms?.aboutTeam?.map((member: any, i: number) => (
             <div
               key={i}
-              className="relative flex flex-col justify-end h-[400px] w-full max-w-[300px] min-w-[250px] mx-auto overflow-hidden"
+              className="relative flex flex-col justify-end h-[400px] w-full max-w-[300px] min-w-[250px]  overflow-hidden"
               style={{
                 backgroundImage: `url("${member.image}")`,
                 backgroundSize: "cover",
@@ -291,7 +291,7 @@ export default async function AboutPage() {
           </div>
 
           {/* Values Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 max-w-6xl mx-auto text-center">
+          <div className="flex justify-center gap-10 max-w-6xl  mx-auto text-center">
             {cms?.aboutValues?.map((item : any, i : number) => (
               <div key={i} className="flex flex-col items-center">
                 

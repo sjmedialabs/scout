@@ -135,7 +135,7 @@ export default function ServicePage({ params }: PageProps) {
            className="h-12 px-10 md:px-6 rounded-full 
                       bg-[#2c34a1] hover:bg-[#2B34C3] 
                       text-white text-[12px] font-semibold 
-                      transition-all duration-200"
+                      transition-all duration-200 cursor-pointer"
            style={{ fontFamily: "Poppins, sans-serif" }}
          >
            {"Click here to post project"} →

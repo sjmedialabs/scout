@@ -3,6 +3,7 @@
 import { useState,useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function RegisterPage() {
   const [role, setRole] = useState<"agency" | "client">("client");
@@ -20,27 +21,34 @@ export default function RegisterPage() {
   const type = searchParams.get("type");
   console.log("Query paraameter is:::::",type)
 
-  const handleSubmit = async () => {
-    setError("");
-    setLoading(true);
+const handleSubmit = async () => {
+  if (loading) return
+  setError("")
+  setLoading(true)
 
-    try {
-      await register(
-        email,
-        password,
-        name,
-        role,
-        role === "agency" ? companyName : undefined
-      );
+  try {
+    const user = await register(
+      email,
+      password,
+      name,
+      role,
+      role === "agency" ? companyName : undefined
+    )
 
-      if (role === "client") router.push("/client/dashboard");
-      if (role === "agency") router.push("/agency/dashboard");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed");
-    } finally {
-      setLoading(false);
+    if (user.role === "client") {
+      router.replace("/client/dashboard")
     }
-  };
+
+    if (user.role === "agency") {
+      router.replace("/agency/dashboard")
+    }
+  } catch (err) {
+    setError(err instanceof Error ? err.message : "Registration failed")
+  } finally {
+    setLoading(false)
+  }
+}
+
  useEffect(()=>{
     if(type){
     type==="provider"?setRole("agency"):setRole("client")
@@ -131,15 +139,27 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label className="text-xs font-bold text-gray-600">Password</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter Password"
-                  className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
-                />
-              </div>
+  <label className="text-xs font-bold text-gray-600">Password</label>
+
+  <div className="relative">
+    <input
+      type={showPassword ? "text" : "password"}
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      placeholder="Enter Password"
+      className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 pr-10 text-[10px]"
+    />
+
+    <button
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+    >
+      {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+    </button>
+  </div>
+</div>
+
 
               <div>
                 <label className="text-xs font-bold text-gray-600">
@@ -165,7 +185,7 @@ export default function RegisterPage() {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="mt-4 w-full rounded-xl bg-black py-2 text-xs font-medium text-white hover:bg-gray-900 transition"
+              className="mt-4 cursor-pointer w-full rounded-xl bg-black py-2 text-xs font-medium text-white hover:bg-gray-900 transition"
             >
               {loading ? "Creating Account..." : "Create Account"}
             </button>
