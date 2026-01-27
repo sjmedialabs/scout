@@ -1,18 +1,25 @@
-import React from "react"
-import { Star } from "lucide-react"
-import {Provider} from "./types/service"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+"use client";
+
+import { Star } from "lucide-react";
+import { Provider } from "./types/service";
+import { useRouter } from "next/navigation";
 
 
 export default function ServiceCard({ provider }: { provider: Provider }) {
     const p = provider
     const router=useRouter();
-    console.log("prop provider:::",p)
+
+     const handleContact = () => {
+    if (!provider.email) return;
+    window.location.href = `mailto:${provider.email}?subject=Service Inquiry&body=Hi ${provider.name},%0D%0A%0D%0AI am interested in your services.`;
+  };
+
     return (
         <div className="overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:shadow-md flex flex-col h-full">
             <div className="aspect-16/10 w-full overflow-hidden">
-                <img src={p?.coverImage || "/uploads/15ac2d8f-31f9-48ac-aadd-b67ba9f4d860-Artificial-intelligence-platforms-copy.jpg"} alt={p.name} className="h-full w-full object-cover"/>
+                <img src={p?.coverImage || "/uploads/15ac2d8f-31f9-48ac-aadd-b67ba9f4d860-Artificial-intelligence-platforms-copy.jpg"} 
+                alt={p.name} 
+                className="h-full w-full object-cover"/>
             </div>
             <div className="flex flex-col flex-1 sm:p-6 p-5 justify-between">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -70,7 +77,8 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
          {p.rating.toFixed(1)}
         </span>
          {p.rating && (
-         <span className="text-[14px] sm:text-[15px] text-[#7C7C7C]">({p.reviewCount})</span>
+         <span className="text-[14px] sm:text-[15px] text-[#7C7C7C]">
+            ({p.reviewCount})</span>
          )}
         </div>
         </div>
@@ -79,7 +87,7 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
                  {/* Title + Description */}
                 <div className="flex items-start justify-between py-3">
                     <div>
-                        <h3 className="text-3xl sm:text-3xl font-extrabold text-[][#0E0E0E] leading-none"
+                        <h3 className="text-3xl sm:text-3xl font-extrabold text-[#0E0E0E] leading-none"
                         style={{fontFamily: "CabinetGrotesk2"}}
                         >
                             {p.name} 
@@ -143,15 +151,14 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
                 {/*Buttons*/}
                 <div className="flex sm:flex-row sm:items-center sm:justify-between pt-3">
                     <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                    <button className="mt-auto rounded-full bg-[#2c34a1] cursor-pointer px-4 py-3 text-sm font-bold text-white hover:bg-[#3f437e]" onClick={()=>router.push(`/provider/${provider.id}`)}>
+                    <button className="mt-auto rounded-full bg-[#2c34a1] cursor-pointer px-4 py-3 text-sm font-bold text-white hover:bg-[#3f437e]" 
+                    onClick={()=>router.push(`/provider/${provider.id}`)}>
                          View Profile  →
                     
                     </button>
                      <button
         className="w-full sm:w-[160px] bg-[#4d4d4d] cursor-pointer rounded-3xl text-white"
-        onClick={() => {
-          window.location.href = `mailto:${provider.email}?subject=Service Inquiry&body=Hi ${provider.name},%0D%0A%0D%0AI am interested in your services.`
-        }}
+        onClick={handleContact}
       >
         Contact Provider
       </button>
