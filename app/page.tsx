@@ -69,13 +69,14 @@ async function getData() {
     console.log(`[HomePage] Fetching data from: ${baseUrl}`);
     const [cmsRes, providersRes, projectsRes, categoriesRes] = await Promise.all([
       fetch(`${baseUrl}/api/cms`, options),
-      fetch(`${baseUrl}/api/providers?featured=true`, options),
+      fetch(`${baseUrl}/api/providers`, options),
       fetch(`${baseUrl}/api/requirements`, options),
       fetch(`${baseUrl}/api/service-categories`, options),
     ]);
 
     const cms = cmsRes.ok ? (await cmsRes.json()).data : null;
     const providers = providersRes.ok ? (await providersRes.json()).providers?.slice(0, 3) : [];
+    console.log("Fetched Providers::::::", providers)
     
     const projectsData = projectsRes.ok ? await projectsRes.json() : {};
     // Try finding the array in 'requirements' OR 'data'
@@ -127,15 +128,15 @@ export default async function HomePage() {
             <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-1 rounded-full border border-orangeButton mb-2">
               <span className="text-xs font-medium text-slate-600 capitalize">Service Categories</span>
             </div>
-            <h2 className="stext-mediun uppercase font-extrabold text-black ">
+            <h2 className="stext-mediun uppercase my-custom-class font-bold text-black ">
               The perfect partner for{" "}
-              <span className="text-blueButton">
+              <span className="text-blueButton font-bold my-custom-class">
                 any project
               </span>
             </h2>
-            <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
+            <p className="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">
               Whatever your business challenge, browse our most in-demand service categories to find top-ranked
-              companies in over <span className="font-semibold text-blue-600">2,000 specialized service lines</span>.
+              companies in <span className="font-semibold text-blueButton">over 2,000 specialized service lines</span>.
             </p>
           </div>
 
@@ -154,7 +155,7 @@ export default async function HomePage() {
                 >
                   <div className="flex items-center gap-2 mb-4">
                     <img src={category?.icon || "/images/icon-1.png"} alt="" className="h-10" />
-                    <h3 className={`text-2xl font-bold text-slate-800 group-hover:${colors.text} transition-colors`}>
+                    <h3 className={`text-2xl font-bold text-blueButton group-hover:${colors.text} transition-colors`}>
                       {category.title}
                     </h3>
                   </div>
@@ -198,11 +199,11 @@ export default async function HomePage() {
               <h2 className="stext-mediun uppercase font-extrabold text-black ">
                 Recent Requirements
               </h2>
-              <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
+              <p className="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">
                 Discover opportunities from businesses lookking for your services
               </p>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
+            {/* <div className="grid md:grid-cols-3 gap-6">
               {projects.map((project: any) => (
                 <div key={project._id} className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300">
                   <div className="">
@@ -227,7 +228,74 @@ export default async function HomePage() {
                       </div>
                 </div>
               ))}
-            </div>
+            </div> */}
+
+            <div className="grid md:grid-cols-3 gap-6">
+  {projects.map((project: any) => (
+    <div
+      key={project._id}
+      className="rounded-3xl border border-slate-200 bg-white hover:shadow-lg transition-shadow
+      flex flex-col h-full"
+    >
+      {/* Image */}
+      <img
+        src={project.image || "/requirements.jpg"}
+         alt={project.title}
+        className="w-full h-[220px] object-cover rounded-t-3xl"
+      />
+
+      {/* Category + Timeline */}
+      <div className="flex items-center justify-between px-6 mt-4">
+        <Badge
+          variant="outline"
+          className="rounded-full bg-gray-100 text-[11px] font-semibold px-3 py-1"
+        >
+          {project.category}
+        </Badge>
+
+        <span className="text-sm font-semibold text-red-500">
+          {project.timeline}
+        </span>
+      </div>
+
+      {/* Title */}
+      <h3 className="px-6 mt-3 text-lg font-semibold capitalize">
+        {project.title}
+      </h3>
+
+      {/* Description */}
+      <div className="px-6 mt-2">
+        <p className="text-sm text-gray-500 line-clamp-2">
+          {project.description}
+        </p>
+      </div>
+
+      {/* Budget */}
+      <div className="mt-auto">
+      <div className="px-6 mt-1">
+        <span className="text-lg font-bold text-blueButton">
+           ${project.budgetMin.toLocaleString()} - ${project.budgetMax.toLocaleString()}
+        </span>
+      </div>
+
+      {/* Button */}
+      <div className="px-6 pb-6 mt-1">
+        <Button
+          variant="outline"
+          size="sm"
+          asChild
+          className="bg-black text-white rounded-full text-xs px-5 py-2 hover:bg-black"
+        >
+          <Link href="/login?to=project-enquiries">
+            View Details →
+          </Link>
+        </Button>
+      </div>
+      </div>
+    </div>
+  ))}
+</div>
+
             <div className="flex justify-center items-center">
               <Link href="/browse">
                 <Button className="rounded-full py-2 mt-8 text-lg font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1]" size={"lg"}>
@@ -255,9 +323,16 @@ export default async function HomePage() {
             </div>
             <div className="grid md:grid-cols-3 gap-6">
               {providers.map((provider: any) => (
-                <div key={provider._id} className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300 bg-white">
+                <div 
+                key={provider._id} 
+                className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300 bg-white
+                 flex flex-col h-full">
                   <div className="">
-                    <div className="text-lg"><img src={provider.coverImage} alt="" className="rounded-t-3xl" /></div>
+                    <div className="text-lg w-full h-[200px] overflow-hidden rounded-t-3xl">
+                      <img src={provider.coverImage || "/requirements.jpg"} 
+                      alt="" 
+                      className="rounded-t-3xl w-full h-full object-cover object-center" />
+                      </div>
                     <div className="flex items-center justify-between mb-2 px-8 mt-4">
 
                       {/* FEATURED & VERIFIED BADGES */}
@@ -302,9 +377,9 @@ export default async function HomePage() {
 
                     <h3 className="text-lg px-8 font-bold capitalize">{provider.name}</h3>
                   </div>
-                  <div className="pb-10 px-8">
+                  <div className="pb-10 px-8 flex flex-col flex-1">
                     <p className="text-sm text-gray-500 mb-4 line-clamp-2">{provider.description}</p>
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col h-full gap-4">
 
                       {/* SERVICES BADGES */}
                       <div className="flex flex-wrap gap-2">
@@ -323,14 +398,14 @@ export default async function HomePage() {
                       </div>
 
                       {/* VIEW DETAILS BUTTON */}
-                      <div>
+                      <div className="mt-auto">
                         <Button
                           variant="outline"
                           size="default"
                           asChild
                           className="bg-blueButton text-white rounded-full text-xs"
                         >
-                          <Link href={`/provider/${provider.id || provider._id}`}>View Details →</Link>
+                          <Link href={`/provider/${provider.id || provider._id}`}>View Profile →</Link>
                         </Button>
                       </div>
                     </div>

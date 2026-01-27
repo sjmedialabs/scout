@@ -128,7 +128,8 @@ export default function ProvidersPage() {
   const [selectedService, setSelectedService] = useState("");
 
 const [open, setOpen] = useState(false);
-
+const ITEMS_PER_LOAD = 4
+const [visibleCount, setVisibleCount] = useState(ITEMS_PER_LOAD)
 
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const [items, setItems] = useState([]);
@@ -255,7 +256,7 @@ const [open, setOpen] = useState(false);
             <div className="max-w-7xl mx-auto text-center ">
                 {/* Header */}
                 <div className="mb-8 px-2 sm:px-0">
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#F54A0C] pt-6 sm:pt-10 mb-2">{bannerData.title}</h1>
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#F54A0C] pt-6 sm:pt-10 mb-0">{bannerData.title}</h1>
                   <p className="text-sm sm:text-base md:text-lg text-[#b2b2b2] leading-sung px-3 sm:px-0">{bannerData.description}</p>
                 </div>
 
@@ -266,9 +267,9 @@ const [open, setOpen] = useState(false);
 
                       {/* Search Input */}
                       <div className="relative w-fullmin-w-0">
-                        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
                         <Input placeholder="Search providers..." 
-                        className="pl-10 w-full text:sm md:text-base border-0 border-b-2 border-b-[#b2b2b2] 
+                        className="pl-10 w-full placeholder:text-gray-500 text:sm md:text-base border-0 border-b-2 border-b-[#b2b2b2] 
                         bg-transparent rounded-none shadow-none focus:outline-none focus:ring-0 focus:border-[#F54A0C]"  
                         onChange={(e)=>setSearchFilter(e.target.value)}/>
                       </div>
@@ -285,7 +286,7 @@ const [open, setOpen] = useState(false);
                           px-0 w-full text-sm md:text-base h-12
                         "
                       >
-                        <span className="text-sm md:text-base text-gray-900">
+                        <span className="text-sm md:text-base text-gray-500">
                           {serviceFilter || "Select Service"}
                         </span>
                       </SelectTrigger>
@@ -346,7 +347,7 @@ const [open, setOpen] = useState(false);
                               focus:ring-0 
                               cursor-pointer
                               focus:ring-offset-0
-                              px-0
+                              px-0 [&>span]:text-gray-500
                               w-full text-sm md:text-base h-12
                             ">
                           <SelectValue placeholder="Location" />
@@ -380,7 +381,7 @@ const [open, setOpen] = useState(false);
         <div className="max-w-7xl mx-auto">
 
         <div className="flex justify-between my-8">
-          <h1 className="text-3xl text-[#b2b2b2]">List of agencies</h1>
+          <h1 className="text-3xl text-[#b2b2b2]">List of best agencies</h1>
           <Select onValueChange={handleHighestRating}>
             <SelectTrigger
               className="
@@ -427,7 +428,10 @@ const [open, setOpen] = useState(false);
               </div>
             )}
           <div className="grid md:grid-cols-2 gap-6">
-            {(filteredData.length!=0 && !loading && !Failed)?(filteredData.map((provider) => (
+            {(filteredData.length!=0 && !loading && !Failed)?
+            // (filteredData.map((provider) => (
+            (filteredData.slice(0, visibleCount).map((provider) => (
+
 
      <Card
   key={provider.id}
@@ -564,11 +568,28 @@ const [open, setOpen] = useState(false);
           </div>
 
           {/* Load More */}
-          {/* <div className="text-center mt-8">
-            <Button variant="outline" className="bg-[#f7f5f6] rounded-2xl" size="lg">
-              Load More Providers
-            </Button>
-          </div> */}
+
+          {visibleCount < filteredData.length && (
+                <div className="flex justify-center mt-10">
+                  <Button
+                    className="
+                      rounded-full
+                      px-8
+                      py-3
+                      text-base
+                      font-semibold
+                      bg-[#f7f5f5]
+                      text-black
+                      hover:bg-gray-200
+                      transition-all
+                    "
+                    onClick={() => setVisibleCount(prev => prev + ITEMS_PER_LOAD)}
+                  >
+                    Load More Providers
+                  </Button>
+                </div>
+              )}
+
         </div>
       </div>
     </div>

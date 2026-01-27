@@ -6,7 +6,7 @@ import { legalContent } from "../../lib/legalContent"
 export default function LegalContent() {
   return (
     <section className="bg-white">
-      <div className="w-full px-4 py-6 ml-0 sm:px-6 lg:px-12">
+      <div className="w-full px-4 py-6 ml-0 sm:px-6 lg:px-12 xl:pl-28">
         
         <h1 className="text-3xl h-8 font-medium text-orangeButton">
           {legalContent.title}
