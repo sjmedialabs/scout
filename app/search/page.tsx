@@ -28,6 +28,9 @@ export default function SearchPage() {
   const[filteredDynamicProviders,setDynamicFilteredProviders]=useState<Provider[]>([])
   console.log("search param is:::",query)
 
+  const ITEMS_PER_LOAD = 4
+const [visibleCount, setVisibleCount] = useState(ITEMS_PER_LOAD)
+
  
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
@@ -47,6 +50,7 @@ const [results, setResults] = useState<SearchResults>({
   useEffect(() => {
     if (query) {
       performSearch(query)
+      setVisibleCount(ITEMS_PER_LOAD)
     }
   }, [query])
 
@@ -95,6 +99,7 @@ const [results, setResults] = useState<SearchResults>({
       )
        console.log("dynamic filtered queris are:::",filtered)
       setDynamicFilteredProviders(filtered)
+      setVisibleCount(ITEMS_PER_LOAD)
   }}
  const handleHighestRating = (value: string) => {
   let sortedData = [...filteredDynamicProviders];
@@ -172,9 +177,12 @@ const [results, setResults] = useState<SearchResults>({
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex items-center justify-between mb-8">
           <p className="text-4xl text-gray-500">
-            Search Results - {" "}
-            <span className="font-medium text-gray-700">
-              {providers.length > 0 && `1–${providers.length}`}
+            Search Results: {" "}
+            <span className="font-medium text-3xl text-gray-500">
+              {/* {providers.length > 0 && `1–${providers.length}`} */}
+              {filteredDynamicProviders.length > 0
+                ? `1–${filteredDynamicProviders.length}`
+                : "0"}
             </span>
           </p>
 
@@ -221,7 +229,7 @@ const [results, setResults] = useState<SearchResults>({
         ) : (
           /* CARDS GRID */
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {filteredDynamicProviders.map((provider) => (
+          {filteredDynamicProviders.slice(0, visibleCount).map((provider) => (
             <ServiceCard
               key={provider.id ?? provider._id ?? provider.name}
               provider={provider}
@@ -230,6 +238,27 @@ const [results, setResults] = useState<SearchResults>({
         </div>
         )}
       </section>
+      {filteredDynamicProviders.length > visibleCount && (
+  <div className="flex justify-center mt-12">
+    <Button
+      className="
+        rounded-full
+        px-8
+        py-3
+        text-base
+        font-semibold
+        bg-[#f7f5f5]
+        text-black
+        hover:bg-gray-200
+        transition-all
+      "
+      onClick={() => setVisibleCount(prev => prev + ITEMS_PER_LOAD)}
+    >
+      Load More
+    </Button>
+  </div>
+)}
+
     </div>
   )
 }

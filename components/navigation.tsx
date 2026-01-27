@@ -19,6 +19,7 @@ export function Navigation() {
   const [searchQuery, setSearchQuery] = useState("")
   const pathname = usePathname()
   const router = useRouter()
+  const [isSticky, setIsSticky] = useState(false)
   const isAgencyDashboard = pathname?.startsWith("/agency/dashboard")
 
   const [serviceCategories, setServiceCategories] = useState<any[]>([])
@@ -44,6 +45,16 @@ useEffect(() => {
 
   fetchCategories()
 }, [])
+
+  useEffect(() => {
+  const handleScroll = () => {
+    setIsSticky(window.scrollY > 80)
+  }
+
+  window.addEventListener("scroll", handleScroll)
+  return () => window.removeEventListener("scroll", handleScroll)
+}, [])
+
 
   const getDashboardLink = () => {
     if (!user) return "/"
@@ -102,8 +113,8 @@ useEffect(() => {
 
   return (
     <div className="bg-background">
-      <div className="bg-blueBackground text-gray-500">
-        <div className={`max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 ${isAgencyDashboard ? "ml-80" : ""}`}>
+      <div className="bg-[#eff3f7] text-gray-500">
+        <div className={`max-w-7xl mx-auto px-4 py-2 sm:px-6 lg:px-8 ${isAgencyDashboard ? "ml-80" : ""}`}>
           <div className="flex justify-between items-center h-12">
             <div>
               <Link href="/" className="flex items-center space-x-2">
@@ -111,16 +122,16 @@ useEffect(() => {
               </Link>
             </div>
             {/* Search Bar */}
-            <div className="lg:flex items-center rounded-full flex-1 max-w-md hidden">
+            <div className="lg:flex items-center rounded-full flex-1 max-w-[350px] xl:max-w-md border-[#c8d9ec] hidden">
               <form onSubmit={handleSearch} className="relative w-full">
-                <div className="absolute right-4 top-[25%] flex items-center justify-center pr-3 gap-2">
-                  <Search className=" rotate-90 h-5 w-5 text-gray-400" />
-                  <Button className="text-orangeButton text-[13px] right-12 top-[45%] p-0 h-0">Search</Button></div>
+                <div className="absolute right-4 top-[30%] flex items-center justify-center pr-2 gap-1">
+                  <Search className=" rotate-90 h-4 w-4 text-black" />
+                  <Button className="text-orangeButton font-bold text-[13px] right-12 top-[45%] p-0 h-0">Search</Button></div>
                 <Input
                   placeholder="Search for agency name/service name"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-transparent border-slate-300 rounded-full placeholder:text-gray-500 py-0 placeholder:text-xs focus:bg-slate-100"
+                  className="pl-6 bg-transparent border-slate-300 rounded-full placeholder:text-gray-500 py-0 placeholder:text-xs focus:bg-slate-100"
                 />
               </form>
             </div>
@@ -131,7 +142,7 @@ useEffect(() => {
                 For Agencies
               </Link>
               <div className="">
-                <Button variant="ghost" className="hover:bg-slate-600 h-8 px-4 py-0 bg-transparent border border-orangeButton rounded-full text-orangeButton" asChild>
+                <Button variant="ghost" className="hover:bg-slate-600 h-7 px-4 py-0 bg-transparent border border-orangeButton rounded-full text-orangeButton" asChild>
                   <Link href="/login" className="text-sm">
                     Signin
                   </Link>
@@ -141,10 +152,25 @@ useEffect(() => {
           </div>
         </div>
       </div>
-
-      <nav className="border-b border-border">
+      
+      {isSticky && <div className="h-14" />}
+      <nav
+        className={`border-b border-border bg-white transition-all duration-300
+        ${isSticky ? "fixed top-0 left-0 right-0 z-50 shadow-md" : "relative"}`}
+      >
         <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${isAgencyDashboard ? "ml-80" : ""}`}>
-          <div className="flex justify-center lg:justify-around items-center h-16">
+          <div className="flex justify-between items-center h-14 gap-4">
+            {isSticky && (
+               <div className="shrink-0">
+              <Link href="/" className="hidden lg:flex items-center">
+                <img
+                  src="/images/spark-nav-logo.png"
+                  alt="Logo"
+                  className="h-8"
+                />
+              </Link>
+               </div>
+            )}
           <div className="flex items-center rounded-full flex-1 max-w-md lg:hidden">
               <form onSubmit={handleSearch} className="relative w-full">
                 <div className="absolute right-4 top-[25%] flex items-center justify-center pr-3 gap-2">
@@ -188,7 +214,17 @@ useEffect(() => {
                 Social Media
               </Link>
             </div> */}
-        <div className="hidden lg:flex  justify-between  items-center space-x-8 text-xs xl:text-sm font-medium">
+        {/* <div
+  className={`hidden justify-center flex-1 lg:flex items-center text-md xl:text-sm font-medium transition-all duration-300
+    ${isSticky ? "lg:gap-14" : "lg:gap-16"}
+  gap-4 lg:gap-16 2xl:gap-16`}
+> */}
+<div
+  className={`hidden flex-1 min-w-0 lg:flex items-center
+  gap-4
+  ${isSticky ? "lg:gap-12" : "lg:gap-16"}
+  lg:gap-20 2xl:gap-24
+  transition-all duration-300`} >
  {serviceCategories.map((category) => (
   <DropdownMenu
     key={category.slug}
@@ -237,21 +273,22 @@ useEffect(() => {
   </DropdownMenu>
 ))}
 
-
+  <div className="hidden lg:flex gap-4 lg:gap-16 xl:gap-16 2xl:gap-16">
   {/* Static links – apply same active style if needed */}
   <Link 
     href="/pricing" 
-    className="text-xs text-gray-500 hover:text-slate-900"
+    className="text-md text-gray-500 hover:text-slate-900"
   >
     Pricing & Packages
   </Link>
 
   <Link 
     href="/about" 
-    className="text-xs text-gray-500 hover:text-slate-900"
+    className="text-md text-gray-500 hover:text-slate-900"
   >
     About us
   </Link>
+  </div>
 
   {/* ... other static links ... */}
 
@@ -268,8 +305,8 @@ useEffect(() => {
 
 
             {/* Post a Project Button */}
-            <div className="hidden lg:block rounded-full ml-auto">
-              <Button className="bg-orangeButton hover:bg-[#f54607] text-white rounded-full" asChild>
+            <div className="hidden lg:block rounded-full ml-4 shrink-0">
+              <Button className="bg-orangeButton hover:bg-[#f54607] text-white h-8 rounded-full" asChild>
                 <Link href={user ? "/client/dashboard?section=projects" : "/register"}>Post A Project</Link>
               </Button>
             </div>

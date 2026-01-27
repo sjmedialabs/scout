@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import ServiceCard from "@/components/ServiceCard";
+import StatsGrid from "@/components/StatsGrid";
 import { useRouter } from "next/navigation";
 
 interface PageProps {
@@ -80,6 +81,37 @@ export default function ServicePage({ params }: PageProps) {
     loadData();
   },[])
 
+
+  const stats = [
+  {
+    label: "Total Providers",
+    value: matchedServiceProviders.length.toString(),
+  },
+  {
+    label: "Avg Rating",
+    value: (
+      matchedServiceProviders.reduce(
+        (sum, p) => sum + (p.rating || 0),
+        0
+      ) / (matchedServiceProviders.length || 1)
+    ).toFixed(1),
+  },
+  {
+    label: "Verified Agencies",
+    value: matchedServiceProviders
+      .filter(p => p.isVerified)
+      .length.toString(),
+  },
+  {
+    label: "Featured Agencies",
+    value: matchedServiceProviders
+      .filter(p => p.isFeatured)
+      .length.toString(),
+  },
+]
+
+
+
   return (
       <main className = "bg-white text-slate-900">
    
@@ -145,7 +177,7 @@ export default function ServicePage({ params }: PageProps) {
    </section>
    
                {/* Stats Section*/}
-               {/* <StatsGrid stats={stats} /> */}
+               <StatsGrid stats={stats} />
    
                {/* Cards Section*/}
             {

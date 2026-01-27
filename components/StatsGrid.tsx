@@ -5,6 +5,13 @@ interface Start {
     value: string
 }
 
+const stats: Start[] = [
+  { label: "...", value: "..." }
+]
+
+
+
+
 export default function StatsGrid({ stats }: { stats: Start[] }) {
   return (
     <section className="bg-white">

@@ -67,7 +67,11 @@ export function HomeHero({ cms }: HomeHeroProps) {
     >
       <div className="w-full max-w-7xl mx-auto">
         <div className="w-full max-w-5xl mx-auto text-center px-2 sm:px-4 md:px-8">
-          <h1 className="custom-heading text-3xl sm:text-4xl md:text-5xl font-normal text-white mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-4xl font-normal md:text-5xl text-white mb-6 leading-tight"
+          style={{
+              fontFamily: "'Cinzel', serif",
+            }}
+          >
             {cms?.homeBannerTitle || "Connect with trusted companies for your next project."}
           </h1>
 
