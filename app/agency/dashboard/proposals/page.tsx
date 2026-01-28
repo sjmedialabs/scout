@@ -129,7 +129,7 @@ const ProposalsPage = () => {
     setFailed(false);
 
     try {
-      const res = await fetch("/api/proposals");
+      const res = await authFetch("/api/proposals");
       if (!res.ok) throw new Error("Failed");
 
       const data = await res.json();

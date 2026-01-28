@@ -107,10 +107,10 @@ const CompetitorComparisonPage = () => {
         reviewsRes,
       ] = await Promise.all([
         fetch(`/api/providers/${user?.id}`),
-        fetch("/api/search/track"),
-        fetch("/api/proposals"),
-        fetch("/api/requirements"),
-        fetch("/api/reviews"),
+        authFetch("/api/search/track"),
+        authFetch("/api/proposals"),
+        authFetch("/api/requirements"),
+        authFetch("/api/reviews"),
       ]);
       if (
         !providerRes.ok ||

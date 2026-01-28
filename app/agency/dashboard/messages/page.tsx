@@ -160,7 +160,7 @@ export default function MessagesPage() {
     setResLoading(true);
     setFailed(false);
     try {
-      const res = await fetch("/api/chat/conversation");
+      const res = await authFetch("/api/chat/conversation");
       if (!res.ok) {
         throw new Error();
       }
@@ -240,7 +240,7 @@ export default function MessagesPage() {
     }
     console.log("Message Payload is ::::::", payload);
     try {
-      const res = await fetch("/api/chat/message", {
+      const res = await authFetch("/api/chat/message", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -412,7 +412,7 @@ export default function MessagesPage() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const res = await fetch("/api/upload", {
+      const res = await authFetch("/api/upload", {
         method: "POST",
         body: formData,
       });

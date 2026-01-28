@@ -34,7 +34,7 @@ export default function SubmitProposalPage() {
     setFailed(false);
     try {
       const res = await fetch(`/api/requirements/${id}`);
-      const proposalRes = await fetch("/api/proposals");
+      const proposalRes = await authFetch("/api/proposals");
       if (res.ok && proposalRes.ok) {
         const data = await res.json();
         const proposalData = await proposalRes.json();
@@ -98,7 +98,7 @@ export default function SubmitProposalPage() {
       };
 
       console.log("Payload to send:::::::", payload);
-      const res = await fetch("/api/proposals", {
+      const res = await authFetch("/api/proposals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

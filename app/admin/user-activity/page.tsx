@@ -66,7 +66,7 @@ export default function UserActivityPage() {
   -------------------------------------------------
   useEffect(() => {
     async function loadActivity() {
-      const res = await fetch("/api/admin/user-activity");
+      const res = await authFetch("/api/admin/user-activity");
       const data = await res.json();
       setActivity(data);
     }
@@ -87,11 +87,12 @@ export default function UserActivityPage() {
 
   return (
     <div className="space-y-10">
-
       {/* Header Section */}
       <div>
         <h1 className="text-3xl font-bold">User Activity</h1>
-        <p className="text-gray-500">Track recent user actions and platform interactions.</p>
+        <p className="text-gray-500">
+          Track recent user actions and platform interactions.
+        </p>
       </div>
 
       {/* Filters */}
@@ -121,7 +122,6 @@ export default function UserActivityPage() {
             className="p-6 bg-white border rounded-2xl shadow-sm hover:shadow-xl transition"
           >
             <div className="flex items-start justify-between gap-4">
-
               {/* Left Section */}
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
@@ -144,10 +144,10 @@ export default function UserActivityPage() {
                   item.type === "login"
                     ? "bg-green-100 text-green-700"
                     : item.type === "update"
-                    ? "bg-blue-100 text-blue-700"
-                    : item.type === "upload"
-                    ? "bg-purple-100 text-purple-700"
-                    : "bg-red-100 text-red-700"
+                      ? "bg-blue-100 text-blue-700"
+                      : item.type === "upload"
+                        ? "bg-purple-100 text-purple-700"
+                        : "bg-red-100 text-red-700"
                 }
               >
                 {item.type.toUpperCase()}

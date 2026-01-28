@@ -81,7 +81,7 @@ const ReviewsPage = () => {
   const loadData = async () => {
     setResLoading(true);
     try {
-      const reviewRes = await fetch("/api/reviews");
+      const reviewRes = await authFetch("/api/reviews");
       const data = await reviewRes.json();
 
       console.log("Fetched the reviews::::", data);

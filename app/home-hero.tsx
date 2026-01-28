@@ -1,59 +1,58 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Search } from "lucide-react"
-import { categories } from "@/lib/mock-data"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+import { categories } from "@/lib/mock-data";
 
 interface HomeHeroProps {
-  cms: any
+  cms: any;
 }
 
 export function HomeHero({ cms }: HomeHeroProps) {
-  const router = useRouter()
-  const [searchQuery, setSearchQuery] = useState("")
-  const [activeButton, setActiveButton] = useState<"match" | "browse" | null>(null)
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeButton, setActiveButton] = useState<"match" | "browse" | null>(
+    null,
+  );
 
-  const handleGetMatched = async() => {
+  const handleGetMatched = async () => {
     if (searchQuery.trim()) {
-      try{
-
-        console.log("Tracking search keyword:", searchQuery.trim())
-        const response = await fetch("/api/search/track", {
+      try {
+        console.log("Tracking search keyword:", searchQuery.trim());
+        const response = await authFetch("/api/search/track", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ keyword: searchQuery.trim() }),
-
-        })
-        console.log("Track response:", response)
+        });
+        console.log("Track response:", response);
 
         if (!response.ok) {
-          console.error("Failed to track search keyword")
-          throw new Error("Failed to track search keyword")
+          console.error("Failed to track search keyword");
+          throw new Error("Failed to track search keyword");
         }
-       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
-      }catch(err){
-        console.error("Error tracking search keyword:", err)
+        router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      } catch (err) {
+        console.error("Error tracking search keyword:", err);
       }
-      
-    } 
-  }
+    }
+  };
 
   const handleLetUsMatch = () => {
-    router.push("/register?type=match")
-  }
+    router.push("/register?type=match");
+  };
 
   const handleBrowseOwn = () => {
-    router.push("/browse")
-  }
+    router.push("/browse");
+  };
 
   const handlePopularSearch = (query: string) => {
-    router.push(`/search?q=${encodeURIComponent(query)}`)
-  }
+    router.push(`/search?q=${encodeURIComponent(query)}`);
+  };
 
   return (
     <section
@@ -67,12 +66,14 @@ export function HomeHero({ cms }: HomeHeroProps) {
     >
       <div className="w-full max-w-7xl mx-auto">
         <div className="w-full max-w-5xl mx-auto text-center px-2 sm:px-4 md:px-8">
-          <h1 className="text-3xl sm:text-4xl font-normal md:text-5xl text-white mb-6 leading-tight"
-          style={{
+          <h1
+            className="text-3xl sm:text-4xl font-normal md:text-5xl text-white mb-6 leading-tight"
+            style={{
               fontFamily: "'Cinzel', serif",
             }}
           >
-            {cms?.homeBannerTitle || "Connect with trusted companies for your next project."}
+            {cms?.homeBannerTitle ||
+              "Connect with trusted companies for your next project."}
           </h1>
 
           {/* Action Buttons */}
@@ -86,8 +87,8 @@ export function HomeHero({ cms }: HomeHeroProps) {
                     : "bg-[#F54A0C] hover:bg-[#d93f0b] text-white"
                 } `}
                 onClick={() => {
-                  setActiveButton("match")
-                  router.push("/login")
+                  setActiveButton("match");
+                  router.push("/login");
                   // handleLetUsMatch()
                 }}
               >
@@ -107,8 +108,8 @@ export function HomeHero({ cms }: HomeHeroProps) {
                     : "bg-white hover:bg-white/90 hover:text-[#F54A0C] text-[#F54A0C]"
                 }`}
                 onClick={() => {
-                  setActiveButton("browse")
-                  handleBrowseOwn()
+                  setActiveButton("browse");
+                  handleBrowseOwn();
                 }}
               >
                 Browse on your own
@@ -140,7 +141,13 @@ export function HomeHero({ cms }: HomeHeroProps) {
             <div className="space-y-3 sm:space-y-2">
               <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
                 {categories.map((search, index) => (
-                  <Button key={index} variant="outline" size="sm" className="text-white border-slate-300 hover:bg-white/30 bg-transparentr rounded-full px-3 sm:px-4 text-xs sm:text-sm" onClick={() => handlePopularSearch(search)}>
+                  <Button
+                    key={index}
+                    variant="outline"
+                    size="sm"
+                    className="text-white border-slate-300 hover:bg-white/30 bg-transparentr rounded-full px-3 sm:px-4 text-xs sm:text-sm"
+                    onClick={() => handlePopularSearch(search)}
+                  >
                     {search}
                   </Button>
                 ))}
@@ -150,5 +157,5 @@ export function HomeHero({ cms }: HomeHeroProps) {
         </div>
       </div>
     </section>
-  )
+  );
 }

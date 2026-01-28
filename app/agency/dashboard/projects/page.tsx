@@ -104,7 +104,7 @@ const ProjectsPage = () => {
     setResLoading(true);
     setFailed(false);
     try {
-      const response = await fetch("/api/proposals");
+      const response = await authFetch("/api/proposals");
       if (!response.ok) {
         setFailed(true);
         throw new Error("Failed to fetch data");

@@ -677,7 +677,7 @@ export default function ClientDashboard() {
       };
       console.log("Requirement payload on main parent:", payload);
       // API CALL
-      // const res = await fetch("/api/requirements", {
+      // const res = await authFetch("/api/requirements", {
       //   method: "POST",
       //   headers: { "Content-Type": "application/json" },
       //   body: JSON.stringify(payload),

@@ -29,7 +29,7 @@ export default function SettingsPage() {
   --------------------------------------------------
   useEffect(() => {
     async function loadSettings() {
-      const res = await fetch("/api/admin/settings");
+      const res = await authFetch("/api/admin/settings");
       const data = await res.json();
 
       setAutoApprove(data.autoApprove);
@@ -54,7 +54,7 @@ export default function SettingsPage() {
     });
 
     // Future API:
-    // await fetch("/api/admin/settings", { method: "POST", body: JSON.stringify(settings) });
+    // await authFetch("/api/admin/settings", { method: "POST", body: JSON.stringify(settings) });
   };
 
   return (
@@ -62,7 +62,9 @@ export default function SettingsPage() {
       {/* HEADER */}
       <div>
         <h1 className="text-3xl font-bold">Platform Settings</h1>
-        <p className="text-gray-500">Manage system-wide preferences and configurations.</p>
+        <p className="text-gray-500">
+          Manage system-wide preferences and configurations.
+        </p>
       </div>
 
       {/* Platform Controls */}

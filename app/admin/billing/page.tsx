@@ -29,9 +29,7 @@ import {
   ArrowUpRight,
   CheckCircle,
 } from "lucide-react";
-import {
-  mockSubscriptionStats,
-} from "@/lib/mock-data";
+import { mockSubscriptionStats } from "@/lib/mock-data";
 const mockBillingInvoices = [
   {
     id: "INV-001",
@@ -83,7 +81,9 @@ const mrrData = [
 ];
 
 export default function BillingPage() {
-   const [activeTab, setActiveTab] = useState<"overview" | "invoices">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "invoices">(
+    "overview",
+  );
   const [invoices, setInvoices] = useState(mockBillingInvoices || []);
   const [billingStats, setBillingStats] = useState(mockSubscriptionStats);
 
@@ -93,7 +93,7 @@ export default function BillingPage() {
   ------------------------------------------------------
   useEffect(() => {
     async function loadBilling() {
-      const res = await fetch("/api/admin/billing");
+      const res = await authFetch("/api/admin/billing");
       const data = await res.json();
 
       setInvoices(data.invoices);
@@ -257,44 +257,45 @@ export default function BillingPage() {
   //     )}
   //   </div>
   // );
-  
+
   return (
     <div className="space-y-4">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-orangeButton my-custom-class">Billing & Invoices</h1>
+        <h1 className="text-3xl font-bold text-orangeButton my-custom-class">
+          Billing & Invoices
+        </h1>
         <p className="text-gray-500 mt-0 my-custom-class text-xl">
           Manage your billing, payments, and invoices
         </p>
       </div>
 
       {/* Segmented Tabs */}
-<div className="inline-flex items-center bg-[#e6edf5] rounded-full p-1">
-  <button
-    onClick={() => setActiveTab("overview")}
-    className={`px-6 py-2 text-sm font-medium rounded-full transition my-custom-class
+      <div className="inline-flex items-center bg-[#e6edf5] rounded-full p-1">
+        <button
+          onClick={() => setActiveTab("overview")}
+          className={`px-6 py-2 text-sm font-medium rounded-full transition my-custom-class
       ${
         activeTab === "overview"
           ? "bg-orange-500 text-white shadow"
           : "text-black hover:text-gray-900"
       }`}
-  >
-    Overview
-  </button>
+        >
+          Overview
+        </button>
 
-  <button
-    onClick={() => setActiveTab("invoices")}
-    className={`px-6 py-2 text-sm font-medium rounded-full transition my-custom-class
+        <button
+          onClick={() => setActiveTab("invoices")}
+          className={`px-6 py-2 text-sm font-medium rounded-full transition my-custom-class
       ${
         activeTab === "invoices"
           ? "bg-orange-500 text-white shadow"
           : "text-black hover:text-gray-900"
       }`}
-  >
-    Invoices
-  </button>
-</div>
-
+        >
+          Invoices
+        </button>
+      </div>
 
       {/* CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -324,7 +325,7 @@ export default function BillingPage() {
           value="98.5%"
           note="$4,200 outstanding"
           noteColor="text-black"
-          icon={<FaCheckCircle className="text-green-500"/>}
+          icon={<FaCheckCircle className="text-green-500" />}
         />
       </div>
 
@@ -362,9 +363,27 @@ export default function BillingPage() {
               <XAxis dataKey="week" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="a" stroke="#2ec4f1" strokeWidth={3} dot />
-              <Line type="monotone" dataKey="b" stroke="#ff7b7b" strokeWidth={3} dot />
-              <Line type="monotone" dataKey="c" stroke="#7b61ff" strokeWidth={3} dot />
+              <Line
+                type="monotone"
+                dataKey="a"
+                stroke="#2ec4f1"
+                strokeWidth={3}
+                dot
+              />
+              <Line
+                type="monotone"
+                dataKey="b"
+                stroke="#ff7b7b"
+                strokeWidth={3}
+                dot
+              />
+              <Line
+                type="monotone"
+                dataKey="c"
+                stroke="#7b61ff"
+                strokeWidth={3}
+                dot
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -390,21 +409,22 @@ export default function BillingPage() {
 //   );
 // }
 
-
 function StatCard({ title, value, note, noteColor, icon }: any) {
   return (
     <div className="relative bg-white flex flex-col justify-between rounded-2xl p-4 shadow-md border-none">
       {/* Icon top-right */}
       <div className="flex flex-row justify-between">
-      <div className="absolute top-4 right-2 w-7 h-7 rounded-full bg-[#eef7fe] flex items-center justify-center text-orangeButton">
-        {icon}
-      </div>
+        <div className="absolute top-4 right-2 w-7 h-7 rounded-full bg-[#eef7fe] flex items-center justify-center text-orangeButton">
+          {icon}
+        </div>
 
-      <p className="text-sm my-custom-class max-w-[150px] font-bold">{title}</p>
+        <p className="text-sm my-custom-class max-w-[150px] font-bold">
+          {title}
+        </p>
       </div>
       <div className="items-end">
-      <p className="text-3xl font-bold my-custom-class mt-3">{value}</p>
-      <p className={`text-xs ${noteColor} mt-0 my-custom-class`}>{note}</p>
+        <p className="text-3xl font-bold my-custom-class mt-3">{value}</p>
+        <p className={`text-xs ${noteColor} mt-0 my-custom-class`}>{note}</p>
       </div>
     </div>
   );

@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // ✅ LOGIN (FIXED)
   const login = async (email: string, password: string): Promise<User> => {
-    const res = await fetch("/api/auth/login", {
+    const res = await authFetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -81,7 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     role: UserRole,
     companyName?: string,
   ) => {
-    const res = await fetch("/api/auth/register", {
+    const res = await authFetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password, name, role, companyName }),
@@ -103,7 +103,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // ✅ LOGOUT
   const logout = async () => {
     try {
-      await fetch("/api/auth/logout", { method: "POST" });
+      await authFetch("/api/auth/logout", { method: "POST" });
     } finally {
       localStorage.removeItem("token");
       localStorage.removeItem("user");

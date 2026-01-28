@@ -74,7 +74,7 @@ export default function NotificationsPage() {
     setResLoading(true);
     setFailed(false);
     try {
-      const response = await fetch("/api/notifications");
+      const response = await authFetch("/api/notifications");
       const data = await response.json();
       const notificationsData = (data.data || []).filter(
         (item: any) => item.isRead === false,

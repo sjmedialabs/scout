@@ -80,8 +80,8 @@ const AnalyticsPage = () => {
     setFailed(false);
     try {
       const [searchRes, proposalRes, providerDetails] = await Promise.all([
-        fetch("/api/search/track"),
-        fetch("/api/proposals"),
+        authFetch("/api/search/track"),
+        authFetch("/api/proposals"),
         fetch(`/api/providers/${user?.id}`),
       ]);
       if (!searchRes.ok || !proposalRes.ok) {

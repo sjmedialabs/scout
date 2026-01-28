@@ -42,7 +42,7 @@ export default function GrowthMetricsPage() {
   ------------------------------------------------------
   useEffect(() => {
     async function loadGrowthMetrics() {
-      const res = await fetch("/api/admin/growth-metrics");
+      const res = await authFetch("/api/admin/growth-metrics");
       const data = await res.json();
 
       setGrowthData(data.growthData);
@@ -58,7 +58,9 @@ export default function GrowthMetricsPage() {
       {/* Page Header */}
       <div>
         <h1 className="text-3xl font-bold">Growth Metrics</h1>
-        <p className="text-gray-500">Track user, provider, and requirement growth over time.</p>
+        <p className="text-gray-500">
+          Track user, provider, and requirement growth over time.
+        </p>
       </div>
 
       {/* KPI Cards */}
@@ -98,35 +100,54 @@ export default function GrowthMetricsPage() {
             <XAxis dataKey="month" />
             <YAxis />
             <Tooltip />
-            <Line type="monotone" dataKey="users" stroke="#2563eb" strokeWidth={3} />
+            <Line
+              type="monotone"
+              dataKey="users"
+              stroke="#2563eb"
+              strokeWidth={3}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
       {/* Provider Growth Chart */}
       <div className="bg-white p-6 rounded-2xl border shadow-sm">
-        <h2 className="text-xl font-semibold mb-4">Provider Growth Over Time</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          Provider Growth Over Time
+        </h2>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={growthData}>
             <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
             <XAxis dataKey="month" />
             <YAxis />
             <Tooltip />
-            <Line type="monotone" dataKey="providers" stroke="#10b981" strokeWidth={3} />
+            <Line
+              type="monotone"
+              dataKey="providers"
+              stroke="#10b981"
+              strokeWidth={3}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
       {/* Requirements Growth Chart */}
       <div className="bg-white p-6 rounded-2xl border shadow-sm">
-        <h2 className="text-xl font-semibold mb-4">Requirements Posted Growth</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          Requirements Posted Growth
+        </h2>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={growthData}>
             <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
             <XAxis dataKey="month" />
             <YAxis />
             <Tooltip />
-            <Line type="monotone" dataKey="requirements" stroke="#8b5cf6" strokeWidth={3} />
+            <Line
+              type="monotone"
+              dataKey="requirements"
+              stroke="#8b5cf6"
+              strokeWidth={3}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>

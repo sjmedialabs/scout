@@ -78,7 +78,7 @@ const ProjectInquiriesPage = () => {
     setLoading(true);
     setFailed(false);
     try {
-      const res = await fetch("/api/requirements");
+      const res = await authFetch("/api/requirements");
       if (res.ok) {
         const data = await res.json();
 
