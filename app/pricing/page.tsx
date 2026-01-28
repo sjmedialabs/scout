@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { authFetch } from "@/lib/auth-fetch";
 import { Badge } from "@/components/ui/badge";
 import { Check, Star } from "lucide-react";
 import Link from "next/link";

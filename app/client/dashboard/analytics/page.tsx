@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { authFetch } from "@/lib/auth-fetch";
 import {
   Card,
   CardContent,

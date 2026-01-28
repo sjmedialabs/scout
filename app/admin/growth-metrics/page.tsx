@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import { TrendingUp, Users, Building2, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { authFetch } from "@/lib/auth-fetch";
 
 // ----------------------------------------------------
 // MOCK DATA (Replace with API later)

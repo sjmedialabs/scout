@@ -7,6 +7,7 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
+import { authFetch } from "@/lib/auth-fetch";
 
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";

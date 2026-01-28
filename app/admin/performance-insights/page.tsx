@@ -23,6 +23,7 @@ import {
   UserCheck,
   MousePointerClick,
 } from "lucide-react";
+import { authFetch } from "@/lib/auth-fetch";
 
 // ----------------------------------------------------
 // MOCK DATA (API Replacable)

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PlusCircle, Trash } from "lucide-react";
 import FileUpload from "@/components/file-upload";
+import { authFetch } from "@/lib/auth-fetch";
 
 interface ServiceItem {
   title: string;

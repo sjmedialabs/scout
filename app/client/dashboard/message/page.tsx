@@ -31,6 +31,7 @@ import { Input } from "@/components/ui/input";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
+import { authFetch } from "@/lib/auth-fetch";
 
 type Attachment = {
   id: string;

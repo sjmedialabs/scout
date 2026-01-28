@@ -6,6 +6,7 @@ import {
   mockReportedContent,
   mockSubscriptionStats,
 } from "@/lib/mock-data";
+import { authFetch } from "@/lib/auth-fetch";
 import {
   Users,
   FileText,

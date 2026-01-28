@@ -108,6 +108,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { authFetch } from "@/lib/auth-fetch";
 
 const ProjectsPage = () => {
   const { user, loading } = useAuth();

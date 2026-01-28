@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { authFetch } from "@/lib/auth-fetch";
 import {
   User,
   Activity,

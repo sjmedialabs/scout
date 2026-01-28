@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Edit, Check, X, CreditCard, PlusCircle, Loader2 } from "lucide-react";
 import { ISubscription } from "@/lib/types";
+import { authFetch } from "@/lib/auth-fetch";
 
 export default function SubscriptionPlansPage() {
   const [plans, setPlans] = useState<ISubscription[]>([]);

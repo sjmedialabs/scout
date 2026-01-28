@@ -13,6 +13,7 @@ import {
   Briefcase,
   Shield,
 } from "lucide-react";
+import { authFetch } from "@/lib/auth-fetch";
 
 interface ServiceChild {
   _id: string;
@@ -92,10 +93,10 @@ async function getData() {
     console.log(`[HomePage] Fetching data from: ${baseUrl}`);
     const [cmsRes, providersRes, projectsRes, categoriesRes] =
       await Promise.all([
-        fetch(`${baseUrl}/api/cms`, options),
-        fetch(`${baseUrl}/api/providers`, options),
-        fetch(`${baseUrl}/api/requirements`, options),
-        fetch(`${baseUrl}/api/service-categories`, options),
+        authFetch(`${baseUrl}/api/cms`, options),
+        authFetch(`${baseUrl}/api/providers`, options),
+        authFetch(`${baseUrl}/api/requirements`, options),
+        authFetch(`${baseUrl}/api/service-categories`, options),
       ]);
 
     const cms = cmsRes.ok ? (await cmsRes.json()).data : null;

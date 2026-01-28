@@ -15,6 +15,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { DollarSign, TrendingUp, PieChart } from "lucide-react";
+import { authFetch } from "@/lib/auth-fetch";
 
 // -------------------------------------------------
 // MOCK DATA (Replace with API later)

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { mockAdminUsers } from "@/lib/mock-data";
 import { UserCheck, FileText, AlertCircle, XCircle } from "lucide-react";
+import { authFetch } from "@/lib/auth-fetch";
 
 export default function UserVerificationPage() {
   const [users, setUsers] = useState(
