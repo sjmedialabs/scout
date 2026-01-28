@@ -1,18 +1,18 @@
-import { NextRequest, NextResponse } from "next/server"
-import mongoose from "mongoose"
-import { connectToDatabase } from "@/lib/mongodb"
-import { getCurrentUser } from "@/lib/auth/jwt"
-import {Message} from "@/models/Message"
-import {Conversation} from "@/models/Message"
+import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
+import { connectToDatabase } from "@/lib/mongodb";
+import { getCurrentUser } from "@/lib/auth/jwt";
+import { Message } from "@/models/Message";
+import { Conversation } from "@/models/Message";
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await getCurrentUser(req);
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await connectToDatabase()
+    await connectToDatabase();
 
     const {
       conversationId,
@@ -21,13 +21,13 @@ export async function POST(request: NextRequest) {
       messageType = "TEXT",
       attachments = [],
       senderType,
-    } = await request.json()
+    } = await request.json();
 
     if (
       !mongoose.Types.ObjectId.isValid(conversationId) ||
       !mongoose.Types.ObjectId.isValid(receiverId)
     ) {
-      return NextResponse.json({ error: "Invalid IDs" }, { status: 400 })
+      return NextResponse.json({ error: "Invalid IDs" }, { status: 400 });
     }
 
     const message = await Message.create({
@@ -38,18 +38,21 @@ export async function POST(request: NextRequest) {
       content,
       messageType,
       attachments,
-    })
+    });
 
     // ✅ Update conversation
     await Conversation.findByIdAndUpdate(conversationId, {
       lastMessage: content,
       lastMessageAt: new Date(),
       $inc: { [`unreadCount.${receiverId}`]: 1 },
-    })
+    });
 
-    return NextResponse.json({ message })
+    return NextResponse.json({ message });
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: "Failed to send message" }, { status: 500 })
+    console.error(error);
+    return NextResponse.json(
+      { error: "Failed to send message" },
+      { status: 500 },
+    );
   }
 }

@@ -1,36 +1,34 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { connectToDatabase } from "@/lib/mongodb"
-import Review from "@/models/Review"
-import Provider from "@/models/Provider"
-import Project from "@/models/Project"
-import { getCurrentUser } from "@/lib/auth/jwt"
-import mongoose from "mongoose"
-import Requirement from "@/models/Requirement"
+import { type NextRequest, NextResponse } from "next/server";
+import { connectToDatabase } from "@/lib/mongodb";
+import Review from "@/models/Review";
+import Provider from "@/models/Provider";
+import Project from "@/models/Project";
+import { getCurrentUser } from "@/lib/auth/jwt";
+import mongoose from "mongoose";
+import Requirement from "@/models/Requirement";
 
-export async function GET(
-  req: NextRequest
-) {
+export async function GET(req: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await getCurrentUser(req);
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },
-        { status: 401 }
-      )
+        { status: 401 },
+      );
     }
 
-    await connectToDatabase()
+    await connectToDatabase();
 
-    const id  = user.userId
+    const id = user.userId;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
         { error: "Invalid provider ID" },
-        { status: 400 }
-      )
+        { status: 400 },
+      );
     }
 
-    const providerObjectId = new mongoose.Types.ObjectId(id)
+    const providerObjectId = new mongoose.Types.ObjectId(id);
 
     const reviews = await Review.aggregate([
       {
@@ -111,36 +109,42 @@ export async function GET(
       {
         $sort: { createdAt: -1 },
       },
-    ])
+    ]);
 
     return NextResponse.json({
       success: true,
       count: reviews.length,
       reviews,
-    })
+    });
   } catch (error) {
-    console.error("Error fetching provider reviews:", error)
+    console.error("Error fetching provider reviews:", error);
     return NextResponse.json(
       { error: "Failed to fetch reviews" },
-      { status: 500 }
-    )
+      { status: 500 },
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await getCurrentUser(req);
     if (!user) {
-      return NextResponse.json({ error: "Authentication required" }, { status: 401 })
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 },
+      );
     }
 
     if (user.role !== "client") {
-      return NextResponse.json({ error: "Only clients can submit reviews" }, { status: 403 })
+      return NextResponse.json(
+        { error: "Only clients can submit reviews" },
+        { status: 403 },
+      );
     }
 
-    await connectToDatabase()
+    await connectToDatabase();
 
-    const body = await request.json()
+    const body = await request.json();
     const {
       providerId,
       projectId,
@@ -153,23 +157,35 @@ export async function POST(request: NextRequest) {
       content,
       pros,
       cons,
-    } = body
+    } = body;
 
     if (!providerId || !projectId || !rating || !title || !content) {
       return NextResponse.json(
-        { error: "Missing required fields: providerId, projectId, rating, title, content" },
+        {
+          error:
+            "Missing required fields: providerId, projectId, rating, title, content",
+        },
         { status: 400 },
-      )
+      );
     }
 
-    if (!mongoose.Types.ObjectId.isValid(providerId) || !mongoose.Types.ObjectId.isValid(projectId)) {
-      return NextResponse.json({ error: "Invalid provider or project ID" }, { status: 400 })
+    if (
+      !mongoose.Types.ObjectId.isValid(providerId) ||
+      !mongoose.Types.ObjectId.isValid(projectId)
+    ) {
+      return NextResponse.json(
+        { error: "Invalid provider or project ID" },
+        { status: 400 },
+      );
     }
 
     // Verify project belongs to user
-    const project = await Requirement.findById(projectId)
+    const project = await Requirement.findById(projectId);
     if (!project || project.clientId.toString() !== user.userId) {
-      return NextResponse.json({ error: "Project not found or unauthorized" }, { status: 404 })
+      return NextResponse.json(
+        { error: "Project not found or unauthorized" },
+        { status: 404 },
+      );
     }
 
     // Check if already reviewed
@@ -177,10 +193,13 @@ export async function POST(request: NextRequest) {
       clientId: user.userId,
       providerId,
       projectId,
-    })
+    });
 
     if (existingReview) {
-      return NextResponse.json({ error: "You have already reviewed this provider for this project" }, { status: 409 })
+      return NextResponse.json(
+        { error: "You have already reviewed this provider for this project" },
+        { status: 409 },
+      );
     }
 
     // Create review
@@ -200,41 +219,45 @@ export async function POST(request: NextRequest) {
       keyHighLights: body.keyHighLights || [],
       isVerified: false,
       isPublic: true,
-    })
+    });
 
     // Mark project as reviewed
-    await Requirement.findByIdAndUpdate(projectId, { isReviewed: true })
+    await Requirement.findByIdAndUpdate(projectId, { isReviewed: true });
 
     // Update provider rating
-    const reviews = await Review.find({ providerId, isPublic: true })
-    const avgRating = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
-    const avgCostRating = reviews.reduce((sum, r) => sum + r.costRating, 0) / reviews.length
-    const avgQualityRating = reviews.reduce((sum, r) => sum + r.qualityRating, 0) / reviews.length
-    const avgScheduleRating = reviews.reduce((sum, r) => sum + r.scheduleRating, 0) / reviews.length
-    const avgWillingToReferRating = reviews.reduce((sum, r) => sum + r.willingToReferRating, 0) / reviews.length
+    const reviews = await Review.find({ providerId, isPublic: true });
+    const avgRating =
+      reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+    const avgCostRating =
+      reviews.reduce((sum, r) => sum + r.costRating, 0) / reviews.length;
+    const avgQualityRating =
+      reviews.reduce((sum, r) => sum + r.qualityRating, 0) / reviews.length;
+    const avgScheduleRating =
+      reviews.reduce((sum, r) => sum + r.scheduleRating, 0) / reviews.length;
+    const avgWillingToReferRating =
+      reviews.reduce((sum, r) => sum + r.willingToReferRating, 0) /
+      reviews.length;
 
-    const providerToupdate= await Provider.findOneAndUpdate(
-              { userId: providerId },
-              {
-                rating: Math.round(avgRating * 10) / 10,
-                reviewCount: reviews.length,
-                costRating: Math.round(avgCostRating * 10) / 10,
-                qualityRating: Math.round(avgQualityRating * 10) / 10,
-                scheduleRating: Math.round(avgScheduleRating * 10) / 10,
-                willingToReferRating: Math.round(avgWillingToReferRating * 10) / 10,
-              },
-              { new: true }
-    )
+    const providerToupdate = await Provider.findOneAndUpdate(
+      { userId: providerId },
+      {
+        rating: Math.round(avgRating * 10) / 10,
+        reviewCount: reviews.length,
+        costRating: Math.round(avgCostRating * 10) / 10,
+        qualityRating: Math.round(avgQualityRating * 10) / 10,
+        scheduleRating: Math.round(avgScheduleRating * 10) / 10,
+        willingToReferRating: Math.round(avgWillingToReferRating * 10) / 10,
+      },
+      { new: true },
+    );
     console.log("--Updated provider ratings:", providerToupdate);
-//     console.log({
-//   avgRating,
-//   avgCostRating,
-//   avgQualityRating,
-//   avgScheduleRating,
-//   avgWillingToReferRating,
-// })
-
-
+    //     console.log({
+    //   avgRating,
+    //   avgCostRating,
+    //   avgQualityRating,
+    //   avgScheduleRating,
+    //   avgWillingToReferRating,
+    // })
 
     return NextResponse.json({
       success: true,
@@ -245,9 +268,12 @@ export async function POST(request: NextRequest) {
         content: review.content,
         createdAt: review.createdAt,
       },
-    })
+    });
   } catch (error) {
-    console.error("Error creating review:", error)
-    return NextResponse.json({ error: "Failed to create review" }, { status: 500 })
+    console.error("Error creating review:", error);
+    return NextResponse.json(
+      { error: "Failed to create review" },
+      { status: 500 },
+    );
   }
 }

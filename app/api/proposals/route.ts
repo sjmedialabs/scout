@@ -1,45 +1,48 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { connectToDatabase } from "@/lib/mongodb"
-import Proposal from "@/models/Proposal"
-import Project from "@/models/Project"
-import Provider from "@/models/Provider"
-import Seeker from "@/models/Seeker"
-import { getCurrentUser } from "@/lib/auth/jwt"
-import mongoose from "mongoose"
-import Requirement from "@/models/Requirement"
-import Notification from "@/models/Notification"
+import { type NextRequest, NextResponse } from "next/server";
+import { connectToDatabase } from "@/lib/mongodb";
+import Proposal from "@/models/Proposal";
+import Project from "@/models/Project";
+import Provider from "@/models/Provider";
+import Seeker from "@/models/Seeker";
+import { getCurrentUser } from "@/lib/auth/jwt";
+import mongoose from "mongoose";
+import Requirement from "@/models/Requirement";
+import Notification from "@/models/Notification";
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await getCurrentUser(req);
     if (!user) {
-      return NextResponse.json({ error: "Authentication required" }, { status: 401 })
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 },
+      );
     }
 
-    await connectToDatabase()
+    await connectToDatabase();
 
-    const { searchParams } = new URL(request.url)
-    const requirementId = searchParams.get("requirementId")
-    const status = searchParams.get("status")
-    const limit = Number.parseInt(searchParams.get("limit") || "50")
-    const page = Number.parseInt(searchParams.get("page") || "1")
+    const { searchParams } = new URL(request.url);
+    const requirementId = searchParams.get("requirementId");
+    const status = searchParams.get("status");
+    const limit = Number.parseInt(searchParams.get("limit") || "50");
+    const page = Number.parseInt(searchParams.get("page") || "1");
 
-    const query: any = {}
-    const skip = (page - 1) * limit
+    const query: any = {};
+    const skip = (page - 1) * limit;
 
     // -----------------------------
     // Role-based filtering
     // -----------------------------
     if (user.role === "agency") {
-      query.agencyId = user.userId
+      query.agencyId = user.userId;
     }
 
     if (user.role === "client") {
-      query.clientId = user.userId
+      query.clientId = user.userId;
     }
 
-    if (requirementId) query.requirementId = requirementId
-    if (status) query.status = status
+    if (requirementId) query.requirementId = requirementId;
+    if (status) query.status = status;
 
     // -----------------------------
     // Fetch proposals
@@ -52,43 +55,43 @@ export async function GET(request: NextRequest) {
         .limit(limit)
         .lean(),
       Proposal.countDocuments(query),
-    ])
+    ]);
 
     // -----------------------------
     // Fetch agency details
     // -----------------------------
     const agencyUserIds = [
       ...new Set(proposals.map((p: any) => p.agencyId.toString())),
-    ]
+    ];
 
     const agencies = await Provider.find({
       userId: { $in: agencyUserIds },
     })
       .select(
-        "userId name logo location rating reviewCount services technologies coverImage"
+        "userId name logo location rating reviewCount services technologies coverImage",
       )
-      .lean()
+      .lean();
 
     const agencyMap = new Map(
-      agencies.map((a: any) => [a.userId.toString(), a])
-    )
+      agencies.map((a: any) => [a.userId.toString(), a]),
+    );
 
     // -----------------------------
-      // Fetch client details
-      // -----------------------------
-      const clientUserIds = [
-        ...new Set(proposals.map((p: any) => p.clientId.toString())),
-      ]
+    // Fetch client details
+    // -----------------------------
+    const clientUserIds = [
+      ...new Set(proposals.map((p: any) => p.clientId.toString())),
+    ];
 
-      const clients = await Seeker.find({
-        userId: { $in: clientUserIds },
-      })
-        .select("userId name companyName")
-        .lean()
+    const clients = await Seeker.find({
+      userId: { $in: clientUserIds },
+    })
+      .select("userId name companyName")
+      .lean();
 
-      const clientMap = new Map(
-        clients.map((c: any) => [c.userId.toString(), c])
-      )
+    const clientMap = new Map(
+      clients.map((c: any) => [c.userId.toString(), c]),
+    );
 
     // -----------------------------
     // Format response
@@ -107,7 +110,7 @@ export async function GET(request: NextRequest) {
       agency: agencyMap.get(p.agencyId.toString()) || null,
       client: clientMap.get(p.clientId.toString()) || null,
 
-      agencyId:p.agencyId,
+      agencyId: p.agencyId,
 
       coverLetter: p.coverLetter,
       proposedBudget: p.proposedBudget,
@@ -122,7 +125,7 @@ export async function GET(request: NextRequest) {
       proposalDescription: p.proposalDescription,
       createdAt: p.createdAt,
       updatedAt: p.updatedAt,
-    }))
+    }));
 
     return NextResponse.json({
       proposals: formattedProposals,
@@ -132,30 +135,46 @@ export async function GET(request: NextRequest) {
         limit,
         pages: Math.ceil(total / limit),
       },
-    })
+    });
   } catch (error) {
-    console.error("Error fetching proposals:", error)
-    return NextResponse.json({ error: "Failed to fetch proposals" }, { status: 500 })
+    console.error("Error fetching proposals:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch proposals" },
+      { status: 500 },
+    );
   }
 }
 
-
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await getCurrentUser(req);
 
     if (!user) {
-      return NextResponse.json({ error: "Authentication required" }, { status: 401 })
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 },
+      );
     }
 
     if (user.role !== "agency") {
-      return NextResponse.json({ error: "Only agencies can submit proposals" }, { status: 403 })
+      return NextResponse.json(
+        { error: "Only agencies can submit proposals" },
+        { status: 403 },
+      );
     }
 
-    await connectToDatabase()
+    await connectToDatabase();
 
-    const body = await request.json()
-     const { requirementId, proposalDescription, clientId, proposedBudget, proposedTimeline, coverLetter, milestones } = body
+    const body = await request.json();
+    const {
+      requirementId,
+      proposalDescription,
+      clientId,
+      proposedBudget,
+      proposedTimeline,
+      coverLetter,
+      milestones,
+    } = body;
 
     // if (!projectId || !proposedBudget || !coverLetter) {
     //   return NextResponse.json(
@@ -165,36 +184,51 @@ export async function POST(request: NextRequest) {
     // }
 
     if (!mongoose.Types.ObjectId.isValid(requirementId)) {
-      return NextResponse.json({ error: "Invalid requirement ID" }, { status: 400 })
+      return NextResponse.json(
+        { error: "Invalid requirement ID" },
+        { status: 400 },
+      );
     }
 
     // Get provider profile
-    const provider = await Provider.findOne({ userId: user.userId })
+    const provider = await Provider.findOne({ userId: user.userId });
     if (!provider) {
       return NextResponse.json(
-        { error: "Provider profile not found. Please complete your agency profile first." },
+        {
+          error:
+            "Provider profile not found. Please complete your agency profile first.",
+        },
         { status: 404 },
-      )
+      );
     }
 
     // Check if project exists and is open
-    const project = await Requirement.findById(requirementId)
+    const project = await Requirement.findById(requirementId);
     if (!project) {
-      return NextResponse.json({ error: "Project not found" }, { status: 404 })
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
-    if (project.status.toLocaleLowerCase() === "closed" || project.status.toLocaleLowerCase() === "Allocated") {
-      return NextResponse.json({ error: "Project is not accepting proposals" }, { status: 400 })
+    if (
+      project.status.toLocaleLowerCase() === "closed" ||
+      project.status.toLocaleLowerCase() === "Allocated"
+    ) {
+      return NextResponse.json(
+        { error: "Project is not accepting proposals" },
+        { status: 400 },
+      );
     }
 
     // Check if already submitted proposal
     const existingProposal = await Proposal.findOne({
       requirementId,
       agencyId: user.userId,
-    })
+    });
 
     if (existingProposal) {
-      return NextResponse.json({ error: "You have already submitted a proposal for this project" }, { status: 409 })
+      return NextResponse.json(
+        { error: "You have already submitted a proposal for this project" },
+        { status: 409 },
+      );
     }
 
     // Create proposal
@@ -211,29 +245,33 @@ export async function POST(request: NextRequest) {
       clientViewed: false,
       clientResponded: false,
       conversationStarted: false,
-    })
+    });
 
     // Update project proposal count
-     await Requirement.findByIdAndUpdate(requirementId, { $inc: { proposals: 1 } })
+    await Requirement.findByIdAndUpdate(requirementId, {
+      $inc: { proposals: 1 },
+    });
 
-     await Notification.create({
-          userId: clientId,                 //  RECEIVER (client)
-          triggeredBy: user.userId,          // AGENCY who submitted proposal
-          title: "New Proposal Received!",
-          message: `${provider.name} submitted a proposal for your ${project.title} project.`,
-          type: "proposal_submitted",
-          userRole: "client",
-          linkUrl: `/client/dashboard/projects/${requirementId}`,
-          sourceId: proposal._id,
-        })
-
+    await Notification.create({
+      userId: clientId, //  RECEIVER (client)
+      triggeredBy: user.userId, // AGENCY who submitted proposal
+      title: "New Proposal Received!",
+      message: `${provider.name} submitted a proposal for your ${project.title} project.`,
+      type: "proposal_submitted",
+      userRole: "client",
+      linkUrl: `/client/dashboard/projects/${requirementId}`,
+      sourceId: proposal._id,
+    });
 
     return NextResponse.json({
       success: true,
-      proposal
-    })
+      proposal,
+    });
   } catch (error) {
-    console.error("Error creating proposal:", error)
-    return NextResponse.json({ error: "Failed to create proposal" }, { status: 500 })
+    console.error("Error creating proposal:", error);
+    return NextResponse.json(
+      { error: "Failed to create proposal" },
+      { status: 500 },
+    );
   }
 }

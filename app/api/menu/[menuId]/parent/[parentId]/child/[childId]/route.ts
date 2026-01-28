@@ -2,10 +2,10 @@
 
 // this is a put to update the child elements title, slug, url, isActive and order
 
-import { NextRequest, NextResponse } from "next/server"
-import MenuItems from "@/models/MenuItems"
-import { connectToDatabase } from "@/lib/mongodb"
-import { getCurrentUser } from "@/lib/auth/jwt"
+import { NextRequest, NextResponse } from "next/server";
+import MenuItems from "@/models/MenuItems";
+import { connectToDatabase } from "@/lib/mongodb";
+import { getCurrentUser } from "@/lib/auth/jwt";
 
 //Json body example:
 
@@ -16,57 +16,55 @@ import { getCurrentUser } from "@/lib/auth/jwt"
 //   "isActive": false
 // }
 
-
 export async function PUT(
   req: NextRequest,
   {
     params,
   }: {
     params: {
-      menuId: string
-      parentId: string
-      childId: string
-    }
-  }
+      menuId: string;
+      parentId: string;
+      childId: string;
+    };
+  },
 ) {
   try {
     // 🔐 Auth check
-    const user = await getCurrentUser()
+    const user = await getCurrentUser(req);
     if (!user || user.role !== "admin") {
       return NextResponse.json(
         { success: false, message: "Admin access required" },
-        { status: 403 }
-      )
+        { status: 403 },
+      );
     }
 
-    await connectToDatabase()
+    await connectToDatabase();
 
-    const { title, slug, url, isActive, order } = await req.json()
+    const { title, slug, url, isActive, order } = await req.json();
 
     // 🛠 Build dynamic update object
-    const updateFields: Record<string, any> = {}
+    const updateFields: Record<string, any> = {};
 
     if (title !== undefined)
-      updateFields["parents.$[p].children.$[c].title"] = title
+      updateFields["parents.$[p].children.$[c].title"] = title;
 
     if (slug !== undefined)
-      updateFields["parents.$[p].children.$[c].slug"] = slug
+      updateFields["parents.$[p].children.$[c].slug"] = slug;
 
-    if (url !== undefined)
-      updateFields["parents.$[p].children.$[c].url"] = url
+    if (url !== undefined) updateFields["parents.$[p].children.$[c].url"] = url;
 
     if (isActive !== undefined)
-      updateFields["parents.$[p].children.$[c].isActive"] = isActive
+      updateFields["parents.$[p].children.$[c].isActive"] = isActive;
 
     if (order !== undefined)
-      updateFields["parents.$[p].children.$[c].order"] = order
+      updateFields["parents.$[p].children.$[c].order"] = order;
 
     // ❌ Nothing to update
     if (Object.keys(updateFields).length === 0) {
       return NextResponse.json(
         { success: false, message: "No fields to update" },
-        { status: 400 }
-      )
+        { status: 400 },
+      );
     }
 
     const updatedMenu = await MenuItems.findOneAndUpdate(
@@ -78,26 +76,26 @@ export async function PUT(
           { "c._id": params.childId },
         ],
         new: true,
-      }
-    )
+      },
+    );
 
     if (!updatedMenu) {
       return NextResponse.json(
         { success: false, message: "Menu / Parent / Child not found" },
-        { status: 404 }
-      )
+        { status: 404 },
+      );
     }
 
     return NextResponse.json({
       success: true,
       message: "Child updated successfully",
       data: updatedMenu,
-    })
+    });
   } catch (error) {
-    console.error("Update child error:", error)
+    console.error("Update child error:", error);
     return NextResponse.json(
       { success: false, message: "Internal server error" },
-      { status: 500 }
-    )
+      { status: 500 },
+    );
   }
 }

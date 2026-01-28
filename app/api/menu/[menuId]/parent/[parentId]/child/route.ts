@@ -11,48 +11,47 @@
 //   "isActive": true
 // }
 
-import { NextRequest, NextResponse } from "next/server"
-import MenuItems from "@/models/MenuItems"
-import { connectToDatabase } from "@/lib/mongodb"
-import { getCurrentUser } from "@/lib/auth/jwt"
+import { NextRequest, NextResponse } from "next/server";
+import MenuItems from "@/models/MenuItems";
+import { connectToDatabase } from "@/lib/mongodb";
+import { getCurrentUser } from "@/lib/auth/jwt";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { menuId: string; parentId: string } }
+  { params }: { params: { menuId: string; parentId: string } },
 ) {
   try {
-    const user = await getCurrentUser()
+    const user = await getCurrentUser(req);
     if (!user || user.role !== "admin") {
-      return NextResponse.json({ success: false }, { status: 403 })
+      return NextResponse.json({ success: false }, { status: 403 });
     }
 
-    await connectToDatabase()
-    const { title, slug, url, isActive = true } = await req.json()
+    await connectToDatabase();
+    const { title, slug, url, isActive = true } = await req.json();
 
-    const menu = await MenuItems.findById(params.menuId)
-    if (!menu) return NextResponse.json({ success: false }, { status: 404 })
+    const menu = await MenuItems.findById(params.menuId);
+    if (!menu) return NextResponse.json({ success: false }, { status: 404 });
 
-    const parent = menu.parents.id(params.parentId)
+    const parent = menu.parents.id(params.parentId);
     if (!parent) {
-      return NextResponse.json({ success: false, message: "Parent not found" })
+      return NextResponse.json({ success: false, message: "Parent not found" });
     }
 
     const nextOrder = parent.children.length
-      ? Math.max(...parent.children.map(c => c.order)) + 1
-      : 1
+      ? Math.max(...parent.children.map((c) => c.order)) + 1
+      : 1;
 
     parent.children.push({
       title,
       slug,
       url,
       order: nextOrder,
-      isActive
-    })
+      isActive,
+    });
 
-    await menu.save()
-    return NextResponse.json({ success: true, data: menu })
+    await menu.save();
+    return NextResponse.json({ success: true, data: menu });
   } catch (error) {
-    return NextResponse.json({ success: false }, { status: 500 })
+    return NextResponse.json({ success: false }, { status: 500 });
   }
 }
-

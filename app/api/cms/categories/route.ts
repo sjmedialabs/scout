@@ -1,7 +1,7 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { connectToDatabase } from "@/lib/mongodb"
-import CMSContent from "@/models/CMSContent"
-import { getCurrentUser } from "@/lib/auth/jwt"
+import { type NextRequest, NextResponse } from "next/server";
+import { connectToDatabase } from "@/lib/mongodb";
+import CMSContent from "@/models/CMSContent";
+import { getCurrentUser } from "@/lib/auth/jwt";
 
 // Default categories
 const defaultCategories = [
@@ -10,7 +10,13 @@ const defaultCategories = [
     name: "Development",
     icon: "Code",
     description: "Web, mobile, and software development services",
-    subcategories: ["Web Development", "Mobile Apps", "Custom Software", "E-commerce", "API Development"],
+    subcategories: [
+      "Web Development",
+      "Mobile Apps",
+      "Custom Software",
+      "E-commerce",
+      "API Development",
+    ],
     providerCount: 2500,
   },
   {
@@ -18,7 +24,13 @@ const defaultCategories = [
     name: "Design",
     icon: "Palette",
     description: "Creative design and branding services",
-    subcategories: ["UI/UX Design", "Graphic Design", "Brand Identity", "Motion Graphics", "Illustration"],
+    subcategories: [
+      "UI/UX Design",
+      "Graphic Design",
+      "Brand Identity",
+      "Motion Graphics",
+      "Illustration",
+    ],
     providerCount: 1800,
   },
   {
@@ -26,7 +38,13 @@ const defaultCategories = [
     name: "Marketing",
     icon: "TrendingUp",
     description: "Digital marketing and growth services",
-    subcategories: ["SEO", "PPC Advertising", "Social Media", "Content Marketing", "Email Marketing"],
+    subcategories: [
+      "SEO",
+      "PPC Advertising",
+      "Social Media",
+      "Content Marketing",
+      "Email Marketing",
+    ],
     providerCount: 2200,
   },
   {
@@ -34,7 +52,13 @@ const defaultCategories = [
     name: "IT Services",
     icon: "Server",
     description: "Infrastructure and technical support",
-    subcategories: ["Cloud Services", "Cybersecurity", "DevOps", "IT Consulting", "Network Management"],
+    subcategories: [
+      "Cloud Services",
+      "Cybersecurity",
+      "DevOps",
+      "IT Consulting",
+      "Network Management",
+    ],
     providerCount: 1500,
   },
   {
@@ -42,19 +66,30 @@ const defaultCategories = [
     name: "Business Services",
     icon: "Briefcase",
     description: "Business consulting and strategy",
-    subcategories: ["Strategy Consulting", "Financial Services", "Legal Services", "HR Services", "Operations"],
+    subcategories: [
+      "Strategy Consulting",
+      "Financial Services",
+      "Legal Services",
+      "HR Services",
+      "Operations",
+    ],
     providerCount: 1200,
   },
-]
+];
 
 export async function GET() {
   try {
-    await connectToDatabase()
+    await connectToDatabase();
 
-    const categories = await CMSContent.find({ type: "category", isActive: true }).sort({ order: 1 }).lean()
+    const categories = await CMSContent.find({
+      type: "category",
+      isActive: true,
+    })
+      .sort({ order: 1 })
+      .lean();
 
     if (!categories || categories.length === 0) {
-      return NextResponse.json({ categories: defaultCategories })
+      return NextResponse.json({ categories: defaultCategories });
     }
 
     const formattedCategories = categories.map((c: any) => ({
@@ -65,29 +100,36 @@ export async function GET() {
       subcategories: c.content?.subcategories || [],
       providerCount: c.content?.providerCount || 0,
       link: c.link,
-    }))
+    }));
 
-    return NextResponse.json({ categories: formattedCategories })
+    return NextResponse.json({ categories: formattedCategories });
   } catch (error) {
-    console.error("Error fetching categories:", error)
-    return NextResponse.json({ categories: defaultCategories })
+    console.error("Error fetching categories:", error);
+    return NextResponse.json({ categories: defaultCategories });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await getCurrentUser(req);
     if (!user || user.role !== "admin") {
-      return NextResponse.json({ error: "Admin access required" }, { status: 403 })
+      return NextResponse.json(
+        { error: "Admin access required" },
+        { status: 403 },
+      );
     }
 
-    await connectToDatabase()
+    await connectToDatabase();
 
-    const body = await request.json()
-    const { id, name, icon, description, subcategories, providerCount, link } = body
+    const body = await request.json();
+    const { id, name, icon, description, subcategories, providerCount, link } =
+      body;
 
     if (!id || !name) {
-      return NextResponse.json({ error: "Missing required fields: id, name" }, { status: 400 })
+      return NextResponse.json(
+        { error: "Missing required fields: id, name" },
+        { status: 400 },
+      );
     }
 
     const category = await CMSContent.create({
@@ -103,7 +145,7 @@ export async function POST(request: NextRequest) {
       },
       order: (await CMSContent.countDocuments({ type: "category" })) + 1,
       isActive: true,
-    })
+    });
 
     return NextResponse.json({
       success: true,
@@ -115,9 +157,12 @@ export async function POST(request: NextRequest) {
         subcategories: category.content?.subcategories,
         providerCount: category.content?.providerCount,
       },
-    })
+    });
   } catch (error) {
-    console.error("Error creating category:", error)
-    return NextResponse.json({ error: "Failed to create category" }, { status: 500 })
+    console.error("Error creating category:", error);
+    return NextResponse.json(
+      { error: "Failed to create category" },
+      { status: 500 },
+    );
   }
 }

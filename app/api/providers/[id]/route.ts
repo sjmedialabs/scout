@@ -1,19 +1,22 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { connectToDatabase } from "@/lib/mongodb"
-import Provider from "@/models/Provider"
-import Review from "@/models/Review"
-import { getCurrentUser } from "@/lib/auth/jwt"
-import mongoose from "mongoose"
+import { type NextRequest, NextResponse } from "next/server";
+import { connectToDatabase } from "@/lib/mongodb";
+import Provider from "@/models/Provider";
+import Review from "@/models/Review";
+import { getCurrentUser } from "@/lib/auth/jwt";
+import mongoose from "mongoose";
 import dayjs from "dayjs";
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   try {
-    await connectToDatabase()
+    await connectToDatabase();
 
-    const { id } = await params
+    const { id } = await params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-       return NextResponse.json({ error: "Invalid ID format" }, { status: 400 })
+      return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
     }
 
     // ---------------------------------------------
@@ -21,13 +24,16 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     // ---------------------------------------------
     const provider = await Provider.findOne({
       $or: [
-        { _id: id },         // match provider's _id
-        { userId: id },      // match provider's userId
+        { _id: id }, // match provider's _id
+        { userId: id }, // match provider's userId
       ],
-    })
+    });
 
     if (!provider) {
-      return NextResponse.json({ error: "Provider not found" }, { status: 404 })
+      return NextResponse.json(
+        { error: "Provider not found" },
+        { status: 404 },
+      );
     }
 
     // Increment profile views
@@ -50,7 +56,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     await provider.save();
 
-    const reviews = await Review.find({ providerId: provider._id.toString(), isPublic: true })
+    const reviews = await Review.find({
+      providerId: provider._id.toString(),
+      isPublic: true,
+    });
 
     const formattedReviews = reviews.map((r: any) => ({
       id: r._id.toString(),
@@ -68,7 +77,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       isVerified: r.isVerified,
       response: r.response,
       createdAt: r.createdAt,
-    }))
+    }));
 
     return NextResponse.json({
       provider: {
@@ -93,7 +102,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         projectsCompleted: provider.projectsCompleted,
         hourlyRate: provider.hourlyRate,
         minProjectSize: provider.minProjectSize,
-        websiteClicks:provider.websiteClicks,
+        websiteClicks: provider.websiteClicks,
         teamSize: provider.teamSize,
         foundedYear: provider.foundedYear,
         portfolio: provider.portfolio,
@@ -103,34 +112,46 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         socialLinks: provider.socialLinks,
         isFeatured: provider.isFeatured,
         isVerified: provider.isVerified,
-        profileViews: (provider.profileViews || 0),
-        currentMonthProfileViews:provider.currentMonthProfileViews,
-        lastMonthProfileViews:provider.lastMonthProfileViews,
-        currentMonthWebsiteClicks:provider.currentMonthWebsiteClicks,
-        focusArea:provider.focusArea,
+        profileViews: provider.profileViews || 0,
+        currentMonthProfileViews: provider.currentMonthProfileViews,
+        lastMonthProfileViews: provider.lastMonthProfileViews,
+        currentMonthWebsiteClicks: provider.currentMonthWebsiteClicks,
+        focusArea: provider.focusArea,
         createdAt: provider.createdAt,
       },
       reviews: formattedReviews,
-    })
+    });
   } catch (error) {
-    console.error("Error fetching provider:", error)
-    return NextResponse.json({ error: "Failed to fetch provider" }, { status: 500 })
+    console.error("Error fetching provider:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch provider" },
+      { status: 500 },
+    );
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   try {
-    const user = await getCurrentUser()
+    const user = await getCurrentUser(req);
     if (!user) {
-      return NextResponse.json({ error: "Authentication required" }, { status: 401 })
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 },
+      );
     }
 
-    await connectToDatabase()
+    await connectToDatabase();
 
-    const { id } = await params
+    const { id } = await params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json({ error: "Invalid provider ID" }, { status: 400 })
+      return NextResponse.json(
+        { error: "Invalid provider ID" },
+        { status: 400 },
+      );
     }
 
     // ---------------------------------------------
@@ -138,20 +159,23 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     // ---------------------------------------------
     const provider = await Provider.findOne({
       $or: [
-        { _id: id },         // match provider's _id
-        { userId: id },      // match provider's userId
+        { _id: id }, // match provider's _id
+        { userId: id }, // match provider's userId
       ],
-    }).lean()
+    }).lean();
 
     if (!provider) {
-      return NextResponse.json({ error: "Provider not found" }, { status: 404 })
+      return NextResponse.json(
+        { error: "Provider not found" },
+        { status: 404 },
+      );
     }
 
     // if (provider.userId.toString() !== user.userId && user.role !== "admin") {
     //   return NextResponse.json({ error: "Not authorized" }, { status: 403 })
     // }
 
-    const body = await request.json()
+    const body = await request.json();
     const allowedUpdates = [
       "name",
       "tagline",
@@ -162,8 +186,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       "website",
       "email",
       "salesEmail",
-       "projectsCompleted",
-       "lastMonthProfileViews",
+      "projectsCompleted",
+      "lastMonthProfileViews",
       "phone",
       "adminContactPhone",
       "services",
@@ -184,37 +208,35 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       "currentMonthKey",
       "awards",
       "socialLinks",
-    ]
+    ];
 
-    const updates: any = {}
-    
+    const updates: any = {};
+
     for (const key of allowedUpdates) {
       if (body[key] !== undefined) {
-        updates[key] = body[key] 
-           
+        updates[key] = body[key];
       }
     }
 
     // Admin-only updates
     if (user.role === "admin") {
-      if (body.isFeatured !== undefined) updates.isFeatured = body.isFeatured
-      if (body.isVerified !== undefined) updates.isVerified = body.isVerified
-      if (body.isActive !== undefined) updates.isActive = body.isActive
+      if (body.isFeatured !== undefined) updates.isFeatured = body.isFeatured;
+      if (body.isVerified !== undefined) updates.isVerified = body.isVerified;
+      if (body.isActive !== undefined) updates.isActive = body.isActive;
     }
 
     // const updated = await Provider.findOneAndUpdate({ userId: id }, updates, { new: true })
 
     // Apply updates using resolved _id
     console.log("Updating provider with ID:", updates);
-   const updated = await Provider.findByIdAndUpdate(
-  provider._id,
-  { $set: updates },           // ✅ FORCE FIELD CREATION
-  {
-    new: true,
-    runValidators: true,       // ✅ ensure schema validation
-  }
-)
-
+    const updated = await Provider.findByIdAndUpdate(
+      provider._id,
+      { $set: updates }, // ✅ FORCE FIELD CREATION
+      {
+        new: true,
+        runValidators: true, // ✅ ensure schema validation
+      },
+    );
 
     return NextResponse.json({
       success: true,
@@ -229,9 +251,12 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         isVerified: updated!.isVerified,
         updatedAt: updated!.updatedAt,
       },
-    })
+    });
   } catch (error) {
-    console.error("Error updating provider:", error)
-    return NextResponse.json({ error: "Failed to update provider" }, { status: 500 })
+    console.error("Error updating provider:", error);
+    return NextResponse.json(
+      { error: "Failed to update provider" },
+      { status: 500 },
+    );
   }
 }
