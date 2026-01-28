@@ -1,10 +1,10 @@
-import React from "react"
-
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { headers } from "next/headers"
-import { HomeHero}  from "@/app/home-hero"
+"use client";
+import React from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { headers } from "next/headers";
+import { HomeHero } from "@/app/home-hero";
 import {
   Code,
   Palette,
@@ -12,7 +12,7 @@ import {
   Megaphone,
   Briefcase,
   Shield,
-} from "lucide-react"
+} from "lucide-react";
 
 interface ServiceChild {
   _id: string;
@@ -30,7 +30,6 @@ export interface ServiceCategory {
   children: ServiceChild[];
 }
 
-
 // Icon mapping
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Code,
@@ -39,17 +38,41 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Megaphone,
   Briefcase,
   Shield,
-}
+};
 
 // Color mapping
 const colorMap: Record<string, { bg: string; hover: string; text: string }> = {
-  green: { bg: "from-green-100 to-green-200", hover: "hover:border-green-200", text: "text-green-600" },
-  purple: { bg: "from-purple-100 to-purple-200", hover: "hover:border-purple-200", text: "text-purple-600" },
-  blue: { bg: "from-blue-100 to-blue-200", hover: "hover:border-blue-200", text: "text-blue-600" },
-  orange: { bg: "from-orange-100 to-orange-200", hover: "hover:border-orange-200", text: "text-orange-600" },
-  teal: { bg: "from-teal-100 to-teal-200", hover: "hover:border-teal-200", text: "text-teal-600" },
-  indigo: { bg: "from-indigo-100 to-indigo-200", hover: "hover:border-indigo-200", text: "text-indigo-600" },
-}
+  green: {
+    bg: "from-green-100 to-green-200",
+    hover: "hover:border-green-200",
+    text: "text-green-600",
+  },
+  purple: {
+    bg: "from-purple-100 to-purple-200",
+    hover: "hover:border-purple-200",
+    text: "text-purple-600",
+  },
+  blue: {
+    bg: "from-blue-100 to-blue-200",
+    hover: "hover:border-blue-200",
+    text: "text-blue-600",
+  },
+  orange: {
+    bg: "from-orange-100 to-orange-200",
+    hover: "hover:border-orange-200",
+    text: "text-orange-600",
+  },
+  teal: {
+    bg: "from-teal-100 to-teal-200",
+    hover: "hover:border-teal-200",
+    text: "text-teal-600",
+  },
+  indigo: {
+    bg: "from-indigo-100 to-indigo-200",
+    hover: "hover:border-indigo-200",
+    text: "text-indigo-600",
+  },
+};
 
 async function getData() {
   // 1. Dynamically determine the base URL to avoid port mismatches
@@ -60,30 +83,37 @@ async function getData() {
   //   const protocol = host.includes("localhost") ? "http" : "https";
   //   baseUrl = `${protocol}://${host}`;
   // }
-// const options: RequestInit = { cache: "no-store" }; for instant changes
+  // const options: RequestInit = { cache: "no-store" }; for instant changes
   // 2. Use ISR with revalidation (e.g., every hour)
   const REVALIDATE_TIME = Number(process.env.CMS_REVALIDATE_TIME) || 10;
-  const options = { next: { revalidate: REVALIDATE_TIME } }; 
+  const options = { next: { revalidate: REVALIDATE_TIME } };
 
   try {
     console.log(`[HomePage] Fetching data from: ${baseUrl}`);
-    const [cmsRes, providersRes, projectsRes, categoriesRes] = await Promise.all([
-      fetch(`${baseUrl}/api/cms`, options),
-      fetch(`${baseUrl}/api/providers`, options),
-      fetch(`${baseUrl}/api/requirements`, options),
-      fetch(`${baseUrl}/api/service-categories`, options),
-    ]);
+    const [cmsRes, providersRes, projectsRes, categoriesRes] =
+      await Promise.all([
+        fetch(`${baseUrl}/api/cms`, options),
+        fetch(`${baseUrl}/api/providers`, options),
+        fetch(`${baseUrl}/api/requirements`, options),
+        fetch(`${baseUrl}/api/service-categories`, options),
+      ]);
 
     const cms = cmsRes.ok ? (await cmsRes.json()).data : null;
-    const providers = providersRes.ok ? (await providersRes.json()).providers?.slice(0, 3) : [];
-    console.log("Fetched Providers::::::", providers)
-    
+    const providers = providersRes.ok
+      ? (await providersRes.json()).providers?.slice(0, 3)
+      : [];
+    console.log("Fetched Providers::::::", providers);
+
     const projectsData = projectsRes.ok ? await projectsRes.json() : {};
     // Try finding the array in 'requirements' OR 'data'
-    const projects = (projectsData.requirements || projectsData.data || []).filter((eachItem:any)=>eachItem.status.toLowerCase()==="open").slice(0, 3);
-    
-    const categories = categoriesRes.ok ? (await categoriesRes.json()).data : [];
-    
+    const projects = (projectsData.requirements || projectsData.data || [])
+      .filter((eachItem: any) => eachItem.status.toLowerCase() === "open")
+      .slice(0, 3);
+
+    const categories = categoriesRes.ok
+      ? (await categoriesRes.json()).data
+      : [];
+
     return { cms, providers, projects, categories };
   } catch (error) {
     // This log will appear in your VS Code TERMINAL, not the browser
@@ -102,10 +132,15 @@ export default async function HomePage() {
       {/* Features */}
       <section className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-4">How Spark Works</h2>
+          <h2 className="text-4xl font-bold text-center mb-4">
+            How Spark Works
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {cms?.homeWorkSection?.map((section: any, index: number) => (
-              <div key={index} className="flex flex-col gap-4 items-center text-center">
+              <div
+                key={index}
+                className="flex flex-col gap-4 items-center text-center"
+              >
                 <img src={section.image} alt="" />
                 <div className="">
                   <h3 className="text-2xl font-bold">{section.title}</h3>
@@ -118,15 +153,18 @@ export default async function HomePage() {
       </section>
 
       {/* Service Categories - CMS Driven */}
-      <section className="py-20 px-4"
+      <section
+        className="py-20 px-4"
         style={{
-          backgroundImage: "url('/images/category-background.png')"
+          backgroundImage: "url('/images/category-background.png')",
         }}
       >
         <div className="max-w-6xl mx-auto flex justify-center flex-col">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-1 rounded-full border border-orangeButton mb-2">
-              <span className="text-xs font-medium text-slate-600 capitalize">Service Categories</span>
+              <span className="text-xs font-medium text-slate-600 capitalize">
+                Service Categories
+              </span>
             </div>
             <h2 className="stext-mediun uppercase my-custom-class font-bold text-black ">
               The perfect partner for{" "}
@@ -135,55 +173,71 @@ export default async function HomePage() {
               </span>
             </h2>
             <p className="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">
-              Whatever your business challenge, browse our most in-demand service categories to find top-ranked
-              companies in <span className="font-semibold text-blueButton">over 2,000 specialized service lines</span>.
+              Whatever your business challenge, browse our most in-demand
+              service categories to find top-ranked companies in{" "}
+              <span className="font-semibold text-blueButton">
+                over 2,000 specialized service lines
+              </span>
+              .
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {(categories && categories.length > 0
-              ? categories
-              : []
-            ).map((category: any) => {
-              const colors = colorMap[category.color] || colorMap.blue;
-              const serviceLink = `/services/${category._id}`;
+            {(categories && categories.length > 0 ? categories : []).map(
+              (category: any) => {
+                const colors = colorMap[category.color] || colorMap.blue;
+                const serviceLink = `/services/${category._id}`;
 
-              return (
-                <div
-                  key={category._id}
-                  className={`group bg-white/70 backdrop-blur-sm rounded-4xl px-6 py-6 border pl-12 ${colors.hover} hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
-                >
-                  <div className="flex items-center gap-2 mb-4">
-                    <img src={category?.icon || "/images/icon-1.png"} alt="" className="h-10" />
-                    <h3 className={`text-2xl font-bold text-blueButton group-hover:${colors.text} transition-colors`}>
-                      {category.title}
-                    </h3>
-                  </div>
+                return (
+                  <div
+                    key={category._id}
+                    className={`group bg-white/70 backdrop-blur-sm rounded-4xl px-6 py-6 border pl-12 ${colors.hover} hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
+                  >
+                    <div className="flex items-center gap-2 mb-4">
+                      <img
+                        src={category?.icon || "/images/icon-1.png"}
+                        alt=""
+                        className="h-10"
+                      />
+                      <h3
+                        className={`text-2xl font-bold text-blueButton group-hover:${colors.text} transition-colors`}
+                      >
+                        {category.title}
+                      </h3>
+                    </div>
 
-                  {/* Subcategories */}
-                  <div className="space-y-3">
-                    {(category.children.slice(0, 6)|| []).map((sub: any, index: number) => (
-                      <p key={index} className={`block text-slate-500 text-sm hover:${colors.text} hover:translate-x-2 transition-all duration-200 font-medium`}>
-                        {/* <Link
+                    {/* Subcategories */}
+                    <div className="space-y-3">
+                      {(category.children.slice(0, 6) || []).map(
+                        (sub: any, index: number) => (
+                          <p
+                            key={index}
+                            className={`block text-slate-500 text-sm hover:${colors.text} hover:translate-x-2 transition-all duration-200 font-medium`}
+                          >
+                            {/* <Link
       key={index}
       href={`/services/${category.slug}/${sub.slug}`}  // or your serviceLink
     > */}
-                        → {sub.title}
-                        {/* </Link> */}
-                      </p>
-                    ))}
+                            → {sub.title}
+                            {/* </Link> */}
+                          </p>
+                        ),
+                      )}
+                    </div>
                   </div>
-
-                </div>
-              );
-            })}
-
+                );
+              },
+            )}
           </div>
           <div className="flex justify-center items-center">
             <Link href="/services">
-              <Button className="rounded-full py-2 text-lg font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1]" size={"lg"}>
+              <Button
+                className="rounded-full py-2 text-lg font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1]"
+                size={"lg"}
+              >
                 Browse all services →
-              </Button></Link>
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -194,13 +248,16 @@ export default async function HomePage() {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-1 rounded-full border border-orangeButton mb-2">
-                <span className="text-xs font-medium text-slate-600 capitalize">Newly added</span>
+                <span className="text-xs font-medium text-slate-600 capitalize">
+                  Newly added
+                </span>
               </div>
               <h2 className="stext-mediun uppercase font-extrabold text-black ">
                 Recent Requirements
               </h2>
               <p className="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">
-                Discover opportunities from businesses lookking for your services
+                Discover opportunities from businesses lookking for your
+                services
               </p>
             </div>
             {/* <div className="grid md:grid-cols-3 gap-6">
@@ -231,76 +288,81 @@ export default async function HomePage() {
             </div> */}
 
             <div className="grid md:grid-cols-3 gap-6">
-  {projects.map((project: any) => (
-    <div
-      key={project._id}
-      className="rounded-3xl border border-slate-200 bg-white hover:shadow-lg transition-shadow
+              {projects.map((project: any) => (
+                <div
+                  key={project._id}
+                  className="rounded-3xl border border-slate-200 bg-white hover:shadow-lg transition-shadow
       flex flex-col h-full"
-    >
-      {/* Image */}
-      <img
-        src={project.image || "/requirements.jpg"}
-         alt={project.title}
-        className="w-full h-[220px] object-cover rounded-t-3xl"
-      />
+                >
+                  {/* Image */}
+                  <img
+                    src={project.image || "/requirements.jpg"}
+                    alt={project.title}
+                    className="w-full h-[220px] object-cover rounded-t-3xl"
+                  />
 
-      {/* Category + Timeline */}
-      <div className="flex items-center justify-between px-6 mt-4">
-        <Badge
-          variant="outline"
-          className="rounded-full bg-gray-100 text-[11px] font-semibold px-3 py-1"
-        >
-          {project.category}
-        </Badge>
+                  {/* Category + Timeline */}
+                  <div className="flex items-center justify-between px-6 mt-4">
+                    <Badge
+                      variant="outline"
+                      className="rounded-full bg-gray-100 text-[11px] font-semibold px-3 py-1"
+                    >
+                      {project.category}
+                    </Badge>
 
-        <span className="text-sm font-semibold text-red-500">
-          {project.timeline}
-        </span>
-      </div>
+                    <span className="text-sm font-semibold text-red-500">
+                      {project.timeline}
+                    </span>
+                  </div>
 
-      {/* Title */}
-      <h3 className="px-6 mt-3 text-lg font-semibold capitalize">
-        {project.title}
-      </h3>
+                  {/* Title */}
+                  <h3 className="px-6 mt-3 text-lg font-semibold capitalize">
+                    {project.title}
+                  </h3>
 
-      {/* Description */}
-      <div className="px-6 mt-2">
-        <p className="text-sm text-gray-500 line-clamp-2">
-          {project.description}
-        </p>
-      </div>
+                  {/* Description */}
+                  <div className="px-6 mt-2">
+                    <p className="text-sm text-gray-500 line-clamp-2">
+                      {project.description}
+                    </p>
+                  </div>
 
-      {/* Budget */}
-      <div className="mt-auto">
-      <div className="px-6 mt-1">
-        <span className="text-lg font-bold text-blueButton">
-           ${project.budgetMin.toLocaleString()} - ${project.budgetMax.toLocaleString()}
-        </span>
-      </div>
+                  {/* Budget */}
+                  <div className="mt-auto">
+                    <div className="px-6 mt-1">
+                      <span className="text-lg font-bold text-blueButton">
+                        ${project.budgetMin.toLocaleString()} - $
+                        {project.budgetMax.toLocaleString()}
+                      </span>
+                    </div>
 
-      {/* Button */}
-      <div className="px-6 pb-6 mt-1">
-        <Button
-          variant="outline"
-          size="sm"
-          asChild
-          className="bg-black text-white rounded-full text-xs px-5 py-2 hover:bg-black"
-        >
-          <Link href="/login?to=project-enquiries">
-            View Details →
-          </Link>
-        </Button>
-      </div>
-      </div>
-    </div>
-  ))}
-</div>
+                    {/* Button */}
+                    <div className="px-6 pb-6 mt-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        asChild
+                        className="bg-black text-white rounded-full text-xs px-5 py-2 hover:bg-black"
+                      >
+                        <Link href="/login?to=project-enquiries">
+                          View Details →
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
 
             <div className="flex justify-center items-center">
               <Link href="/browse">
-                <Button className="rounded-full py-2 mt-8 text-lg font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1]" size={"lg"}>
+                <Button
+                  className="rounded-full py-2 mt-8 text-lg font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1]"
+                  size={"lg"}
+                >
                   Browse all requirements →
-                </Button></Link>
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
@@ -312,29 +374,34 @@ export default async function HomePage() {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-1 rounded-full border border-orangeButton mb-2">
-                <span className="text-xs font-medium text-slate-600 capitalize">Top Agency</span>
+                <span className="text-xs font-medium text-slate-600 capitalize">
+                  Top Agency
+                </span>
               </div>
               <h2 className="stext-mediun uppercase font-extrabold text-black ">
                 Top Providers
               </h2>
               <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
-                Discover opportunities from businesses lookking for your services
+                Discover opportunities from businesses lookking for your
+                services
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
               {providers.map((provider: any) => (
-                <div 
-                key={provider._id} 
-                className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300 bg-white
-                 flex flex-col h-full">
+                <div
+                  key={provider._id}
+                  className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300 bg-white
+                 flex flex-col h-full"
+                >
                   <div className="">
                     <div className="text-lg w-full h-[200px] overflow-hidden rounded-t-3xl">
-                      <img src={provider.coverImage || "/requirements.jpg"} 
-                      alt="" 
-                      className="rounded-t-3xl w-full h-full object-cover object-center" />
-                      </div>
+                      <img
+                        src={provider.coverImage || "/requirements.jpg"}
+                        alt=""
+                        className="rounded-t-3xl w-full h-full object-cover object-center"
+                      />
+                    </div>
                     <div className="flex items-center justify-between mb-2 px-8 mt-4">
-
                       {/* FEATURED & VERIFIED BADGES */}
                       <div className="flex items-center gap-2">
                         {provider.isVerified && (
@@ -362,10 +429,12 @@ export default async function HomePage() {
                             fill={i < provider.rating ? "#F59E0B" : "#D1D5DB"} // yellow or gray
                             className="w-4 h-4"
                           >
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 
+                            <path
+                              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 
         0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 
         1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 
-        1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+        1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                            />
                           </svg>
                         ))}
 
@@ -375,25 +444,32 @@ export default async function HomePage() {
                       </div>
                     </div>
 
-                    <h3 className="text-lg px-8 font-bold capitalize">{provider.name}</h3>
+                    <h3 className="text-lg px-8 font-bold capitalize">
+                      {provider.name}
+                    </h3>
                   </div>
                   <div className="pb-10 px-8 flex flex-col flex-1">
-                    <p className="text-sm text-gray-500 mb-4 line-clamp-2">{provider.description}</p>
+                    <p className="text-sm text-gray-500 mb-4 line-clamp-2">
+                      {provider.description}
+                    </p>
                     <div className="flex flex-col h-full gap-4">
-
                       {/* SERVICES BADGES */}
                       <div className="flex flex-wrap gap-2">
                         {provider.services?.length > 0 ? (
-                          provider.services.slice(0, 4).map((service: string, idx: number) => (
-                            <span
-                              key={idx}
-                              className="bg-gray-100 text-black px-2 py-1 rounded-full text-xs font-semibold"
-                            >
-                              {service}
-                            </span>
-                          ))
+                          provider.services
+                            .slice(0, 4)
+                            .map((service: string, idx: number) => (
+                              <span
+                                key={idx}
+                                className="bg-gray-100 text-black px-2 py-1 rounded-full text-xs font-semibold"
+                              >
+                                {service}
+                              </span>
+                            ))
                         ) : (
-                          <span className="text-xs text-gray-400 italic">No services listed</span>
+                          <span className="text-xs text-gray-400 italic">
+                            No services listed
+                          </span>
                         )}
                       </div>
 
@@ -405,17 +481,25 @@ export default async function HomePage() {
                           asChild
                           className="bg-blueButton text-white rounded-full text-xs"
                         >
-                          <Link href={`/provider/${provider.id || provider._id}`}>View Profile →</Link>
+                          <Link
+                            href={`/provider/${provider.id || provider._id}`}
+                          >
+                            View Profile →
+                          </Link>
                         </Button>
                       </div>
                     </div>
-
                   </div>
                 </div>
               ))}
             </div>
             <div className="text-center mt-8">
-              <Button variant="outline" className="rounded-full py-2 mt-8 text-lg font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] text-white" size={"lg"} asChild>
+              <Button
+                variant="outline"
+                className="rounded-full py-2 mt-8 text-lg font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] text-white"
+                size={"lg"}
+                asChild
+              >
                 <Link href="/providers">View All Providers</Link>
               </Button>
             </div>
@@ -426,28 +510,31 @@ export default async function HomePage() {
       {/* CTA Section */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h3 className="text-2xl md:text-4xl font-extralight">{cms?.getStartedTitle}</h3>
+          <h3 className="text-2xl md:text-4xl font-extralight">
+            {cms?.getStartedTitle}
+          </h3>
           <p className="text-base max-w-sm mx-auto text-slate-500">
             {cms?.getStartedSubtitle}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
-            <Button size="lg" className="bg-orangeButton font-semibold text-sm text-white rounded-full hover:bg-gray-100" asChild>
+            <Button
+              size="lg"
+              className="bg-orangeButton font-semibold text-sm text-white rounded-full hover:bg-gray-100"
+              asChild
+            >
               <Link href="/register?type=seeker">Post a requirement</Link>
             </Button>
             <Button
-            size="lg"
-            variant="outline"
-            className="bg-blueButton font-semibold text-sm text-white rounded-full hover:bg-gray-100"
-            asChild
-          >
-            <Link href="/register?type=provider">
-              Become a provider
-            </Link>
-          </Button>
-
+              size="lg"
+              variant="outline"
+              className="bg-blueButton font-semibold text-sm text-white rounded-full hover:bg-gray-100"
+              asChild
+            >
+              <Link href="/register?type=provider">Become a provider</Link>
+            </Button>
           </div>
         </div>
       </section>
     </div>
-  )
+  );
 }
