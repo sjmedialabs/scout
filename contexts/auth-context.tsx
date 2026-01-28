@@ -1,8 +1,5 @@
 "use client";
-
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { authFetch } from "@/lib/auth-fetch";
-
 export type UserRole = "client" | "agency" | "admin";
 
 interface User {

@@ -1,6 +1,6 @@
 export async function authFetch(url: string, options: RequestInit = {}) {
   if (typeof window === "undefined") {
-    throw new Error("authFetch can only be used on the client");
+    throw new Error("authFetch client-only");
   }
 
   const token = localStorage.getItem("token");
