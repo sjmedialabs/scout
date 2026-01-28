@@ -396,11 +396,11 @@ export default function ClientDashboard() {
         reqRes,
         shortlistVendorsRes,
       ] = await Promise.all([
-        authFetch("/api/notifications", {}),
-        authFetch("/api/providers", {}),
-        authFetch(`/api/proposals/${user?.id}`, {}),
-        authFetch(`/api/requirements/${user?.id}`, {}),
-        authFetch("/api/wishlist", {}),
+        authFetch("/api/notifications", { credentials: "include" }),
+        authFetch("/api/providers", { credentials: "include" }),
+        authFetch(`/api/proposals/${user?.id}`, { credentials: "include" }),
+        authFetch(`/api/requirements/${user?.id}`, { credentials: "include" }),
+        authFetch("/api/wishlist", { credentials: "include" }),
       ]);
 
       //  If ANY request failed → throw error

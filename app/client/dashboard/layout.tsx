@@ -5,7 +5,6 @@ import { Menu } from "lucide-react";
 import ClientSidebar from "@/components/seeker/side-bar";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
-import { authFetch } from "@/lib/auth-fetch";
 
 export default function ClientDashboardLayout({
   children,

@@ -290,7 +290,7 @@ const ProposalPage = () => {
     setFailed(false);
 
     try {
-      const response = await authFetch(`/api/proposals`);
+      const response = await authFetch(`/api/proposals`, {credentials: "include" });
       const data = await response.json();
 
       console.log("Fetched Proposal for your posted Requirements:::", data);
@@ -337,6 +337,7 @@ const ProposalPage = () => {
       const response = await authFetch(`/api/proposals/${proposalId}`, {
         method: "PUT",
         body: JSON.stringify({ status: "shortlisted" }),
+        credentials: "include" 
       });
       console.log(
         "Shortlist action response::::",
@@ -355,6 +356,7 @@ const ProposalPage = () => {
       const response = await authFetch(`/api/proposals/${proposalId}`, {
         method: "PUT",
         body: JSON.stringify({ status: "accepted" }),
+        credentials: "include" 
       });
       console.log(
         "Shortlist action response::::",
@@ -377,6 +379,7 @@ const ProposalPage = () => {
       const response = await authFetch(`/api/proposals/${proposalId}`, {
         method: "PUT",
         body: JSON.stringify({ status: "rejected" }),
+        credentials: "include" 
       });
       console.log(
         "Shortlist action response::::",

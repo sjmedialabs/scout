@@ -23,7 +23,9 @@ const AgencyPortfolioPage = () => {
     setLoading(true);
     setFailed(false);
     try {
-      const response = await authFetch(`/api/providers/${id}`);
+      const response = await authFetch(`/api/providers/${id}`, {
+        credentials: "include",
+      });
       const data = await response.json();
       setProviderDetails(data.provider);
       setReviews(data.reviews);

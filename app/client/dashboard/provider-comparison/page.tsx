@@ -300,9 +300,13 @@ const ProviderComparisonPage = () => {
     setLoadingResponse(true);
     setFailed(false);
     try {
-      const response = await authFetch("/api/providers");
+      const response = await authFetch("/api/providers", {
+        credentials: "include",
+      });
       const data = await response.json();
-      const vendorsResponse = await authFetch(`/api/comparision/${user?.id}`);
+      const vendorsResponse = await authFetch(`/api/comparision/${user?.id}`, {
+        credentials: "include",
+      });
       const vendorsData = await vendorsResponse.json();
       // console.log("fetched Vendors Data:::",vendorsData)
       if (response.ok) {
@@ -334,6 +338,7 @@ const ProviderComparisonPage = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+        credentials: "include",
       });
       const data = await response.json();
       console.log("added comparision response:::", data);
@@ -358,6 +363,7 @@ const ProviderComparisonPage = () => {
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
         },
       );
       const data = await response.json();
@@ -417,6 +423,7 @@ const ProviderComparisonPage = () => {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ isFavourite: !provider?.isFavourite }),
+          credentials: "include",
         },
       );
       if (!provider?.isFavourite) {
@@ -424,12 +431,14 @@ const ProviderComparisonPage = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ agencyId: recievdId }),
+          credentials: "include",
         });
       }
       if (provider?.isFavourite) {
         const wishlistRes = await authFetch(`/api/wishlist/${recievdId}`, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
         });
       }
       if (comparisonRes.ok) {

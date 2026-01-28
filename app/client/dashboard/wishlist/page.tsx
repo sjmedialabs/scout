@@ -1,4 +1,5 @@
 "use client";
+import { authFetch } from "@/lib/auth-fetch";
 import { useEffect, useState } from "react";
 
 import { useAuth } from "@/contexts/auth-context";
@@ -115,7 +116,9 @@ const WishListPage = () => {
     setLoading(true);
     setFailed(false);
     try {
-      const response = await authFetch("/api/wishlist");
+      const response = await authFetch("/api/wishlist", {
+        credentials: "include",
+      });
       const data = await response.json();
       console.log("Fetched  Data:::", data);
       setWishListData(data.data);
@@ -136,6 +139,7 @@ const WishListPage = () => {
       const res = await authFetch(`/api/wishlist/${recievedId}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
       });
       if (res.ok) {
         setWishListData((prev) =>
@@ -153,6 +157,7 @@ const WishListPage = () => {
       // fire analytics update
       await authFetch(`/api/providers/${providerId}/profile-view`, {
         method: "POST",
+        credentials: "include",
       });
     } catch (err) {
       console.error("Failed to update profile view", err);

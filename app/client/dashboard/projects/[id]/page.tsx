@@ -36,8 +36,12 @@ const ProjectDetailPage = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const response = await authFetch(`/api/proposals/${id}`);
-      const project = await authFetch(`/api/requirements/${id}`);
+      const response = await authFetch(`/api/proposals/${id}`, {
+        credentials: "include",
+      });
+      const project = await authFetch(`/api/requirements/${id}`, {
+        credentials: "include",
+      });
       console.log("Project detail response::::", await project.json());
       if (response.status === 404) {
         // ✅ No proposals case
@@ -88,6 +92,7 @@ const ProjectDetailPage = () => {
       const response = await authFetch(`/api/proposals/${proposalId}`, {
         method: "PUT",
         body: JSON.stringify({ status: "shortlisted" }),
+        credentials: "include",
       });
       console.log(
         "Shortlist action response::::",
@@ -105,6 +110,7 @@ const ProjectDetailPage = () => {
       const response = await authFetch(`/api/proposals/${proposalId}`, {
         method: "PUT",
         body: JSON.stringify({ status: "accepted" }),
+        credentials: "include",
       });
       console.log(
         "Shortlist action response::::",
@@ -126,6 +132,7 @@ const ProjectDetailPage = () => {
       const response = await authFetch(`/api/proposals/${proposalId}`, {
         method: "PUT",
         body: JSON.stringify({ status: "rejected" }),
+        credentials: "include",
       });
       console.log(
         "Shortlist action response::::",

@@ -188,7 +188,7 @@ const ProjectsPage = () => {
   const loadData = async (userId: string) => {
     setResponseLoading(true);
     try {
-      const response = await authFetch(`/api/requirements/${userId}`);
+      const response = await authFetch(`/api/requirements/${userId}`, {credentials: "include" });
       const data = await response.json();
       setRequirements(data.requirements);
       setFilteredRequirements(data.requirements);
@@ -266,6 +266,7 @@ const ProjectsPage = () => {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
+          credentials: "include" 
         });
         const data = await res.json();
         if (!res.ok) {
@@ -293,6 +294,7 @@ const ProjectsPage = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
+          credentials: "include" 
         });
 
         const data = await res.json();
@@ -367,6 +369,7 @@ const ProjectsPage = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+        credentials: "include" 
       });
       if (res.ok) {
         toast.success("Review submitted successfully");

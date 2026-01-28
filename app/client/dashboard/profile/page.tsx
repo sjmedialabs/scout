@@ -145,6 +145,7 @@ const ClientProfilePage = () => {
       const response = await authFetch(`/api/seeker/${user.userId}`, {
         method: "PUT",
         body: JSON.stringify(profileData),
+        credentials: "include",
       });
 
       if (response.ok) {
