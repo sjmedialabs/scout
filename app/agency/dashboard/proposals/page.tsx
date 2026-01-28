@@ -219,7 +219,7 @@ const ProposalsPage = () => {
       };
 
       console.log("Payload to send:::::::", payload);
-      const res = await fetch(`/api/proposals/${selectedProposal?.id}`, {
+      const res = await authFetch(`/api/proposals/${selectedProposal?.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

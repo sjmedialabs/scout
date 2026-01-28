@@ -152,7 +152,7 @@ export default function ProvidersPage() {
   const handleViewProfile = async (recivedId) => {
     try {
       // 1️⃣ Track profile view
-      await fetch(`/api/providers/${recivedId}/profile-view`, {
+      await authFetch(`/api/providers/${recivedId}/profile-view`, {
         method: "POST",
       });
     } catch (error) {

@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { X, Loader2, CheckCircle } from "lucide-react"
-import { Content } from "next/font/google"
-import { useEffect, useState } from "react"
+import { X, Loader2, CheckCircle } from "lucide-react";
+import { Content } from "next/font/google";
+import { useEffect, useState } from "react";
 
 interface RespondToReviewModalProps {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
   review: {
-    clientName: string
-    date: string
-    reviewText: string
-    quality: number
-    value: number
-    timeline: number
-    id:string
-  }
+    clientName: string;
+    date: string;
+    reviewText: string;
+    quality: number;
+    value: number;
+    timeline: number;
+    id: string;
+  };
 }
 
 export default function RespondToReviewModal({
@@ -23,61 +23,58 @@ export default function RespondToReviewModal({
   onClose,
   review,
 }: RespondToReviewModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showToast, setShowToast] = useState(false)
-  const[message,setMessage]=useState("");
-  const[errorMsg,setErrorMsg]=useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [message, setMessage] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
   /* ---- stop background scroll ---- */
   useEffect(() => {
     if (open) {
-      document.body.style.overflow = "hidden"
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = ""
+      document.body.style.overflow = "";
     }
 
     return () => {
-      document.body.style.overflow = ""
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  if (!open) return null;
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+
+    console.log("Submitting");
+    if (!message.trim()) {
+      console.log("entered if");
+      setErrorMsg("*Required");
+      return;
     }
-  }, [open])
 
-  if (!open) return null
+    try {
+      const res = await authFetch(`/api/reviews/${review.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: message }),
+      });
 
-  const handleSubmit = async() => {
-    setIsSubmitting(true)
+      console.log("Respond to review status:::", res);
 
-    console.log("Submitting")
-    if(!message.trim()){
-      console.log("entered if")
-      setErrorMsg("*Required")
-      return
-    }
-
-    try{
-      
-      const res=await fetch(`/api/reviews/${review.id}`,{
-        method:"PUT",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({content:message})
-      })
-
-      console.log("Respond to review status:::",res)
-
-      if(res.ok){
+      if (res.ok) {
         setShowToast(true);
         setMessage("");
-        setTimeout(()=>{setShowToast(false),window.location.reload() },5000)
+        setTimeout(() => {
+          (setShowToast(false), window.location.reload());
+        }, 5000);
       }
-
-
-    }catch(error){
-      console.log('Failed to post the response:::',error);
-    }finally{
-      setIsSubmitting(false)
+    } catch (error) {
+      console.log("Failed to post the response:::", error);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    
-  }
+  };
 
   return (
     <>
@@ -92,7 +89,6 @@ export default function RespondToReviewModal({
       )}
 
       <div className="fixed inset-0 z-50 flex items-center justify-center">
-        
         {/* Overlay */}
         <div
           className="absolute inset-0 bg-black/60 backdrop-blur-[1px]"
@@ -126,13 +122,9 @@ export default function RespondToReviewModal({
 
           {/* Review Summary */}
           <div className="p-6 bg-[#f7f7f7] rounded-2xl mx-6 mt-6">
-            <h3 className="text-base font-extrabold">
-              {review.clientName}
-            </h3>
+            <h3 className="text-base font-extrabold">{review.clientName}</h3>
 
-            <p className="text-xs text-gray-400 mt-0">
-              {review.date}
-            </p>
+            <p className="text-xs text-gray-400 mt-0">{review.date}</p>
 
             <p className="text-xs text-gray-600 mt-0 leading-relaxed">
               {review.reviewText}
@@ -156,7 +148,7 @@ export default function RespondToReviewModal({
               placeholder="Thank you for your feedback. We appreciate your business and..."
               disabled={isSubmitting}
               value={message}
-              onChange={(e)=>setMessage(e.target.value)}
+              onChange={(e) => setMessage(e.target.value)}
               className="
                 w-full h-40
                 border border-[#e5e5e5]
@@ -168,7 +160,7 @@ export default function RespondToReviewModal({
                 disabled:bg-[#f2f2f2]
               "
             />
-            {errorMsg && (<p className="text-red-500 text-sm">{errorMsg}</p>)}
+            {errorMsg && <p className="text-red-500 text-sm">{errorMsg}</p>}
           </div>
 
           {/* Actions */}
@@ -223,18 +215,12 @@ export default function RespondToReviewModal({
         </div>
       </div>
     </>
-  )
+  );
 }
 
-function RatingBlock({
-  label,
-  value,
-}: {
-  label: string
-  value: number
-}) {
-  const fullStars = Math.floor(value)
-  const hasHalfStar = value % 1 >= 0.5
+function RatingBlock({ label, value }: { label: string; value: number }) {
+  const fullStars = Math.floor(value);
+  const hasHalfStar = value % 1 >= 0.5;
 
   return (
     <div className="flex flex-col items-center">
@@ -249,7 +235,7 @@ function RatingBlock({
               <span key={i} className="text-[#F5A623] text-sm">
                 ★
               </span>
-            )
+            );
           }
 
           if (i === fullStars && hasHalfStar) {
@@ -267,16 +253,16 @@ function RatingBlock({
                   ★
                 </span>
               </span>
-            )
+            );
           }
 
           return (
             <span key={i} className="text-[#D9D9D9] text-sm">
               ★
             </span>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }

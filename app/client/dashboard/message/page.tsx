@@ -184,7 +184,7 @@ export default function MessagesPage() {
         // Set the active state immediately with the object we already have
         setDynamicActiveConversation(firstConv);
         // Fetch messages for this specific ID
-        await fetchMessages(firstConv.conversationId);
+        await authFetchMessages(firstConv.conversationId);
       }
     } catch (err) {
       console.log(err);
@@ -248,7 +248,7 @@ export default function MessagesPage() {
         body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error();
-      await fetchMessages(dynamicActiveConversation.conversationId);
+      await authFetchMessages(dynamicActiveConversation.conversationId);
       setUploadedUrl({
         url: "",
         type: "",
@@ -332,8 +332,8 @@ export default function MessagesPage() {
   const fetchMessages = async (id: string) => {
     setChatLoading(true);
     try {
-      const res = await fetch(`/api/chat/message/${id}`);
-      const readRes = await fetch(`/api/chat/read`, {
+      const res = await authFetch(`/api/chat/message/${id}`);
+      const readRes = await authFetch(`/api/chat/read`, {
         method: "PATCH",
         headers: {
           "Context-Type": "application/json",
@@ -370,7 +370,7 @@ export default function MessagesPage() {
       );
       setTotalUnreadMessagesCount((prev) => prev - tempCount);
 
-      await fetchMessages(recievdId);
+      await authFetchMessages(recievdId);
     }
   };
 

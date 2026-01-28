@@ -278,7 +278,7 @@ const RequirementsPage = () => {
   const loadData = async (userId: string) => {
     setResponseLoading(true);
     try {
-      const response = await fetch(`/api/requirements/${userId}`);
+      const response = await authFetch(`/api/requirements/${userId}`);
       const data = await response.json();
       setRequirements(data.requirements);
       setFilteredRequirements(data.requirements);

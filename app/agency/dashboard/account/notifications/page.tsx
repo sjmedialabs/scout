@@ -97,7 +97,7 @@ export default function NotificationsPage() {
     redirectionUrl: string,
   ) => {
     try {
-      const res = await fetch(`/api/notifications/${notificationId}`, {
+      const res = await authFetch(`/api/notifications/${notificationId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

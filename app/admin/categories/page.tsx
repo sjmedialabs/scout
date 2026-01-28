@@ -134,12 +134,12 @@ export default function CategoriesPage() {
   const removeCategory = async (catId: string) => {
     const updated = categories.filter((c) => c._id !== catId);
     setCategories(updated);
-    await fetch(`/api/service-categories/${catId}`, { method: "DELETE" });
+    await authFetch(`/api/service-categories/${catId}`, { method: "DELETE" });
   };
 
   const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
     try {
-      const res = await fetch(`/api/service-categories/${catId}`, {
+      const res = await authFetch(`/api/service-categories/${catId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

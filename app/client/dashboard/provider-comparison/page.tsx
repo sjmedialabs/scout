@@ -300,9 +300,9 @@ const ProviderComparisonPage = () => {
     setLoadingResponse(true);
     setFailed(false);
     try {
-      const response = await fetch("/api/providers");
+      const response = await authFetch("/api/providers");
       const data = await response.json();
-      const vendorsResponse = await fetch(`/api/comparision/${user?.id}`);
+      const vendorsResponse = await authFetch(`/api/comparision/${user?.id}`);
       const vendorsData = await vendorsResponse.json();
       // console.log("fetched Vendors Data:::",vendorsData)
       if (response.ok) {
@@ -330,7 +330,7 @@ const ProviderComparisonPage = () => {
       const payload = {
         agencyId: recievdProviderId,
       };
-      const response = await fetch("/api/comparision", {
+      const response = await authFetch("/api/comparision", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -353,10 +353,13 @@ const ProviderComparisonPage = () => {
   const removeVendorHandle = async (recievedProposal: any) => {
     console.log("Recievd Id to remove the proposal:::", recievedProposal);
     try {
-      const response = await fetch(`/api/comparision/${recievedProposal._id}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await authFetch(
+        `/api/comparision/${recievedProposal._id}`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        },
+      );
       const data = await response.json();
       if (response.ok) {
         setSelectedVendor((prev) =>
@@ -408,11 +411,14 @@ const ProviderComparisonPage = () => {
     console.log("data to be add::", provider);
 
     try {
-      const comparisonRes = await fetch(`/api/comparision/${provider?._id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isFavourite: !provider?.isFavourite }),
-      });
+      const comparisonRes = await authFetch(
+        `/api/comparision/${provider?._id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ isFavourite: !provider?.isFavourite }),
+        },
+      );
       if (!provider?.isFavourite) {
         const wishlistRes = await authFetch("/api/wishlist", {
           method: "POST",
@@ -421,7 +427,7 @@ const ProviderComparisonPage = () => {
         });
       }
       if (provider?.isFavourite) {
-        const wishlistRes = await fetch(`/api/wishlist/${recievdId}`, {
+        const wishlistRes = await authFetch(`/api/wishlist/${recievdId}`, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
         });

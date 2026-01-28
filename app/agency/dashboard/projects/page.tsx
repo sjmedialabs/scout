@@ -68,7 +68,7 @@ const ProjectsPage = () => {
 
       console.log("----completedPercentage---", completedPercentage);
 
-      const res = await fetch(`/api/proposals/${selectedProject.id}`, {
+      const res = await authFetch(`/api/proposals/${selectedProject.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

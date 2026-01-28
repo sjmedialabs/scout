@@ -33,7 +33,7 @@ export default function SubmitProposalPage() {
     setResLoading(true);
     setFailed(false);
     try {
-      const res = await fetch(`/api/requirements/${id}`);
+      const res = await authFetch(`/api/requirements/${id}`);
       const proposalRes = await authFetch("/api/proposals");
       if (res.ok && proposalRes.ok) {
         const data = await res.json();

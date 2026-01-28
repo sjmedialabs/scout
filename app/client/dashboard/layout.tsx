@@ -14,7 +14,7 @@ export default function ClientDashboardLayout({
 }) {
   // const loadUserDetails=async()=>{
   //   try{
-  //      const res=await fetch(`/api/users/${user?.id}`)
+  //      const res=await authFetch(`/api/users/${user?.id}`)
   //      const data=await res.json();
 
   //   }catch(error){

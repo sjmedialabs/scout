@@ -133,7 +133,7 @@ const WishListPage = () => {
   }, []);
   const handleRemove = async (recievedId: string) => {
     try {
-      const res = await fetch(`/api/wishlist/${recievedId}`, {
+      const res = await authFetch(`/api/wishlist/${recievedId}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       });
@@ -151,7 +151,7 @@ const WishListPage = () => {
   const handleViewProfile = async (providerId: string) => {
     try {
       // fire analytics update
-      await fetch(`/api/providers/${providerId}/profile-view`, {
+      await authFetch(`/api/providers/${providerId}/profile-view`, {
         method: "POST",
       });
     } catch (err) {

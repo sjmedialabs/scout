@@ -37,7 +37,7 @@ export default function UserVerificationPage() {
     console.log(`User ${userId} verification updated: ${status}`);
 
     // Future API:
-    // await fetch(`/api/admin/user-verification/update`, { method: "POST", body: JSON.stringify({ userId, status }) })
+    // await authFetch(`/api/admin/user-verification/update`, { method: "POST", body: JSON.stringify({ userId, status }) })
 
     setLoading(false);
   };

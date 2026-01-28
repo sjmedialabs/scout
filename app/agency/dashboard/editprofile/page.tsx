@@ -41,7 +41,7 @@ const EditProfile = () => {
     setResponseLoading(true);
     setFailed(false);
     try {
-      const response = await fetch(`/api/providers/${userDetails.userId}`);
+      const response = await authFetch(`/api/providers/${userDetails.userId}`);
       const data = await response.json();
 
       setProviderDetails(data.provider);
@@ -65,7 +65,7 @@ const EditProfile = () => {
     console.log("Recieved Form Data to handle save profile:::", recievedData);
 
     try {
-      const response = await fetch(`/api/providers/${userDetails.userId}`, {
+      const response = await authFetch(`/api/providers/${userDetails.userId}`, {
         method: "PUT",
         body: JSON.stringify(recievedData),
       });

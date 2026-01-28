@@ -83,7 +83,7 @@ export default function SubscriptionPlansPage() {
   // EDIT PLAN
   // ------------------------------
   const saveEdit = async (id: string, updated: Partial<ISubscription>) => {
-    const res = await fetch(`/api/subscription/${id}`, {
+    const res = await authFetch(`/api/subscription/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updated),

@@ -36,8 +36,8 @@ const ProjectDetailPage = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/proposals/${id}`);
-      const project = await fetch(`/api/requirements/${id}`);
+      const response = await authFetch(`/api/proposals/${id}`);
+      const project = await authFetch(`/api/requirements/${id}`);
       console.log("Project detail response::::", await project.json());
       if (response.status === 404) {
         // ✅ No proposals case
@@ -85,7 +85,7 @@ const ProjectDetailPage = () => {
     );
     console.log("recievd id::::", proposalId);
     try {
-      const response = await fetch(`/api/proposals/${proposalId}`, {
+      const response = await authFetch(`/api/proposals/${proposalId}`, {
         method: "PUT",
         body: JSON.stringify({ status: "shortlisted" }),
       });
@@ -102,7 +102,7 @@ const ProjectDetailPage = () => {
   const handleAccept = async (proposalId: string) => {
     console.log("Entered to accept fun:::", proposalId);
     try {
-      const response = await fetch(`/api/proposals/${proposalId}`, {
+      const response = await authFetch(`/api/proposals/${proposalId}`, {
         method: "PUT",
         body: JSON.stringify({ status: "accepted" }),
       });
@@ -123,7 +123,7 @@ const ProjectDetailPage = () => {
   };
   const handleReject = async (proposalId: string) => {
     try {
-      const response = await fetch(`/api/proposals/${proposalId}`, {
+      const response = await authFetch(`/api/proposals/${proposalId}`, {
         method: "PUT",
         body: JSON.stringify({ status: "rejected" }),
       });

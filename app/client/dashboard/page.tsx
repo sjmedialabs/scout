@@ -750,7 +750,7 @@ export default function ClientDashboard() {
       (item) => item._id === notificationId,
     );
     try {
-      // const res=await fetch(`/api/notifications/${notificationId}`,{
+      // const res=await authFetch(`/api/notifications/${notificationId}`,{
       //   method:"PUT",
       //   headers:{
       //     "Content-Type":"application/json"

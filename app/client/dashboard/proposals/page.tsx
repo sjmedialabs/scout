@@ -290,7 +290,7 @@ const ProposalPage = () => {
     setFailed(false);
 
     try {
-      const response = await fetch(`/api/proposals`);
+      const response = await authFetch(`/api/proposals`);
       const data = await response.json();
 
       console.log("Fetched Proposal for your posted Requirements:::", data);
@@ -334,7 +334,7 @@ const ProposalPage = () => {
     );
     console.log("recievd id::::", proposalId);
     try {
-      const response = await fetch(`/api/proposals/${proposalId}`, {
+      const response = await authFetch(`/api/proposals/${proposalId}`, {
         method: "PUT",
         body: JSON.stringify({ status: "shortlisted" }),
       });
@@ -352,7 +352,7 @@ const ProposalPage = () => {
   const handleAccept = async (proposalId: string) => {
     console.log("Entered to accept fun:::", proposalId);
     try {
-      const response = await fetch(`/api/proposals/${proposalId}`, {
+      const response = await authFetch(`/api/proposals/${proposalId}`, {
         method: "PUT",
         body: JSON.stringify({ status: "accepted" }),
       });
@@ -374,7 +374,7 @@ const ProposalPage = () => {
 
   const handleReject = async (proposalId: string) => {
     try {
-      const response = await fetch(`/api/proposals/${proposalId}`, {
+      const response = await authFetch(`/api/proposals/${proposalId}`, {
         method: "PUT",
         body: JSON.stringify({ status: "rejected" }),
       });

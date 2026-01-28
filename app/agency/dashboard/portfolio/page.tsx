@@ -26,7 +26,7 @@ export default function ProviderPortfolioPage() {
     setFailed(false);
 
     try {
-      const res = await fetch(`/api/providers/${user.userId}`);
+      const res = await authFetch(`/api/providers/${user.userId}`);
       const data = await res.json();
       setProvider(data.provider);
     } catch (err) {

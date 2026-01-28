@@ -188,7 +188,7 @@ const ProjectsPage = () => {
   const loadData = async (userId: string) => {
     setResponseLoading(true);
     try {
-      const response = await fetch(`/api/requirements/${userId}`);
+      const response = await authFetch(`/api/requirements/${userId}`);
       const data = await response.json();
       setRequirements(data.requirements);
       setFilteredRequirements(data.requirements);
@@ -262,7 +262,7 @@ const ProjectsPage = () => {
       setSending(true);
       // API CALL
       if (editingProject) {
-        const res = await fetch(`/api/requirements/${editingProject._id}`, {
+        const res = await authFetch(`/api/requirements/${editingProject._id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -363,7 +363,7 @@ const ProjectsPage = () => {
     try {
       // API CALL
       setSending(true);
-      const res = await fetch(`/api/reviews`, {
+      const res = await authFetch(`/api/reviews`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

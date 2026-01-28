@@ -34,7 +34,7 @@ export default function ProposalViewDetailsPage() {
       setFailed(false);
 
       try {
-        const res = await fetch(`/api/proposals/${id}`);
+        const res = await authFetch(`/api/proposals/${id}`);
         if (!res.ok) throw new Error("Failed");
 
         const data = await res.json();
