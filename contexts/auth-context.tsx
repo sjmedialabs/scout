@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { authFetch } from "@/lib/auth-fetch";
 
 export type UserRole = "client" | "agency" | "admin";
 
@@ -51,7 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // ✅ LOGIN (FIXED)
   const login = async (email: string, password: string): Promise<User> => {
-    const res = await authFetch("/api/auth/login", {
+    const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -63,11 +64,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error(data.error || "Invalid credentials");
     }
 
-    // 🔑 STORE TOKEN
+    // ✅ STORE TOKEN
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
 
-    setToken(data.token);
     setUser(data.user);
 
     return data.user;
@@ -81,7 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     role: UserRole,
     companyName?: string,
   ) => {
-    const res = await authFetch("/api/auth/register", {
+    const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password, name, role, companyName }),
@@ -103,7 +103,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // ✅ LOGOUT
   const logout = async () => {
     try {
-      await authFetch("/api/auth/logout", { method: "POST" });
+      await fetch("/api/auth/logout", { method: "POST" });
     } finally {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
