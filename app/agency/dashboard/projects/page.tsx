@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useState,useEffect } from "react"
-import {Card,CardContent} from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DollarSign,
   Calendar,
@@ -11,9 +11,9 @@ import {
   Eye,
   Edit,
   X,
-} from "lucide-react"
-import { useAuth } from "@/contexts/auth-context"
-import { useRouter } from "next/navigation"
+} from "lucide-react";
+import { useAuth } from "@/contexts/auth-context";
+import { useRouter } from "next/navigation";
 
 import {
   Dialog,
@@ -21,121 +21,123 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 
-import { Checkbox } from "@/components/ui/checkbox"
-import { toast } from "@/lib/toast"
-
+import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "@/lib/toast";
+import { authFetch } from "@/lib/auth-fetch";
 
 const ProjectsPage = () => {
   const [projectTab, setProjectTab] = useState<
     "active" | "completed" | "invitations"
-  >("active")
+  >("active");
 
-  const[dynamicActiveProjects,setDynamicActiveProjects]=useState<any[]>([]);
-  const[dynamicCompletedProjects,setDynamicCompletedProjects]=useState<any[]>([]);
-  const { user, loading } = useAuth()
+  const [dynamicActiveProjects, setDynamicActiveProjects] = useState<any[]>([]);
+  const [dynamicCompletedProjects, setDynamicCompletedProjects] = useState<
+    any[]
+  >([]);
+  const { user, loading } = useAuth();
   const router = useRouter();
 
+  const [resLoading, setResLoading] = useState<boolean>(false);
+  const [failed, setFailed] = useState<boolean>(false);
 
-  const[resLoading,setResLoading]=useState<boolean>(false);
-  const[failed,setFailed]=useState<boolean>(false);
+  const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [milestonesDraft, setMilestonesDraft] = useState<any[]>([]);
+  const [updating, setUpdating] = useState(false);
 
-  const [isProgressModalOpen, setIsProgressModalOpen] = useState(false)
-  const [selectedProject, setSelectedProject] = useState<any>(null)
-  const [milestonesDraft, setMilestonesDraft] = useState<any[]>([])
-  const [updating, setUpdating] = useState(false)
+  const updateProgress = async () => {
+    if (!selectedProject) return;
 
-const updateProgress = async () => {
-  if (!selectedProject) return
+    try {
+      setUpdating(true);
 
-  try {
-    setUpdating(true)
+      console.log("----milestonesDraft---", milestonesDraft);
 
-    console.log("----milestonesDraft---",milestonesDraft);
-
-    const completedPercentage=calculateProgress(milestonesDraft || []);
-    // Build payload dynamically
+      const completedPercentage = calculateProgress(milestonesDraft || []);
+      // Build payload dynamically
       const payload: any = {
         milestones: milestonesDraft,
-      }
+      };
 
       // Only send status if project is 100% completed
       if (completedPercentage === 100) {
-        payload.status = "completed"
+        payload.status = "completed";
       }
 
-    console.log("----completedPercentage---",completedPercentage);
+      console.log("----completedPercentage---", completedPercentage);
 
-    const res = await fetch(`/api/proposals/${selectedProject.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
+      const res = await fetch(`/api/proposals/${selectedProject.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    if (!res.ok) throw new Error("Failed to update progress")
+      if (!res.ok) throw new Error("Failed to update progress");
 
-    await loadData() // refresh projects
-    setIsProgressModalOpen(false)
-    setSelectedProject(null)
-    if(completedPercentage===100){
-      toast.success("Project Completed successfully!")
+      await loadData(); // refresh projects
+      setIsProgressModalOpen(false);
+      setSelectedProject(null);
+      if (completedPercentage === 100) {
+        toast.success("Project Completed successfully!");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUpdating(false);
     }
-  } catch (err) {
-    console.error(err)
-  } finally {
-    setUpdating(false)
-  }
-}
-
+  };
 
   const calculateProgress = (milestones = []) => {
-  if (!milestones.length) return 0
+    if (!milestones.length) return 0;
 
-  const completedCount = milestones.filter(
-    (milestone) => milestone.completed === true
-  ).length
+    const completedCount = milestones.filter(
+      (milestone) => milestone.completed === true,
+    ).length;
 
-  return Math.round((completedCount / milestones.length) * 100)
-}
+    return Math.round((completedCount / milestones.length) * 100);
+  };
 
-const loadData=async()=>{
+  const loadData = async () => {
     // Fetch data or perform any necessary actions on component mount
     setResLoading(true);
     setFailed(false);
-    try{
-   
-      const response=await fetch('/api/proposals');
-      if(!response.ok){
+    try {
+      const response = await fetch("/api/proposals");
+      if (!response.ok) {
         setFailed(true);
         throw new Error("Failed to fetch data");
       }
-      const data=await response.json();
-      const filteredProjects=data.proposals.filter((req:any)=>req.status.toLowerCase()==="accepted");
-      console.log("Filtered Projects:",filteredProjects);
+      const data = await response.json();
+      const filteredProjects = data.proposals.filter(
+        (req: any) => req.status.toLowerCase() === "accepted",
+      );
+      console.log("Filtered Projects:", filteredProjects);
 
       setDynamicActiveProjects(filteredProjects);
 
-      const filyteredCompletedProjects=data.proposals.filter((req:any) => req.status.toLowerCase()==="completed");
+      const filyteredCompletedProjects = data.proposals.filter(
+        (req: any) => req.status.toLowerCase() === "completed",
+      );
 
       setDynamicCompletedProjects(filyteredCompletedProjects);
 
-      console.log("Filtered Completed Projects:",filyteredCompletedProjects);
-    }
-    catch(err){
+      console.log("Filtered Completed Projects:", filyteredCompletedProjects);
+    } catch (err) {
       console.error("Error loading data:", err);
-    }finally{
+    } finally {
       setResLoading(false);
     }
-}
- useEffect(() => {
+  };
+  useEffect(() => {
     if (!loading && (!user || user.role !== "agency")) {
-      router.push("/login")
+      router.push("/login");
     }
-    if(user && user.role === "agency"){
-       loadData()
+    if (user && user.role === "agency") {
+      loadData();
     }
-  }, [user, loading, router])
+  }, [user, loading, router]);
 
   /* =================  ACTIVE PROJECTS ================= */
   const projects = [
@@ -189,9 +191,9 @@ const loadData=async()=>{
         { name: "Final Delivery", completed: false },
       ],
     },
-  ]
+  ];
 
-   /* ================= COMPLETED PROJECTS ================= */
+  /* ================= COMPLETED PROJECTS ================= */
   const completedProjects = [
     {
       id: "c1",
@@ -208,9 +210,9 @@ const loadData=async()=>{
         "Testing & Launch",
       ],
     },
-  ]
+  ];
 
-   /* ================= PROJECT INVITATIONS ================= */
+  /* ================= PROJECT INVITATIONS ================= */
   const invitations = [
     {
       id: "i1",
@@ -224,19 +226,24 @@ const loadData=async()=>{
       category: "Web Development",
       description:
         "We're looking for an experienced agency to develop a custom CRM system with advanced analytics and reporting capabilities.",
-      skills: ["React/Node.js", "Database Design", "API Integration", "Cloud Deployment"],
+      skills: [
+        "React/Node.js",
+        "Database Design",
+        "API Integration",
+        "Cloud Deployment",
+      ],
       reason:
         "Your portfolio in enterprise solutions and 4.9 rating impressed us",
     },
-  ]
+  ];
 
-  if(resLoading){
-        return(
-             <div className="min-h-screen flex items-center justify-center">
+  if (resLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
-        )
-    }
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -265,8 +272,8 @@ const loadData=async()=>{
             {tab === "active"
               ? "Active Projects"
               : tab === "completed"
-              ? "Completed Projects"
-              : "Project invitations"}
+                ? "Completed Projects"
+                : "Project invitations"}
           </button>
         ))}
       </div>
@@ -274,128 +281,136 @@ const loadData=async()=>{
       {/* ACTIVE PROJECTS */}
       {projectTab === "active" && (
         <div>
-          {dynamicActiveProjects.length!==0?
-          (
+          {dynamicActiveProjects.length !== 0 ? (
             <div className="space-y-5">
-          {dynamicActiveProjects.map((project) => (
-            <Card
-              key={project.id}
-              className="rounded-[28px] border border-gray-200 bg-white"
-            >
-              <CardContent className="p-6 space-y-4">
-                {/* TOP */}
-                <div className="flex flex-col md:flex-row md:justify-between gap-4">
-                  <div>
-                    <h3 className="text-[20px] font-extrabold text-blueButton">
-                      {project.requirement.title}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      {project.client.name} • {project.client.companyName}
-                    </p>
+              {dynamicActiveProjects.map((project) => (
+                <Card
+                  key={project.id}
+                  className="rounded-[28px] border border-gray-200 bg-white"
+                >
+                  <CardContent className="p-6 space-y-4">
+                    {/* TOP */}
+                    <div className="flex flex-col md:flex-row md:justify-between gap-4">
+                      <div>
+                        <h3 className="text-[20px] font-extrabold text-blueButton">
+                          {project.requirement.title}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {project.client.name} • {project.client.companyName}
+                        </p>
 
-                    <div className="flex flex-wrap items-center gap-6 mt-4">
-                    {/* Budget */}
-                    <div className="flex items-center gap-3">
-                        <div className="h-6 w-6 rounded-full bg-orangeButton flex items-center justify-center">
-                        <DollarSign className="h-3 w-3 text-white" />
+                        <div className="flex flex-wrap items-center gap-6 mt-4">
+                          {/* Budget */}
+                          <div className="flex items-center gap-3">
+                            <div className="h-6 w-6 rounded-full bg-orangeButton flex items-center justify-center">
+                              <DollarSign className="h-3 w-3 text-white" />
+                            </div>
+                            <span className="text-[13px] font-semibold text-black">
+                              ${project.proposedBudget.toLocaleString()}
+                            </span>
+                          </div>
+
+                          {/* Due Date */}
+                          <div className="flex items-center gap-3">
+                            <div className="h-6 w-6 rounded-full bg-orangeButton flex items-center justify-center">
+                              <Calendar className="h-3 w-3 text-white" />
+                            </div>
+                            <span className="text-[13px] font-semibold text-black">
+                              {/* Due {new Date(project).toLocaleDateString("en-GB")} */}
+                              {project.proposedTimeline}
+                            </span>
+                          </div>
                         </div>
-                        <span className="text-[13px] font-semibold text-black">
-                        ${project.proposedBudget.toLocaleString()}
+                      </div>
+
+                      <Badge className="bg-green-500 text-white px-4 py-1 rounded-full h-fit">
+                        {project.status === "accepted" ? "Active" : "Pending"}
+                      </Badge>
+                    </div>
+
+                    {/* PROGRESS */}
+                    <div>
+                      <div className="flex justify-between h-5 text-sm mb-1">
+                        <span></span>
+                        <span>
+                          {calculateProgress(project.milestones) || 0}% Complete
                         </span>
+                      </div>
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-blue-500 rounded-full"
+                          style={{
+                            width: `${calculateProgress(project.milestones) || 0}%`,
+                          }}
+                        />
+                      </div>
                     </div>
 
-                    {/* Due Date */}
-                    <div className="flex items-center gap-3">
-                        <div className="h-6 w-6 rounded-full bg-orangeButton flex items-center justify-center">
-                        <Calendar className="h-3 w-3 text-white" />
-                        </div>
-                        <span className="text-[13px] font-semibold text-black">
-                        {/* Due {new Date(project).toLocaleDateString("en-GB")} */}
-                        {project.proposedTimeline}
-                        </span>
+                    {/* MILESTONES */}
+                    <div>
+                      <h4 className="font-bold mb-2">Milestones</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {project.milestones.map((m, i) => (
+                          <span
+                            key={i}
+                            className={`px-4 py-1 rounded-full text-sm border ${
+                              m?.completed
+                                ? "bg-gray-100 text-gray-400"
+                                : "bg-white text-gray-900"
+                            }`}
+                          >
+                            {m.title}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                    </div>
 
-                  </div>
+                    {/* ACTIONS */}
+                    <div className="flex flex-wrap gap-3">
+                      <Button className="rounded-full bg-[#2C34A1]">
+                        <MessageSquare className="h-4 w-4 mr-2" />
+                        Message Client
+                      </Button>
 
-                  <Badge className="bg-green-500 text-white px-4 py-1 rounded-full h-fit">
-                    {project.status==="accepted"?"Active":"Pending"}
-                  </Badge>
-                </div>
-
-                {/* PROGRESS */}
-                <div>
-                  <div className="flex justify-between h-5 text-sm mb-1">
-                    <span></span>
-                    <span>{calculateProgress(project.milestones) || 0}% Complete</span>
-                  </div>
-                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-blue-500 rounded-full"
-                      style={{ width: `${calculateProgress(project.milestones) || 0}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* MILESTONES */}
-                <div>
-                  <h4 className="font-bold mb-2">Milestones</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {project.milestones.map((m, i) => (
-                      <span
-                        key={i}
-                        className={`px-4 py-1 rounded-full text-sm border ${
-                          m?.completed
-                            ? "bg-gray-100 text-gray-400"
-                            : "bg-white text-gray-900"
-                        }`}
+                      <Button
+                        variant="outline"
+                        className="rounded-full"
+                        onClick={() =>
+                          router.push(
+                            `/agency/dashboard/proposals/${project.id}`,
+                          )
+                        }
                       >
-                        {m.title}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                        <Eye className="h-4 w-4 mr-2" />
+                        View details
+                      </Button>
 
-                {/* ACTIONS */}
-                <div className="flex flex-wrap gap-3">
-                  <Button className="rounded-full bg-[#2C34A1]">
-                    <MessageSquare className="h-4 w-4 mr-2" />
-                    Message Client
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    className="rounded-full"
-                    onClick={()=>router.push(`/agency/dashboard/proposals/${project.id}`)}
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    View details
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    className="rounded-full"
-                    onClick={() => {
-                    setSelectedProject(project)
-                    setMilestonesDraft(
-                      project.milestones.map((m: any) => ({
-                        ...m,
-                        completed: m.completed ?? false, // backward-safe
-                      }))
-                    )
-                    setIsProgressModalOpen(true)
-                  }}
-                  >
-                    <Edit className="h-4 w-4 mr-2" />
-                    Update progress
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-          {
-            isProgressModalOpen&& selectedProject && (
-                <Dialog open={isProgressModalOpen} onOpenChange={setIsProgressModalOpen}>
+                      <Button
+                        variant="outline"
+                        className="rounded-full"
+                        onClick={() => {
+                          setSelectedProject(project);
+                          setMilestonesDraft(
+                            project.milestones.map((m: any) => ({
+                              ...m,
+                              completed: m.completed ?? false, // backward-safe
+                            })),
+                          );
+                          setIsProgressModalOpen(true);
+                        }}
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Update progress
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              {isProgressModalOpen && selectedProject && (
+                <Dialog
+                  open={isProgressModalOpen}
+                  onOpenChange={setIsProgressModalOpen}
+                >
                   <DialogContent className="sm:max-w-lg">
                     <DialogHeader>
                       <DialogTitle>Update Project Progress</DialogTitle>
@@ -411,10 +426,9 @@ const loadData=async()=>{
                           <Checkbox
                             checked={m.completed}
                             onCheckedChange={(checked) => {
-                              const updated = [...milestonesDraft]
-                              updated[index].completed = Boolean(checked)
-                              setMilestonesDraft(updated)
-                              
+                              const updated = [...milestonesDraft];
+                              updated[index].completed = Boolean(checked);
+                              setMilestonesDraft(updated);
                             }}
                             className="border-1 border-[#000]"
                           />
@@ -447,122 +461,126 @@ const loadData=async()=>{
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
-
-            )
-          }
-        </div>
-          )
-          :
-          (
-            <div>
-              <p className="text-gray-500 text-center text-[30px] my-15">No Active Projects</p>
+              )}
             </div>
-          )
-}        </div>
+          ) : (
+            <div>
+              <p className="text-gray-500 text-center text-[30px] my-15">
+                No Active Projects
+              </p>
+            </div>
+          )}{" "}
+        </div>
       )}
 
       {/* ================= COMPLETED PROJECTS ================= */}
       {projectTab === "completed" && (
         <div>
-          {dynamicCompletedProjects.length!==0?
-          (
+          {dynamicCompletedProjects.length !== 0 ? (
             <div className="space-y-5">
-          {dynamicCompletedProjects.map((project) => (
-            <Card
-              key={project.id}
-              className="rounded-[28px] border border-gray-200 bg-white"
-            >
-              <CardContent className="p-6 space-y-4">
-                {/* TOP */}
-                <div className="flex flex-col md:flex-row md:justify-between gap-4">
-                  <div>
-                    <h3 className="text-[20px] font-extrabold text-blueButton">
-                      {project.requirement.title}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      {project.client.name} • {project.client.companyName}
-                    </p>
+              {dynamicCompletedProjects.map((project) => (
+                <Card
+                  key={project.id}
+                  className="rounded-[28px] border border-gray-200 bg-white"
+                >
+                  <CardContent className="p-6 space-y-4">
+                    {/* TOP */}
+                    <div className="flex flex-col md:flex-row md:justify-between gap-4">
+                      <div>
+                        <h3 className="text-[20px] font-extrabold text-blueButton">
+                          {project.requirement.title}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {project.client.name} • {project.client.companyName}
+                        </p>
 
-                    <div className="flex flex-wrap items-center gap-6 mt-4">
-                    {/* Budget */}
-                    <div className="flex items-center gap-3">
-                        <div className="h-6 w-6 rounded-full bg-orangeButton flex items-center justify-center">
-                        <DollarSign className="h-3 w-3 text-white" />
+                        <div className="flex flex-wrap items-center gap-6 mt-4">
+                          {/* Budget */}
+                          <div className="flex items-center gap-3">
+                            <div className="h-6 w-6 rounded-full bg-orangeButton flex items-center justify-center">
+                              <DollarSign className="h-3 w-3 text-white" />
+                            </div>
+                            <span className="text-[13px] font-semibold text-black">
+                              ${project.proposedBudget.toLocaleString()}
+                            </span>
+                          </div>
+
+                          {/* Due Date */}
+                          <div className="flex items-center gap-3">
+                            <div className="h-6 w-6 rounded-full bg-orangeButton flex items-center justify-center">
+                              <Calendar className="h-3 w-3 text-white" />
+                            </div>
+                            <span className="text-[13px] font-semibold text-black">
+                              {/* Due {new Date(project).toLocaleDateString("en-GB")} */}
+                              {project.proposedTimeline}
+                            </span>
+                          </div>
                         </div>
-                        <span className="text-[13px] font-semibold text-black">
-                        ${project.proposedBudget.toLocaleString()}
+                      </div>
+
+                      <Badge className="bg-green-500 text-white px-4 py-1 rounded-full h-fit">
+                        {project.status}
+                      </Badge>
+                    </div>
+
+                    {/* PROGRESS */}
+                    <div>
+                      <div className="flex justify-between h-5 text-sm mb-1">
+                        <span></span>
+                        <span>
+                          {calculateProgress(project.milestones) || 0}% Complete
                         </span>
+                      </div>
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-blue-500 rounded-full"
+                          style={{
+                            width: `${calculateProgress(project.milestones) || 0}%`,
+                          }}
+                        />
+                      </div>
                     </div>
 
-                    {/* Due Date */}
-                    <div className="flex items-center gap-3">
-                        <div className="h-6 w-6 rounded-full bg-orangeButton flex items-center justify-center">
-                        <Calendar className="h-3 w-3 text-white" />
-                        </div>
-                        <span className="text-[13px] font-semibold text-black">
-                        {/* Due {new Date(project).toLocaleDateString("en-GB")} */}
-                        {project.proposedTimeline}
-                        </span>
+                    {/* MILESTONES */}
+                    <div>
+                      <h4 className="font-bold mb-2">Milestones</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {project.milestones.map((m, i) => (
+                          <span
+                            key={i}
+                            className={`px-4 py-1 rounded-full text-sm border ${
+                              m?.completed
+                                ? "bg-gray-100 text-gray-400"
+                                : "bg-white text-gray-900"
+                            }`}
+                          >
+                            {m.title}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                    </div>
 
-                  </div>
+                    {/* ACTIONS */}
+                    <div className="flex flex-wrap gap-3">
+                      <Button className="rounded-full bg-[#2C34A1]">
+                        <MessageSquare className="h-4 w-4 mr-2" />
+                        Message Client
+                      </Button>
 
-                  <Badge className="bg-green-500 text-white px-4 py-1 rounded-full h-fit">
-                    {project.status}
-                  </Badge>
-                </div>
-
-                {/* PROGRESS */}
-                <div>
-                  <div className="flex justify-between h-5 text-sm mb-1">
-                    <span></span>
-                    <span>{calculateProgress(project.milestones) || 0}% Complete</span>
-                  </div>
-                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-blue-500 rounded-full"
-                      style={{ width: `${calculateProgress(project.milestones) || 0}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* MILESTONES */}
-                <div>
-                  <h4 className="font-bold mb-2">Milestones</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {project.milestones.map((m, i) => (
-                      <span
-                        key={i}
-                        className={`px-4 py-1 rounded-full text-sm border ${
-                          m?.completed
-                            ? "bg-gray-100 text-gray-400"
-                            : "bg-white text-gray-900"
-                        }`}
+                      <Button
+                        variant="outline"
+                        className="rounded-full"
+                        onClick={() =>
+                          router.push(
+                            `/agency/dashboard/proposals/${project.id}`,
+                          )
+                        }
                       >
-                        {m.title}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                        <Eye className="h-4 w-4 mr-2" />
+                        View details
+                      </Button>
 
-                {/* ACTIONS */}
-                <div className="flex flex-wrap gap-3">
-                  <Button className="rounded-full bg-[#2C34A1]">
-                    <MessageSquare className="h-4 w-4 mr-2" />
-                    Message Client
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    className="rounded-full"
-                    onClick={()=>router.push(`/agency/dashboard/proposals/${project.id}`)}
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    View details
-                  </Button>
-
-                  {/* <Button
+                      {/* <Button
                     variant="outline"
                     className="rounded-full"
                     onClick={() => {
@@ -579,22 +597,21 @@ const loadData=async()=>{
                     <Edit className="h-4 w-4 mr-2" />
                     Update progress
                   </Button> */}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-          )
-          :
-          (
-               <div>
-                <p className="text-gray-500 text-center text-[30px] my-15"> No Completed Projects </p>
-                </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div>
+              <p className="text-gray-500 text-center text-[30px] my-15">
+                {" "}
+                No Completed Projects{" "}
+              </p>
+            </div>
           )}
         </div>
-        
       )}
-      
 
       {/* ================= PROJECT INVITATIONS ================= */}
       {/* {projectTab === "invitations" && (
@@ -686,7 +703,7 @@ const loadData=async()=>{
         </div>
       )} */}
     </div>
-  )
-}
+  );
+};
 
-export default ProjectsPage
+export default ProjectsPage;

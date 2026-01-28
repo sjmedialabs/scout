@@ -1,46 +1,47 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useCurrentUser } from "@/hooks/useCurrentUser"
-import PortfolioHeader from "@/components/provider/portfolio/PortfolioHeader"
-import CompanyOverviewCard from "@/components/provider/portfolio/CompanyOverviewCard"
-import FocusAreasCard from "@/components/provider/portfolio/FocusAreasCard"
-import ServiceLines from "@/components/provider/portfolio/ServiceLines"
-import PricingSnapshot from "@/components/provider/portfolio/PricingSnapshot"
-import PortfolioGrid from "@/components/provider/portfolio/PortfolioGrid"
-import Testimonials from "@/components/provider/portfolio/Testimonials"
-import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import PortfolioHeader from "@/components/provider/portfolio/PortfolioHeader";
+import CompanyOverviewCard from "@/components/provider/portfolio/CompanyOverviewCard";
+import FocusAreasCard from "@/components/provider/portfolio/FocusAreasCard";
+import ServiceLines from "@/components/provider/portfolio/ServiceLines";
+import PricingSnapshot from "@/components/provider/portfolio/PricingSnapshot";
+import PortfolioGrid from "@/components/provider/portfolio/PortfolioGrid";
+import Testimonials from "@/components/provider/portfolio/Testimonials";
+import { Button } from "@/components/ui/button";
+import { authFetch } from "@/lib/auth-fetch";
 
 export default function ProviderPortfolioPage() {
-  const { user, loading } = useCurrentUser()
+  const { user, loading } = useCurrentUser();
 
-  const [provider, setProvider] = useState<any>(null)
-  const [responseLoading, setResponseLoading] = useState(true)
-  const [failed, setFailed] = useState(false)
+  const [provider, setProvider] = useState<any>(null);
+  const [responseLoading, setResponseLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
 
   const loadData = async () => {
-    if (!user?.userId) return
+    if (!user?.userId) return;
 
-    setResponseLoading(true)
-    setFailed(false)
+    setResponseLoading(true);
+    setFailed(false);
 
     try {
-      const res = await fetch(`/api/providers/${user.userId}`)
-      const data = await res.json()
-      setProvider(data.provider)
+      const res = await fetch(`/api/providers/${user.userId}`);
+      const data = await res.json();
+      setProvider(data.provider);
     } catch (err) {
-      console.error(err)
-      setFailed(true)
+      console.error(err);
+      setFailed(true);
     } finally {
-      setResponseLoading(false)
+      setResponseLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     if (!loading && user) {
-      loadData()
+      loadData();
     }
-  }, [loading, user])
+  }, [loading, user]);
 
   /* Loading */
   if (responseLoading) {
@@ -48,7 +49,7 @@ export default function ProviderPortfolioPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
-    )
+    );
   }
 
   /* Error */
@@ -60,14 +61,13 @@ export default function ProviderPortfolioPage() {
           Reload
         </Button>
       </div>
-    )
+    );
   }
 
-  if (!provider) return null
+  if (!provider) return null;
 
   return (
     <div className="space-y-8">
-
       {/* Header */}
       <PortfolioHeader />
 
@@ -87,7 +87,6 @@ export default function ProviderPortfolioPage() {
           <FocusAreasCard provider={provider} />
         </div>
       </div>
-
     </div>
-  )
+  );
 }

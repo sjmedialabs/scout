@@ -352,10 +352,10 @@ export default function AgencyDashboard() {
     try {
       const [providerDetailRes, proposalRes, requirementRes, notificationRes] =
         await Promise.all([
-          authFetch(`/api/providers/${user?.id}`, {}, token),
-          authFetch("/api/proposals", {}, token),
-          authFetch("/api/requirements", {}, token),
-          authFetch("/api/notifications", {}, token),
+          authFetch(`/api/providers/${user?.id}`, {}),
+          authFetch("/api/proposals", {}),
+          authFetch("/api/requirements", {}),
+          authFetch("/api/notifications", {}),
         ]);
       if (
         providerDetailRes.ok &&
