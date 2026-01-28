@@ -1,151 +1,122 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { createContext, useContext, useState, useEffect, useCallback } from "react"
+import React, { createContext, useContext, useState, useEffect } from "react";
 
-export type UserRole = "client" | "agency" | "admin"
-
-
+export type UserRole = "client" | "agency" | "admin";
 
 interface User {
-  id: string
-  email: string
-  name: string
-  role: UserRole
-  isVerified:boolean
-  isActive:boolean
-  companyName?: string
-  avatar?: string
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  isVerified: boolean;
+  isActive: boolean;
+  companyName?: string;
+  avatar?: string;
 }
 
-// interface AuthContextType {
-//   user: User | null
-//   login: (email: string, password: string) => Promise<void>
-//   register: (email: string, password: string, name: string, role: UserRole, companyName?: string) => Promise<void>
-//   logout: () => Promise<void>
-//   loading: boolean
-//   isAuthenticated: boolean
-// }
-
 interface AuthContextType {
-  user: User | null
-  login: (email: string, password: string) => Promise<User>
+  user: User | null;
+  token: string | null;
+  login: (email: string, password: string) => Promise<User>;
   register: (
     email: string,
     password: string,
     name: string,
     role: UserRole,
-    companyName?: string
-  ) => Promise<void>
-  logout: () => Promise<void>
-  loading: boolean
-  isAuthenticated: boolean
+    companyName?: string,
+  ) => Promise<void>;
+  logout: () => Promise<void>;
+  loading: boolean;
+  isAuthenticated: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Check for existing session on mount
-  const checkAuth = useCallback(async () => {
-    try {
-      const response = await fetch("/api/auth/me")
-      if (response.ok) {
-        const data = await response.json()
-        setUser(data.user)
-      }
-    } catch (error) {
-      console.error("Auth check failed:", error)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
+  // 🔄 Restore session on refresh
   useEffect(() => {
-    checkAuth()
-  }, [checkAuth])
+    const storedToken = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
 
-  // const login = async (email: string, password: string) => {
-  //   setLoading(true)
-  //   try {
-  //     const response = await fetch("/api/auth/login", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ email, password}),
-  //     })
+    if (storedToken) setToken(storedToken);
+    if (storedUser) setUser(JSON.parse(storedUser));
 
-  //     const data = await response.json()
+    setLoading(false);
+  }, []);
 
-  //     if (!response.ok) {
-  //       throw new Error(data.error || "Login failed")
-  //     }
+  // ✅ LOGIN (FIXED)
+  const login = async (email: string, password: string): Promise<User> => {
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-  //     setUser(data.user)
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
+    const data = await res.json();
 
- const login = async (
-  email: string,
-  password: string
-): Promise<User> => {
-  const res = await fetch("/api/auth/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
-
-  if (!res.ok) {
-    throw new Error("Invalid credentials");
-  }
-
-  const data = await res.json();
-
-  setUser(data.user);
-  return data.user;
-};
-
-
-
-  const register = async (email: string, password: string, name: string, role: UserRole, companyName?: string) => {
-    setLoading(true)
-    try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, name, role, companyName }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || "Registration failed")
-      }
-
-      setUser(data.user)
-       return data.user
-    } finally {
-      setLoading(false)
+    if (!res.ok) {
+      throw new Error(data.error || "Invalid credentials");
     }
-  }
 
+    // 🔑 STORE TOKEN
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    setToken(data.token);
+    setUser(data.user);
+
+    return data.user;
+  };
+
+  // ✅ REGISTER
+  const register = async (
+    email: string,
+    password: string,
+    name: string,
+    role: UserRole,
+    companyName?: string,
+  ) => {
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, name, role, companyName }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Registration failed");
+    }
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    setToken(data.token);
+    setUser(data.user);
+  };
+
+  // ✅ LOGOUT
   const logout = async () => {
     try {
-      await fetch("/api/auth/logout", { method: "POST" })
-    } catch (error) {
-      console.error("Logout error:", error)
+      await fetch("/api/auth/logout", { method: "POST" });
     } finally {
-      setUser(null)
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      setUser(null);
+      setToken(null);
     }
-  }
+  };
 
   return (
     <AuthContext.Provider
       value={{
         user,
+        token,
         login,
         register,
         logout,
@@ -155,13 +126,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     >
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext)
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider")
+  const ctx = useContext(AuthContext);
+  if (!ctx) {
+    throw new Error("useAuth must be used within AuthProvider");
   }
-  return context
+  return ctx;
 }
