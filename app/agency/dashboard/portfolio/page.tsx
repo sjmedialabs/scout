@@ -1,5 +1,4 @@
 "use client";
-import { authFetch } from "@/lib/auth-fetch";
 import { useEffect, useState } from "react";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import PortfolioHeader from "@/components/provider/portfolio/PortfolioHeader";
