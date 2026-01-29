@@ -85,7 +85,7 @@ export function ImageUpload({
 
       console.log("[ImageUpload] Uploading to /api/upload...");
 
-      const response = await authFetch("/api/upload", {
+      const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });

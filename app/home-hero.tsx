@@ -130,7 +130,7 @@ export function HomeHero({ cms }: HomeHeroProps) {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               <Button
-                onClick={handleGetMatched}
+                onClick={()=>router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)}
                 className="absolute top-1/2 right-2 -translate-y-1/2 flex items-center justify-center h-10 sm:h-12 w-10 sm:w-12 rounded-full bg-[#F54A0C] hover:bg-[#d93f0b] shadow-md transition-all rotate-90"
               >
                 <Search className="h-5 w-5 sm:h-6 sm:w-6 text-white" />

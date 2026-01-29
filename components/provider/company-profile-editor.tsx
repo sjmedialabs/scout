@@ -24,6 +24,7 @@ import { Plus, X, ExternalLink, Lock } from "lucide-react";
 import type { Provider, PortfolioItem, TestimonialItem } from "@/lib/types";
 import { categories } from "@/lib/mock-data";
 import { ImageUpload } from "../ui/image-upload";
+import { authFetch } from "@/lib/auth-fetch";
 
 interface CompanyProfileEditorProps {
   provider: Provider;

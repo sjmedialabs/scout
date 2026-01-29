@@ -184,7 +184,7 @@ export default function MessagesPage() {
         // Set the active state immediately with the object we already have
         setDynamicActiveConversation(firstConv);
         // Fetch messages for this specific ID
-        await authFetchMessages(firstConv.conversationId);
+        await fetchMessages(firstConv.conversationId);
       }
     } catch (err) {
       console.log(err);
@@ -248,7 +248,7 @@ export default function MessagesPage() {
         body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error();
-      await authFetchMessages(dynamicActiveConversation.conversationId);
+      await fetchMessages(dynamicActiveConversation.conversationId);
       setUploadedUrl({
         url: "",
         type: "",
@@ -370,7 +370,7 @@ export default function MessagesPage() {
       );
       setTotalUnreadMessagesCount((prev) => prev - tempCount);
 
-      await authFetchMessages(recievdId);
+      await fetchMessages(recievdId);
     }
   };
 
@@ -412,7 +412,7 @@ export default function MessagesPage() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const res = await authFetch("/api/upload", {
+      const res = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });

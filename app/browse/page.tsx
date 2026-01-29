@@ -61,7 +61,7 @@ export default function BrowsePage() {
       setResLoading(true);
       setFailed(false);
       try {
-        const res = await authFetch("/api/requirements");
+        const res = await fetch("/api/requirements");
         console.log("Res from api", res);
         const data = await res.json();
         console.log("data from api", data.requirements);

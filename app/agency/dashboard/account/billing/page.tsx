@@ -255,7 +255,7 @@ export default function BillingPage() {
             </CardHeader>
             <CardContent>
               <p className="text-blue-600 font-medium">
-                {`${subscriptionDetails?.price} / ${subscriptionDetails.billingCycle}`}
+                {`${subscriptionDetails?.price || 0} / ${subscriptionDetails?.billingCycle || "Monthly"}`}
               </p>
             </CardContent>
           </Card>

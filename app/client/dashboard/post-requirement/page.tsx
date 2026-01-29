@@ -11,6 +11,7 @@ import type {
   Notification,
 } from "@/lib/types";
 import { PostRequirementForm } from "@/components/seeker/post-requirement-form";
+import { authFetch } from "@/lib/auth-fetch"
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
