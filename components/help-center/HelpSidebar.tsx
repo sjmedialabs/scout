@@ -17,11 +17,11 @@ export default function HelpSidebar() {
         <ul className="space-y-2">
           <li 
            className="text-blue-600 font-medium">
-            How Clutch Evaluates Companies
+            How Scout Evaluates Companies
           </li>
           <li>
             <Link href="/login" className="font-medium hover:underline">
-              How Clutch Evaluates Companies
+              How Scout Evaluates Companies
             </Link>
           </li>
           <li>
@@ -56,7 +56,7 @@ export default function HelpSidebar() {
           </li>
           <li>
             <Link href="/about" className="font-medium hover:underline">
-            Clutch Network
+            Scout Network
             </Link>
           </li>
         </ul>

@@ -3,7 +3,7 @@ export default function HelpContent() {
     <div className="space-y-2 text-gray-700">
 
       <h2 className="text-2xl  text-gray-900">
-        How Does Clutch Rank Companies?
+        How Does Scout Rank Companies?
       </h2>
 
       <p className="text-gray-500">

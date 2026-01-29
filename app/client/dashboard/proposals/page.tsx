@@ -641,7 +641,7 @@ const ProposalPage = () => {
                                     variant="outline"
                                     size="sm"
                                     onClick={() =>
-                                      handleViewPortfolio(proposal.agencyId)
+                                      handleViewPortfolio(proposal.agency._id)
                                     }
                                     className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
                                   >
@@ -660,9 +660,11 @@ const ProposalPage = () => {
                                   >
                                     View Project Details
                                   </Button>
-                                  {proposal.status === "pending" && (
-                                    <>
-                                      <Button
+                                  
+                                    {/*Shprtlist */}
+                                      {
+                                        (proposal.status!=="shortlisted" && proposal.status!=="negotation" && proposal.status!=="accepted") && (
+                                          <Button
                                         variant="outline"
                                         size="sm"
                                         onClick={() =>
@@ -672,34 +674,46 @@ const ProposalPage = () => {
                                       >
                                         Shortlist
                                       </Button>
-                                      <Button
+                                        )
+                                      }
+                                      {/*Accept */}
+                                      {
+                                        (proposal.status!=="accepted" && proposal.status!=="rejected") &&(
+                                                <Button
                                         variant="default"
                                         size="sm"
                                         onClick={() =>
-                                          handleProjectProposalAction(
-                                            proposal.id,
-                                            "accept",
+                                          handleAccept(
+                                            proposal.id
+                                            
                                           )
                                         }
                                         className="bg-[#39A935] rounded-full text-xs font-bold hover:bg-[#39A935] active:bg-[#39A935]"
                                       >
                                         Accept
                                       </Button>
-                                      <Button
+                                        )
+                                      }
+                                      {/*Reject */}
+                                      {
+                                        (proposal.status!=="rejected" &&  proposal.status!=="accepted") && (
+                                          <Button
                                         variant="destructive"
                                         size="sm"
                                         onClick={() =>
-                                          handleProjectProposalAction(
-                                            proposal.id,
-                                            "reject",
+                                          handleReject(
+                                            proposal.id
+                                            
                                           )
                                         }
                                         className="bg-[#FF0000] rounded-full text-xs font-bold hover:bg-[#FF0000] active:bg-[#FF0000]"
                                       >
                                         Reject
                                       </Button>
-                                    </>
-                                  )}
+                                        )
+                                      }
+                                
+                                  
                                 </div>
                               </div>
                             </div>
