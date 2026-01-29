@@ -1,6 +1,7 @@
 "use client";
 
 import type React from "react";
+import { authFetch } from "@/lib/auth-fetch";
 
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
@@ -46,17 +47,32 @@ export function Navigation() {
   // console.log("Active Menu:", activeMenu)
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchCategories = async () => {
       try {
-        const res = await authFetch("/api/service-categories");
+        // ✅ PUBLIC API → normal fetch
+        const res = await fetch("/api/service-categories", {
+          credentials: "include",
+        });
+
+        if (!res.ok) return;
+
         const data = await res.json();
-        setServiceCategories(data.data || []);
+
+        if (isMounted) {
+          setServiceCategories(data.data || []);
+        }
       } catch (err) {
-        console.error("Failed to load service categories", err);
+        console.warn("Service categories unavailable");
       }
     };
 
     fetchCategories();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {

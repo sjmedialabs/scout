@@ -1,9 +1,8 @@
 "use client";
 
 import type React from "react";
-
+import { authFetch } from "@/lib/auth-fetch";
 import { useState, useEffect } from "react";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
