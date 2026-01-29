@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PostRequirementForm } from "@/components/seeker/post-requirement-form";
+import { authFetch } from "@/lib/auth-fetch";
 import { RequirementList } from "@/components/seeker/requirement-list";
 import { ProposalList } from "@/components/seeker/proposal-list";
 import { RequirementDetailsModal } from "@/components/seeker/requirement-details-modal";

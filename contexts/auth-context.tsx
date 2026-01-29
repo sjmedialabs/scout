@@ -95,6 +95,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     setToken(data.token);
     setUser(data.user);
+    return data.user
   };
 
   // ✅ LOGOUT

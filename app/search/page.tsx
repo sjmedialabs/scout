@@ -61,7 +61,7 @@ export default function SearchPage() {
     try {
       setLoading(true);
 
-      const res = await authFetch("/api/providers");
+      const res = await fetch("/api/providers");
       const data = await res.json();
 
       setDynamicProviders(data.providers);

@@ -25,7 +25,7 @@ export default function PdfUpload({
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await authFetch("/api/upload", {
+      const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });

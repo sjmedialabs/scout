@@ -72,7 +72,7 @@ export default function ServicePage({ params }: PageProps) {
     setFailed(false);
     try {
       // Fetch service providers based on slug
-      const response = await authFetch(`/api/providers`);
+      const response = await fetch(`/api/providers`);
       const data = await response.json();
 
       const filteredProviders = data.providers.filter((eachItem: any) =>
