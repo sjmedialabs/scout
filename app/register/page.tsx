@@ -102,7 +102,7 @@ const handleSubmit = async () => {
                     checked={role === "agency"}
                     onChange={() => setRole("agency")}
                   />
-                  Service Provider
+                  Agency
                 </label>
                 <label className="flex items-center gap-2">
                   <input
@@ -110,7 +110,7 @@ const handleSubmit = async () => {
                     checked={role === "client"}
                     onChange={() => setRole("client")}
                   />
-                  Service seeker
+                  Client
                 </label>
               </div>
             </div>

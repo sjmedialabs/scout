@@ -45,7 +45,7 @@ export default function SubscribePage({ params }: SubscribePageProps) {
     setLoading(true);
     setFailed(false);
     try {
-      const response = await authFetch(`/api/subscription/${params.plan}`);
+      const response = await fetch(`/api/subscription/${params.plan}`);
       if (!response.ok) {
         throw new Error("Failed to fetch subscription plan data");
       } else {

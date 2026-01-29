@@ -6,12 +6,15 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/lib/toast";
 import { authFetch } from "@/lib/auth-fetch";
+import { useAuth } from "@/contexts/auth-context";
+import { useRouter } from "next/navigation";
 
 const token =
   typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
 const EditProfile = () => {
-  const { user, loading } = useCurrentUser();
+  const router=useRouter();
+  const { user, loading } = useAuth();
 
   const [provider, setProvider] = useState({
     id: "1",
@@ -36,12 +39,13 @@ const EditProfile = () => {
   const [providerDetails, setProviderDetails] = useState({});
   const [responseLoading, setResponseLoading] = useState(true);
   const [failed, setFailed] = useState(false);
+  console.log("fetched user Details are from the edit profie is:::::",user)
 
   const loadData = async () => {
     setResponseLoading(true);
     setFailed(false);
     try {
-      const response = await authFetch(`/api/providers/${userDetails.userId}`);
+      const response = await authFetch(`/api/providers/${user?.id}`);
       const data = await response.json();
 
       setProviderDetails(data.provider);
@@ -53,19 +57,14 @@ const EditProfile = () => {
     }
   };
   console.log("Provider Details::::", providerDetails);
-  useEffect(() => {
-    if (!loading && user) {
-      console.log("Logged in user payload::::", user);
-      setUserDetails(user);
-      loadData();
-    }
-  }, [user, loading]);
+
+ 
 
   const handleSaveProfile = async (recievedData: any) => {
     console.log("Recieved Form Data to handle save profile:::", recievedData);
 
     try {
-      const response = await authFetch(`/api/providers/${userDetails.userId}`, {
+      const response = await authFetch(`/api/providers/${user?.id}`, {
         method: "PUT",
         body: JSON.stringify(recievedData),
       });
@@ -79,6 +78,14 @@ const EditProfile = () => {
       toast.error("Failed to update the details");
     }
   };
+  useEffect(() => {
+      if (!loading && (!user || user.role !== "agency")) {
+        router.push("/login");
+      }
+      if (user && user.role === "agency") {
+        loadData();
+      }
+    }, [user, loading, router]);
 
   if (responseLoading) {
     return (
