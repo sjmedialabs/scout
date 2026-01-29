@@ -43,7 +43,7 @@ export default function PaymentMethodsPage() {
   -------------------------------------------------------
   useEffect(() => {
     async function loadMethods() {
-      const res = await fetch("/api/admin/payment-methods");
+      const res = await authFetch("/api/admin/payment-methods");
       const data = await res.json();
       setGateways(data);
     }
@@ -55,15 +55,13 @@ export default function PaymentMethodsPage() {
     setLoading(true);
 
     setGateways((prev) =>
-      prev.map((g) =>
-        g.id === id ? { ...g, enabled: !g.enabled } : g
-      )
+      prev.map((g) => (g.id === id ? { ...g, enabled: !g.enabled } : g)),
     );
 
     console.log(`Toggled payment method: ${id}`);
 
     // Future API call:
-    // await fetch("/api/admin/payment-methods/toggle", {
+    // await authFetch("/api/admin/payment-methods/toggle", {
     //   method: "POST",
     //   body: JSON.stringify({ id }),
     // });
@@ -101,7 +99,9 @@ export default function PaymentMethodsPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-800">{gateway.name}</h3>
+                  <h3 className="text-xl font-semibold text-gray-800">
+                    {gateway.name}
+                  </h3>
                   <p className="text-gray-500 mt-1">{gateway.description}</p>
 
                   {/* Status */}
@@ -152,8 +152,9 @@ export default function PaymentMethodsPage() {
       <div className="bg-white p-6 rounded-xl shadow border">
         <h3 className="text-lg font-semibold mb-2">Payment Method Notes</h3>
         <p className="text-gray-600">
-          Enabled payment methods will appear during checkout for subscription and billing payments.
-          Configure keys and credentials to activate new gateways.
+          Enabled payment methods will appear during checkout for subscription
+          and billing payments. Configure keys and credentials to activate new
+          gateways.
         </p>
       </div>
     </div>

@@ -1,32 +1,41 @@
+"use client";
 
+import type React from "react";
 
-
-
-"use client"
-
-import type React from "react"
-
-import { useState, useEffect } from "react"
-import { useAuth } from "@/contexts/auth-context"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { PostRequirementForm } from "@/components/seeker/post-requirement-form"
-import { RequirementList } from "@/components/seeker/requirement-list"
-import { ProposalList } from "@/components/seeker/proposal-list"
-import { RequirementDetailsModal } from "@/components/seeker/requirement-details-modal"
-import { NegotiationChat } from "@/components/negotiation-chat"
-import { FiltersPanel } from "@/components/filters-panel"
-import { ProviderProfileModal } from "@/components/provider-profile-modal"
-import { ProjectSubmissionForm } from "@/components/project-submission-form"
-import { ReviewSubmissionForm } from "@/components/review-submission-form"
-import { ProviderComparison } from "@/components/provider-comparison"
-import { NotificationsWidget } from "@/components/seeker/notifications-widget"
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/auth-context";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { PostRequirementForm } from "@/components/seeker/post-requirement-form";
+import { RequirementList } from "@/components/seeker/requirement-list";
+import { ProposalList } from "@/components/seeker/proposal-list";
+import { RequirementDetailsModal } from "@/components/seeker/requirement-details-modal";
+import { NegotiationChat } from "@/components/negotiation-chat";
+import { FiltersPanel } from "@/components/filters-panel";
+import { ProviderProfileModal } from "@/components/provider-profile-modal";
+import { ProjectSubmissionForm } from "@/components/project-submission-form";
+import { ReviewSubmissionForm } from "@/components/review-submission-form";
+import { ProviderComparison } from "@/components/provider-comparison";
+import { NotificationsWidget } from "@/components/seeker/notifications-widget";
 import {
   Plus,
   FileText,
@@ -61,34 +70,41 @@ import {
   Target,
   Heart,
   SeparatorVertical as Separator,
-} from "lucide-react"
-import { mockRequirements, mockProposals, mockProviders } from "@/lib/mock-data"
-import type { Requirement, Proposal, Provider, Notification } from "@/lib/types"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import RatingStars from "@/components/rating-star"
-import { Linden_Hill } from "next/font/google"
-import { useSearchParams } from "next/navigation"
+} from "lucide-react";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+  mockRequirements,
+  mockProposals,
+  mockProviders,
+} from "@/lib/mock-data";
+import type {
+  Requirement,
+  Proposal,
+  Provider,
+  Notification,
+} from "@/lib/types";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import RatingStars from "@/components/rating-star";
+import { Linden_Hill } from "next/font/google";
+import { useSearchParams } from "next/navigation";
+import { authFetch } from "@/lib/auth-fetch";
 
 interface ProjectProposal {
-  id: string
-  projectId: string
-  providerId: string
-  providerName: string
-  providerRating: number
-  proposalAmount: number
-  timeline: string
-  description: string
-  submittedAt: string
-  status: "pending" | "shortlisted" | "accepted" | "rejected"
-  coverLetter: string
+  id: string;
+  projectId: string;
+  providerId: string;
+  providerName: string;
+  providerRating: number;
+  proposalAmount: number;
+  timeline: string;
+  description: string;
+  submittedAt: string;
+  status: "pending" | "shortlisted" | "accepted" | "rejected";
+  coverLetter: string;
 }
 
 const mockProjectProposals: ProjectProposal[] = [
@@ -242,579 +258,471 @@ const mockProjectProposals: ProjectProposal[] = [
     coverLetter:
       "We specialize in educational technology and have built LMS platforms for universities and corporate training programs. Our solutions support 10,000+ concurrent users with excellent performance.",
   },
-]
- 
+];
 
+const ProposalPage = () => {
+  const { user, loading } = useAuth();
+  const searchParams = useSearchParams();
+  const requirementId = searchParams.get("requirementId");
 
+  useEffect(() => {
+    setSelectedRequirement(requirementId);
+  }, [requirementId]);
 
-const ProposalPage=()=>{
-    const { user, loading } = useAuth()
-    const searchParams = useSearchParams()
-    const requirementId = searchParams.get("requirementId")
+  const [selectedRequirementProposals, setSelectedRequirementProposals] =
+    useState<Proposal[]>();
+  const router = useRouter();
+  const [activeSection, setActiveSection] = useState("dashboard"); // Set initial state to "dashboard" so content shows by default
 
-    useEffect(() => {
+  const [proposals, setProposals] = useState<Proposal[]>();
+  const [selectedRequirement, setSelectedRequirement] = useState<string | null>(
+    null,
+  );
+  const [responseLoading, setResponseLoading] = useState(false);
+  const [failed, setFailed] = useState(false);
 
-      setSelectedRequirement(requirementId)
-      
-    }, [requirementId])
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
+    null,
+  );
 
-      const[selectedRequirementProposals,setSelectedRequirementProposals]=useState<Proposal[]>()
-      const router = useRouter()
-      const [activeSection, setActiveSection] = useState("dashboard") // Set initial state to "dashboard" so content shows by default
-     
-      const [proposals, setProposals] = useState<Proposal[]>()
-      const [selectedRequirement, setSelectedRequirement] = useState<string | null>(null)
-      const[responseLoading,setResponseLoading]=useState(false);
-      const[failed,setFailed]=useState(false)
-     
-      const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
+  const LoadData = async (userId: string) => {
+    setResponseLoading(true);
+    setFailed(false);
 
-      // negotation modal and message
-    const[showNegotationModal,setShowNegotationModal]=useState(false);
-    const[negotationMessage,setNegotationMessage]=useState("");
-    const[sending,setSending]=useState(false);
-    const[conversationId,setConversationId]=useState("");
-    const[selectedProposalId,setSelectedProposalId]=useState('')
-    const[errorMsg,setErrorMsg]=useState({
-      status:"success",
-      msg:""
-    })
-     
-      
-    
-      
+    try {
+      const response = await authFetch(`/api/proposals`, {credentials: "include" });
+      const data = await response.json();
 
-     const LoadData = async (userId: string) => {
-  setResponseLoading(true)
-  setFailed(false)
+      console.log("Fetched Proposal for your posted Requirements:::", data);
 
-  try {
-    const response = await fetch(`/api/proposals`)
-    const data = await response.json()
+      const filteredProposals = data.proposals.filter((p: any) => {
+        const id =
+          p.requirement?._id || // populated
+          p.requirement?.id || // populated
+          p.requirementId; // not populated
 
-    console.log("Fetched Proposal for your posted Requirements:::", data)
+        console.log("Comparing:", id?.toString(), requirementId);
 
-    const filteredProposals = data.proposals.filter((p: any) => {
-      const id =
-        p.requirement?._id ||   // populated
-        p.requirement?.id || // populated
-        p.requirementId         // not populated
+        return id?.toString() === requirementId;
+      });
 
+      setProposals(data.proposals);
+      setSelectedRequirementProposals(filteredProposals);
+      setFailed(false);
+    } catch (error) {
+      console.log("Failed to fetch the proposals", error);
+      setFailed(true);
+    } finally {
+      setResponseLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!loading && (!user || user.role !== "client")) {
+      router.push("/login");
+    }
+    if (!loading && user) {
+      LoadData(user.id);
+    }
+  }, [user, loading, router]);
+
+  const handleShortlist = async (proposalId: string) => {
+    setProposals((prev) =>
+      prev.map((p) =>
+        p.id === proposalId ? { ...p, status: "shortlisted" as const } : p,
+      ),
+    );
+    console.log("recievd id::::", proposalId);
+    try {
+      const response = await authFetch(`/api/proposals/${proposalId}`, {
+        method: "PUT",
+        body: JSON.stringify({ status: "shortlisted" }),
+        credentials: "include" 
+      });
       console.log(
-        "Comparing:",
-        id?.toString(),
-        requirementId
-      )
+        "Shortlist action response::::",
+        await response.json,
+        proposalId,
+      );
+    } catch (error) {
+      console.log("failed to update the  status", error);
+      alert("Staus failed to shortlist the proposal");
+    }
+  };
 
-      return id?.toString() === requirementId
-    })
+  const handleAccept = async (proposalId: string) => {
+    console.log("Entered to accept fun:::", proposalId);
+    try {
+      const response = await authFetch(`/api/proposals/${proposalId}`, {
+        method: "PUT",
+        body: JSON.stringify({ status: "accepted" }),
+        credentials: "include" 
+      });
+      console.log(
+        "Shortlist action response::::",
+        await response.json,
+        proposalId,
+      );
+      setProposals((prev) =>
+        prev.map((p) =>
+          p.id === proposalId ? { ...p, status: "accepted" as const } : p,
+        ),
+      );
+    } catch (error) {
+      console.log("failed to update the  status", error);
+      alert("Staus failed to shortlist the proposal");
+    }
+  };
 
-    setProposals(data.proposals)
-    setSelectedRequirementProposals(filteredProposals)
-    setFailed(false)
+  const handleReject = async (proposalId: string) => {
+    try {
+      const response = await authFetch(`/api/proposals/${proposalId}`, {
+        method: "PUT",
+        body: JSON.stringify({ status: "rejected" }),
+        credentials: "include" 
+      });
+      console.log(
+        "Shortlist action response::::",
+        await response.json,
+        proposalId,
+      );
+      setProposals((prev) =>
+        prev.map((p) =>
+          p.id === proposalId ? { ...p, status: "rejected" as const } : p,
+        ),
+      );
+    } catch (error) {
+      console.log("failed to update the  status", error);
+      alert("Staus failed to shortlist the proposal");
+    }
+  };
 
-  } catch (error) {
-    console.log("Failed to fetch the proposals", error)
-    setFailed(true)
-  } finally {
-    setResponseLoading(false)
+  const handleRequestRevision = (proposalId: string, feedback: string) => {
+    console.log(
+      "Revision requested for proposal:",
+      proposalId,
+      "Feedback:",
+      feedback,
+    );
+    // In real app, this would send the revision request to the provider
+  };
+
+  const getProposalsForRequirement = (requirementId: string) => {
+    return proposals.filter((p) => p.requirementId === requirementId);
+  };
+
+  const handleProjectProposalAction = (
+    proposalId: string,
+    action: "shortlist" | "accept" | "reject",
+  ) => {
+    // setProjectProposals((prev) =>
+    //   prev.map((proposal) =>
+    //     proposal.id === proposalId
+    //       ? { ...proposal, status: action === "shortlist" ? "shortlisted" : action }
+    //       : proposal,
+    //   ),
+    // )
+  };
+
+  const handleViewPortfolio = (providerId: string) => {
+    // setSelectedCompanyId(providerId)
+    // setViewingPortfolio(true)
+    // setViewingProfile(false)
+    // setActiveSection("company-portfolio")
+    router.push(`/client/dashboard/proposals/agency/${providerId}`);
+  };
+
+  const handleViewProfile = (providerId: string) => {
+    setSelectedCompanyId(providerId);
+    setViewingProfile(true);
+    setViewingPortfolio(false);
+    setActiveSection("company-profile");
+  };
+
+  if (loading || responseLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
   }
-}
+  if (failed || !proposals) {
+    return (
+      <div className="flex flex-col justify-center items-center text-center min-h-100">
+        <h1 className="text-center font-semibold">
+          Failed to Retrive the data
+        </h1>
+        <Button
+          onClick={LoadData}
+          className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]"
+        >
+          Reload
+        </Button>
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold my-custom-class text-[#F4561C]">
+          Proposals
+          {selectedRequirementProposals[0]?.requirement?.title && (
+            <span className="text-[#656565] font-normal text-sm">
+              {` (for  ${selectedRequirementProposals[0].requirement?.title} )`}
+            </span>
+          )}
+        </h1>
+        <p className="text-[#656565] text-xl font-medium my-custom-class">
+          {selectedRequirement
+            ? "Review and manage proposals for the selected requirement"
+            : "All proposals received for your projects and requirements"}
+        </p>
+      </div>
 
+      <div className="flex gap-4  h-[40px] w-fit  justify-center items-center font-bold text-sm text-[#000] bg-[#E6EDF5] rounded-full">
+        <button
+          className={`h-[100%] ${
+            !selectedRequirement
+              ? " bg-[#F54A0C] rounded-full text-[#fff] px-5"
+              : " text-muted-foreground hover:text-foreground px-5"
+          }`}
+          onClick={() => setSelectedRequirement(null)}
+        >
+          Project Proposals ({proposals.length})
+        </button>
+        <button
+          className={`h-[100%] ${
+            selectedRequirement
+              ? "bg-[#F54A0C] rounded-full text-[#fff] px-5"
+              : "text-muted-foreground hover:text-foreground px-5"
+          }`}
+          onClick={() => setSelectedRequirement("req" || null)}
+        >
+          Requirement Proposals
+        </button>
+      </div>
 
-      useEffect(() => {
-        if (!loading && (!user || user.role !== "client")) {
-          router.push("/login")
-        }
-        if(!loading && user){
-          LoadData(user.id)
-        }
-      }, [user, loading, router])
-    
-     
-    
-      const handleShortlist = async(proposalId: string) => {
-        setProposals((prev) => prev.map((p) => (p.id === proposalId ? { ...p, status: "shortlisted" as const } : p)))
-        console.log("recievd id::::",proposalId)
-        try{
-           const  response=await fetch(`/api/proposals/${proposalId}`,{
-            method:"PUT",
-            body:JSON.stringify({status:"shortlisted"})})
-            console.log("Shortlist action response::::",await response.json,proposalId)
-          
-        }catch(error){
-          console.log("failed to update the  status",error)
-          alert("Staus failed to shortlist the proposal")
-        }
-      }
-    
-      const handleAccept = async(proposalId: string) => {
-        console.log("Entered to accept fun:::",proposalId)
-         try{
-           const  response=await fetch(`/api/proposals/${proposalId}`,{
-            method:"PUT",
-            body:JSON.stringify({status:"accepted"})})
-            console.log("Shortlist action response::::",await response.json,proposalId)
-            setProposals((prev) => prev.map((p) => (p.id === proposalId ? { ...p, status: "accepted" as const } : p)))
-        }catch(error){
-          console.log("failed to update the  status",error)
-          alert("Staus failed to shortlist the proposal")
-        }
-        
-      }
-    
-      const handleReject = async(proposalId: string) => {
-       
-        try{
-           const  response=await fetch(`/api/proposals/${proposalId}`,{
-            method:"PUT",
-            body:JSON.stringify({status:"rejected"})})
-            console.log("Shortlist action response::::",await response.json,proposalId)
-            setProposals((prev) => prev.map((p) => (p.id === proposalId ? { ...p, status: "rejected" as const } : p)))
-        }catch(error){
-          console.log("failed to update the  status",error)
-          alert("Staus failed to shortlist the proposal")
-        }
-      }
-
-      const handlNegotation=async(proposalId:string)=>{
-         console.log("Entered to accept fun:::",proposalId)
-        // const negotatiteProposal=proposals.find((eachItem:any)=>eachItem.id===proposalId)
-         try{
-           const  response=await fetch(`/api/proposals/${proposalId}`,{
-            method:"PUT",
-            body:JSON.stringify({status:"negotation"})})
-
-            console.log("negotation action response::::",await response.json,proposalId)
-            setProposals((prev) => prev.map((p) => (p.id === proposalId ? { ...p, status: "negotation" as const } : p)))
-            //chat concersation start api
-            const conRes=await fetch(`/api/chat/conversation`,{
-              method:"POST",
-              headers:{
-                "Content-Type":"application/json"
-              },
-              body:JSON.stringify({proposalId})
-  
-            })
-            const convData=await conRes.json();
-            setConversationId(convData.conversationId)
-            
-            setSelectedProposalId(proposalId)
-            setShowNegotationModal(true)
-            
-            console.log("Conversation Started")
-        }catch(error){
-          console.log("failed to update the  status",error)
-          alert("Staus failed to shortlist the proposal")
-        }
-      }
-      const handleSendMessage=async()=>{
-        if(!negotationMessage.trim()) {
-          setErrorMsg({
-            status:"failed",
-          msg:"Required"          
-        })
-        }
-          setSending(true);
-          const negotatiteProposal=proposals.find((eachItem:any)=>eachItem.id===selectedProposalId)
-          try{
-             //send message to the agency in the chat
-            const messRes=await fetch(`/api/chat/message`,{
-              method:"POST",
-              headers:{
-                "Content-Type":"application/json"
-              },
-              body:JSON.stringify({
-                conversationId:conversationId,
-                senderType:"SEEKER",
-                receiverId:negotatiteProposal?.agency?.userId,
-                content:negotationMessage,
-                messageType:"TEXT"
-
-              })
-  
-            })
-            if(messRes.ok){
-              setNegotationMessage("");
-              setShowNegotationModal(false);
-
-            }
-          }catch(error){
-             console.log("Failed to send the message")
-             setErrorMsg({
-              status:"failed",
-              msg:"Failed to send the message"
-             })
-          }finally{
-            setSending(false)
-          }
-      }
-    
-      const handleRequestRevision = (proposalId: string, feedback: string) => {
-        console.log("Revision requested for proposal:", proposalId, "Feedback:", feedback)
-        // In real app, this would send the revision request to the provider
-      }
-  
-      const getProposalsForRequirement = (requirementId: string) => {
-        return proposals.filter((p) => p.requirementId === requirementId)
-      }
-    
-      
-   
-      const handleProjectProposalAction = (proposalId: string, action: "shortlist" | "accept" | "reject") => {
-        // setProjectProposals((prev) =>
-        //   prev.map((proposal) =>
-        //     proposal.id === proposalId
-        //       ? { ...proposal, status: action === "shortlist" ? "shortlisted" : action }
-        //       : proposal,
-        //   ),
-        // )
-      }
-    
-      const handleViewPortfolio = (providerId: string) => {
-        // setSelectedCompanyId(providerId)
-        // setViewingPortfolio(true)
-        // setViewingProfile(false)
-        // setActiveSection("company-portfolio")
-        router.push(`/client/dashboard/proposals/agency/${providerId}`)
-      }
-    
-      const handleViewProfile = (providerId: string) => {
-        setSelectedCompanyId(providerId)
-        setViewingProfile(true)
-        setViewingPortfolio(false)
-        setActiveSection("company-profile")
-      }
-
-      if (loading || responseLoading) {
-          return (
-            <div className="min-h-screen flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-          )
-        }
-         if(failed || !proposals){
-                return(
-                  <div className="flex flex-col justify-center items-center text-center min-h-100">
-                    <h1 className="text-center font-semibold">Failed  to Retrive the data</h1>
-                    <Button onClick={LoadData} className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]">Reload</Button>
+      <Card className="bg-[#fff] py-0 rounded-[22px]">
+        <CardContent className="max-h-[600px] overflow-y-auto p-4">
+          {selectedRequirement ? (
+            <ProposalList
+              // proposals={getProposalsForRequirement(selectedRequirement)}
+              proposals={selectedRequirementProposals || []}
+              onShortlist={handleShortlist}
+              onAccept={handleAccept}
+              onReject={handleReject}
+              onRequestRevision={handleRequestRevision}
+            />
+          ) : (
+            <div className="space-y-6">
+              {proposals.length > 0 ? (
+                <div>
+                  <div className="space-y-4 mb-4">
+                    <div className="flex justify-between items-center mt-0">
+                      <h3 className="text-lg font-semibold my-custom-class tracking-tight">
+                        Proposals Received
+                      </h3>
+                      <div className="text-sm text-muted-foreground">
+                        Showing {proposals.length} of {proposals.length}{" "}
+                        proposals
+                        {proposals.rejectedCount > 0 &&
+                          ` (${proposals.rejectedCount} rejected)`}
+                      </div>
+                    </div>
                   </div>
-                )
-            }
-    return(
-   <div className="space-y-6">
-               <div>
-                 <h1 className="text-2xl font-bold my-custom-class text-[#F4561C]">
-                   Proposals 
-                   {((selectedRequirementProposals[0]?.requirement?.title)) && (
-                     <span className="text-[#656565] font-normal text-sm">
-                       
-                      {` (for  ${selectedRequirementProposals[0].requirement?.title} )`}
-                     </span>
-                   )}
-                 </h1>
-                 <p className="text-[#656565] text-xl font-medium my-custom-class">
-                   {selectedRequirement
-                     ? "Review and manage proposals for the selected requirement"
-                     : "All proposals received for your projects and requirements"}
-                 </p>
-               </div>
-   
-               <div className="flex gap-4  h-[40px] w-fit  justify-center items-center font-bold text-sm text-[#000] bg-[#E6EDF5] rounded-full">
-                 <button
-                   className={`h-[100%] ${
-                     !selectedRequirement
-                       ? " bg-[#F54A0C] rounded-full text-[#fff] px-5"
-                       : " text-muted-foreground hover:text-foreground px-5"
-                   }`}
-                   onClick={() => setSelectedRequirement(null)}
-                 >
-                   Project Proposals ({proposals.length})
-                 </button>
-                 <button
-                   className={`h-[100%] ${
-                     selectedRequirement
-                       ? "bg-[#F54A0C] rounded-full text-[#fff] px-5"
-                       : "text-muted-foreground hover:text-foreground px-5"
-                   }`}
-                   onClick={() => setSelectedRequirement("req" || null)}
-                 >
-                   Requirement Proposals
-                 </button>
-               </div>
-   
-               <Card className="bg-[#fff] py-0 rounded-[22px]">
-                 <CardContent className="max-h-[600px] overflow-y-auto p-4">
-                  
-                   {selectedRequirement ? (
-                     <ProposalList
-                        // proposals={getProposalsForRequirement(selectedRequirement)}
-                       proposals={selectedRequirementProposals || []}
-                       onShortlist={handleShortlist}
-                       onAccept={handleAccept}
-                       onReject={handleReject}
-                       onRequestRevision={handleRequestRevision}
-                     />
-                   ) : (
-                     <div className="space-y-6">
-                       {proposals.length > 0 ? (
-                         <div>
-                          <div className="space-y-4 mb-4">
-                            <div className="flex justify-between items-center mt-0">
-                              <h3 className="text-lg font-semibold my-custom-class tracking-tight">Proposals Received</h3>
-                              <div className="text-sm text-muted-foreground">
-                                Showing {proposals.length} of {proposals.length} proposals
-                                {proposals.rejectedCount > 0 && ` (${proposals.rejectedCount} rejected)`}
+
+                  {proposals.map((proposal) => (
+                    <Card
+                      key={proposal.id}
+                      className="py-0 px-0 rounded-[22px] mb-3"
+                    >
+                      <CardContent className="px-5 py-6">
+                        <div className="flex flex-col lg:flex-row lg:justify-start gap-4">
+                          {/* Left Image */}
+                          <div className="max-h-[300px] max-w-full  lg:max-h-[100%] lg:max-w-[300px] rounded-[18px] overflow-hidden shrink-0">
+                            <img
+                              src={
+                                proposal.agency.coverImage || "/proposal.jpg"
+                              }
+                              alt={proposal.agency.name}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                          {/*Right side content */}
+                          <div>
+                            <div className="flex  justify-between items-center mb-2">
+                              <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Badge
+                                    variant="outline"
+                                    className="text-xs border-[#DEDEDE] bg-[#EDEDED] rounded-full h-[30px] px-3"
+                                  >
+                                    {proposal?.requirement?.title ||
+                                      "Unknown Project"}
+                                  </Badge>
+                                </div>
+                                <h3
+                                  className="text-2xl font-bold text-[#000] mb-0"
+                                  onClick={() =>
+                                    handleViewProfile(proposal.providerId)
+                                  }
+                                >
+                                  {proposal.agency.name}
+                                </h3>
+                                <p className="text-sm ml-1 -mt-1 text-[#939191] font-normal">
+                                  {proposal.agency.name}
+                                </p>
+                                {/* Rating */}
+                                <div className="flex items-center mt-0 gap-1 text-sm font-medium">
+                                  <RatingStars
+                                    rating={proposal.agency.rating}
+                                    reviews={proposal.agency.reviewCount}
+                                  />
+                                  <span className="text-sm font-bold text-[#000] mt-1">
+                                    {`${proposal.agency.rating || 0} (${proposal.agency.reviewCount || 0})`}{" "}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="text-right mb-0">
+                                <div className="text-2xl font-bold text-[#39A935] items-end">
+                                  ${proposal.proposedBudget.toLocaleString()}
+                                </div>
+                                <div className="text-sm text-[#A0A0A0] -mt-1">
+                                  {proposal.proposedTimeline}
+                                </div>
                               </div>
                             </div>
-                            </div>
-                          
-                           { proposals.map((proposal)=>(
-                                  <Card key={proposal.id} className="py-0 px-0 rounded-[22px] mb-3">
-                              <CardContent className="px-5 py-6">
-                                <div className="flex flex-col lg:flex-row lg:justify-start gap-4">
-                                  {/* Left Image */}
-                                  <div className="max-h-[300px] max-w-full  lg:max-h-[100%] lg:max-w-[300px] rounded-[18px] overflow-hidden shrink-0">
-                                    <img
-                                      src={proposal.agency.coverImage || "/proposal.jpg"}
-                                      alt={proposal.agency.name}
-                                      className="h-full w-full object-cover"
-                                    />
-                                  </div>
-                                  {/*Right side content */}
-                                  <div>
-                                    <div className="flex  justify-between items-center mb-2">
-                                    <div>
-                                      <div className="flex items-center gap-2 mb-2">
-                                        <Badge variant="outline" className="text-xs border-[#DEDEDE] bg-[#EDEDED] rounded-full h-[30px] px-3">
-                                          {proposal?.requirement?.title || "Unknown Project"}
-                                        </Badge>
-                                      </div>
-                                      <h3
-                                        className="text-2xl font-bold text-[#000] mb-0"
-                                        onClick={() => handleViewProfile(proposal.providerId)}
-                                      >
-                                        {proposal.agency.name}
-                                      </h3>
-                                      <p className="text-sm ml-1 -mt-1 text-[#939191] font-normal">
-                                        {proposal.agency.name}
-                                      </p>
-                                      {/* Rating */}
-                                        <div className="flex items-center mt-0 gap-1 text-sm font-medium">
-                                          <RatingStars rating={proposal.agency.rating} reviews={proposal.agency.reviewCount}/>
-                                          <span className="text-sm font-bold text-[#000] mt-1">{`${proposal.agency.rating || 0} (${proposal.agency.reviewCount || 0})`} </span>
-                                        </div>
-                                      
-                                    </div>
-                                    <div className="text-right mb-0">
-                                      <div className="text-2xl font-bold text-[#39A935] items-end">
-                                        ${proposal.proposedBudget.toLocaleString()}
-                                      </div>
-                                      <div className="text-sm text-[#A0A0A0] -mt-1">{proposal.proposedTimeline}</div>
-                                    </div>
-                                    </div>
-    
-                                  <div className="space-y-2">
-                                    <div>
-                                      <h4 className="font-bold text-xl text-[#616161] mb-0">Cover Letter</h4>
-                                      <p className="text-[#939191] font-normal text-sm">{proposal.coverLetter}</p>
-                                    </div>
-    
-                                    <div>
-                                      <h4 className="font-bold text-xl text-[#616161] mb-0">Proposal Description</h4>
-                                      <p className="text-[#939191] font-normal text-sm">{proposal.proposalDescription}</p>
-                                    </div>
-                                    <div className="flex  items-center mt-2 mb-3 gap-2">
-                                      <span className="text-sm text-[#000000] font-noormal">
-                                          Submitted on : {new Date(proposal.updatedAt).toLocaleDateString()}
-                                        </span>
-                                        <Badge
-                                          variant={
-                                            proposal.status === "accepted"
-                                              ? "default"
-                                              : proposal.status === "shortlisted"
-                                                ? "secondary"
-                                                : proposal.status === "rejected"
-                                                  ? "destructive"
-                                                  : "outline"
-                                          } className="border-[#DEDEDE] bg-[#EDEDED] rounded-full text-xs text-[#000]"
-                                        >
-                                          {proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)}
-                                        </Badge>
-                                        
-                                      </div>
-    
-                                    <div className="flex items-center  justify-between pt-4  border-[#DDDDDD] border-t-2">
-                                      
-    
-                                      <div className="flex flex-wrap gap-2">
-                                      
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => handleViewPortfolio(proposal.agencyId)}
-                                          className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
-                                        >
-                                          View Portfolio
-                                        </Button>
-                                      
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => ( router.push(`/client/dashboard/proposals/${proposal.id}`))
-                                          }
-                                            className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
-                                        >
-                                          View Project Details
-                                        </Button>
-                                        {proposal.status === "pending" && (
-                                          <>
-                                            <Button
-                                              variant="outline"
-                                              size="sm"
-                                              onClick={() => handleShortlist(proposal.id)}
-                                                className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
-                                            >
-                                              Shortlist
-                                            </Button>
-                                            {/* <Button
-                                              variant="default"
-                                              size="sm"
-                                              onClick={() => handleProjectProposalAction(proposal.id, "accept")}
-                                              className="bg-[#39A935] rounded-full text-xs font-bold hover:bg-[#39A935] active:bg-[#39A935]"
-                                            >
 
-                                              Accept
-                                            </Button> */}
+                            <div className="space-y-2">
+                              <div>
+                                <h4 className="font-bold text-xl text-[#616161] mb-0">
+                                  Cover Letter
+                                </h4>
+                                <p className="text-[#939191] font-normal text-sm">
+                                  {proposal.coverLetter}
+                                </p>
+                              </div>
 
-                                            {/* <Button
-                                              variant="destructive"
-                                              size="sm"
-                                              onClick={() => handleProjectProposalAction(proposal.id, "reject")}
-                                              className="bg-[#FF0000] rounded-full text-xs font-bold hover:bg-[#FF0000] active:bg-[#FF0000]"
-                                            >
-                                              Reject
-                                            </Button> */}
-                                          </>
-                                        )}
+                              <div>
+                                <h4 className="font-bold text-xl text-[#616161] mb-0">
+                                  Proposal Description
+                                </h4>
+                                <p className="text-[#939191] font-normal text-sm">
+                                  {proposal.proposalDescription}
+                                </p>
+                              </div>
+                              <div className="flex  items-center mt-2 mb-3 gap-2">
+                                <span className="text-sm text-[#000000] font-noormal">
+                                  Submitted on :{" "}
+                                  {new Date(
+                                    proposal.updatedAt,
+                                  ).toLocaleDateString()}
+                                </span>
+                                <Badge
+                                  variant={
+                                    proposal.status === "accepted"
+                                      ? "default"
+                                      : proposal.status === "shortlisted"
+                                        ? "secondary"
+                                        : proposal.status === "rejected"
+                                          ? "destructive"
+                                          : "outline"
+                                  }
+                                  className="border-[#DEDEDE] bg-[#EDEDED] rounded-full text-xs text-[#000]"
+                                >
+                                  {proposal.status.charAt(0).toUpperCase() +
+                                    proposal.status.slice(1)}
+                                </Badge>
+                              </div>
 
-                                        {/*Accept */}
-                                        {
-                                          proposal.status !== "accepted" &&
-                                              proposal.status !== "rejected" && proposal.status !== "completed" &&(
-                                                <Button
-                                              variant="default"
-                                              size="sm"
-                                              onClick={() => handleProjectProposalAction(proposal.id, "accept")}
-                                              className="bg-[#39A935] rounded-full text-xs font-bold hover:bg-[#39A935] active:bg-[#39A935]"
-                                            >
+                              <div className="flex items-center  justify-between pt-4  border-[#DDDDDD] border-t-2">
+                                <div className="flex flex-wrap gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                      handleViewPortfolio(proposal.agencyId)
+                                    }
+                                    className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
+                                  >
+                                    View Portfolio
+                                  </Button>
 
-                                              Accept
-                                            </Button>
-                                              )
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                      router.push(
+                                        `projects/${proposal.requirement.id}`,
+                                      )
+                                    }
+                                    className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
+                                  >
+                                    View Project Details
+                                  </Button>
+                                  {proposal.status === "pending" && (
+                                    <>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                          handleShortlist(proposal.id)
                                         }
-                                        {/*negotation */}
-                                        {proposal.status !== "accepted" &&
-                                        proposal.status !== "rejected" && 
-                                        proposal.status!=="shortlisted" &&
-                                        proposal.status!=="negotation" && proposal.status !== "completed" &&(
-                                          <Button
-                                            variant="default"
-                                            size="sm"
-                                            onClick={() => handlNegotation(proposal.id)}
-                                            className="bg-[#F5A30C] rounded-full text-xs font-bold hover:bg-[#F5A30C] active:bg-[#F5A30C]"
-                                          >
-                                            Negotation
-                                          </Button>
-                                        )}
-
-                                        {/*Reject */}
-                                        {
-                                          proposal.status !== "accepted" &&
-                                          proposal.status !== "rejected" && proposal.status !== "completed" &&(
-                                           <Button
-                                              variant="destructive"
-                                              size="sm"
-                                              onClick={() => handleProjectProposalAction(proposal.id, "reject")}
-                                              className="bg-[#FF0000] rounded-full text-xs font-bold hover:bg-[#FF0000] active:bg-[#FF0000]"
-                                            >
-                                              Reject
-                                            </Button>
+                                        className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
+                                      >
+                                        Shortlist
+                                      </Button>
+                                      <Button
+                                        variant="default"
+                                        size="sm"
+                                        onClick={() =>
+                                          handleProjectProposalAction(
+                                            proposal.id,
+                                            "accept",
                                           )
                                         }
-                                      </div>
-                                    </div>
-                                  </div>
-                                  </div>
+                                        className="bg-[#39A935] rounded-full text-xs font-bold hover:bg-[#39A935] active:bg-[#39A935]"
+                                      >
+                                        Accept
+                                      </Button>
+                                      <Button
+                                        variant="destructive"
+                                        size="sm"
+                                        onClick={() =>
+                                          handleProjectProposalAction(
+                                            proposal.id,
+                                            "reject",
+                                          )
+                                        }
+                                        className="bg-[#FF0000] rounded-full text-xs font-bold hover:bg-[#FF0000] active:bg-[#FF0000]"
+                                      >
+                                        Reject
+                                      </Button>
+                                    </>
+                                  )}
                                 </div>
-                              </CardContent>
-                                  </Card>
-                           ))}
-                         </div>
-                       ) : (
-                         <div className="text-center py-8">
-                           <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                           <h3 className="text-lg font-medium mb-2">No Proposals Yet</h3>
-                           <p className="text-muted-foreground">No proposals have been received for your projects yet.</p>
-                         </div>
-                       )}
-                     </div>
-                   )}
-                 </CardContent>
-               </Card>
-
-               {/*Negotaatiion Modal */}
-
-           {showNegotationModal && (
-              <Dialog open={showNegotationModal} onOpenChange={setShowNegotationModal}>
-              <DialogContent className="md:max-w-xl rounded-2xl  flex flex-col p-0">
-
-                {/* ✅ FIXED HEADER */}
-                <DialogHeader className="px-6 py-4 border-b shrink-0">
-                  <DialogTitle className="text-xl font-bold text-[#F4561C]">
-                   Send Message to Agency
-                  </DialogTitle>
-                </DialogHeader>
-
-                {/* ✅ SCROLLABLE FORM FIELDS */}
-              
-                 <div className="mt-3 p-4 w-full">
-                  <p className="text-md text-gray-400">Message</p>
-                  <textarea
-                  value={negotationMessage}
-                  onChange={(e)=>setNegotationMessage(e.target.value)}
-                  className="border-1 border-gray-500 p-3 w-100 rounded-md"
-                  rows={6}
-                  cols={30}
-                  placeholder="Enter Your Message"
-                  >
-
-                  </textarea>
-                  {
-                    errorMsg.status==="failed" &&(
-                      <p className="text-sm text-red-400">{errorMsg.msg}</p>
-
-                    )
-                  }
-                 </div>
-
-                {/* ✅ FIXED FOOTER */}
-                <div className="px-6 py-4 border-t flex gap-5 shrink-0">
-                  <Button type="submit" disabled={sending} onClick={handleSendMessage} className="bg-[#2C34A1] rounded-full">
-                    {sending ? "Sending..." : "Send"}
-                  </Button>
-                  <DialogClose asChild>
-                    <Button className="bg-[#000] rounded-full">Cancel</Button>
-                  </DialogClose>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
-
-              </DialogContent>
-            </Dialog>
-
-            )}
-
-
+              ) : (
+                <div className="text-center py-8">
+                  <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="text-lg font-medium mb-2">No Proposals Yet</h3>
+                  <p className="text-muted-foreground">
+                    No proposals have been received for your projects yet.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
-    )
-}
+  );
+};
 export default ProposalPage;

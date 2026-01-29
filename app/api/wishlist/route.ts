@@ -1,33 +1,33 @@
-import { NextRequest, NextResponse } from "next/server"
-import mongoose from "mongoose"
-import { connectToDatabase } from "@/lib/mongodb"
-import { getCurrentUser } from "@/lib/auth/jwt"
-import Wishlist from "@/models/Wishlist"
+import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
+import { connectToDatabase } from "@/lib/mongodb";
+import { getCurrentUser } from "@/lib/auth/jwt";
+import Wishlist from "@/models/Wishlist";
 
 export async function POST(req: NextRequest) {
   try {
     //Authentication
-    const user = await getCurrentUser()
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
         { success: false, message: "Authentication required" },
-        { status: 401 }
-      )
+        { status: 401 },
+      );
     }
 
-    const clientId = user.userId
+    const clientId = user.userId;
 
-    await connectToDatabase()
+    await connectToDatabase();
 
-    const body = await req.json()
-    const { agencyId } = body
+    const body = await req.json();
+    const { agencyId } = body;
 
     // Validation
     if (!agencyId) {
       return NextResponse.json(
         { success: false, message: "agencyId is required" },
-        { status: 400 }
-      )
+        { status: 400 },
+      );
     }
 
     if (
@@ -36,15 +36,15 @@ export async function POST(req: NextRequest) {
     ) {
       return NextResponse.json(
         { success: false, message: "Invalid ObjectId" },
-        { status: 400 }
-      )
+        { status: 400 },
+      );
     }
 
     // Prevent duplicate wishlist entry
     const alreadyExists = await Wishlist.findOne({
       clientId,
       agencyId,
-    })
+    });
 
     if (alreadyExists) {
       return NextResponse.json(
@@ -52,15 +52,15 @@ export async function POST(req: NextRequest) {
           success: false,
           message: "Agency already added to wishlist",
         },
-        { status: 409 }
-      )
+        { status: 409 },
+      );
     }
 
     // Create wishlist entry
     const wishlist = await Wishlist.create({
       clientId,
       agencyId,
-    })
+    });
 
     // ✅ Populate agency details
     const populatedWishlist = await Wishlist.aggregate([
@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
           },
         },
       },
-    ])
+    ]);
 
     return NextResponse.json(
       {
@@ -101,38 +101,38 @@ export async function POST(req: NextRequest) {
         message: "Added to wishlist successfully",
         data: populatedWishlist[0],
       },
-      { status: 201 }
-    )
+      { status: 201 },
+    );
   } catch (error) {
-    console.error("Wishlist POST Error:", error)
+    console.error("Wishlist POST Error:", error);
     return NextResponse.json(
       { success: false, message: "Internal server error" },
-      { status: 500 }
-    )
+      { status: 500 },
+    );
   }
 }
 
 export async function GET(req: NextRequest) {
   try {
     // 🔐 Auth check
-    const user = await getCurrentUser()
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
         { success: false, message: "Authentication required" },
-        { status: 401 }
-      )
+        { status: 401 },
+      );
     }
 
-    const clientId = user.userId
+    const clientId = user.userId;
 
     if (!mongoose.Types.ObjectId.isValid(clientId)) {
       return NextResponse.json(
         { success: false, message: "Invalid client ID" },
-        { status: 400 }
-      )
+        { status: 400 },
+      );
     }
 
-    await connectToDatabase()
+    await connectToDatabase();
 
     // ✅ Fetch wishlist with FULL provider data
     const wishlist = await Wishlist.aggregate([
@@ -229,7 +229,7 @@ export async function GET(req: NextRequest) {
       {
         $sort: { createdAt: -1 },
       },
-    ])
+    ]);
 
     return NextResponse.json(
       {
@@ -237,13 +237,13 @@ export async function GET(req: NextRequest) {
         count: wishlist.length,
         data: wishlist,
       },
-      { status: 200 }
-    )
+      { status: 200 },
+    );
   } catch (error) {
-    console.error("Wishlist GET Error:", error)
+    console.error("Wishlist GET Error:", error);
     return NextResponse.json(
       { success: false, message: "Internal server error" },
-      { status: 500 }
-    )
+      { status: 500 },
+    );
   }
 }

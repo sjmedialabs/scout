@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Edit, Check, X, CreditCard, PlusCircle, Loader2 } from "lucide-react";
 import { ISubscription } from "@/lib/types";
+import { authFetch } from "@/lib/auth-fetch";
 
 export default function SubscriptionPlansPage() {
   const [plans, setPlans] = useState<ISubscription[]>([]);
@@ -29,7 +30,7 @@ export default function SubscriptionPlansPage() {
 
   const fetchPlans = async () => {
     try {
-      const res = await fetch("/api/subscription");
+      const res = await authFetch("/api/subscription");
       if (res.ok) {
         const data = await res.json();
         setPlans(data);
@@ -50,16 +51,16 @@ export default function SubscriptionPlansPage() {
     const newData = {
       title: newPlan.title,
       pricePerMonth: parseFloat(newPlan.pricePerMonth),
-      pricePerYear: 
-      parseFloat(newPlan.pricePerYear) || 
-      parseFloat(newPlan.pricePerMonth) * 12,
+      pricePerYear:
+        parseFloat(newPlan.pricePerYear) ||
+        parseFloat(newPlan.pricePerMonth) * 12,
       description: newPlan.description,
       features: newPlan.features.split(",").map((f) => f.trim()),
       yearlySubscription: newPlan.yearlySubscription,
       isActive: true,
     };
 
-    const res = await fetch("/api/subscription", {
+    const res = await authFetch("/api/subscription", {
       method: "POST",
       body: JSON.stringify(newData),
     });
@@ -67,13 +68,13 @@ export default function SubscriptionPlansPage() {
     if (res.ok) {
       const created = await res.json();
       setPlans((prev) => [...prev, created]);
-      setNewPlan({ 
-        title: "", 
-        pricePerMonth: "", 
-        pricePerYear: "", 
-        description: "", 
-        features: "", 
-        yearlySubscription: false 
+      setNewPlan({
+        title: "",
+        pricePerMonth: "",
+        pricePerYear: "",
+        description: "",
+        features: "",
+        yearlySubscription: false,
       });
     }
   };
@@ -82,7 +83,7 @@ export default function SubscriptionPlansPage() {
   // EDIT PLAN
   // ------------------------------
   const saveEdit = async (id: string, updated: Partial<ISubscription>) => {
-    const res = await fetch(`/api/subscription/${id}`, {
+    const res = await authFetch(`/api/subscription/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updated),
@@ -92,9 +93,7 @@ export default function SubscriptionPlansPage() {
       const result = await res.json();
       // Map API response (id) back to frontend interface (_id)
       const updatedPlan = { ...result.data, _id: result.data.id };
-      setPlans((prev) =>
-        prev.map((p) => (p._id === id ? updatedPlan : p))
-      );
+      setPlans((prev) => prev.map((p) => (p._id === id ? updatedPlan : p)));
       setEditingId(null);
     }
   };
@@ -119,19 +118,18 @@ export default function SubscriptionPlansPage() {
       {/* ADD PLAN */}
       <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-2">
         <h2 className="text-xl font-semibold flex my-custom-class items-center gap-2">
-          
           Add New Plan
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <Input className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+          <Input
+            className="border-gray-300 rounded-2xl placeholder:text-gray-500"
             placeholder="Enter Plan Title"
             value={newPlan.title}
-            onChange={(e) =>
-              setNewPlan({ ...newPlan, title: e.target.value })
-            }
+            onChange={(e) => setNewPlan({ ...newPlan, title: e.target.value })}
           />
-          <Input className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+          <Input
+            className="border-gray-300 rounded-2xl placeholder:text-gray-500"
             placeholder="Price / Month"
             type="number"
             value={newPlan.pricePerMonth}
@@ -139,7 +137,8 @@ export default function SubscriptionPlansPage() {
               setNewPlan({ ...newPlan, pricePerMonth: e.target.value })
             }
           />
-          <Input className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+          <Input
+            className="border-gray-300 rounded-2xl placeholder:text-gray-500"
             placeholder="Price / Year"
             type="number"
             value={newPlan.pricePerYear}
@@ -147,7 +146,8 @@ export default function SubscriptionPlansPage() {
               setNewPlan({ ...newPlan, pricePerYear: e.target.value })
             }
           />
-          <Input className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+          <Input
+            className="border-gray-300 rounded-2xl placeholder:text-gray-500"
             placeholder="Features (comma separated)"
             value={newPlan.features}
             onChange={(e) =>
@@ -166,7 +166,6 @@ export default function SubscriptionPlansPage() {
             }
           />
         </div>
-        
 
         <Button
           className="bg-orangeButton rounded-2xl h-8 hover:bg-orange-600"
@@ -190,13 +189,13 @@ export default function SubscriptionPlansPage() {
               <div
                 key={plan._id}
                 className={`relative bg-[#fafafa] border rounded-2xl p-8 flex flex-col h-full ${
-                isPopular ? "border-gray-900 shadow-xl" : ""
-              }`}
+                  isPopular ? "border-gray-900 shadow-xl" : ""
+                }`}
               >
                 {isPopular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <span className="flex items-center gap-1 bg-gray-900 my-custom-class text-white text-xs px-3 py-1 rounded-full">
-                       <Star className="w-3 h-3 fill-white text-white" />
+                      <Star className="w-3 h-3 fill-white text-white" />
                       Most Popular
                     </span>
                   </div>
@@ -211,8 +210,8 @@ export default function SubscriptionPlansPage() {
                           prev.map((p) =>
                             p._id === plan._id
                               ? { ...p, title: e.target.value }
-                              : p
-                          )
+                              : p,
+                          ),
                         )
                       }
                       className="text-center"
@@ -236,8 +235,8 @@ export default function SubscriptionPlansPage() {
                                     ...p,
                                     pricePerMonth: Number(e.target.value),
                                   }
-                                : p
-                            )
+                                : p,
+                            ),
                           )
                         }
                       />
@@ -252,8 +251,8 @@ export default function SubscriptionPlansPage() {
                                     ...p,
                                     pricePerYear: Number(e.target.value),
                                   }
-                                : p
-                            )
+                                : p,
+                            ),
                           )
                         }
                       />
@@ -261,7 +260,9 @@ export default function SubscriptionPlansPage() {
                   ) : (
                     <p className="text-3xl font-bold">
                       ${plan.pricePerMonth}
-                      <span className="text-sm text-gray-500 font-medium">/monthly</span>
+                      <span className="text-sm text-gray-500 font-medium">
+                        /monthly
+                      </span>
                     </p>
                   )}
                 </div>
@@ -275,8 +276,8 @@ export default function SubscriptionPlansPage() {
                           prev.map((p) =>
                             p._id === plan._id
                               ? { ...p, description: e.target.value }
-                              : p
-                          )
+                              : p,
+                          ),
                         )
                       }
                       placeholder="Enter plan description"
@@ -303,14 +304,17 @@ export default function SubscriptionPlansPage() {
                                     .split(",")
                                     .map((f) => f.trim()),
                                 }
-                              : p
-                          )
+                              : p,
+                          ),
                         )
                       }
                     />
                   ) : (
                     plan.features.map((f, i) => (
-                      <div key={i} className="flex items-center gap-2 text-sm text-gray-500 my-custom-class">
+                      <div
+                        key={i}
+                        className="flex items-center gap-2 text-sm text-gray-500 my-custom-class"
+                      >
                         <Check className="w-4 h-4 text-green-600" />
                         {f}
                       </div>
@@ -377,4 +381,3 @@ export default function SubscriptionPlansPage() {
     </div>
   );
 }
-

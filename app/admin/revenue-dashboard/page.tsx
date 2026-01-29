@@ -15,6 +15,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { DollarSign, TrendingUp, PieChart } from "lucide-react";
+import { authFetch } from "@/lib/auth-fetch";
 
 // -------------------------------------------------
 // MOCK DATA (Replace with API later)
@@ -36,7 +37,7 @@ export default function RevenueDashboardPage() {
   -------------------------------------------------
   useEffect(() => {
     async function loadRevenue() {
-      const res = await fetch("/api/admin/revenue-dashboard");
+      const res = await authFetch("/api/admin/revenue-dashboard");
       const data = await res.json();
       setStats(data.stats);
       setHistory(data.history);
@@ -51,12 +52,13 @@ export default function RevenueDashboardPage() {
       {/* Page Header */}
       <div>
         <h1 className="text-3xl font-bold">Revenue Dashboard</h1>
-        <p className="text-gray-500">Detailed insight into subscription revenue and performance.</p>
+        <p className="text-gray-500">
+          Detailed insight into subscription revenue and performance.
+        </p>
       </div>
 
       {/* KPI Boxes */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
         <KpiCard
           title="MRR (Monthly Recurring Revenue)"
           value={`$${stats.monthlyRecurring.toLocaleString()}`}
@@ -122,7 +124,8 @@ export default function RevenueDashboardPage() {
       <div className="bg-white p-5 rounded-xl border shadow-sm">
         <h3 className="text-lg font-semibold">Revenue Notes</h3>
         <p className="text-gray-600 mt-2">
-          Revenue data includes subscription income across all plans. Metrics update every 24 hours.
+          Revenue data includes subscription income across all plans. Metrics
+          update every 24 hours.
         </p>
       </div>
     </div>
@@ -134,9 +137,7 @@ export default function RevenueDashboardPage() {
 --------------------------------------------------------- */
 function KpiCard({ title, value, icon, gradient }: any) {
   return (
-    <div
-      className="group bg-white rounded-2xl p-6 border shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-    >
+    <div className="group bg-white rounded-2xl p-6 border shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
       <div className="flex items-center justify-between pb-3">
         <h3 className="text-sm text-gray-600">{title}</h3>
         <div

@@ -30,7 +30,7 @@ export default function ModerationPage() {
   -------------------------------------------------------------
   useEffect(() => {
     async function loadReports() {
-      const res = await fetch("/api/admin/moderation");
+      const res = await authFetch("/api/admin/moderation");
       const data = await res.json();
       setReports(data);
     }
@@ -46,18 +46,20 @@ export default function ModerationPage() {
               ...r,
               status: action === "approve" ? "resolved" : "dismissed",
             }
-          : r
-      )
+          : r,
+      ),
     );
 
-    console.log(`Report ${id} ${action === "approve" ? "approved" : "rejected"}`);
+    console.log(
+      `Report ${id} ${action === "approve" ? "approved" : "rejected"}`,
+    );
   };
 
   const filteredReports = reports.filter(
     (r) =>
       r.reason.toLowerCase().includes(search.toLowerCase()) ||
       r.type.toLowerCase().includes(search.toLowerCase()) ||
-      r.reporter.toLowerCase().includes(search.toLowerCase())
+      r.reporter.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -65,7 +67,9 @@ export default function ModerationPage() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold">Content Moderation</h1>
-        <p className="text-gray-500">Review and take action on reported content.</p>
+        <p className="text-gray-500">
+          Review and take action on reported content.
+        </p>
       </div>
 
       {/* Search Bar */}
@@ -103,8 +107,8 @@ export default function ModerationPage() {
                     report.status === "pending"
                       ? "bg-yellow-100 text-yellow-700"
                       : report.status === "resolved"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-gray-100 text-gray-700"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-gray-100 text-gray-700"
                   }
                 >
                   {report.status.toUpperCase()}
@@ -120,7 +124,8 @@ export default function ModerationPage() {
               </p>
 
               <p className="text-gray-700">
-                <span className="font-semibold">Reporter:</span> {report.reporter}
+                <span className="font-semibold">Reporter:</span>{" "}
+                {report.reporter}
               </p>
 
               <p className="text-gray-500 text-sm mt-2">

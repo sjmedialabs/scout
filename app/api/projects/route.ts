@@ -1,26 +1,26 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { connectToDatabase } from "@/lib/mongodb"
-import Project from "@/models/Project"
-import { getCurrentUser } from "@/lib/auth/jwt"
+import { type NextRequest, NextResponse } from "next/server";
+import { connectToDatabase } from "@/lib/mongodb";
+import Project from "@/models/Project";
+import { getCurrentUser } from "@/lib/auth/jwt";
 
 export async function GET(request: NextRequest) {
   try {
-    await connectToDatabase()
+    await connectToDatabase();
 
-    const { searchParams } = new URL(request.url)
-    const clientId = searchParams.get("clientId")
-    const status = searchParams.get("status")
-    const category = searchParams.get("category")
-    const limit = Number.parseInt(searchParams.get("limit") || "50")
-    const page = Number.parseInt(searchParams.get("page") || "1")
+    const { searchParams } = new URL(request.url);
+    const clientId = searchParams.get("clientId");
+    const status = searchParams.get("status");
+    const category = searchParams.get("category");
+    const limit = Number.parseInt(searchParams.get("limit") || "50");
+    const page = Number.parseInt(searchParams.get("page") || "1");
 
-    const query: any = {}
+    const query: any = {};
 
-    if (clientId) query.clientId = clientId
-    if (status) query.status = status
-    if (category) query.category = category
+    if (clientId) query.clientId = clientId;
+    if (status) query.status = status;
+    if (category) query.category = category;
 
-    const skip = (page - 1) * limit
+    const skip = (page - 1) * limit;
 
     const [projects, total] = await Promise.all([
       Project.find(query)
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
         .limit(limit)
         .lean(),
       Project.countDocuments(query),
-    ])
+    ]);
 
     const formattedProjects = projects.map((p: any) => ({
       id: p._id.toString(),
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
       deadline: p.deadline,
       createdAt: p.createdAt,
       updatedAt: p.updatedAt,
-    }))
+    }));
 
     return NextResponse.json({
       projects: formattedProjects,
@@ -66,28 +66,37 @@ export async function GET(request: NextRequest) {
         limit,
         pages: Math.ceil(total / limit),
       },
-    })
+    });
   } catch (error) {
-    console.error("Error fetching projects:", error)
-    return NextResponse.json({ error: "Failed to fetch projects" }, { status: 500 })
+    console.error("Error fetching projects:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch projects" },
+      { status: 500 },
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser()
+    const user = await getCurrentUser();
 
     if (!user) {
-      return NextResponse.json({ error: "Authentication required" }, { status: 401 })
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 },
+      );
     }
 
     if (user.role !== "client") {
-      return NextResponse.json({ error: "Only clients can create projects" }, { status: 403 })
+      return NextResponse.json(
+        { error: "Only clients can create projects" },
+        { status: 403 },
+      );
     }
 
-    await connectToDatabase()
+    await connectToDatabase();
 
-    const body = await request.json()
+    const body = await request.json();
     const {
       title,
       description,
@@ -101,10 +110,13 @@ export async function POST(request: NextRequest) {
       requirements,
       isUrgent,
       deadline,
-    } = body
+    } = body;
 
     if (!title || !description || !category) {
-      return NextResponse.json({ error: "Missing required fields: title, description, category" }, { status: 400 })
+      return NextResponse.json(
+        { error: "Missing required fields: title, description, category" },
+        { status: 400 },
+      );
     }
 
     const project = await Project.create({
@@ -128,7 +140,7 @@ export async function POST(request: NextRequest) {
       isFeatured: false,
       publishedAt: new Date(),
       deadline: deadline ? new Date(deadline) : undefined,
-    })
+    });
 
     return NextResponse.json({
       success: true,
@@ -142,9 +154,12 @@ export async function POST(request: NextRequest) {
         status: project.status,
         createdAt: project.createdAt,
       },
-    })
+    });
   } catch (error) {
-    console.error("Error creating project:", error)
-    return NextResponse.json({ error: "Failed to create project" }, { status: 500 })
+    console.error("Error creating project:", error);
+    return NextResponse.json(
+      { error: "Failed to create project" },
+      { status: 500 },
+    );
   }
 }

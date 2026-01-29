@@ -1,7 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ChevronRight, ChevronDown, Code, Shield, PenTool, Layers, Briefcase, Package, BookOpen } from "lucide-react";
+import {
+  ChevronRight,
+  ChevronDown,
+  Code,
+  Shield,
+  PenTool,
+  Layers,
+  Briefcase,
+  Package,
+  BookOpen,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -93,17 +103,17 @@ const STATIC_CATEGORIES = [
 export default function ServicesPage() {
   const [categories, setCategories] = useState<any[]>([]);
   const [openId, setOpenId] = useState<number | null>(null);
-    const [cms, setCms] = useState<any>(null);
+  const [cms, setCms] = useState<any>(null);
   // --------------------------------------
   // FUTURE API SUPPORT: Just uncomment this
   // --------------------------------------
 
   useEffect(() => {
     async function fetchCategories() {
-      const res = await fetch("/api/service-categories");
+      const res = await authFetch("/api/service-categories");
       const data = await res.json();
-      if (data.success){
-                const mainCats = data.data.filter((c: any) => c.parent === null);
+      if (data.success) {
+        const mainCats = data.data.filter((c: any) => c.parent === null);
         setCategories(mainCats);
         console.log("Categories response data from api", mainCats);
       }
@@ -111,10 +121,9 @@ export default function ServicesPage() {
     fetchCategories();
   }, []);
 
- 
-      useEffect(() => {
+  useEffect(() => {
     async function fetchCategories() {
-      const res = await fetch("/api/cms");
+      const res = await authFetch("/api/cms");
       const data = await res.json();
       setCms(data);
     }
@@ -123,16 +132,21 @@ export default function ServicesPage() {
   return (
     <div className="w-full min-h-screen bg-white pb-20">
       {/* ---------- Header Section ---------- */}
-      <div className="w-full bg-gray-100 py-20 text-center flex flex-col items-center justify-center"
-      style={{
-        backgroundImage: `url("${cms?.commonBgImage || "/images/banner.jpg"}")`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        height: "60vh"
-      }}
+      <div
+        className="w-full bg-gray-100 py-20 text-center flex flex-col items-center justify-center"
+        style={{
+          backgroundImage: `url("${cms?.commonBgImage || "/images/banner.jpg"}")`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          height: "60vh",
+        }}
       >
-        <h1 className="text-4xl md:text-5xl font-black text-orangeButton">Services</h1>
-        <p className="text-gray-400 text-xl md:text-2xl font-medium">Find verified professionals for your next project</p>
+        <h1 className="text-4xl md:text-5xl font-black text-orangeButton">
+          Services
+        </h1>
+        <p className="text-gray-400 text-xl md:text-2xl font-medium">
+          Find verified professionals for your next project
+        </p>
       </div>
 
       {/* ---------- Services List ---------- */}
@@ -151,8 +165,17 @@ export default function ServicesPage() {
                 className="flex justify-between items-center cursor-pointer px-4 py-4"
               >
                 <div className="flex items-center gap-3">
-                <img src={cat.icon || "/uploads/44eaa969-97bd-41fe-8a4b-cff26356de06-Group%20208.jpg"} alt="" className="h-10 w-10"/>
-                  <span className="font-bold text-2xl text-blueButton">{cat.title}</span>
+                  <img
+                    src={
+                      cat.icon ||
+                      "/uploads/44eaa969-97bd-41fe-8a4b-cff26356de06-Group%20208.jpg"
+                    }
+                    alt=""
+                    className="h-10 w-10"
+                  />
+                  <span className="font-bold text-2xl text-blueButton">
+                    {cat.title}
+                  </span>
                 </div>
 
                 {cat.children.length > 0 ? (
@@ -171,16 +194,18 @@ export default function ServicesPage() {
                 <div className="mt-3 pl-10 space-y-2 transition-all flex flex-wrap gap-12 font-semibold">
                   {cat.children.map((sub: any, i: number) => (
                     <div key={i} className="text-gray-500 hover:text-black ">
-                     <span> → {sub.title}</span>
-                                           {/* Inner items */}
+                      <span> → {sub.title}</span>
+                      {/* Inner items */}
                       {sub.items?.length > 0 && (
                         <div className="ml-6 mt-1 flex flex-col gap-1">
                           {sub.items.map((item: any, idx: number) => (
                             <div
                               key={idx}
                               className="text-gray-500 hover:text-black cursor-pointer"
-                            ><Link href={`/services/${item.slug}`}>
-                              • {item.title}</Link>
+                            >
+                              <Link href={`/services/${item.slug}`}>
+                                • {item.title}
+                              </Link>
                             </div>
                           ))}
                         </div>
@@ -195,7 +220,11 @@ export default function ServicesPage() {
 
         {/* Load More Button */}
         <div className="flex justify-center mt-6">
-          <Button variant="default" size="lg" className="px-5 border font-medium bg-gray-100 rounded-2xl text-black hover:bg-gray-100">
+          <Button
+            variant="default"
+            size="lg"
+            className="px-5 border font-medium bg-gray-100 rounded-2xl text-black hover:bg-gray-100"
+          >
             Load More Services
           </Button>
         </div>

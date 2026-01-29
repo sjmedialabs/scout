@@ -29,7 +29,7 @@ export default function FinancialReportsPage() {
   --------------------------------------------------
   useEffect(() => {
     async function loadFinancial() {
-      const res = await fetch("/api/admin/financial-reports");
+      const res = await authFetch("/api/admin/financial-reports");
       const data = await res.json();
       setSummary(data.summary);
       setQuarters(data.quarters);
@@ -49,7 +49,9 @@ export default function FinancialReportsPage() {
       {/* Page Heading */}
       <div>
         <h1 className="text-3xl font-bold">Financial Reports</h1>
-        <p className="text-gray-500">View platform revenue, expenses, and long-term financial performance.</p>
+        <p className="text-gray-500">
+          View platform revenue, expenses, and long-term financial performance.
+        </p>
       </div>
 
       {/* Summary KPIs */}
@@ -78,7 +80,9 @@ export default function FinancialReportsPage() {
 
       {/* Quarterly Performance */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border">
-        <h2 className="text-xl font-semibold mb-4">Quarterly Financial Performance</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          Quarterly Financial Performance
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {quarters.map((q) => (
@@ -137,9 +141,11 @@ export default function FinancialReportsPage() {
                 {y.expenses.toLocaleString()}
               </p>
 
-              <p className={`font-semibold mt-2 ${
-                y.profit >= 0 ? "text-green-700" : "text-red-700"
-              }`}>
+              <p
+                className={`font-semibold mt-2 ${
+                  y.profit >= 0 ? "text-green-700" : "text-red-700"
+                }`}
+              >
                 Net Profit: ${y.profit.toLocaleString()}
               </p>
             </div>
@@ -150,7 +156,9 @@ export default function FinancialReportsPage() {
       {/* Download Reports */}
       <div className="bg-white p-6 rounded-xl shadow-sm border space-y-4">
         <h3 className="text-lg font-semibold">Export Full Financial Reports</h3>
-        <p className="text-gray-600">Download detailed financial documents for auditing & compliance.</p>
+        <p className="text-gray-600">
+          Download detailed financial documents for auditing & compliance.
+        </p>
 
         <div className="flex gap-3 flex-wrap">
           <Button

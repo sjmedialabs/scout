@@ -5,10 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { mockAdminUsers } from "@/lib/mock-data";
 import { UserCheck, FileText, AlertCircle, XCircle } from "lucide-react";
+import { authFetch } from "@/lib/auth-fetch";
 
 export default function UserVerificationPage() {
   const [users, setUsers] = useState(
-    mockAdminUsers.filter((u) => u.status === "pending")
+    mockAdminUsers.filter((u) => u.status === "pending"),
   );
   const [loading, setLoading] = useState(false);
 
@@ -18,7 +19,7 @@ export default function UserVerificationPage() {
   ------------------------------------------------------
   useEffect(() => {
     async function fetchPendingVerifications() {
-      const res = await fetch("/api/admin/user-verification");
+      const res = await authFetch("/api/admin/user-verification");
       const data = await res.json();
       setUsers(data);
     }
@@ -30,13 +31,13 @@ export default function UserVerificationPage() {
     setLoading(true);
 
     setUsers((prev) =>
-      prev.map((u) => (u.id === userId ? { ...u, status } : u))
+      prev.map((u) => (u.id === userId ? { ...u, status } : u)),
     );
 
     console.log(`User ${userId} verification updated: ${status}`);
 
     // Future API:
-    // await fetch(`/api/admin/user-verification/update`, { method: "POST", body: JSON.stringify({ userId, status }) })
+    // await authFetch(`/api/admin/user-verification/update`, { method: "POST", body: JSON.stringify({ userId, status }) })
 
     setLoading(false);
   };

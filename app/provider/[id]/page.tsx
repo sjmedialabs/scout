@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   MessageSquareMore,
   Building,
@@ -21,143 +21,155 @@ import {
   Phone,
   Briefcase,
   CircleUser,
-  Share2
-} from "lucide-react"
+  Share2,
+} from "lucide-react";
 import { FaCircleUser } from "react-icons/fa6";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { mockProviders } from "@/lib/mock-data"
-import RatingStars from "@/components/rating-star"
-import { useEffect, useState } from "react"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { mockProviders } from "@/lib/mock-data";
+import RatingStars from "@/components/rating-star";
+import { useEffect, useState } from "react";
 
-export default function ProviderProfilePage({ params }: { params: { id: string } }) {
-  const { id } =  params
+export default function ProviderProfilePage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const { id } = params;
 
   // Find provider by ID
-  const provider = mockProviders.find((p) => p.id === id)
-  const[serviceFilter,setServiceFilter]=useState("");
-  const[sortByFilter,setSortByFilter]=useState("");
-  const[providerDetails,setProviderDetails]=useState({});
-  const[reviews,setReviews]=useState([]);
-  const[filteredReviews,setFilteredReviews]=useState([]);
-  const[loading,setLoading]=useState(true);
-  const[failed,setFailed]=useState(false);
-  useEffect(()=>{
+  const provider = mockProviders.find((p) => p.id === id);
+  const [serviceFilter, setServiceFilter] = useState("");
+  const [sortByFilter, setSortByFilter] = useState("");
+  const [providerDetails, setProviderDetails] = useState({});
+  const [reviews, setReviews] = useState([]);
+  const [filteredReviews, setFilteredReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
     loadData();
-  },[])
-  const loadData=async()=>{
+  }, []);
+  const loadData = async () => {
     setLoading(true);
-    setFailed(false)
-    try{
-       const response=await fetch(`/api/providers/${id}`)
-       const data=await response.json();
-       const reviewsResponse=await fetch(`/api/reviews/${data.provider.userId}`);
-       const reviewsdata=await reviewsResponse.json();
-       console.log("Fetched Reviews are the::::",reviewsdata)
-       setProviderDetails(data.provider);
-       setReviews(reviewsdata.reviews)
-       setFailed(false)
-    }catch(error){
-      console.log("Failed to get the data error:::",error);
-      setFailed(true)
-    }finally{
+    setFailed(false);
+    try {
+      const response = await authFetch(`/api/providers/${id}`);
+      const data = await response.json();
+      const reviewsResponse = await authFetch(
+        `/api/reviews/${data.provider.userId}`,
+      );
+      const reviewsdata = await reviewsResponse.json();
+      console.log("Fetched Reviews are the::::", reviewsdata);
+      setProviderDetails(data.provider);
+      setReviews(reviewsdata.reviews);
+      setFailed(false);
+    } catch (error) {
+      console.log("Failed to get the data error:::", error);
+      setFailed(true);
+    } finally {
       setLoading(false);
     }
-  }
+  };
   const mockReviews = [
-  {
-    id: 1,
-    project: {
-      title: "The Project",
-      type: "UX/UI Design Web Design Web Development",
-      timeline: "July 2024 - Oct. 2025",
-      budget: "$50,000 to $199,999",
-      summary:
-        "Goji Labs has been hired by an investment firm to build their website. The team has been tasked with creating solutions for the client’s unique requests."
+    {
+      id: 1,
+      project: {
+        title: "The Project",
+        type: "UX/UI Design Web Design Web Development",
+        timeline: "July 2024 - Oct. 2025",
+        budget: "$50,000 to $199,999",
+        summary:
+          "Goji Labs has been hired by an investment firm to build their website. The team has been tasked with creating solutions for the client’s unique requests.",
+      },
+      review: {
+        quote:
+          "They are fantastic in almost every aspect and my experience so far has been great.",
+        date: "May 31, 2025",
+        summary:
+          "Goji Labs has successfully built the website and helped the client solve real-world problems through digital means. The team has been transparent and communicative throughout the collaboration. Overall, their strategic planning and problem-solving skills have pleased the client.",
+      },
+      rating: {
+        overall: 4.5,
+        totalReviews: 357,
+        quality: 5.0,
+        cost: 4.5,
+        schedule: 4.2,
+        refer: 5.0,
+      },
+      reviewer: {
+        name: "Sudheer uppuluri",
+        role: "Founder, Investment Firm",
+        industry: "Advertising & marketing",
+        location: "New Delhi",
+        employees: "1-10 Employees",
+        reviewType: "Online Review",
+        verified: true,
+      },
     },
-    review: {
-      quote:
-        "They are fantastic in almost every aspect and my experience so far has been great.",
-      date: "May 31, 2025",
-      summary:
-        "Goji Labs has successfully built the website and helped the client solve real-world problems through digital means. The team has been transparent and communicative throughout the collaboration. Overall, their strategic planning and problem-solving skills have pleased the client."
+    {
+      id: 2,
+      project: {
+        title: "The Project",
+        type: "UX/UI Design Web Design Web Development",
+        timeline: "July 2024 - Oct. 2025",
+        budget: "$50,000 to $199,999",
+        summary:
+          "Goji Labs has been hired by an investment firm to build their website. The team has been tasked with creating solutions for the client’s unique requests.",
+      },
+      review: {
+        quote:
+          "They are fantastic in almost every aspect and my experience so far has been great.",
+        date: "May 31, 2025",
+        summary:
+          "Goji Labs has successfully built the website and helped the client solve real-world problems through digital means. The team has been transparent and communicative throughout the collaboration. Overall, their strategic planning and problem-solving skills have pleased the client.",
+      },
+      rating: {
+        overall: 4.5,
+        totalReviews: 357,
+        quality: 5.0,
+        cost: 4.5,
+        schedule: 4.2,
+        refer: 5.0,
+      },
+      reviewer: {
+        name: "Sudheer uppuluri",
+        role: "Founder, Investment Firm",
+        industry: "Advertising & marketing",
+        location: "New Delhi",
+        employees: "1-10 Employees",
+        reviewType: "Online Review",
+        verified: true,
+      },
     },
-    rating: {
-      overall: 4.5,
-      totalReviews: 357,
-      quality: 5.0,
-      cost: 4.5,
-      schedule: 4.2,
-      refer: 5.0
-    },
-    reviewer: {
-      name: "Sudheer uppuluri",
-      role: "Founder, Investment Firm",
-      industry: "Advertising & marketing",
-      location: "New Delhi",
-      employees: "1-10 Employees",
-      reviewType: "Online Review",
-      verified: true
-    }
-  },
-   {
-    id: 2,
-    project: {
-      title: "The Project",
-      type: "UX/UI Design Web Design Web Development",
-      timeline: "July 2024 - Oct. 2025",
-      budget: "$50,000 to $199,999",
-      summary:
-        "Goji Labs has been hired by an investment firm to build their website. The team has been tasked with creating solutions for the client’s unique requests."
-    },
-    review: {
-      quote:
-        "They are fantastic in almost every aspect and my experience so far has been great.",
-      date: "May 31, 2025",
-      summary:
-        "Goji Labs has successfully built the website and helped the client solve real-world problems through digital means. The team has been transparent and communicative throughout the collaboration. Overall, their strategic planning and problem-solving skills have pleased the client."
-    },
-    rating: {
-      overall: 4.5,
-      totalReviews: 357,
-      quality: 5.0,
-      cost: 4.5,
-      schedule: 4.2,
-      refer: 5.0
-    },
-    reviewer: {
-      name: "Sudheer uppuluri",
-      role: "Founder, Investment Firm",
-      industry: "Advertising & marketing",
-      location: "New Delhi",
-      employees: "1-10 Employees",
-      reviewType: "Online Review",
-      verified: true
-    }
-  }
-];
+  ];
 
-console.log("Providers Details are :::",providerDetails);
+  console.log("Providers Details are :::", providerDetails);
 
   if (!providerDetails) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-2">Provider Not Found</h1>
-          <p className="text-muted-foreground">The provider you're looking for doesn't exist.</p>
+          <p className="text-muted-foreground">
+            The provider you're looking for doesn't exist.
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
-  
-
   const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    month: "long",
-    day: "2-digit",
-    year: "numeric",
-  });
-};
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "long",
+      day: "2-digit",
+      year: "numeric",
+    });
+  };
 
   const stats = [
     { label: "Year founded", value: providerDetails.foundedYear || "N/A" },
@@ -169,82 +181,87 @@ console.log("Providers Details are :::",providerDetails);
   ];
 
   useEffect(() => {
-  let tempFilteredReviews = [...reviews]
+    let tempFilteredReviews = [...reviews];
 
-  // 🔹 Service filter
-  if (serviceFilter && serviceFilter !== "all") {
-    tempFilteredReviews = tempFilteredReviews.filter((eachItem) =>
-      eachItem.project.category
-        .toLowerCase()
-        .includes(serviceFilter.toLowerCase())
-    )
-  }
-
-  // 🔹 Rating sort
-  if (sortByFilter) {
-    if (sortByFilter === "low-to-high") {
-      tempFilteredReviews.sort(
-        (a, b) => (a.rating ?? 0) - (b.rating ?? 0)
-      )
+    // 🔹 Service filter
+    if (serviceFilter && serviceFilter !== "all") {
+      tempFilteredReviews = tempFilteredReviews.filter((eachItem) =>
+        eachItem.project.category
+          .toLowerCase()
+          .includes(serviceFilter.toLowerCase()),
+      );
     }
 
-    if (sortByFilter === "high-to-low") {
-      tempFilteredReviews.sort(
-        (a, b) => (b.rating ?? 0) - (a.rating ?? 0)
-      )
+    // 🔹 Rating sort
+    if (sortByFilter) {
+      if (sortByFilter === "low-to-high") {
+        tempFilteredReviews.sort((a, b) => (a.rating ?? 0) - (b.rating ?? 0));
+      }
+
+      if (sortByFilter === "high-to-low") {
+        tempFilteredReviews.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+      }
     }
-  }
 
-  setFilteredReviews(tempFilteredReviews)
-}, [serviceFilter, sortByFilter, reviews])
+    setFilteredReviews(tempFilteredReviews);
+  }, [serviceFilter, sortByFilter, reviews]);
 
+  const webisteClickHandle = async (e, id) => {
+    e.preventDefault();
+    console.log(providerDetails.websiteClicks + 1);
 
- const webisteClickHandle = async (e, id) => {
-  e.preventDefault();
-  console.log(providerDetails.websiteClicks+1)
+    try {
+      await authFetch(`/api/providers/${id}/website-clicks`, {
+        method: "POST",
+      });
+    } catch (err) {
+      console.error("Failed to update click count", err);
+    }
 
-  try {
-    await fetch(`/api/providers/${id}/website-clicks`, {
-      method: "POST"
-    });
-  } catch (err) {
-    console.error("Failed to update click count", err);
-  }
+    window.open(providerDetails.website, "_blank");
+  };
 
-  window.open(providerDetails.website, "_blank");
-};
-
- 
-  if(loading){
-    return(
+  if (loading) {
+    return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
-    )
+    );
   }
-  if(failed){
-    return(
+  if (failed) {
+    return (
       <div className="min-h-screen flex flex-col items-center justify-center">
-       <h1 className="text-lg mb-2 font-medium">Failed to get the data</h1>
-       <Button className="h-[30px] w-[80px] bg-[#2C34A1] hover:bg-[#2C34A1] active:bg-[#2C34A1]" onClick={loadData} >Reload</Button>
+        <h1 className="text-lg mb-2 font-medium">Failed to get the data</h1>
+        <Button
+          className="h-[30px] w-[80px] bg-[#2C34A1] hover:bg-[#2C34A1] active:bg-[#2C34A1]"
+          onClick={loadData}
+        >
+          Reload
+        </Button>
       </div>
-    )
+    );
   }
 
   return (
     <div className="min-h-screen mt-0 bg-[#fff]">
       {/* Hero Section */}
-      <div className="text-white py-16" style={{
-        backgroundImage:`url(/ProviderDetailBanner.jpg)`,
-        backgroundSize:"cover",
-        backgroundPosition:"center",
-        backgroundRepeat:"no-repeat",
-        height:"400px"
-      }}>
+      <div
+        className="text-white py-16"
+        style={{
+          backgroundImage: `url(/ProviderDetailBanner.jpg)`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          height: "400px",
+        }}
+      >
         <div className="max-w-7xl mx-auto px-8 py-12 lg:px-30">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
             <div>
-              <img src={providerDetails.logo || "/provider4.jpg"} className="h-45 w-48  rounded-2xl" />
+              <img
+                src={providerDetails.logo || "/provider4.jpg"}
+                className="h-45 w-48  rounded-2xl"
+              />
             </div>
             <div className="flex-1">
               <div className="mb-0">
@@ -260,33 +277,54 @@ console.log("Providers Details are :::",providerDetails);
                     Featured
                   </Badge>
                 )}
-                <h1 className="text-4xl font-extrabold mt-1 tracking-widest">{providerDetails.name.toUpperCase()}</h1>
-                
+                <h1 className="text-4xl font-extrabold mt-1 tracking-widest">
+                  {providerDetails.name.toUpperCase()}
+                </h1>
               </div>
-              <p className="text-lg text-white/90 mb-4">{providerDetails.tagline || "Professional service provider"}</p>
-               <div className="grid grid-cols-3 gap-4 mb-4 text-sm">
-                    <div className="flex items-center gap-2">
-                      <img src="/ProviderDetailPageBannerIconLoactionFilled.png" className="h-5 w-4"/>
-        
-                      <span className="text-[#fff] font-semibold text-sm">{providerDetails.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <img src="/ProviderDetailPageBannerIconBriefCase.png" className="h-5 w-5" />
-                      <span  className="text-[#fff] font-semibold text-sm">{providerDetails.projectsCompleted} projects</span>
-                    </div>
-                     <div className="flex items-center gap-2">
-                      <img src="/ProviderDetailPageBannerIconChatOperational.png" className="h-5 w-5" />
-                      <span  className="text-[#fff] font-semibold text-sm">Response: {providerDetails?.responseTime || "2 hrs"}</span>
-                    </div>
-                    
-                  </div>
+              <p className="text-lg text-white/90 mb-4">
+                {providerDetails.tagline || "Professional service provider"}
+              </p>
+              <div className="grid grid-cols-3 gap-4 mb-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <img
+                    src="/ProviderDetailPageBannerIconLoactionFilled.png"
+                    className="h-5 w-4"
+                  />
+
+                  <span className="text-[#fff] font-semibold text-sm">
+                    {providerDetails.location}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <img
+                    src="/ProviderDetailPageBannerIconBriefCase.png"
+                    className="h-5 w-5"
+                  />
+                  <span className="text-[#fff] font-semibold text-sm">
+                    {providerDetails.projectsCompleted} projects
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <img
+                    src="/ProviderDetailPageBannerIconChatOperational.png"
+                    className="h-5 w-5"
+                  />
+                  <span className="text-[#fff] font-semibold text-sm">
+                    Response: {providerDetails?.responseTime || "2 hrs"}
+                  </span>
+                </div>
+              </div>
               <div className="flex flex-wrap items-center gap-4 text-sm">
                 <div className="flex items-center gap-2">
-                  <RatingStars rating={providerDetails.rating}/>
-                  <span className="font-semibold text-lg">{providerDetails.rating}</span>
-                  <span className="text-white/80">({providerDetails.reviewCount} reviews)</span>
+                  <RatingStars rating={providerDetails.rating} />
+                  <span className="font-semibold text-lg">
+                    {providerDetails.rating}
+                  </span>
+                  <span className="text-white/80">
+                    ({providerDetails.reviewCount} reviews)
+                  </span>
                 </div>
-                
+
                 <Badge className="bg-[#fff] text-[#000] rounded-2xl backdrop-blur-sm border-white/30 capitalize">
                   {providerDetails.subscriptionTier || "Basic"} Plan
                 </Badge>
@@ -294,26 +332,30 @@ console.log("Providers Details are :::",providerDetails);
             </div>
             <div className="flex flex-col gap-1">
               <a href={`mailto:${providerDetails.email}`}>
-              <Button size="lg" className="bg-white text-[#2C34A1] hover:bg-white/90 text-sm font-semibold  active:bg-white  rounded-3xl">
-                <img src="/providerDetailPageBannerButton.jpg" className="h-4 w-4 mr-0.5" />
-                Contact Provider
-              </Button>
+                <Button
+                  size="lg"
+                  className="bg-white text-[#2C34A1] hover:bg-white/90 text-sm font-semibold  active:bg-white  rounded-3xl"
+                >
+                  <img
+                    src="/providerDetailPageBannerButton.jpg"
+                    className="h-4 w-4 mr-0.5"
+                  />
+                  Contact Provider
+                </Button>
               </a>
-              {
-                providerDetails.website && (
-                  <a href={`${providerDetails.website}`} target="_blank">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white rounded-3xl mt-2 font-semibold text-white hover:bg-white/10 bg-transparent  active:bg-transparent"
-                onClick={(e)=>webisteClickHandle(e,id)}
-              >
-                  <ExternalLink className="mr-0.5"  height={16} width={16}/>
-                View Website
-              </Button>
-              </a>
-                )
-              }
+              {providerDetails.website && (
+                <a href={`${providerDetails.website}`} target="_blank">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-white rounded-3xl mt-2 font-semibold text-white hover:bg-white/10 bg-transparent  active:bg-transparent"
+                    onClick={(e) => webisteClickHandle(e, id)}
+                  >
+                    <ExternalLink className="mr-0.5" height={16} width={16} />
+                    View Website
+                  </Button>
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -325,10 +367,12 @@ console.log("Providers Details are :::",providerDetails);
           {/* Left Column - Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* About Section */}
-             <div>
+            <div>
               <h1 className="text-xl font-bold">Over View</h1>
-              <p className="text-sm text-[#b2b2b2] mt-0.5">{providerDetails.description}</p>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+              <p className="text-sm text-[#b2b2b2] mt-0.5">
+                {providerDetails.description}
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
                 {stats.map((item, index) => (
                   <div
                     key={index}
@@ -342,25 +386,25 @@ console.log("Providers Details are :::",providerDetails);
                       bg-white
                     "
                   >
-                    <span className="text-md text-[#000] font-medium">{item.label}</span>
-                    <span className="text-sm text-[#b2b2b2] font-normal mt-1">{item.value}</span>
+                    <span className="text-md text-[#000] font-medium">
+                      {item.label}
+                    </span>
+                    <span className="text-sm text-[#b2b2b2] font-normal mt-1">
+                      {item.value}
+                    </span>
                   </div>
                 ))}
               </div>
-             </div>
+            </div>
 
             {/* Services Section */}
-            
-                <h1 className="text-2xl font-bold mb-1">Services Offered</h1>
-              
-            
-                <div>
-                  
-                  {
-                    providerDetails.services.length !=0?
-                    (
-                      <div className="flex flex-row flex-wrap gap-3">
-                        {providerDetails.services.map((service, index) => (
+
+            <h1 className="text-2xl font-bold mb-1">Services Offered</h1>
+
+            <div>
+              {providerDetails.services.length != 0 ? (
+                <div className="flex flex-row flex-wrap gap-3">
+                  {providerDetails.services.map((service, index) => (
                     <div
                       key={index}
                       className="p-3 text-center rounded-xl bg-[#d9e4f6]"
@@ -368,80 +412,78 @@ console.log("Providers Details are :::",providerDetails);
                       <span className="font-medium text-sm">{service}</span>
                     </div>
                   ))}
-                      </div>
-                    )
-                    :
-                    (
-                      <div className="text-center">
-                        <p className="text-gray-500 text-xl my-10">No Services Offered</p>
-                      </div>
-                    )
-                  }
                 </div>
-            
+              ) : (
+                <div className="text-center">
+                  <p className="text-gray-500 text-xl my-10">
+                    No Services Offered
+                  </p>
+                </div>
+              )}
+            </div>
 
             {/* Portfolio Section */}
-            
-                <h1 className="text-2xl font-bold">Portfolio & Awards</h1>
-              
-                <div className="grid sm:grid-cols-2 gap-6">
-  {providerDetails?.portfolio?.length > 0 ? (
-    providerDetails.portfolio.map((item) => (
-      <div
-        key={item.id}
-        className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300"
-      >
-        <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100">
-          <img
-            src={
-              item.image ||
-              `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(item.title)}`
-            }
-            alt={item.title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-          />
-        </div>
 
-        <div className="p-4">
-          <Badge
-            variant="outline"
-            className="mb-2 bg-[#ebecee] rounded-2xl text-[12px] text-[#000]"
-          >
-            {item.category}
-          </Badge>
+            <h1 className="text-2xl font-bold">Portfolio & Awards</h1>
 
-          <h4 className="font-semibold text-md mb-1">{item.title}</h4>
-          <p className="text-sm text-[#b2b2b2] line-clamp-2 mb-3">
-            {item.description}
-          </p>
+            <div className="grid sm:grid-cols-2 gap-6">
+              {providerDetails?.portfolio?.length > 0 ? (
+                providerDetails.portfolio.map((item) => (
+                  <div
+                    key={item.id}
+                    className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300"
+                  >
+                    <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100">
+                      <img
+                        src={
+                          item.image ||
+                          `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(item.title)}`
+                        }
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                    </div>
 
-          <div className="flex flex-wrap gap-1 mb-3">
-            {item.technologies.slice(0, 3).map((tech, idx) => (
-              <Badge
-                key={idx}
-                variant="secondary"
-                className="text-xs bg-[#d9e4f6] text-[#000] rounded-2xl"
-              >
-                {tech}
-              </Badge>
-            ))}
-          </div>
-        </div>
-      </div>
-    ))
-  ) : (
-    <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
-      <p className="text-lg font-semibold text-gray-600">
-        No Portfolio & Awards
-      </p>
-      <p className="text-sm text-gray-400 mt-1">
-        This provider hasn’t added any portfolio items yet.
-      </p>
-    </div>
-  )}
-</div>
+                    <div className="p-4">
+                      <Badge
+                        variant="outline"
+                        className="mb-2 bg-[#ebecee] rounded-2xl text-[12px] text-[#000]"
+                      >
+                        {item.category}
+                      </Badge>
 
-             
+                      <h4 className="font-semibold text-md mb-1">
+                        {item.title}
+                      </h4>
+                      <p className="text-sm text-[#b2b2b2] line-clamp-2 mb-3">
+                        {item.description}
+                      </p>
+
+                      <div className="flex flex-wrap gap-1 mb-3">
+                        {item.technologies.slice(0, 3).map((tech, idx) => (
+                          <Badge
+                            key={idx}
+                            variant="secondary"
+                            className="text-xs bg-[#d9e4f6] text-[#000] rounded-2xl"
+                          >
+                            {tech}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
+                  <p className="text-lg font-semibold text-gray-600">
+                    No Portfolio & Awards
+                  </p>
+                  <p className="text-sm text-gray-400 mt-1">
+                    This provider hasn’t added any portfolio items yet.
+                  </p>
+                </div>
+              )}
+            </div>
 
             {/* Client Testimonials */}
             {/* <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
@@ -530,32 +572,27 @@ console.log("Providers Details are :::",providerDetails);
             <Card className="border-2 shadow-none bg-white backdrop-blur-sm">
               <CardHeader className="text-center px-0">
                 <CardTitle className="mb-3">Technologies</CardTitle>
-                <hr className="border-[1px] w-full"/>
+                <hr className="border-[1px] w-full" />
               </CardHeader>
               <CardContent>
-                <div >
-                  {
-                    providerDetails.technologies.length!=0?
-                    (
-                      <div className="flex flex-wrap gap-2">
-                        {providerDetails.technologies.map((tech, index) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      className="bg-[#ebecee] text-black h-[30px] min-w-[80px] rounded-xl "
-                    >
-                      {tech}
-                    </Badge>
-                  ))}
-                      </div>
-                    )
-                    :
-                    (
-                      <div className="text-center">
-                        <p className="text-gray-500 text-xl">No Technologies</p>
-                      </div>
-                    )
-                  }
+                <div>
+                  {providerDetails.technologies.length != 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {providerDetails.technologies.map((tech, index) => (
+                        <Badge
+                          key={index}
+                          variant="secondary"
+                          className="bg-[#ebecee] text-black h-[30px] min-w-[80px] rounded-xl "
+                        >
+                          {tech}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <p className="text-gray-500 text-xl">No Technologies</p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -628,14 +665,18 @@ console.log("Providers Details are :::",providerDetails);
         </div>
 
         {/*Filter s header */}
-         <div className="flex flex-col lg:flex-row justify-between my-8">
-          <h1 className="text-3xl text-[#000] mb-4 lg:mb-0">Creative Design Studios Reviews</h1>
+        <div className="flex flex-col lg:flex-row justify-between my-8">
+          <h1 className="text-3xl text-[#000] mb-4 lg:mb-0">
+            Creative Design Studios Reviews
+          </h1>
           <div className="flex gap-2 items-center mb-4 lg:mb-0">
-             <span className="text-md font-semibold">Services:</span>
-          <Select onValueChange={(value)=>setServiceFilter(value)} value={serviceFilter}>
-           
-            <SelectTrigger
-              className="
+            <span className="text-md font-semibold">Services:</span>
+            <Select
+              onValueChange={(value) => setServiceFilter(value)}
+              value={serviceFilter}
+            >
+              <SelectTrigger
+                className="
                 bg-[#f5f5f5]
                 h-14
                 w-[160px]
@@ -650,26 +691,27 @@ console.log("Providers Details are :::",providerDetails);
                 focus:ring-offset-0
                 focus:border-[#e5e5e5]
               "
-            >
-              
-              <SelectValue placeholder="Select Services" />
-            </SelectTrigger>
+              >
+                <SelectValue placeholder="Select Services" />
+              </SelectTrigger>
 
-            <SelectContent>
-              <SelectItem value="all">All Services</SelectItem>
-              <SelectItem value="development">Development</SelectItem>
-              <SelectItem value="design">Design</SelectItem>
-              <SelectItem value="marketing">Marketing</SelectItem>
-              <SelectItem value="consulting">Consulting</SelectItem>
-            </SelectContent>
-          </Select>
+              <SelectContent>
+                <SelectItem value="all">All Services</SelectItem>
+                <SelectItem value="development">Development</SelectItem>
+                <SelectItem value="design">Design</SelectItem>
+                <SelectItem value="marketing">Marketing</SelectItem>
+                <SelectItem value="consulting">Consulting</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-           <div className="flex gap-2 items-center">
-             <span className="text-md font-semibold">Sortby:</span>
-             <Select onValueChange={(value)=>setSortByFilter(value)} value={sortByFilter}>
-           
-            <SelectTrigger
-              className="
+          <div className="flex gap-2 items-center">
+            <span className="text-md font-semibold">Sortby:</span>
+            <Select
+              onValueChange={(value) => setSortByFilter(value)}
+              value={sortByFilter}
+            >
+              <SelectTrigger
+                className="
                 bg-[#f5f5f5]
                 h-14
                 w-[160px]
@@ -684,40 +726,38 @@ console.log("Providers Details are :::",providerDetails);
                 focus:ring-offset-0
                 focus:border-[#e5e5e5]
               "
-            >
-              
-              <SelectValue placeholder="Rating" />
-            </SelectTrigger>
+              >
+                <SelectValue placeholder="Rating" />
+              </SelectTrigger>
 
-            <SelectContent>
-             
-              <SelectItem value="low-to-high">Low to high</SelectItem>
-              <SelectItem value="high-to-low">High to low</SelectItem>
-             
-            </SelectContent>
-          </Select>
+              <SelectContent>
+                <SelectItem value="low-to-high">Low to high</SelectItem>
+                <SelectItem value="high-to-low">High to low</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
         {/*Reviews contenet */}
-         {
-          filteredReviews.length !==0?(<div>
-            {
-              filteredReviews.map((review)=>(
-            <div className="border border-gray-300 rounded-3xl  bg-white max-w-6xl mx-auto mb-5">
-              
-              <div className="w-full rounded-3xl border border-[#e6e6e6] bg-white p-8">
+        {filteredReviews.length !== 0 ? (
+          <div>
+            {filteredReviews.map((review) => (
+              <div className="border border-gray-300 rounded-3xl  bg-white max-w-6xl mx-auto mb-5">
+                <div className="w-full rounded-3xl border border-[#e6e6e6] bg-white p-8">
                   {/* TOP SECTION */}
                   <div className="flex flex-col lg:flex-row justify-between gap-6">
-                    
                     {/* LEFT — REVIEW CONTENT */}
                     <div className="flex-1">
-                      <h2 className="text-xl font-bold text-black">The Review</h2>
+                      <h2 className="text-xl font-bold text-black">
+                        The Review
+                      </h2>
 
                       <p className="text-sm text-[#b2b2b2] mt-0">
                         {formatDate(review.createdAt)}
                       </p>
 
-                      <h4 className="text-md font-semibold mt-2">Feed back summary</h4>
+                      <h4 className="text-md font-semibold mt-2">
+                        Feed back summary
+                      </h4>
 
                       <p className="text-sm text-[#9c9c9c] leading-relaxed mt-0">
                         {review.content}
@@ -742,11 +782,9 @@ console.log("Providers Details are :::",providerDetails);
                       </p>
                     </div>
                   </div>
-                  
 
                   {/* BOTTOM SECTION */}
                   <div className="flex flex-col lg:flex-row justify-between gap-6">
-                    
                     {/* LEFT — REVIEWER */}
                     <div>
                       <h3 className="text-md font-bold mt-4">The Reviewer</h3>
@@ -765,7 +803,6 @@ console.log("Providers Details are :::",providerDetails);
 
                     {/* RIGHT — META INFO */}
                     <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-[#9c9c9c]">
-                      
                       {/* <div className="flex items-center gap-1">
                         <Building className="h-4 w-4" />
                         {review.reviewer.industry}
@@ -795,16 +832,15 @@ console.log("Providers Details are :::",providerDetails);
                     </div>
                   </div>
                 </div>
-            </div>
-          ))
-            }
-            </div>
-            ):
-            (<div className="text-center mt-20">
-              <p className="text-xl">No Reviews for this provider</p>
-            </div>)
-         }
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center mt-20">
+            <p className="text-xl">No Reviews for this provider</p>
+          </div>
+        )}
       </div>
     </div>
-  )
+  );
 }

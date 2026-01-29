@@ -16,7 +16,14 @@ import {
   Cell,
 } from "recharts";
 import { Badge } from "@/components/ui/badge";
-import { Activity, TrendingUp, Star, UserCheck, MousePointerClick } from "lucide-react";
+import {
+  Activity,
+  TrendingUp,
+  Star,
+  UserCheck,
+  MousePointerClick,
+} from "lucide-react";
+import { authFetch } from "@/lib/auth-fetch";
 
 // ----------------------------------------------------
 // MOCK DATA (API Replacable)
@@ -67,7 +74,7 @@ export default function PerformanceInsightsPage() {
   ----------------------------------------------------
   useEffect(() => {
     async function loadInsights() {
-      const res = await fetch("/api/admin/performance-insights");
+      const res = await authFetch("/api/admin/performance-insights");
       const data = await res.json();
 
       setEngagement(data.engagement);
@@ -84,7 +91,9 @@ export default function PerformanceInsightsPage() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold">Performance Insights</h1>
-        <p className="text-gray-500">Deep analytics on engagement, conversions, and provider success.</p>
+        <p className="text-gray-500">
+          Deep analytics on engagement, conversions, and provider success.
+        </p>
       </div>
 
       {/* KPI Row */}
@@ -127,7 +136,12 @@ export default function PerformanceInsightsPage() {
             <XAxis dataKey="month" />
             <YAxis />
             <Tooltip />
-            <Line type="monotone" dataKey="engagement" stroke="#2563eb" strokeWidth={3} />
+            <Line
+              type="monotone"
+              dataKey="engagement"
+              stroke="#2563eb"
+              strokeWidth={3}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -148,14 +162,21 @@ export default function PerformanceInsightsPage() {
 
       {/* Requirement Conversion */}
       <div className="bg-white p-6 rounded-2xl border shadow-sm">
-        <h2 className="text-xl font-semibold mb-4">Requirement Conversion Growth</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          Requirement Conversion Growth
+        </h2>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={conversion}>
             <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
             <XAxis dataKey="month" />
             <YAxis />
             <Tooltip />
-            <Line type="monotone" dataKey="conversions" stroke="#8b5cf6" strokeWidth={3} />
+            <Line
+              type="monotone"
+              dataKey="conversions"
+              stroke="#8b5cf6"
+              strokeWidth={3}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>

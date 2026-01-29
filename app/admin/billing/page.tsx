@@ -1,18 +1,35 @@
 "use client";
 
+import { RiExchangeDollarFill } from "react-icons/ri";
+import { IoMdTrendingUp } from "react-icons/io";
+import { FaCheckCircle } from "react-icons/fa";
+import { FaArrowUpLong } from "react-icons/fa6";
 import { useState, useEffect } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  LineChart,
+  Line,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Download,
   FileText,
   CreditCard,
-  CircleDollarSign,
   AlertTriangle,
+  CircleDollarSign,
+  TrendingUp,
+  ArrowUpRight,
+  CheckCircle,
 } from "lucide-react";
-import {
-  mockSubscriptionStats,
-} from "@/lib/mock-data";
+import { mockSubscriptionStats } from "@/lib/mock-data";
 const mockBillingInvoices = [
   {
     id: "INV-001",
@@ -37,7 +54,36 @@ const mockBillingInvoices = [
   },
 ];
 
+const revenueData = [
+  { month: "Jan", target: 8000, actual: 7800 },
+  { month: "Feb", target: 15000, actual: 2200 },
+  { month: "Mar", target: 21000, actual: 1500 },
+  { month: "Apr", target: 6000, actual: 14000 },
+  { month: "May", target: 27000, actual: 21000 },
+  { month: "Jun", target: 14000, actual: 2800 },
+  { month: "Jul", target: 5000, actual: 4300 },
+  { month: "Aug", target: 1000, actual: 27000 },
+  { month: "Sep", target: 17000, actual: 4500 },
+  { month: "Oct", target: 22000, actual: 17000 },
+  { month: "Nov", target: 16000, actual: 4000 },
+  { month: "Dec", target: 17000, actual: 2400 },
+];
+
+const mrrData = [
+  { week: "Week 1", a: 200, b: 120, c: 40 },
+  { week: "Week 2", a: 180, b: 90, c: 20 },
+  { week: "Week 3", a: 120, b: 60, c: 30 },
+  { week: "Week 4", a: 210, b: 140, c: 60 },
+  { week: "Week 5", a: 140, b: 110, c: 65 },
+  { week: "Week 6", a: 160, b: 115, c: 25 },
+  { week: "Week 7", a: 180, b: 130, c: 60 },
+  { week: "Week 8", a: 90, b: 50, c: 20 },
+];
+
 export default function BillingPage() {
+  const [activeTab, setActiveTab] = useState<"overview" | "invoices">(
+    "overview",
+  );
   const [invoices, setInvoices] = useState(mockBillingInvoices || []);
   const [billingStats, setBillingStats] = useState(mockSubscriptionStats);
 
@@ -47,7 +93,7 @@ export default function BillingPage() {
   ------------------------------------------------------
   useEffect(() => {
     async function loadBilling() {
-      const res = await fetch("/api/admin/billing");
+      const res = await authFetch("/api/admin/billing");
       const data = await res.json();
 
       setInvoices(data.invoices);
@@ -78,130 +124,308 @@ export default function BillingPage() {
     console.log("Downloading invoice CSV:", id);
   };
 
+  // return (
+  //   <div className="space-y-10">
+  //     {/* Header */}
+  //     <div>
+  //       <h1 className="text-4xl font-bold text-orange-600">Billing & Invoices</h1>
+  //       <p className="text-gray-500 mt-2">
+  //         Manage your billing, payments, and invoices
+  //       </p>
+  //     </div>
+
+  //     {/* Tabs */}
+  //     <div className="inline-flex bg-gray-100 rounded-full p-1">
+  //       {["overview", "invoices"].map((tab) => (
+  //         <button
+  //           key={tab}
+  //           onClick={() => setActiveTab(tab as any)}
+  //           className={`px-6 py-2 rounded-full text-sm font-medium transition
+  //             ${
+  //               activeTab === tab
+  //                 ? "bg-orange-500 text-white"
+  //                 : "text-gray-600 hover:text-gray-900"
+  //             }`}
+  //         >
+  //           {tab === "overview" ? "Overview" : "Invoices"}
+  //         </button>
+  //       ))}
+  //     </div>
+
+  //     {/* OVERVIEW */}
+  //     {activeTab === "overview" && (
+  //       <>
+  //         {/* Stats Cards */}
+  //         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+  //           <BillingCard
+  //             title="Monthly Recurring Revenue"
+  //             value="$18,000"
+  //             subtitle="↑ 15% from last month"
+  //             icon={<CircleDollarSign className="w-6 h-6 text-orange-500" />}
+  //           />
+
+  //           <BillingCard
+  //             title="Annual Recurring Revenue"
+  //             value="$216,000"
+  //             subtitle="↑ 18% growth YoY"
+  //             icon={<TrendingUp className="w-6 h-6 text-orange-500" />}
+  //           />
+
+  //           <BillingCard
+  //             title="Outstanding"
+  //             value="$4,200"
+  //             subtitle="Improved from 1.8%"
+  //             icon={<ArrowUpRight className="w-6 h-6 text-green-500" />}
+  //           />
+
+  //           <BillingCard
+  //             title="Success Rate"
+  //             value="98.5%"
+  //             subtitle="$4,200 outstanding"
+  //             icon={<CheckCircle className="w-6 h-6 text-green-500" />}
+  //           />
+  //         </div>
+
+  //         {/* Monthly Revenue vs Target */}
+  //         <div className="bg-white rounded-2xl p-6 shadow-sm border">
+  //           <h3 className="text-lg font-semibold text-orange-600 mb-4">
+  //             Monthly Revenue vs Target
+  //           </h3>
+  //           <div className="h-[320px] flex items-center justify-center text-gray-400">
+  //             Chart UI Placeholder
+  //           </div>
+  //         </div>
+
+  //         {/* MRR Growth Trend */}
+  //         <div className="bg-white rounded-2xl p-6 shadow-sm border">
+  //           <h3 className="text-lg font-semibold text-orange-600 mb-4">
+  //             MRR Growth Trend
+  //           </h3>
+  //           <div className="h-[300px] flex items-center justify-center text-gray-400">
+  //             Chart UI Placeholder
+  //           </div>
+  //         </div>
+  //       </>
+  //     )}
+
+  //     {/* INVOICES */}
+  //     {activeTab === "invoices" && (
+  //       <div className="bg-white p-6 rounded-2xl shadow-sm border">
+  //         <h2 className="text-xl font-semibold mb-6">Invoice History</h2>
+
+  //         <div className="space-y-4">
+  //           {invoices.map((invoice) => (
+  //             <div
+  //               key={invoice.id}
+  //               className="p-5 border rounded-xl flex flex-col md:flex-row justify-between hover:shadow-lg transition"
+  //             >
+  //               <div className="flex items-start gap-4">
+  //                 <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+  //                   <FileText className="w-6 h-6 text-orange-500" />
+  //                 </div>
+
+  //                 <div>
+  //                   <h3 className="font-semibold">{invoice.plan}</h3>
+  //                   <p className="text-sm text-gray-500">
+  //                     Invoice ID: {invoice.id}
+  //                   </p>
+  //                   <p className="text-sm text-gray-500">
+  //                     Date: {invoice.date}
+  //                   </p>
+  //                   <p className="font-semibold mt-2">
+  //                     ${invoice.amount}
+  //                   </p>
+  //                 </div>
+  //               </div>
+
+  //               <div className="flex flex-col items-end gap-3 mt-4 md:mt-0">
+  //                 {getStatusBadge(invoice.status)}
+
+  //                 <div className="flex gap-2">
+  //                   <Button size="sm" className="bg-orange-500 hover:bg-orange-600">
+  //                     <Download className="w-4 h-4 mr-1" /> PDF
+  //                   </Button>
+  //                   <Button size="sm" variant="outline">
+  //                     <Download className="w-4 h-4 mr-1" /> CSV
+  //                   </Button>
+  //                 </div>
+  //               </div>
+  //             </div>
+  //           ))}
+  //         </div>
+  //       </div>
+  //     )}
+  //   </div>
+  // );
+
   return (
-    <div className="space-y-10">
+    <div className="space-y-4">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Billing & Invoices</h1>
-        <p className="text-gray-500">Manage payments, subscriptions, and invoice history.</p>
+        <h1 className="text-3xl font-bold text-orangeButton my-custom-class">
+          Billing & Invoices
+        </h1>
+        <p className="text-gray-500 mt-0 my-custom-class text-xl">
+          Manage your billing, payments, and invoices
+        </p>
       </div>
 
-      {/* Billing Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Monthly Recurring Revenue */}
-        <BillingCard
-          title="Monthly Recurring Revenue"
-          value={`$${billingStats.monthlyRecurring.toLocaleString()}`}
-          icon={<CircleDollarSign className="w-7 h-7 text-green-600" />}
-          gradient="from-green-100 to-green-200"
+      {/* Segmented Tabs */}
+      <div className="inline-flex items-center bg-[#e6edf5] rounded-full p-1">
+        <button
+          onClick={() => setActiveTab("overview")}
+          className={`px-6 py-2 text-sm font-medium rounded-full transition my-custom-class
+      ${
+        activeTab === "overview"
+          ? "bg-orange-500 text-white shadow"
+          : "text-black hover:text-gray-900"
+      }`}
+        >
+          Overview
+        </button>
+
+        <button
+          onClick={() => setActiveTab("invoices")}
+          className={`px-6 py-2 text-sm font-medium rounded-full transition my-custom-class
+      ${
+        activeTab === "invoices"
+          ? "bg-orange-500 text-white shadow"
+          : "text-black hover:text-gray-900"
+      }`}
+        >
+          Invoices
+        </button>
+      </div>
+
+      {/* CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard
+          title="(Monthly Recurring Revenue)"
+          value="$18,000"
+          note="↑ 15% from last month"
+          noteColor="text-green-600"
+          icon={<RiExchangeDollarFill />}
         />
-
-        {/* Total Subscribers */}
-        {/* <BillingCard
-          title="Active Subscribers"
-          value={billingStats.activeSubscribers}
-          icon={<CreditCard className="w-7 h-7 text-blue-600" />}
-          gradient="from-blue-100 to-blue-200"
-        /> */}
-
-        {/* Pending Payments */}
-        {/* <BillingCard
-          title="Pending Payments"
-          value={billingStats.pendingPayments || 0}
-          icon={<AlertTriangle className="w-7 h-7 text-yellow-600" />}
-          gradient="from-yellow-100 to-yellow-200"
-        /> */}
+        <StatCard
+          title="Annual Recurring Revenue"
+          value="$216,000"
+          note="↑ 18% growth YoY"
+          noteColor="text-green-600"
+          icon={<IoMdTrendingUp />}
+        />
+        <StatCard
+          title="Outstanding"
+          value="$4,200"
+          note="Improved from 1.8%"
+          noteColor="text-black"
+          icon={<FaArrowUpLong className="text-green-500" />}
+        />
+        <StatCard
+          title="Success Rate"
+          value="98.5%"
+          note="$4,200 outstanding"
+          noteColor="text-black"
+          icon={<FaCheckCircle className="text-green-500" />}
+        />
       </div>
 
-      {/* Invoice List */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border">
-        <h2 className="text-xl font-semibold mb-6">Invoice History</h2>
+      {/* MONTHLY REVENUE vs TARGET */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border">
+        <h3 className="text-xl font-semibold text-orangeButton my-custom-class mb-6">
+          Monthly Revenue vs Target
+        </h3>
 
-        <div className="space-y-4">
-          {invoices.map((invoice) => (
-            <div
-              key={invoice.id}
-              className="p-5 border rounded-xl flex flex-col md:flex-row justify-between hover:shadow-lg transition"
-            >
-              {/* Left Info */}
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <FileText className="w-6 h-6 text-blue-600" />
-                </div>
-
-                <div>
-                  <h3 className="font-semibold text-lg">{invoice.plan}</h3>
-                  <p className="text-gray-500 text-sm">
-                    Invoice ID: <span className="font-medium">{invoice.id}</span>
-                  </p>
-
-                  <p className="text-gray-600 text-sm mt-1">
-                    Date: {invoice.date}
-                  </p>
-
-                  <p className="text-gray-900 font-semibold mt-2">
-                    ${invoice.amount.toLocaleString()}
-                  </p>
-                </div>
-              </div>
-
-              {/* Right */}
-              <div className="flex flex-col items-end gap-3 mt-4 md:mt-0">
-                {/* Status */}
-                {getStatusBadge(invoice.status)}
-
-                {/* Actions */}
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
-                    onClick={() => downloadPDF(invoice.id)}
-                  >
-                    <Download className="w-4 h-4" />
-                    PDF
-                  </Button>
-
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="flex items-center gap-2"
-                    onClick={() => downloadCSV(invoice.id)}
-                  >
-                    <Download className="w-4 h-4" />
-                    CSV
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ))}
+        <div className="h-[360px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={revenueData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="target" fill="#9b8cff" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="actual" fill="#ffb3a7" radius={[6, 6, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
+      </div>
 
-        {invoices.length === 0 && (
-          <p className="text-gray-500 mt-6 text-center">No invoices available.</p>
-        )}
+      {/* MRR GROWTH TREND */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border">
+        <h3 className="text-xl font-semibold text-orangeButton my-custom-class mb-6">
+          MRR Growth Trend
+        </h3>
+
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={mrrData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="week" />
+              <YAxis />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="a"
+                stroke="#2ec4f1"
+                strokeWidth={3}
+                dot
+              />
+              <Line
+                type="monotone"
+                dataKey="b"
+                stroke="#ff7b7b"
+                strokeWidth={3}
+                dot
+              />
+              <Line
+                type="monotone"
+                dataKey="c"
+                stroke="#7b61ff"
+                strokeWidth={3}
+                dot
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );
 }
 
-/* ---------------------------------------------------------
-   REUSABLE BILLING CARD COMPONENT
---------------------------------------------------------- */
-function BillingCard({ title, value, icon, gradient }: any) {
+/* ---------------- Billing Card ---------------- */
+
+// function BillingCard({ title, value, subtitle, icon }: any) {
+//   return (
+//     <div className="bg-white rounded-2xl p-6 shadow-sm border hover:shadow-md transition">
+//       <div className="flex justify-between items-start">
+//         <h3 className="text-sm text-gray-500">{title}</h3>
+//         <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center">
+//           {icon}
+//         </div>
+//       </div>
+//       <div className="text-2xl font-bold mt-3">{value}</div>
+//       <p className="text-sm text-green-600 mt-1">{subtitle}</p>
+//     </div>
+//   );
+// }
+
+function StatCard({ title, value, note, noteColor, icon }: any) {
   return (
-    <div
-      className="group bg-white rounded-2xl p-6 border shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-    >
-      <div className="flex items-center justify-between pb-3">
-        <h3 className="text-sm text-gray-600">{title}</h3>
-        <div
-          className={`w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br ${gradient} group-hover:scale-110 transition-transform`}
-        >
+    <div className="relative bg-white flex flex-col justify-between rounded-2xl p-4 shadow-md border-none">
+      {/* Icon top-right */}
+      <div className="flex flex-row justify-between">
+        <div className="absolute top-4 right-2 w-7 h-7 rounded-full bg-[#eef7fe] flex items-center justify-center text-orangeButton">
           {icon}
         </div>
-      </div>
 
-      <div className="text-2xl font-bold text-gray-800">{value}</div>
+        <p className="text-sm my-custom-class max-w-[150px] font-bold">
+          {title}
+        </p>
+      </div>
+      <div className="items-end">
+        <p className="text-3xl font-bold my-custom-class mt-3">{value}</p>
+        <p className={`text-xs ${noteColor} mt-0 my-custom-class`}>{note}</p>
+      </div>
     </div>
   );
 }
