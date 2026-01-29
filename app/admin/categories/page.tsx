@@ -4,9 +4,15 @@ import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PlusCircle, Trash } from "lucide-react";
+import { PlusCircle,Plus,Pencil,X, Trash } from "lucide-react";
 import FileUpload from "@/components/file-upload";
 import { authFetch } from "@/lib/auth-fetch";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface ServiceItem {
   title: string;
@@ -25,6 +31,7 @@ interface MainCategory {
   slug: string;
   icon?: string | null;
   isMainCategory: boolean;
+   status?: "active" | "inactive"
   children: SubCategory[];
 }
 
@@ -34,12 +41,26 @@ export default function CategoriesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editIcon, setEditIcon] = useState<string | null>(null);
+  const [editStatus, setEditStatus] = useState<"active" | "inactive">("active");
+
   // For editing subcategory
   const [editingSub, setEditingSub] = useState<{
     catId: string;
     index: number;
   } | null>(null);
   const [editSubTitle, setEditSubTitle] = useState("");
+
+
+const [openEditCategory, setOpenEditCategory] = useState(false);
+const [selectedCategory, setSelectedCategory] = useState<MainCategory | null>(null);
+
+
+  const [openAddCategory, setOpenAddCategory] = useState(false);
+const [openAddSub, setOpenAddSub] = useState(false);
+const [openEdit, setOpenEdit] = useState(false);
+
+const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+
 
   // For editing service items
   const [editingItem, setEditingItem] = useState<{
@@ -161,291 +182,250 @@ export default function CategoriesPage() {
     }
   };
 
-  return (
-    <div className="space-y-10">
-      <h1 className="text-3xl font-bold">Service Category Management</h1>
-      <p className="text-gray-500">
-        Manage categories → subcategories → service items.
-      </p>
+   return (
+    <div className="space-y-6">
+      {/* HEADER */}
+      <div>
+        <h1 className="text-3xl font-bold text-orangeButton my-custom-class">
+          Category Management
+        </h1>
+        <p className="text-gray-500 my-custom-class">
+          Create, edit, and manage content categories
+        </p>
+      </div>
 
-      {/* ADD MAIN CATEGORY */}
-      <div className="bg-white p-6 rounded-2xl border shadow space-y-6">
+      {/* TOP ACTION BAR */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <p className="text-gray-600 my-custom-class">
+          Total Categories: {categories.length}
+        </p>
+
         <div className="flex gap-3">
-          <Input
-            placeholder="New main category name..."
-            value={newCategory}
-            onChange={(e) => setNewCategory(e.target.value)}
-          />
-          <Button className="flex items-center gap-2" onClick={addMainCategory}>
-            <PlusCircle className="w-4 h-4" /> Add Category
+          <Button className="bg-orangeButton rounded-2xl hover:bg-orange-400 flex items-center gap-2"
+          onClick={() => setOpenAddCategory(true)}
+          >
+            <Plus className="w-4 h-4" />
+            Add Category
+          </Button>
+
+          <Button className="bg-blueButton rounded-2xl hover:bg-indigo-700 flex items-center gap-2"
+          onClick={() => setOpenAddSub(true)}
+          >
+            <Plus className="w-4 h-4" />
+            Add sub Category
           </Button>
         </div>
       </div>
 
-      {/* DISPLAY CATEGORIES */}
-      <div className="space-y-6">
+      {/* CATEGORY LIST */}
+      <div className="space-y-4">
         {categories.map((cat) => (
-          <div key={cat._id} className="bg-white p-6 border rounded-xl shadow">
-            {/* MAIN CATEGORY HEADER */}
-            <div className="flex justify-between items-center">
-              {/* ICON + UPLOAD */}
-              <div className="flex flex-col items-center w-32">
-                <img
-                  src={
-                    editingId === cat._id
-                      ? editIcon || "/images/placeholder.png"
-                      : cat.icon || "/images/placeholder.png"
-                  }
-                  className="w-16 h-16 object-cover rounded-full border mb-2"
-                />
-
-                {editingId === cat._id && (
-                  <FileUpload
-                    onChange={(url) => {
-                      setEditIcon(url); // store locally, don't update DB yet
-                    }}
-                  />
-                )}
-              </div>
-
-              {/* TITLE OR INPUT */}
-              <div className="flex-1 ml-4">
-                {editingId === cat._id ? (
-                  <Input
-                    value={editTitle}
-                    onChange={(e) => setEditTitle(e.target.value)}
-                    className="text-lg font-semibold"
-                  />
-                ) : (
-                  <h2 className="text-xl font-semibold">{cat.title}</h2>
-                )}
-              </div>
-
-              {/* ACTION BUTTONS */}
-              <div className="flex items-center gap-3">
-                {editingId === cat._id ? (
-                  <>
-                    {/* SAVE */}
-                    <Button
-                      size="sm"
-                      onClick={async () => {
-                        const updated = {
-                          ...cat,
-                          title: editTitle,
-                          slug: slugify(editTitle),
-                          icon: editIcon || cat.icon || null, // update icon at save time
-                        };
-
-                        await updateCategory(cat._id!, updated);
-
-                        setEditingId(null);
-                        setEditIcon(null);
-                        fetchCategories(); // refresh UI
-                      }}
-                    >
-                      Save
-                    </Button>
-
-                    {/* CANCEL */}
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        setEditingId(null);
-                        setEditIcon(null);
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </>
-                ) : (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setEditingId(cat._id!);
-                      setEditTitle(cat.title);
-                      setEditIcon(cat.icon || null);
-                    }}
-                  >
-                    Edit
-                  </Button>
-                )}
-
-                {/* DELETE */}
-                <Trash
-                  className="w-5 h-5 cursor-pointer text-red-600"
-                  onClick={() => removeCategory(cat._id!)}
-                />
-              </div>
+          <div
+            key={cat._id}
+            className="bg-white border rounded-2xl px-6 py-5 shadow-sm
+             grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr] items-center gap-40">
+            {/* LEFT */}
+            <div>
+              <h3 className="font-semibold text-gray-900 my-custom-class">{cat.title}</h3>
+              <p className="text-sm text-gray-500 my-custom-class">
+                {cat.slug.replace(/-/g, " ")}
+              </p>
             </div>
-            {/* ADD SUBCATEGORY */}
-            <AddInput
-              placeholder="Add subcategory..."
-              onAdd={(val) => addSubcategory(cat._id!, val)}
-            />
 
-            {/* SUBCATEGORIES LIST */}
-            <div className="pl-6 mt-4 space-y-4">
-              {cat.children.map((sub, subIndex) => (
-                <div
-                  key={subIndex}
-                  className="border p-4 rounded-lg bg-gray-50"
-                >
-                  {/* SUBCATEGORY TITLE */}
-                  <div className="flex justify-between items-center">
-                    {editingSub?.catId === cat._id &&
-                    editingSub?.index === subIndex ? (
-                      <Input
-                        value={editSubTitle}
-                        onChange={(e) => setEditSubTitle(e.target.value)}
-                        className="font-medium text-gray-700 w-64"
-                      />
-                    ) : (
-                      <h3 className="font-medium text-gray-700">{sub.title}</h3>
-                    )}
-
-                    {/* SUBCATEGORY ACTION BUTTONS */}
-                    <div className="flex gap-2">
-                      {editingSub?.catId === cat._id &&
-                      editingSub?.index === subIndex ? (
-                        <>
-                          <Button
-                            size="sm"
-                            onClick={async () => {
-                              const updated = { ...cat };
-                              updated.children[subIndex].title = editSubTitle;
-                              updated.children[subIndex].slug =
-                                slugify(editSubTitle);
-
-                              await updateCategory(cat._id!, updated);
-                              setEditingSub(null);
-                              fetchCategories();
-                            }}
-                          >
-                            Save
-                          </Button>
-
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setEditingSub(null)}
-                          >
-                            Cancel
-                          </Button>
-                        </>
-                      ) : (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            setEditingSub({ catId: cat._id!, index: subIndex });
-                            setEditSubTitle(sub.title);
-                          }}
-                        >
-                          Edit Subcategory
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* ADD SERVICE ITEM */}
-                  <AddInput
-                    placeholder="Add service item..."
-                    onAdd={(val) => addServiceItem(cat._id!, subIndex, val)}
-                  />
-
-                  {/* SERVICE ITEMS LIST */}
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {sub.items.map((item, itemIndex) => (
-                      <div key={itemIndex} className="flex items-center gap-2">
-                        {/* SERVICE ITEM TITLE / INPUT */}
-                        {editingItem?.catId === cat._id &&
-                        editingItem?.subIndex === subIndex &&
-                        editingItem?.itemIndex === itemIndex ? (
-                          <Input
-                            value={editItemTitle}
-                            onChange={(e) => setEditItemTitle(e.target.value)}
-                            className="h-8 w-48"
-                          />
-                        ) : (
-                          <Badge className="bg-white text-black border px-3 py-2 rounded-xl shadow">
-                            {item.title}
-                          </Badge>
-                        )}
-
-                        {/* SERVICE ITEM ACTION BUTTONS */}
-                        {editingItem?.catId === cat._id &&
-                        editingItem?.subIndex === subIndex &&
-                        editingItem?.itemIndex === itemIndex ? (
-                          <>
-                            <Button
-                              size="sm"
-                              onClick={async () => {
-                                const updated = { ...cat };
-                                updated.children[subIndex].items[
-                                  itemIndex
-                                ].title = editItemTitle;
-                                updated.children[subIndex].items[
-                                  itemIndex
-                                ].slug = slugify(editItemTitle);
-
-                                await updateCategory(cat._id!, updated);
-                                setEditingItem(null);
-                                fetchCategories();
-                              }}
-                            >
-                              Save
-                            </Button>
-
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => setEditingItem(null)}
-                            >
-                              Cancel
-                            </Button>
-                          </>
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => {
-                              setEditingItem({
-                                catId: cat._id!,
-                                subIndex,
-                                itemIndex,
-                              });
-                              setEditItemTitle(item.title);
-                            }}
-                          >
-                            Edit
-                          </Button>
-                        )}
-
-                        {/* DELETE SERVICE ITEM */}
-                        <Trash
-                          className="w-4 h-4 text-red-600 cursor-pointer"
-                          onClick={async () => {
-                            const updated = { ...cat };
-                            updated.children[subIndex].items.splice(
-                              itemIndex,
-                              1,
-                            );
-
-                            await updateCategory(cat._id!, updated);
-                            fetchCategories();
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
+            {/* MIDDLE */}
+            <div>
+              <p className="text-sm font-bold text-gray-900 my-custom-class">
+                Sub Categories
+              </p>
+              <p className="text-sm text-gray-500 my-custom-class">
+                {cat.children.length}
+              </p>
             </div>
+
+            {/* RIGHT */}
+            <div className="flex items-center gap-6">
+              <div>
+              <Badge className="bg-green-100 text-green-700 px-4 py-1 font-bold rounded-full cursor-pointer my-custom-class">
+                Active
+              </Badge>
+              </div>
+              <div className="grid grid-cols-2 gap-6">
+              <Pencil 
+              className="w-4 h-4 cursor-pointer text-gray-600 hover:text-black" 
+              onClick={() => {
+                setSelectedCategory(cat);
+                setEditTitle(cat.title);
+                setEditStatus((cat.status as "active" | "inactive") ?? "active");
+                setOpenEditCategory(true);
+              }}
+              />
+
+              <X className="w-4 h-4 cursor-pointer text-gray-600 hover:text-red-600" />
+            </div>
+          </div>
           </div>
         ))}
       </div>
+      
+      {/* Category  */}
+      <Dialog open={openAddCategory} onOpenChange={setOpenAddCategory}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add Category</DialogTitle>
+          </DialogHeader>
+
+          <Input
+            placeholder="Category name"
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+          />
+
+          <Button
+            className="w-full mt-4"
+            onClick={() => {
+              addMainCategory();
+              setOpenAddCategory(false);
+            }}
+          >
+            Save & Submit
+          </Button>
+        </DialogContent>
+      </Dialog>
+
+
+       {/* Sub Category */}
+      <Dialog open={openAddSub} onOpenChange={setOpenAddSub}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add Sub Category</DialogTitle>
+          </DialogHeader>
+
+          <select
+            className="w-full border rounded-xl px-3 py-2"
+            onChange={(e) => {
+              const cat = categories.find(c => c._id === e.target.value);
+              setSelectedCategory(cat || null);
+            }}
+          >
+            <option>Select Category</option>
+            {categories.map(cat => (
+              <option key={cat._id} value={cat._id}>
+                {cat.title}
+              </option>
+            ))}
+          </select>
+
+          <Input
+            placeholder="Sub-category name"
+            onChange={(e) => setEditSubTitle(e.target.value)}
+          />
+
+          <Button
+            className="w-full mt-4"
+            onClick={() => {
+              if (!selectedCategory) return;
+              addSubcategory(selectedCategory._id!, editSubTitle);
+              setOpenAddSub(false);
+            }}
+          >
+            Save & Submit
+          </Button>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Modal */}
+      <Dialog open={openEditCategory} onOpenChange={setOpenEditCategory}>
+  <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto rounded-2xl">
+    <DialogHeader>
+      <DialogTitle className="text-orangeButton">
+        Edit Category
+      </DialogTitle>
+    </DialogHeader>
+
+    {/* CATEGORY NAME */}
+    <div className="space-y-2">
+      <label className="text-sm font-medium text-gray-700">
+        Category Name
+      </label>
+      <Input
+        value={editTitle}
+        onChange={(e) => setEditTitle(e.target.value)}
+      />
+    </div>
+
+    {/* STATUS */}
+    <div className="space-y-2 mt-4">
+      <label className="text-sm font-medium text-gray-700">
+        Status
+      </label>
+      <select
+        className="w-full border rounded-xl px-3 py-2"
+        value={editStatus}
+        onChange={(e) =>
+          setEditStatus(e.target.value as "active" | "inactive")
+        }
+      >
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+    </div>
+
+    {/* SUB CATEGORIES */}
+    <div className="mt-6">
+      <h4 className="text-sm font-semibold text-gray-800 mb-2">
+        Sub Categories
+      </h4>
+
+      <div className="space-y-3">
+        {selectedCategory?.children.map((sub, index) => (
+          <div key={index} className="flex items-center gap-2">
+            <Input
+              value={sub.title}
+              onChange={(e) => {
+                const updated = { ...selectedCategory };
+                updated.children[index].title = e.target.value;
+                updated.children[index].slug = slugify(e.target.value);
+                setSelectedCategory(updated);
+              }}
+            />
+
+            <Trash
+              className="w-4 h-4 cursor-pointer text-red-600"
+              onClick={() => {
+                const updated = { ...selectedCategory };
+                updated.children.splice(index, 1);
+                setSelectedCategory(updated);
+              }}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* SAVE BUTTON */}
+    <Button
+      className="w-full mt-6 bg-orangeButton"
+      onClick={async () => {
+        if (!selectedCategory) return;
+
+        await updateCategory(selectedCategory._id!, {
+          ...selectedCategory,
+          title: editTitle,
+          slug: slugify(editTitle),
+          status: editStatus, // backend-ready
+        });
+
+        fetchCategories();
+        setOpenEditCategory(false);
+      }}
+    >
+      Update Category
+    </Button>
+  </DialogContent>
+</Dialog>
+
+
+
     </div>
   );
 }
