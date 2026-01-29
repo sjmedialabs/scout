@@ -10,7 +10,7 @@ export async function GET(
 ) {
   try {
     // 🔐 Auth check
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
         { success: false, message: "Authentication required" },
@@ -112,7 +112,7 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ) {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },
@@ -164,7 +164,7 @@ export async function PUT(
 ) {
   try {
     //  Auth check
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
         { success: false, message: "Authentication required" },

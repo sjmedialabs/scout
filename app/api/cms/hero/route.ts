@@ -66,7 +66,7 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user || user.role !== "admin") {
       return NextResponse.json(
         { error: "Admin access required" },

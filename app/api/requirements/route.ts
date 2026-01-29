@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
   try {
     await connectToDatabase();
 
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
 
     //  Not logged in
     if (!user) {

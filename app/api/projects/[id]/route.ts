@@ -75,7 +75,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },
@@ -157,7 +157,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },

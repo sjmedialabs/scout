@@ -6,7 +6,7 @@ import { getCurrentUser } from "@/lib/auth/jwt";
 
 export async function PATCH(request: NextRequest) {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 

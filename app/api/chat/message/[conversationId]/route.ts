@@ -9,7 +9,7 @@ export async function GET(
   { params }: { params: { conversationId: string } },
 ) {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 

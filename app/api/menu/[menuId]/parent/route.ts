@@ -18,7 +18,7 @@ export async function POST(
   { params }: { params: { menuId: string } },
 ) {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user || user.role !== "admin") {
       return NextResponse.json(
         { success: false, message: "Admin access required" },

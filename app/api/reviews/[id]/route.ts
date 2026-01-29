@@ -10,7 +10,7 @@ export async function GET(
   { params }: { params: { id: string } },
 ) {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     // if (!user) {
     //   return NextResponse.json(
     //     { error: "Authentication required" },
@@ -130,7 +130,7 @@ export async function PUT(
   { params }: { params: { id: string } },
 ) {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
 
     if (!user) {
       return NextResponse.json(

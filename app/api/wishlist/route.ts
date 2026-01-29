@@ -7,7 +7,7 @@ import Wishlist from "@/models/Wishlist";
 export async function POST(req: NextRequest) {
   try {
     //Authentication
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
         { success: false, message: "Authentication required" },
@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     // 🔐 Auth check
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
         { success: false, message: "Authentication required" },

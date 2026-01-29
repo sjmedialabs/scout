@@ -9,7 +9,7 @@ import Requirement from "@/models/Requirement";
 
 export async function GET(req: NextRequest) {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },
@@ -127,7 +127,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },

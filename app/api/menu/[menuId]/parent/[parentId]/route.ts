@@ -17,7 +17,7 @@ export async function PUT(
   { params }: { params: { menuId: string; parentId: string } },
 ) {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user || user.role !== "admin") {
       return NextResponse.json({ success: false }, { status: 403 });
     }

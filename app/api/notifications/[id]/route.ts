@@ -10,7 +10,7 @@ export async function PUT(
 ) {
   try {
     // 🔐 Auth check
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
         { success: false, message: "Authentication required" },

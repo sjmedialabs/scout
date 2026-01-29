@@ -5,7 +5,7 @@ import { getCurrentUser } from "@/lib/auth/jwt";
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user || user.role !== "admin") {
       return NextResponse.json(
         { error: "Admin access required" },

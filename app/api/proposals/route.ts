@@ -1,17 +1,17 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
 import { connectToDatabase } from "@/lib/mongodb";
+import { getCurrentUser } from "@/lib/auth/jwt";
+
 import Proposal from "@/models/Proposal";
-import Project from "@/models/Project";
 import Provider from "@/models/Provider";
 import Seeker from "@/models/Seeker";
-import { getCurrentUser } from "@/lib/auth/jwt";
-import mongoose from "mongoose";
 import Requirement from "@/models/Requirement";
 import Notification from "@/models/Notification";
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },
@@ -19,34 +19,38 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    if (!mongoose.Types.ObjectId.isValid(user.userId)) {
+      return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
+    }
+
     await connectToDatabase();
+
+    const userObjectId = new mongoose.Types.ObjectId(user.userId);
 
     const { searchParams } = new URL(request.url);
     const requirementId = searchParams.get("requirementId");
     const status = searchParams.get("status");
-    const limit = Number.parseInt(searchParams.get("limit") || "50");
-    const page = Number.parseInt(searchParams.get("page") || "1");
-
-    const query: any = {};
+    const limit = Number(searchParams.get("limit") || 50);
+    const page = Number(searchParams.get("page") || 1);
     const skip = (page - 1) * limit;
 
-    // -----------------------------
-    // Role-based filtering
-    // -----------------------------
+    const query: any = {};
+
+    // 🔐 Role-based filtering
     if (user.role === "agency") {
-      query.agencyId = user.userId;
+      query.agencyId = userObjectId;
     }
 
     if (user.role === "client") {
-      query.clientId = user.userId;
+      query.clientId = userObjectId;
     }
 
-    if (requirementId) query.requirementId = requirementId;
+    if (requirementId && mongoose.Types.ObjectId.isValid(requirementId)) {
+      query.requirementId = new mongoose.Types.ObjectId(requirementId);
+    }
+
     if (status) query.status = status;
 
-    // -----------------------------
-    // Fetch proposals
-    // -----------------------------
     const [proposals, total] = await Promise.all([
       Proposal.find(query)
         .populate("requirementId", "title category budgetMin budgetMax")
@@ -57,11 +61,9 @@ export async function GET(request: NextRequest) {
       Proposal.countDocuments(query),
     ]);
 
-    // -----------------------------
-    // Fetch agency details
-    // -----------------------------
+    // 🔹 Fetch agencies
     const agencyUserIds = [
-      ...new Set(proposals.map((p: any) => p.agencyId.toString())),
+      ...new Set(proposals.map((p) => p.agencyId?.toString())),
     ];
 
     const agencies = await Provider.find({
@@ -72,15 +74,11 @@ export async function GET(request: NextRequest) {
       )
       .lean();
 
-    const agencyMap = new Map(
-      agencies.map((a: any) => [a.userId.toString(), a]),
-    );
+    const agencyMap = new Map(agencies.map((a) => [a.userId.toString(), a]));
 
-    // -----------------------------
-    // Fetch client details
-    // -----------------------------
+    // 🔹 Fetch clients
     const clientUserIds = [
-      ...new Set(proposals.map((p: any) => p.clientId.toString())),
+      ...new Set(proposals.map((p) => p.clientId?.toString())),
     ];
 
     const clients = await Seeker.find({
@@ -89,16 +87,10 @@ export async function GET(request: NextRequest) {
       .select("userId name companyName")
       .lean();
 
-    const clientMap = new Map(
-      clients.map((c: any) => [c.userId.toString(), c]),
-    );
+    const clientMap = new Map(clients.map((c) => [c.userId.toString(), c]));
 
-    // -----------------------------
-    // Format response
-    // -----------------------------
     const formattedProposals = proposals.map((p: any) => ({
       id: p._id.toString(),
-
       requirement: {
         id: p.requirementId?._id?.toString(),
         title: p.requirementId?.title,
@@ -106,23 +98,13 @@ export async function GET(request: NextRequest) {
         budgetMin: p.requirementId?.budgetMin,
         budgetMax: p.requirementId?.budgetMax,
       },
-
-      agency: agencyMap.get(p.agencyId.toString()) || null,
-      client: clientMap.get(p.clientId.toString()) || null,
-
-      agencyId: p.agencyId,
-
+      agency: agencyMap.get(p.agencyId?.toString()) || null,
+      client: clientMap.get(p.clientId?.toString()) || null,
       coverLetter: p.coverLetter,
       proposedBudget: p.proposedBudget,
       proposedTimeline: p.proposedTimeline,
       milestones: p.milestones,
       status: p.status,
-      clientViewed: p.clientViewed,
-      clientViewedAt: p.clientViewedAt,
-      clientResponded: p.clientResponded,
-      clientRespondedAt: p.clientRespondedAt,
-      conversationStarted: p.conversationStarted,
-      proposalDescription: p.proposalDescription,
       createdAt: p.createdAt,
       updatedAt: p.updatedAt,
     }));
@@ -147,7 +129,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
 
     if (!user) {
       return NextResponse.json(
@@ -163,7 +145,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!mongoose.Types.ObjectId.isValid(user.userId)) {
+      return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
+    }
+
     await connectToDatabase();
+
+    const userObjectId = new mongoose.Types.ObjectId(user.userId);
 
     const body = await request.json();
     const {
@@ -176,13 +164,6 @@ export async function POST(request: NextRequest) {
       milestones,
     } = body;
 
-    // if (!projectId || !proposedBudget || !coverLetter) {
-    //   return NextResponse.json(
-    //     { error: "Missing required fields: projectId, proposedBudget, coverLetter" },
-    //     { status: 400 },
-    //   )
-    // }
-
     if (!mongoose.Types.ObjectId.isValid(requirementId)) {
       return NextResponse.json(
         { error: "Invalid requirement ID" },
@@ -190,83 +171,57 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get provider profile
     const provider = await Provider.findOne({ userId: user.userId });
     if (!provider) {
       return NextResponse.json(
-        {
-          error:
-            "Provider profile not found. Please complete your agency profile first.",
-        },
+        { error: "Provider profile not found" },
         { status: 404 },
       );
     }
 
-    // Check if project exists and is open
     const project = await Requirement.findById(requirementId);
-    if (!project) {
-      return NextResponse.json({ error: "Project not found" }, { status: 404 });
-    }
-
-    if (
-      project.status.toLocaleLowerCase() === "closed" ||
-      project.status.toLocaleLowerCase() === "Allocated"
-    ) {
+    if (!project || project.status.toLowerCase() === "closed") {
       return NextResponse.json(
-        { error: "Project is not accepting proposals" },
+        { error: "Project not accepting proposals" },
         { status: 400 },
       );
     }
 
-    // Check if already submitted proposal
-    const existingProposal = await Proposal.findOne({
+    const existing = await Proposal.findOne({
       requirementId,
-      agencyId: user.userId,
+      agencyId: userObjectId,
     });
 
-    if (existingProposal) {
+    if (existing) {
       return NextResponse.json(
-        { error: "You have already submitted a proposal for this project" },
+        { error: "Proposal already submitted" },
         { status: 409 },
       );
     }
 
-    // Create proposal
     const proposal = await Proposal.create({
       requirementId,
       clientId,
-      agencyId: user.userId,
+      agencyId: userObjectId,
       coverLetter,
       proposedBudget,
       proposalDescription,
       proposedTimeline: proposedTimeline || "As discussed",
       milestones: milestones || [],
       status: "pending",
-      clientViewed: false,
-      clientResponded: false,
-      conversationStarted: false,
-    });
-
-    // Update project proposal count
-    await Requirement.findByIdAndUpdate(requirementId, {
-      $inc: { proposals: 1 },
     });
 
     await Notification.create({
-      userId: clientId, //  RECEIVER (client)
-      triggeredBy: user.userId, // AGENCY who submitted proposal
+      userId: clientId,
+      triggeredBy: user.userId,
       title: "New Proposal Received!",
-      message: `${provider.name} submitted a proposal for your ${project.title} project.`,
+      message: `${provider.name} submitted a proposal`,
       type: "proposal_submitted",
       userRole: "client",
-      linkUrl: `/client/dashboard/projects/${requirementId}`,
       sourceId: proposal._id,
     });
 
-    return NextResponse.json({
-      success: true,
-      proposal,
-    });
+    return NextResponse.json({ success: true, proposal });
   } catch (error) {
     console.error("Error creating proposal:", error);
     return NextResponse.json(

@@ -11,7 +11,7 @@ export async function DELETE(
 ) {
   try {
     // Authentication
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
         { success: false, message: "Authentication required" },

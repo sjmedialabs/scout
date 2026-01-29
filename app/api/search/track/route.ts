@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   try {
     await connectToDatabase();
 
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     const body = await req.json();
 
     const keyword = body.keyword?.trim().toLowerCase();

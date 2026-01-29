@@ -7,7 +7,7 @@ import { getCurrentUser } from "@/lib/auth/jwt";
 export async function POST(req: NextRequest) {
   try {
     // 🔐 Auth check
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
         { success: false, message: "Authentication required" },

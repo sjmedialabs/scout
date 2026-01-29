@@ -9,7 +9,7 @@ import Provider from "@/models/Provider";
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

@@ -30,7 +30,7 @@ export async function PUT(
 ) {
   try {
     // 🔐 Auth check
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user || user.role !== "admin") {
       return NextResponse.json(
         { success: false, message: "Admin access required" },

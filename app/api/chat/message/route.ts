@@ -7,7 +7,7 @@ import { Conversation } from "@/models/Message";
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

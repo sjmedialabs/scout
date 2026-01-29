@@ -27,7 +27,7 @@ export async function GET() {
 // --------- POST CMS (Create Initial CMS Only Once) ----------
 export async function POST(req: NextRequest) {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
     if (!user || user.role !== "admin") {
       return NextResponse.json(
         { error: "Admin access required" },
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
 // --------- UPDATE CMS (Admin only) ----------
 export async function PUT(req: NextRequest) {
   try {
-    const user = await getCurrentUser(req);
+    const user = await getCurrentUser();
 
     if (!user || user.role !== "admin") {
       return NextResponse.json(
