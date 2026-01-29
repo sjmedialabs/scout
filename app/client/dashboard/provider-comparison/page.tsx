@@ -514,7 +514,7 @@ const ProviderComparisonPage=()=>{
                       </Button> */}
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-0 mb-1 px-0 py-0">
+                  <CardContent className="space-y-0 flex flex-col justify-end mb-1 px-0 py-0">
                     {/* Proposal Details */}
                     <div className="space-y-0 bg-[#DBE8F2]  -mt-8 p-6">
                       <div className="flex items-center justify-between text-sm">
@@ -574,7 +574,7 @@ const ProviderComparisonPage=()=>{
                       <div className="space-y-1 mb-4">
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-[#6B6B6B] font-bold text-md my-custom-class">Willing to Refer</span>
-                          <span className="font-bold text-[#6B6B6B] text-md">{(proposal.agency.willingToReferRating / 5) * 100 || 0} %</span>
+                          <span className="font-bold text-[#6B6B6B] text-md">{Math.round((proposal.agency.willingToReferRating / 5) * 100) || 0} %</span>
                         </div>
                         <div className="h-2 bg-muted rounded-full overflow-hidden">
                           <div className="h-full bg-[#34359B]" style={{ width: `${(proposal.agency.willingToReferRating / 5) * 100 || 0}%` }} />
@@ -586,7 +586,7 @@ const ProviderComparisonPage=()=>{
 
                     {/* Key Strengths */}
                     <div className="space-y-2 bg-[#fffff] p-6">
-                      <h4 className="text-[#F54A0C] font-bold text-lg">Key Strengths</h4>
+                      {/* <h4 className="text-[#F54A0C] font-bold text-lg">Key Strengths</h4> */}
                       <div className="flex flex-wrap gap-2">
                         {/* <Badge variant="secondary" className="bg-[#1C96F4] rounded-full text-xs my-custom-class min-h-[40px] min-w-[100px] text-[#fff]">Fast Delivery</Badge>
                         <Badge variant="secondary" className="bg-[#1C96F4] rounded-full text-xs my-custom-class min-h-[40px] min-w-[100px] text-[#fff]">Great Communication</Badge>
@@ -600,7 +600,7 @@ const ProviderComparisonPage=()=>{
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex gap-2 p-6 pt-0 bg-[#fff]">
+                    <div className="flex gap-2  p-6 mt-auto pt-0 bg-[#fff]">
                       <a href={`/provider/${proposal.agency._id}`} target="_blank" className="w-full">
                         <Button className="flex-1 bg-[#2C34A1] w-full rounded-full min-h-[40px]" size="sm">
                         View Details

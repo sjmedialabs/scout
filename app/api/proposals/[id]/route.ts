@@ -38,7 +38,7 @@ export async function GET(
     console.log("Incoming ID:", id)
 console.log("Is valid ObjectId:", mongoose.Types.ObjectId.isValid(id));
 
-    // ✅ Fetch ALL matching proposals
+    // Fetch ALL matching proposals
    const proposals = await Proposal.find({
   $or: [
     { _id: objectId },
@@ -80,21 +80,21 @@ console.log("Is valid ObjectId:", mongoose.Types.ObjectId.isValid(id));
 
  
 
-    // ✅ Mark proposals as viewed if client
-    // if (user.role === "client") {
-    //   await Proposal.updateMany(
-    //     {
-    //       _id: { $in: proposals.map((p) => p._id) },
-    //       clientViewed: false,
-    //     },
-    //     {
-    //       $set: {
-    //         clientViewed: true,
-    //         clientViewedAt: new Date(),
-    //       },
-    //     }
-    //   )
-    // }
+    // Mark proposals as viewed if client
+    if (user.role === "client") {
+            await Proposal.updateOne(
+          {
+            _id: new mongoose.Types.ObjectId(id),
+            clientViewed: false,
+          },
+          {
+            $set: {
+              clientViewed: true,
+              clientViewedAt: new Date(),
+            },
+          }
+        )
+    }
 
     // ✅ Format response
     return NextResponse.json({
@@ -196,7 +196,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         return NextResponse.json({ error: "Not authorized" }, { status: 403 })
       }
 
-      if (body.status && ["viewed", "shortlisted", "accepted", "rejected"].includes(body.status)) {
+      if (body.status && ["viewed", "shortlisted", "accepted", "rejected","negotation"].includes(body.status)) {
         updates.status = body.status
         updates.clientResponded = true
         updates.clientRespondedAt = new Date()

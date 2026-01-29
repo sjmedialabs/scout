@@ -127,7 +127,7 @@ export default function ProvidersPage() {
   const [activeSubCategory, setActiveSubCategory] = useState(null);
   const [selectedService, setSelectedService] = useState("");
 
-const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
 
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);

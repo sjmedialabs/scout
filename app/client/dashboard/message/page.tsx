@@ -20,6 +20,9 @@ import { Input } from "@/components/ui/input"
 import clsx from "clsx"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
+import { io } from "socket.io-client"
+
+
 
 type Attachment = {
   id: string
@@ -148,6 +151,19 @@ export default function MessagesPage() {
   const[sendMsgLoading,setSendMsgLoading]=useState(false);
   const[failed,setFailed]=useState(false);
 
+ const socketRef = useRef<any>(null)
+
+useEffect(() => {
+  socketRef.current = io({
+    path: "/socket.io",
+  })
+
+  return () => {
+    socketRef.current.disconnect()
+  }
+}, [])
+
+
   const loadData=async()=>{
      setResLoading(true);
      setFailed(false);
@@ -197,6 +213,23 @@ export default function MessagesPage() {
       }
     }, [user, loading, router])
   
+   useEffect(() => {
+  if (!dynamicActiveConversation?.conversationId) return
+
+  socketRef.current.emit(
+    "join-conversation",
+    dynamicActiveConversation.conversationId
+  )
+
+  socketRef.current.on("receive-message", (message) => {
+    setDynamicMessages((prev) => [...prev, message])
+  })
+
+  return () => {
+    socketRef.current.off("receive-message")
+  }
+}, [dynamicActiveConversation?.conversationId])
+
 
   const sendMessage =async () => {
   if (!messageInput.trim() && !uplodedUrl.url.trim()) return
@@ -240,7 +273,13 @@ export default function MessagesPage() {
       body:JSON.stringify(payload)
      })
      if(!res.ok) throw new Error();
+     const { message } = await res.json()
+      console.log('Send Message Response::::::',message)
+
+  //  REAL-TIME UPDATE
+  socketRef.current.emit("send-message", message)
      await fetchMessages(dynamicActiveConversation.conversationId);
+    //    socket.emit("send-message", messageInput)
      setUploadedUrl({
       url:"",
       type:"",
