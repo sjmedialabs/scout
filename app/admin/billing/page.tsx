@@ -19,17 +19,10 @@ import {
 } from "recharts";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Eye, Download, Send } from "lucide-react";
 import {
-  Download,
-  FileText,
-  CreditCard,
-  AlertTriangle,
-  CircleDollarSign,
-  TrendingUp,
-  ArrowUpRight,
-  CheckCircle,
-} from "lucide-react";
-import { mockSubscriptionStats } from "@/lib/mock-data";
+  mockSubscriptionStats,
+} from "@/lib/mock-data";
 const mockBillingInvoices = [
   {
     id: "INV-001",
@@ -37,6 +30,7 @@ const mockBillingInvoices = [
     amount: 199,
     plan: "Pro Plan",
     status: "paid",
+    company: "Tech Corp"
   },
   {
     id: "INV-002",
@@ -44,6 +38,7 @@ const mockBillingInvoices = [
     amount: 499,
     plan: "Enterprise Plan",
     status: "pending",
+    company: "Tech Corp"
   },
   {
     id: "INV-003",
@@ -51,6 +46,7 @@ const mockBillingInvoices = [
     amount: 99,
     plan: "Basic Plan",
     status: "failed",
+    company: "Tech Corp"
   },
 ];
 
@@ -81,9 +77,7 @@ const mrrData = [
 ];
 
 export default function BillingPage() {
-  const [activeTab, setActiveTab] = useState<"overview" | "invoices">(
-    "overview",
-  );
+   const [activeTab, setActiveTab] = useState<"overview" | "invoices">("overview");
   const [invoices, setInvoices] = useState(mockBillingInvoices || []);
   const [billingStats, setBillingStats] = useState(mockSubscriptionStats);
 
@@ -93,7 +87,7 @@ export default function BillingPage() {
   ------------------------------------------------------
   useEffect(() => {
     async function loadBilling() {
-      const res = await authFetch("/api/admin/billing");
+      const res = await fetch("/api/admin/billing");
       const data = await res.json();
 
       setInvoices(data.invoices);
@@ -123,6 +117,7 @@ export default function BillingPage() {
   const downloadCSV = (id: string) => {
     console.log("Downloading invoice CSV:", id);
   };
+
 
   // return (
   //   <div className="space-y-10">
@@ -257,47 +252,48 @@ export default function BillingPage() {
   //     )}
   //   </div>
   // );
-
+  
   return (
     <div className="space-y-4">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-orangeButton my-custom-class">
-          Billing & Invoices
-        </h1>
+        <h1 className="text-3xl font-bold text-orangeButton my-custom-class">Billing & Invoices</h1>
         <p className="text-gray-500 mt-0 my-custom-class text-xl">
           Manage your billing, payments, and invoices
         </p>
       </div>
 
       {/* Segmented Tabs */}
-      <div className="inline-flex items-center bg-[#e6edf5] rounded-full p-1">
-        <button
-          onClick={() => setActiveTab("overview")}
-          className={`px-6 py-2 text-sm font-medium rounded-full transition my-custom-class
+<div className="inline-flex items-center bg-[#e6edf5] rounded-full p-1">
+  <button
+    onClick={() => setActiveTab("overview")}
+    className={`px-6 py-2 text-sm font-medium rounded-full transition my-custom-class
       ${
         activeTab === "overview"
           ? "bg-orange-500 text-white shadow"
           : "text-black hover:text-gray-900"
       }`}
-        >
-          Overview
-        </button>
+  >
+    Overview
+  </button>
 
-        <button
-          onClick={() => setActiveTab("invoices")}
-          className={`px-6 py-2 text-sm font-medium rounded-full transition my-custom-class
+  <button
+    onClick={() => setActiveTab("invoices")}
+    className={`px-6 py-2 text-sm font-medium rounded-full transition my-custom-class
       ${
         activeTab === "invoices"
           ? "bg-orange-500 text-white shadow"
           : "text-black hover:text-gray-900"
       }`}
-        >
-          Invoices
-        </button>
-      </div>
+  >
+    Invoices
+  </button>
+</div>
+
 
       {/* CARDS */}
+      {activeTab === "overview" && (
+        <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="(Monthly Recurring Revenue)"
@@ -325,7 +321,7 @@ export default function BillingPage() {
           value="98.5%"
           note="$4,200 outstanding"
           noteColor="text-black"
-          icon={<FaCheckCircle className="text-green-500" />}
+          icon={<FaCheckCircle className="text-green-500"/>}
         />
       </div>
 
@@ -363,68 +359,108 @@ export default function BillingPage() {
               <XAxis dataKey="week" />
               <YAxis />
               <Tooltip />
-              <Line
-                type="monotone"
-                dataKey="a"
-                stroke="#2ec4f1"
-                strokeWidth={3}
-                dot
-              />
-              <Line
-                type="monotone"
-                dataKey="b"
-                stroke="#ff7b7b"
-                strokeWidth={3}
-                dot
-              />
-              <Line
-                type="monotone"
-                dataKey="c"
-                stroke="#7b61ff"
-                strokeWidth={3}
-                dot
-              />
+              <Line type="monotone" dataKey="a" stroke="#2ec4f1" strokeWidth={3} dot />
+              <Line type="monotone" dataKey="b" stroke="#ff7b7b" strokeWidth={3} dot />
+              <Line type="monotone" dataKey="c" stroke="#7b61ff" strokeWidth={3} dot />
             </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
+    </>
+  )
+}
+
+
+ {/* ================= INVOICES ================= */}
+      {activeTab === "invoices" && (
+        <div className="bg-white rounded-2xl shadow-sm border-none overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b text-gray-500">
+                <th className="px-6 py-4 text-left text-black font-bold">Invoice ID</th>
+                <th className="px-6 py-4 text-left text-black font-bold">Plan</th>
+                <th className="px-6 py-4 text-left text-black font-bold">Amount</th>
+                <th className="px-6 py-4 text-left text-black font-bold">Date</th>
+                <th className="px-6 py-4 text-left text-black font-bold">Due Date</th>
+                <th className="px-6 py-4 text-left text-black font-bold">Status</th>
+                <th className="px-6 py-4 text-left text-black font-bold">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {invoices.map((invoice) => (
+                <tr key={invoice.id} className="border-b last:border-none">
+                  <td className="px-6 py-5">
+                    <div className="font-semibold">John Doe</div>
+                    <div className="text-xs text-gray-500">
+                      seeker@example.com
+                    </div>
+                    <div className="text-xs text-gray-500">Tech Corp</div>
+                  </td>
+
+                  <td className="px-6 py-5">{invoice.plan}</td>
+
+                  <td className="px-6 py-5 font-semibold">
+                    ${invoice.amount}.00
+                  </td>
+
+                  <td className="px-6 py-5">{invoice.date}</td>
+
+                  <td className="px-6 py-5">{invoice.date}</td>
+
+                  <td className="px-6 py-5">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium
+                        ${
+                          invoice.status === "paid"
+                            ? "bg-green-100 text-green-700"
+                            : invoice.status === "pending"
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                    >
+                      {invoice.status}
+                    </span>
+                  </td>
+
+                  <td className="px-6 py-5">
+                    <div className="flex justify-end gap-4 text-gray-600">
+                      <Eye className="w-4 h-4 hover:text-black cursor-pointer" />
+                      <Download
+                        className="w-4 h-4 hover:text-black cursor-pointer"
+                        onClick={() => downloadPDF(invoice.id)}
+                      />
+                      <Send className="w-4 h-4 hover:text-black cursor-pointer" />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
 
 /* ---------------- Billing Card ---------------- */
 
-// function BillingCard({ title, value, subtitle, icon }: any) {
-//   return (
-//     <div className="bg-white rounded-2xl p-6 shadow-sm border hover:shadow-md transition">
-//       <div className="flex justify-between items-start">
-//         <h3 className="text-sm text-gray-500">{title}</h3>
-//         <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center">
-//           {icon}
-//         </div>
-//       </div>
-//       <div className="text-2xl font-bold mt-3">{value}</div>
-//       <p className="text-sm text-green-600 mt-1">{subtitle}</p>
-//     </div>
-//   );
-// }
+
 
 function StatCard({ title, value, note, noteColor, icon }: any) {
   return (
     <div className="relative bg-white flex flex-col justify-between rounded-2xl p-4 shadow-md border-none">
       {/* Icon top-right */}
       <div className="flex flex-row justify-between">
-        <div className="absolute top-4 right-2 w-7 h-7 rounded-full bg-[#eef7fe] flex items-center justify-center text-orangeButton">
-          {icon}
-        </div>
+      <div className="absolute top-4 right-2 w-7 h-7 rounded-full bg-[#eef7fe] flex items-center justify-center text-orangeButton">
+        {icon}
+      </div>
 
-        <p className="text-sm my-custom-class max-w-[150px] font-bold">
-          {title}
-        </p>
+      <p className="text-sm my-custom-class max-w-[150px] font-bold">{title}</p>
       </div>
       <div className="items-end">
-        <p className="text-3xl font-bold my-custom-class mt-3">{value}</p>
-        <p className={`text-xs ${noteColor} mt-0 my-custom-class`}>{note}</p>
+      <p className="text-3xl font-bold my-custom-class mt-3">{value}</p>
+      <p className={`text-xs ${noteColor} mt-0 my-custom-class`}>{note}</p>
       </div>
     </div>
   );
