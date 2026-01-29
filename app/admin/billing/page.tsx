@@ -19,16 +19,7 @@ import {
 } from "recharts";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Download,
-  FileText,
-  CreditCard,
-  AlertTriangle,
-  CircleDollarSign,
-  TrendingUp,
-  ArrowUpRight,
-  CheckCircle,
-} from "lucide-react";
+import { Eye, Download, Send } from "lucide-react";
 import {
   mockSubscriptionStats,
 } from "@/lib/mock-data";
@@ -39,6 +30,7 @@ const mockBillingInvoices = [
     amount: 199,
     plan: "Pro Plan",
     status: "paid",
+    company: "Tech Corp"
   },
   {
     id: "INV-002",
@@ -46,6 +38,7 @@ const mockBillingInvoices = [
     amount: 499,
     plan: "Enterprise Plan",
     status: "pending",
+    company: "Tech Corp"
   },
   {
     id: "INV-003",
@@ -53,6 +46,7 @@ const mockBillingInvoices = [
     amount: 99,
     plan: "Basic Plan",
     status: "failed",
+    company: "Tech Corp"
   },
 ];
 
@@ -123,6 +117,7 @@ export default function BillingPage() {
   const downloadCSV = (id: string) => {
     console.log("Downloading invoice CSV:", id);
   };
+
 
   // return (
   //   <div className="space-y-10">
@@ -297,6 +292,8 @@ export default function BillingPage() {
 
 
       {/* CARDS */}
+      {activeTab === "overview" && (
+        <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="(Monthly Recurring Revenue)"
@@ -369,26 +366,85 @@ export default function BillingPage() {
           </ResponsiveContainer>
         </div>
       </div>
+    </>
+  )
+}
+
+
+ {/* ================= INVOICES ================= */}
+      {activeTab === "invoices" && (
+        <div className="bg-white rounded-2xl shadow-sm border-none overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b text-gray-500">
+                <th className="px-6 py-4 text-left text-black font-bold">Invoice ID</th>
+                <th className="px-6 py-4 text-left text-black font-bold">Plan</th>
+                <th className="px-6 py-4 text-left text-black font-bold">Amount</th>
+                <th className="px-6 py-4 text-left text-black font-bold">Date</th>
+                <th className="px-6 py-4 text-left text-black font-bold">Due Date</th>
+                <th className="px-6 py-4 text-left text-black font-bold">Status</th>
+                <th className="px-6 py-4 text-left text-black font-bold">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {invoices.map((invoice) => (
+                <tr key={invoice.id} className="border-b last:border-none">
+                  <td className="px-6 py-5">
+                    <div className="font-semibold">John Doe</div>
+                    <div className="text-xs text-gray-500">
+                      seeker@example.com
+                    </div>
+                    <div className="text-xs text-gray-500">Tech Corp</div>
+                  </td>
+
+                  <td className="px-6 py-5">{invoice.plan}</td>
+
+                  <td className="px-6 py-5 font-semibold">
+                    ${invoice.amount}.00
+                  </td>
+
+                  <td className="px-6 py-5">{invoice.date}</td>
+
+                  <td className="px-6 py-5">{invoice.date}</td>
+
+                  <td className="px-6 py-5">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium
+                        ${
+                          invoice.status === "paid"
+                            ? "bg-green-100 text-green-700"
+                            : invoice.status === "pending"
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                    >
+                      {invoice.status}
+                    </span>
+                  </td>
+
+                  <td className="px-6 py-5">
+                    <div className="flex justify-end gap-4 text-gray-600">
+                      <Eye className="w-4 h-4 hover:text-black cursor-pointer" />
+                      <Download
+                        className="w-4 h-4 hover:text-black cursor-pointer"
+                        onClick={() => downloadPDF(invoice.id)}
+                      />
+                      <Send className="w-4 h-4 hover:text-black cursor-pointer" />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
 
 /* ---------------- Billing Card ---------------- */
 
-// function BillingCard({ title, value, subtitle, icon }: any) {
-//   return (
-//     <div className="bg-white rounded-2xl p-6 shadow-sm border hover:shadow-md transition">
-//       <div className="flex justify-between items-start">
-//         <h3 className="text-sm text-gray-500">{title}</h3>
-//         <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center">
-//           {icon}
-//         </div>
-//       </div>
-//       <div className="text-2xl font-bold mt-3">{value}</div>
-//       <p className="text-sm text-green-600 mt-1">{subtitle}</p>
-//     </div>
-//   );
-// }
 
 
 function StatCard({ title, value, note, noteColor, icon }: any) {
