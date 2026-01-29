@@ -1,35 +1,35 @@
-import { NextRequest, NextResponse } from "next/server"
-import { connectToDatabase } from "@/lib/mongodb"
-import Seeker from "@/models/Seeker"
-import { getCurrentUser } from "@/lib/auth/jwt"
+import { NextRequest, NextResponse } from "next/server";
+import { connectToDatabase } from "@/lib/mongodb";
+import Seeker from "@/models/Seeker";
+import { getCurrentUser } from "@/lib/auth/jwt";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     await connectToDatabase();
 
-    const { id } = params
+    const { id } = params;
 
     // Try finding by Mongo _id
-    let seeker = null
+    let seeker = null;
 
     if (id && id.length === 24) {
-      seeker = await Seeker.findById(id).lean()
+      seeker = await Seeker.findById(id).lean();
     }
 
     // If not found, try finding by userId
     if (!seeker) {
-      seeker = await Seeker.findOne({ userId: id }).lean()
+      seeker = await Seeker.findOne({ userId: id }).lean();
     }
 
     // If still not found → return 404
     if (!seeker) {
       return NextResponse.json(
         { success: false, message: "Seeker not found" },
-        { status: 404 }
-      )
+        { status: 404 },
+      );
     }
 
     // Format response
@@ -54,67 +54,69 @@ export async function GET(
       image: seeker.image,
       createdAt: seeker.createdAt,
       updatedAt: seeker.updatedAt,
-    }
+    };
 
     return NextResponse.json(
       { success: true, data: formattedSeeker },
-      { status: 200 }
-    )
+      { status: 200 },
+    );
   } catch (error: any) {
-    console.error("Seeker GET Error:", error)
+    console.error("Seeker GET Error:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Server Error" },
-      { status: 500 }
-    )
+      { status: 500 },
+    );
   }
 }
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const user = await getCurrentUser()
-        if (!user) {
-          return NextResponse.json({ error: "Authentication required" }, { status: 401 })
-        }
-    await connectToDatabase()
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 },
+      );
+    }
+    await connectToDatabase();
 
-    const { id } = await params
-    console.log("---UserId to update the data::",id);
-    const updates = await req.json()
+    const { id } = await params;
+    console.log("---UserId to update the data::", id);
+    const updates = await req.json();
 
     if (!id) {
       return NextResponse.json(
         { success: false, message: "userId is required" },
-        { status: 400 }
-      )
+        { status: 400 },
+      );
     }
 
     // Find and update based on userId
     const updatedSeeker = await Seeker.findOneAndUpdate(
-      { userId:id },          // filter
-      { $set: updates },   // values to update
-      { new: true }        // return updated document
-    ).lean()
+      { userId: id }, // filter
+      { $set: updates }, // values to update
+      { new: true }, // return updated document
+    ).lean();
 
     if (!updatedSeeker) {
       return NextResponse.json(
         { success: false, message: "Seeker not found" },
-        { status: 404 }
-      )
+        { status: 404 },
+      );
     }
 
     return NextResponse.json(
       { success: true, data: updatedSeeker },
-      { status: 200 }
-    )
-
+      { status: 200 },
+    );
   } catch (error: any) {
-    console.error("Seeker UPDATE Error:", error)
+    console.error("Seeker UPDATE Error:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Server Error" },
-      { status: 500 }
-    )
+      { status: 500 },
+    );
   }
 }

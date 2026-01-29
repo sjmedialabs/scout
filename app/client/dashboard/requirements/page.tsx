@@ -1,19 +1,31 @@
+"use client";
 
-"use client"
+import type React from "react";
 
-import type React from "react"
-
-import { useState, useEffect } from "react"
-import { useAuth } from "@/contexts/auth-context"
-import { useRouter } from "next/navigation"
-
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/auth-context";
+import { useRouter } from "next/navigation";
+import { authFetch } from "@/lib/auth-fetch";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import {
   Plus,
@@ -49,11 +61,20 @@ import {
   Target,
   Heart,
   SeparatorVertical as Separator,
-} from "lucide-react"
-import { mockRequirements, mockProposals, mockProviders } from "@/lib/mock-data"
-import type { Requirement, Proposal, Provider, Notification } from "@/lib/types"
-import { FiltersPanel } from "@/components/filters-panel"
-import { RequirementList } from "@/components/seeker/requirement-list"
+} from "lucide-react";
+import {
+  mockRequirements,
+  mockProposals,
+  mockProviders,
+} from "@/lib/mock-data";
+import type {
+  Requirement,
+  Proposal,
+  Provider,
+  Notification,
+} from "@/lib/types";
+import { FiltersPanel } from "@/components/filters-panel";
+import { RequirementList } from "@/components/seeker/requirement-list";
 import {
   Dialog,
   DialogClose,
@@ -63,24 +84,24 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import { LuTag } from "react-icons/lu";
 import { PiCurrencyDollarBold } from "react-icons/pi";
 import { CiCalendar } from "react-icons/ci";
 import { CiLocationOn } from "react-icons/ci";
 import { FaRegFileLines } from "react-icons/fa6";
 interface ProjectProposal {
-  id: string
-  projectId: string
-  providerId: string
-  providerName: string
-  providerRating: number
-  proposalAmount: number
-  timeline: string
-  description: string
-  submittedAt: string
-  status: "pending" | "shortlisted" | "accepted" | "rejected"
-  coverLetter: string
+  id: string;
+  projectId: string;
+  providerId: string;
+  providerName: string;
+  providerRating: number;
+  proposalAmount: number;
+  timeline: string;
+  description: string;
+  submittedAt: string;
+  status: "pending" | "shortlisted" | "accepted" | "rejected";
+  coverLetter: string;
 }
 
 const mockProjectProposals: ProjectProposal[] = [
@@ -234,207 +255,234 @@ const mockProjectProposals: ProjectProposal[] = [
     coverLetter:
       "We specialize in educational technology and have built LMS platforms for universities and corporate training programs. Our solutions support 10,000+ concurrent users with excellent performance.",
   },
-]
+];
 
+const RequirementsPage = () => {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const [requirements, setRequirements] =
+    useState<Requirement[]>(mockRequirements);
+  const [filteredRequirements, setFilteredRequirements] =
+    useState<Requirement[]>(mockRequirements);
+  const [selectedRequirementId, setSelectedRequirementId] = useState<
+    string | null
+  >(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedRequirement, setSelectedRequirement] =
+    useState<Requirement | null>(null);
+  const [responseLoading, setResponseLoading] = useState(false);
+  const [failed, setFailed] = useState(false);
 
-const RequirementsPage=()=>{
-  const { user, loading } = useAuth()
-  const router = useRouter()
-  const [requirements, setRequirements] = useState<Requirement[]>(mockRequirements)
-  const [filteredRequirements, setFilteredRequirements] = useState<Requirement[]>(mockRequirements)
-  const[selectedRequirementId,setSelectedRequirementId]=useState<string|null>(null);
-  const[showDetailsModal,setShowDetailsModal]=useState(false);
-  const[selectedRequirement,setSelectedRequirement]=useState<Requirement|null>(null);
-  const[responseLoading,setResponseLoading]=useState(false);
-  const[failed,setFailed]=useState(false)
- 
- console.log("user Details::::",user);
+  console.log("user Details::::", user);
 
-  const loadData=async(userId:string)=>{
-    setResponseLoading(true)
-      try{
-        const response= await fetch(`/api/requirements/${userId}`)
-        const data=await response.json();
-        setRequirements(data.requirements)
-        setFilteredRequirements(data.requirements)
-        setFailed(false)
-        
-      }catch(error){
-        setFailed(true)
-        console.log("Failed to fetch the  data")
-      }
-      finally{
-        setResponseLoading(false)
-      }
-  }
+  const loadData = async (userId: string) => {
+    setResponseLoading(true);
+    try {
+      const response = await authFetch(`/api/requirements/${userId}`);
+      const data = await response.json();
+      setRequirements(data.requirements);
+      setFilteredRequirements(data.requirements);
+      setFailed(false);
+    } catch (error) {
+      setFailed(true);
+      console.log("Failed to fetch the  data");
+    } finally {
+      setResponseLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!loading && (!user || user.role !== "client")) {
-      router.push("/login")
+      router.push("/login");
     }
-    if(!loading && user){
-      loadData(user.id)
+    if (!loading && user) {
+      loadData(user.id);
     }
-  
-  }, [user, loading, router])
+  }, [user, loading, router]);
 
- 
-console.log("Fetched Requirements::::",requirements);
-
-  
+  console.log("Fetched Requirements::::", requirements);
 
   const handleFiltersChange = (filters: any) => {
-    let filtered = [...requirements]
-    console.log("Applied filters:::::",filters)
+    let filtered = [...requirements];
+    console.log("Applied filters:::::", filters);
 
     if (filters.serviceType) {
-      filtered = filtered.filter((r) => r.category === filters.serviceType)
+      filtered = filtered.filter((r) => r.category === filters.serviceType);
     }
 
     if (filters.status) {
       filtered = filtered.filter(
         (r) => r.status.toLowerCase() === filters.status.toLowerCase(),
-      )
+      );
     }
 
     if (filters.budgetRange) {
-      filtered = filtered.filter((r) => r.budgetMin >= filters.budgetRange[0] && r.budgetMax <= filters.budgetRange[1])
+      filtered = filtered.filter(
+        (r) =>
+          r.budgetMin >= filters.budgetRange[0] &&
+          r.budgetMax <= filters.budgetRange[1],
+      );
     }
-    if(filters.title){
-      filtered=filtered.filter((eachItem)=>eachItem.title.toLowerCase().includes(filters.title.toLowerCase()))
+    if (filters.title) {
+      filtered = filtered.filter((eachItem) =>
+        eachItem.title.toLowerCase().includes(filters.title.toLowerCase()),
+      );
     }
- 
-    setFilteredRequirements(filtered)
-  }
 
-  const handleViewDetails=(recievedId)=>{
-        setSelectedRequirementId(recievedId);
-        setShowDetailsModal(true);
-        const requirement=requirements.find((r)=>r._id===recievedId);
-        setSelectedRequirement(requirement||null);
-  }
-  const handleViewProposals=(recievedId)=>{
-    console.log("Recieved Requirement ID::::",recievedId);
-    router.push(`/client/dashboard/proposals?requirementId=${recievedId}`)
-  }
- const getFileNameFromUrl = (url?: string) => {
-  if (!url) return ""
-  return url.split("/").pop()
-}
+    setFilteredRequirements(filtered);
+  };
+
+  const handleViewDetails = (recievedId) => {
+    setSelectedRequirementId(recievedId);
+    setShowDetailsModal(true);
+    const requirement = requirements.find((r) => r._id === recievedId);
+    setSelectedRequirement(requirement || null);
+  };
+  const handleViewProposals = (recievedId) => {
+    console.log("Recieved Requirement ID::::", recievedId);
+    router.push(`/client/dashboard/proposals?requirementId=${recievedId}`);
+  };
+  const getFileNameFromUrl = (url?: string) => {
+    if (!url) return "";
+    return url.split("/").pop();
+  };
   if (loading || responseLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
-    )
+    );
   }
-   if(failed){
-          return(
-            <div className="flex flex-col justify-center items-center text-center min-h-100">
-              <h1 className="text-center font-semibold">Failed  to Retrive the data</h1>
-              <Button onClick={loadData} className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]">Reload</Button>
-            </div>
-          )
-      }
-    return(
-       <div className="space-y-6">
-            <div className="my-custom-class">
-              <h1 className="text-3xl font-bold text-[#F4561C] tracking-tight">My Requirements</h1>
-              <p className="text-[#656565] text-xl font-light ">Manage all your posted requirements</p>
-            </div>
-            <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-              <div className="lg:col-span-1">
-                <FiltersPanel onFiltersChange={handleFiltersChange} />
+  if (failed) {
+    return (
+      <div className="flex flex-col justify-center items-center text-center min-h-100">
+        <h1 className="text-center font-semibold">
+          Failed to Retrive the data
+        </h1>
+        <Button
+          onClick={loadData}
+          className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]"
+        >
+          Reload
+        </Button>
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-6">
+      <div className="my-custom-class">
+        <h1 className="text-3xl font-bold text-[#F4561C] tracking-tight">
+          My Requirements
+        </h1>
+        <p className="text-[#656565] text-xl font-light ">
+          Manage all your posted requirements
+        </p>
+      </div>
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+        <div className="lg:col-span-1">
+          <FiltersPanel onFiltersChange={handleFiltersChange} />
+        </div>
+        <div className="lg:col-span-3">
+          <Card className="bg-[#fff] rounded-[16px] py-1 px-0 p-0 min-h-100">
+            <CardContent className="max-h-[600px] overflow-y-auto p-6">
+              {filteredRequirements && (
+                <RequirementList
+                  requirements={filteredRequirements}
+                  onViewProposals={handleViewProposals}
+                  onViewDetails={handleViewDetails}
+                />
+              )}
+              {filteredRequirements.length === 0 && (
+                <div className="flex justify-center items-center">
+                  <p className="text-xl font-light text-[#000]">
+                    No Requirements with these applied filters
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+      {showDetailsModal && selectedRequirement && (
+        <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
+          <DialogContent className="sm:max-w-[520px] rounded-2xl p-0 overflow-hidden">
+            {/* Header */}
+            <div className="p-6 pb-0  mt-4 relative">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold my-custom-class text-[#F4561C]">
+                  {selectedRequirement.title}
+                </h2>
+
+                <span className="text-xs px-3 py-1 rounded-lg bg-green-100 text-green-700">
+                  Open
+                </span>
               </div>
-              <div className="lg:col-span-3">
-                <Card className="bg-[#fff] rounded-[16px] py-1 px-0 p-0 min-h-100">
-                  <CardContent className="max-h-[600px] overflow-y-auto p-6">
-                    {filteredRequirements && (<RequirementList
-                      requirements={filteredRequirements}
-                      onViewProposals={handleViewProposals}
-                      onViewDetails={handleViewDetails}
-                    />)}
-                    {filteredRequirements.length===0 && (
-                      <div className="flex justify-center items-center">
-                        <p className="text-xl font-light text-[#000]">No Requirements with these applied filters</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
+
+              <p className="text-sm text-[#686868] my-custom-class font-normal mt-1">
+                Posted on{" "}
+                {new Date(selectedRequirement.createdAt).toLocaleDateString()}
+              </p>
             </div>
-            {showDetailsModal && selectedRequirement && (
-               <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
-                <DialogContent className="sm:max-w-[520px] rounded-2xl p-0 overflow-hidden">
-                  
-                  {/* Header */}
-                  <div className="p-6 pb-0  mt-4 relative">
 
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-semibold my-custom-class text-[#F4561C]">
-                        {selectedRequirement.title}
-                      </h2>
+            {/* Body */}
+            <div className="p-6 pt-0 space-y-5">
+              {/* Meta Info */}
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="flex items-center gap-2 border-2 border-[#F0F0F0] rounded-lg px-3 py-2">
+                  <LuTag className="w-5 h-5" color="#000" />
+                  <span className="my-custom-class font-bold text-xs text-[#000]">
+                    Category: {selectedRequirement.category}
+                  </span>
+                </div>
 
-                      <span className="text-xs px-3 py-1 rounded-lg bg-green-100 text-green-700">
-                        Open
-                      </span>
-                    </div>
+                <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+                  <PiCurrencyDollarBold className="w-5 h-5" color="#000" />
+                  <span className="my-custom-class font-semibold text-xs text-[#000]">
+                    Budget: ${selectedRequirement.budgetMin} - $
+                    {selectedRequirement.budgetMax}
+                  </span>
+                </div>
 
-                    <p className="text-sm text-[#686868] my-custom-class font-normal mt-1">
-                      Posted on {new Date(selectedRequirement.createdAt).toLocaleDateString()}
-                    </p>
+                <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+                  <CiCalendar className="w-5 h-5" color="#000" />
+                  <span className="my-custom-class font-semibold text-xs text-[#000]">
+                    Timeline: {selectedRequirement.timeline}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
+                  <CiLocationOn className="w-5 h-5" color="#000" />
+                  <span className="my-custom-class font-semibold text-xs text-[#000]">
+                    Location: {selectedRequirement.location || "Remote"}
+                  </span>
+                </div>
+              </div>
+
+              <hr className="border-1 border-[#E4E4E4] my-6" />
+
+              {/* Description */}
+              <div className="border-b-2 border-[#E4E4E4] pb-6">
+                <h3 className="font-semibold text-[#F4561C] my-custom-class text-lg mb-1">
+                  Description
+                </h3>
+                <p className="text-sm text-[#656565] leading-relaxed">
+                  {selectedRequirement.description}
+                </p>
+              </div>
+
+              {selectedRequirement.documentUrl && (
+                <div className="flex flex-row justify-start items-center p-4 border rounded-xl shadow gap-3">
+                  <div className="flex justify-center items-center bg-[#EEF7FE] shrink-0 rounded-full h-10 w-10">
+                    <FaRegFileLines className="h-6 w-6" color="#F54A0C" />
                   </div>
+                  <h1 className="text-md font-normal text-[#686868]">
+                    {getFileNameFromUrl(selectedRequirement.documentUrl)}
+                  </h1>
+                </div>
+              )}
 
-                  {/* Body */}
-                  <div className="p-6 pt-0 space-y-5">
-
-                    {/* Meta Info */}
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div className="flex items-center gap-2 border-2 border-[#F0F0F0] rounded-lg px-3 py-2">
-                        <LuTag className="w-5 h-5" color="#000"/>
-                        <span className="my-custom-class font-bold text-xs text-[#000]">Category: {selectedRequirement.category}</span>
-                      </div>
-
-                      <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
-                        <PiCurrencyDollarBold className="w-5 h-5" color="#000"/>
-                       <span className="my-custom-class font-semibold text-xs text-[#000]">Budget: ${selectedRequirement.budgetMin} - ${selectedRequirement.budgetMax}</span>
-                      </div>
-
-                      <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
-                        <CiCalendar className="w-5 h-5" color="#000"/>
-                       <span className="my-custom-class font-semibold text-xs text-[#000]">Timeline: {selectedRequirement.timeline}</span>
-                      </div>
-
-                      <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
-                        <CiLocationOn className="w-5 h-5" color="#000"/>
-                         <span className="my-custom-class font-semibold text-xs text-[#000]">Location: {selectedRequirement.location || "Remote"}</span>
-                      </div>
-                    </div>
-
-                    <hr className="border-1 border-[#E4E4E4] my-6"/>
-
-                    {/* Description */}
-                    <div className="border-b-2 border-[#E4E4E4] pb-6">
-                      <h3 className="font-semibold text-[#F4561C] my-custom-class text-lg mb-1">Description</h3>
-                      <p className="text-sm text-[#656565] leading-relaxed">
-                        {selectedRequirement.description}
-                      </p>
-                    </div>
-
-                   {
-                    selectedRequirement.documentUrl &&(
-                       <div className="flex flex-row justify-start items-center p-4 border rounded-xl shadow gap-3">
-                          <div className="flex justify-center items-center bg-[#EEF7FE] shrink-0 rounded-full h-10 w-10">
-                            <FaRegFileLines className="h-6 w-6" color="#F54A0C"/>
-                          </div>
-                          <h1 className="text-md font-normal text-[#686868]">{getFileNameFromUrl(selectedRequirement.documentUrl)}</h1>
-                    </div>
-
-                    )
-                   } 
-                   
-                    {/* Attachments */}
-                    {/* {selectedRequirement.attachments?.length > 0 && (
+              {/* Attachments */}
+              {/* {selectedRequirement.attachments?.length > 0 && (
                       <div>
                         <h3 className="font-semibold text-[#F4561C] text-lg mb-2">Attachments</h3>
 
@@ -451,32 +499,29 @@ console.log("Fetched Requirements::::",requirements);
                         </div>
                       </div>
                     )} */}
-                    
-                  </div>
+            </div>
 
-                  {/* Footer */}
-                  <div className="p-6 pt-4 border-t flex justify-start gap-4">
-
-                    <Button
-                      className="bg-[#2C34A1] hover:bg-[#2C34A1] text-white rounded-full px-6 flex items-center gap-2" onClick={()=>handleViewProposals(selectedRequirement._id)}
-                    >
-                      View Proposal →
-                    </Button>
-                    <DialogClose asChild>
-                       <Button
-                          variant="default"
-                          className="bg-[#000] hover:bg-[#000] w-[100px] rounded-full px-6"
-                        >
-                          Close
-                        </Button>
-                    </DialogClose>
-                  </div>
-
-                </DialogContent>
-              </Dialog>
-
-            )}
-          </div>
-    )
-}
+            {/* Footer */}
+            <div className="p-6 pt-4 border-t flex justify-start gap-4">
+              <Button
+                className="bg-[#2C34A1] hover:bg-[#2C34A1] text-white rounded-full px-6 flex items-center gap-2"
+                onClick={() => handleViewProposals(selectedRequirement._id)}
+              >
+                View Proposal →
+              </Button>
+              <DialogClose asChild>
+                <Button
+                  variant="default"
+                  className="bg-[#000] hover:bg-[#000] w-[100px] rounded-full px-6"
+                >
+                  Close
+                </Button>
+              </DialogClose>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+    </div>
+  );
+};
 export default RequirementsPage;

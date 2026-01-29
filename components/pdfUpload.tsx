@@ -1,78 +1,78 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 
 interface PdfUploadProps {
-  maxSizeMB?: number
-  onUploadSuccess: (fileUrl: string) => void
+  maxSizeMB?: number;
+  onUploadSuccess: (fileUrl: string) => void;
 }
 
 export default function PdfUpload({
   maxSizeMB = 5,
   onUploadSuccess,
 }: PdfUploadProps) {
-  const [fileName, setFileName] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [fileUrl, setFileUrl] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [fileUrl, setFileUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const uploadFile = async (file: File) => {
-    setLoading(true)
-    setError(null)
-    setFileUrl(null)
+    setLoading(true);
+    setError(null);
+    setFileUrl(null);
 
     try {
-      const formData = new FormData()
-      formData.append("file", file)
+      const formData = new FormData();
+      formData.append("file", file);
 
-      const response = await fetch("/api/upload", {
+      const response = await authFetch("/api/upload", {
         method: "POST",
         body: formData,
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Upload failed")
+        throw new Error(data.error || "Upload failed");
       }
 
-      console.log("data of the file upload",data);
+      console.log("data of the file upload", data);
 
-      setFileUrl(data.url)
-      console.log("Pdf Upload Url is:::",data.url)
+      setFileUrl(data.url);
+      console.log("Pdf Upload Url is:::", data.url);
 
       // ✅ send URL to parent
-      onUploadSuccess(data.url)
+      onUploadSuccess(data.url);
     } catch (err: any) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0]
-    setError(null)
+    const selectedFile = e.target.files?.[0];
+    setError(null);
 
-    if (!selectedFile) return
+    if (!selectedFile) return;
 
     // Validate PDF
     if (selectedFile.type !== "application/pdf") {
-      setError("Only PDF files are allowed")
-      return
+      setError("Only PDF files are allowed");
+      return;
     }
 
     // Validate size
     if (selectedFile.size > maxSizeMB * 1024 * 1024) {
-      setError(`File size should not exceed ${maxSizeMB} MB`)
-      return
+      setError(`File size should not exceed ${maxSizeMB} MB`);
+      return;
     }
 
-    setFileName(selectedFile.name)
+    setFileName(selectedFile.name);
 
     // 🚀 AUTO UPLOAD
-    uploadFile(selectedFile)
-  }
+    uploadFile(selectedFile);
+  };
 
   return (
     <div className="border border-[#D0D5DD] rounded-lg p-6 text-center space-y-4">
@@ -95,32 +95,22 @@ export default function PdfUpload({
         Choose File
       </label>
 
-      {fileName && (
-        <p className="text-sm text-gray-700">{fileName}</p>
-      )}
+      {fileName && <p className="text-sm text-gray-700">{fileName}</p>}
 
       {loading && (
-        <p className="text-sm text-blue-600 animate-pulse">
-          Uploading...
-        </p>
+        <p className="text-sm text-blue-600 animate-pulse">Uploading...</p>
       )}
 
-      {error && (
-        <p className="text-sm text-red-600">{error}</p>
-      )}
+      {error && <p className="text-sm text-red-600">{error}</p>}
 
       {fileUrl && !loading && (
         <p className="text-sm text-green-600">
           Uploaded Successfully:{" "}
-          <a
-            href={fileUrl}
-            target="_blank"
-            className="underline"
-          >
+          <a href={fileUrl} target="_blank" className="underline">
             View File
           </a>
         </p>
       )}
     </div>
-  )
+  );
 }

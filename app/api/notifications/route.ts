@@ -1,42 +1,42 @@
-import { NextRequest, NextResponse } from "next/server"
-import mongoose from "mongoose"
-import { connectToDatabase } from "@/lib/mongodb"
-import Notification from "@/models/Notification"
-import { getCurrentUser } from "@/lib/auth/jwt"
+import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
+import { connectToDatabase } from "@/lib/mongodb";
+import Notification from "@/models/Notification";
+import { getCurrentUser } from "@/lib/auth/jwt";
 
 export async function POST(req: NextRequest) {
   try {
     // 🔐 Auth check
-    const user = await getCurrentUser()
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
         { success: false, message: "Authentication required" },
-        { status: 401 }
-      )
+        { status: 401 },
+      );
     }
 
-    await connectToDatabase()
+    await connectToDatabase();
 
-    const body = await req.json()
+    const body = await req.json();
     const {
-      userId,        // receiver
+      userId, // receiver
       title,
       message,
       type,
       userRole,
       linkUrl,
       sourceId,
-    } = body
+    } = body;
 
     // ✅ Required fields validation
-    if (!userId || !title || !message || !type ) {
+    if (!userId || !title || !message || !type) {
       return NextResponse.json(
         {
           success: false,
           message: "userId, title, message, type, and userRole are required",
         },
-        { status: 400 }
-      )
+        { status: 400 },
+      );
     }
 
     // ✅ Validate ObjectIds
@@ -46,8 +46,8 @@ export async function POST(req: NextRequest) {
     ) {
       return NextResponse.json(
         { success: false, message: "Invalid ObjectId provided" },
-        { status: 400 }
-      )
+        { status: 400 },
+      );
     }
 
     // ✅ Create notification
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
       userRole,
       linkUrl,
       sourceId,
-    })
+    });
 
     return NextResponse.json(
       {
@@ -76,34 +76,34 @@ export async function POST(req: NextRequest) {
           linkUrl: notification.linkUrl,
           isRead: notification.isRead,
           createdAt: notification.createdAt,
-          updatedAt:notification.updatedAt
+          updatedAt: notification.updatedAt,
         },
       },
-      { status: 201 }
-    )
+      { status: 201 },
+    );
   } catch (error) {
-    console.error("Notification POST Error:", error)
+    console.error("Notification POST Error:", error);
     return NextResponse.json(
       { success: false, message: "Internal server error" },
-      { status: 500 }
-    )
+      { status: 500 },
+    );
   }
 }
 
 export async function GET(req: NextRequest) {
   try {
     // 🔐 Auth check
-    const user = await getCurrentUser()
+    const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
         { success: false, message: "Authentication required" },
-        { status: 401 }
-      )
+        { status: 401 },
+      );
     }
 
-    const userId = new mongoose.Types.ObjectId(user.userId)
+    const userId = new mongoose.Types.ObjectId(user.userId);
 
-    await connectToDatabase()
+    await connectToDatabase();
 
     const notifications = await Notification.aggregate([
       {
@@ -193,20 +193,20 @@ export async function GET(req: NextRequest) {
       {
         $sort: { createdAt: -1 },
       },
-    ])
+    ]);
 
     return NextResponse.json(
       {
         success: true,
         data: notifications,
       },
-      { status: 200 }
-    )
+      { status: 200 },
+    );
   } catch (error) {
-    console.error("Notification GET Error:", error)
+    console.error("Notification GET Error:", error);
     return NextResponse.json(
       { success: false, message: "Internal server error" },
-      { status: 500 }
-    )
+      { status: 500 },
+    );
   }
 }

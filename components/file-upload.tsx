@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import React, { useState, useRef } from "react"
-import { Button } from "@/components/ui/button"
+import React, { useState, useRef } from "react";
+import { Button } from "@/components/ui/button";
 
 interface FileUploadProps {
-  value?: string // URL of uploaded file
-  onChange: (url: string) => void
-  accept?: string
-  placeholder?: string
-  multiple?: boolean
-  className?: string
+  value?: string; // URL of uploaded file
+  onChange: (url: string) => void;
+  accept?: string;
+  placeholder?: string;
+  multiple?: boolean;
+  className?: string;
 }
 
 export default function FileUpload({
@@ -20,75 +20,77 @@ export default function FileUpload({
   multiple = false,
   className = "",
 }: FileUploadProps) {
-  const [isDragging, setIsDragging] = useState(false)
-  const [uploading, setUploading] = useState(false)
-  const [preview, setPreview] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isDragging, setIsDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-const handleFileSelect = async (files: FileList | null) => {
-  if (!files || files.length === 0) return
+  const handleFileSelect = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
 
-  const file = files[0]
+    const file = files[0];
 
-  // Check 4:3 ratio and alert if not
-  const img = new Image()
-  img.src = URL.createObjectURL(file)
-  img.onload = () => {
-    const ratio = img.width / img.height
-    if (Math.abs(ratio - 4 / 3) > 0.05) {
-      alert("Note: Image is not 4:3 ratio. It may not display optimally.")
+    // Check 4:3 ratio and alert if not
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+    img.onload = () => {
+      const ratio = img.width / img.height;
+      if (Math.abs(ratio - 4 / 3) > 0.05) {
+        alert("Note: Image is not 4:3 ratio. It may not display optimally.");
+      }
+    };
+
+    setPreview(URL.createObjectURL(file));
+    setUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await authFetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.url) throw new Error("Upload failed");
+      onChange(data.url);
+    } catch (err) {
+      console.error(err);
+      alert("Upload failed");
+      setPreview(null);
+    } finally {
+      setUploading(false);
     }
-  }
-
-  setPreview(URL.createObjectURL(file))
-  setUploading(true)
-
-  try {
-    const formData = new FormData()
-    formData.append("file", file)
-
-    const res = await fetch("/api/upload", { method: "POST", body: formData })
-    const data = await res.json()
-
-    if (!res.ok || !data.url) throw new Error("Upload failed")
-    onChange(data.url)
-  } catch (err) {
-    console.error(err)
-    alert("Upload failed")
-    setPreview(null)
-  } finally {
-    setUploading(false)
-  }
-}
-
+  };
 
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(true)
-  }
+    e.preventDefault();
+    setIsDragging(true);
+  };
 
   const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(false)
-  }
+    e.preventDefault();
+    setIsDragging(false);
+  };
 
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(false)
-    handleFileSelect(e.dataTransfer.files)
-  }
+    e.preventDefault();
+    setIsDragging(false);
+    handleFileSelect(e.dataTransfer.files);
+  };
 
   const handleClick = () => {
-    fileInputRef.current?.click()
-  }
+    fileInputRef.current?.click();
+  };
 
   const handleRemove = () => {
-    setPreview(null)
-    onChange("")
-    if (fileInputRef.current) fileInputRef.current.value = ""
-  }
+    setPreview(null);
+    onChange("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
-  const displayUrl = value || preview
+  const displayUrl = value || preview;
 
   return (
     <div className={`space-y-2 ${className}`}>
@@ -128,8 +130,8 @@ const handleFileSelect = async (files: FileList | null) => {
                 variant="outline"
                 size="sm"
                 onClick={(e) => {
-                  e.stopPropagation()
-                  handleRemove()
+                  e.stopPropagation();
+                  handleRemove();
                 }}
               >
                 Remove
@@ -150,7 +152,9 @@ const handleFileSelect = async (files: FileList | null) => {
             </div>
             <p className="text-sm text-gray-600">{placeholder}</p>
             <p className="text-xs text-gray-500 mt-1">
-              {accept === "image/*" ? "PNG, JPG, GIF up to 10MB" : "Select a file"}
+              {accept === "image/*"
+                ? "PNG, JPG, GIF up to 10MB"
+                : "Select a file"}
             </p>
           </div>
         )}
@@ -162,5 +166,5 @@ const handleFileSelect = async (files: FileList | null) => {
         )}
       </div>
     </div>
-  )
+  );
 }

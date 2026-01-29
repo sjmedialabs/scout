@@ -15,7 +15,7 @@ export default function ContentManagementPage() {
   // Load existing CMS data
   useEffect(() => {
     async function load() {
-      const res = await fetch("/api/cms");
+      const res = await authFetch("/api/cms");
       const data = await res.json();
       setCMS(data.data || {});
     }
@@ -51,7 +51,7 @@ export default function ContentManagementPage() {
     setLoading(true);
     setMessage("");
     console.log("Saving CMS data:", cms);
-    const res = await fetch("/api/cms", {
+    const res = await authFetch("/api/cms", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(cms),
@@ -79,7 +79,6 @@ export default function ContentManagementPage() {
 
         {/* ─────────────────────────────── HOME TAB ─────────────────────────────── */}
         <TabsContent value="home" className="space-y-6">
-
           {/* HERO SECTION */}
           <section className="space-y-4 border p-4 rounded">
             <h2 className="text-xl font-semibold">Hero Section</h2>
@@ -99,7 +98,9 @@ export default function ContentManagementPage() {
             <Input
               placeholder="Home Banner Subtitle"
               value={cms.homeBannerSubtitle}
-              onChange={(e) => updateField("homeBannerSubtitle", e.target.value)}
+              onChange={(e) =>
+                updateField("homeBannerSubtitle", e.target.value)
+              }
             />
           </section>
 
@@ -109,7 +110,11 @@ export default function ContentManagementPage() {
               <h2 className="text-xl font-semibold">How Spark Works</h2>
               <Button
                 onClick={() =>
-                  handleAdd("homeWorkSection", { title: "", description: "", image: "" })
+                  handleAdd("homeWorkSection", {
+                    title: "",
+                    description: "",
+                    image: "",
+                  })
                 }
               >
                 + Add Step
@@ -118,7 +123,6 @@ export default function ContentManagementPage() {
 
             {cms.homeWorkSection?.map((item: any, index: number) => (
               <div key={index} className="border p-3 rounded space-y-2">
-
                 <Input
                   placeholder="Title"
                   value={item.title}
@@ -149,12 +153,14 @@ export default function ContentManagementPage() {
                   }}
                 />
 
-                <Button variant="destructive" onClick={() => handleRemove("homeWorkSection", index)}>
+                <Button
+                  variant="destructive"
+                  onClick={() => handleRemove("homeWorkSection", index)}
+                >
                   Remove
                 </Button>
               </div>
             ))}
-
           </section>
 
           {/* HOME SERVICE CATEGORIES */}
@@ -199,14 +205,15 @@ export default function ContentManagementPage() {
             <Input
               placeholder="Subtitle"
               value={cms.getStartedSubtitle}
-              onChange={(e) => updateField("getStartedSubtitle", e.target.value)}
+              onChange={(e) =>
+                updateField("getStartedSubtitle", e.target.value)
+              }
             />
           </section>
         </TabsContent>
 
         {/* ─────────────────────────────── ABOUT TAB ─────────────────────────────── */}
         <TabsContent value="about" className="space-y-6">
-
           <section className="border p-4 rounded space-y-4">
             <h2 className="text-xl font-semibold">About Banner</h2>
 
@@ -224,7 +231,9 @@ export default function ContentManagementPage() {
             <Input
               placeholder="About Banner Subtitle"
               value={cms.aboutBannerSubtitle}
-              onChange={(e) => updateField("aboutBannerSubtitle", e.target.value)}
+              onChange={(e) =>
+                updateField("aboutBannerSubtitle", e.target.value)
+              }
             />
           </section>
 
@@ -249,7 +258,9 @@ export default function ContentManagementPage() {
           <section className="border p-4 rounded space-y-4">
             <div className="flex justify-between">
               <h2 className="text-xl font-semibold">About Points</h2>
-              <Button onClick={() => handleAdd("aboutPoints", "")}>+ Add</Button>
+              <Button onClick={() => handleAdd("aboutPoints", "")}>
+                + Add
+              </Button>
             </div>
 
             {cms.aboutPoints?.map((point: string, index: number) => (
@@ -284,14 +295,21 @@ export default function ContentManagementPage() {
           <section className="border p-4 rounded space-y-4">
             <div className="flex justify-between">
               <h2 className="text-xl font-semibold">Vision & Mission Cards</h2>
-              <Button onClick={() => handleAdd("aboutVisionCard", { icon: "", title: "", description: "" })}>
+              <Button
+                onClick={() =>
+                  handleAdd("aboutVisionCard", {
+                    icon: "",
+                    title: "",
+                    description: "",
+                  })
+                }
+              >
                 + Add Card
               </Button>
             </div>
 
             {cms.aboutVisionCard?.map((item: any, index: number) => (
               <div key={index} className="border p-3 rounded space-y-3">
-
                 <FileUpload
                   value={item.icon}
                   onChange={(url) => {
@@ -321,7 +339,10 @@ export default function ContentManagementPage() {
                   }}
                 />
 
-                <Button variant="destructive" onClick={() => handleRemove("aboutVisionCard", index)}>
+                <Button
+                  variant="destructive"
+                  onClick={() => handleRemove("aboutVisionCard", index)}
+                >
                   Remove
                 </Button>
               </div>
@@ -331,14 +352,15 @@ export default function ContentManagementPage() {
           <section className="border p-4 rounded space-y-4">
             <div className="flex justify-between">
               <h2 className="text-xl font-semibold">About Stats</h2>
-              <Button onClick={() => handleAdd("aboutStats", { value: "", text: "" })}>
+              <Button
+                onClick={() => handleAdd("aboutStats", { value: "", text: "" })}
+              >
                 + Add Stat
               </Button>
             </div>
 
             {cms.aboutStats?.map((stat: any, index: number) => (
               <div key={index} className="border p-3 rounded space-y-3">
-
                 <Input
                   placeholder="Value (ex: 50,000+)"
                   value={stat.value}
@@ -358,18 +380,20 @@ export default function ContentManagementPage() {
                     updateField("aboutStats", updated);
                   }}
                 />
-            <FileUpload
-              value={stat.imageUrl}
-              onChange={(url) => {
-                const updated = [...cms.aboutStats];
-                updated[index].imageUrl = url;
-                updateField("aboutStats", updated);
-              }}
-            />
-                <Button variant="destructive" onClick={() => handleRemove("aboutStats", index)}>
+                <FileUpload
+                  value={stat.imageUrl}
+                  onChange={(url) => {
+                    const updated = [...cms.aboutStats];
+                    updated[index].imageUrl = url;
+                    updateField("aboutStats", updated);
+                  }}
+                />
+                <Button
+                  variant="destructive"
+                  onClick={() => handleRemove("aboutStats", index)}
+                >
                   Remove
                 </Button>
-
               </div>
             ))}
           </section>
@@ -387,14 +411,17 @@ export default function ContentManagementPage() {
           <section className="border p-4 rounded space-y-4">
             <div className="flex justify-between">
               <h2 className="text-xl font-semibold">About Values</h2>
-              <Button onClick={() => handleAdd("aboutValues", { title: "", description: "" })}>
+              <Button
+                onClick={() =>
+                  handleAdd("aboutValues", { title: "", description: "" })
+                }
+              >
                 + Add Value
               </Button>
             </div>
 
             {cms.aboutValues?.map((value: any, index: number) => (
               <div key={index} className="border p-3 rounded space-y-3">
-
                 <Input
                   placeholder="Title"
                   value={value.title}
@@ -414,26 +441,27 @@ export default function ContentManagementPage() {
                     updateField("aboutValues", updated);
                   }}
                 />
-            <FileUpload
-              value={value.imageUrl}
-              onChange={(url) => {
-                const updated = [...cms.aboutValues];
-                updated[index].imageUrl = url;
-                updateField("aboutValues", updated);
-              }}
-            />
-                <Button variant="destructive" onClick={() => handleRemove("aboutValues", index)}>
+                <FileUpload
+                  value={value.imageUrl}
+                  onChange={(url) => {
+                    const updated = [...cms.aboutValues];
+                    updated[index].imageUrl = url;
+                    updateField("aboutValues", updated);
+                  }}
+                />
+                <Button
+                  variant="destructive"
+                  onClick={() => handleRemove("aboutValues", index)}
+                >
                   Remove
                 </Button>
               </div>
             ))}
           </section>
-
         </TabsContent>
 
         {/* ─────────────────────────────── TEAM TAB ─────────────────────────────── */}
         <TabsContent value="team" className="space-y-6">
-
           <section className="border p-4 rounded space-y-4">
             <h2 className="text-xl font-semibold">Team Section</h2>
 
@@ -469,7 +497,6 @@ export default function ContentManagementPage() {
 
             {cms.aboutTeam?.map((member: any, index: number) => (
               <div key={index} className="border p-4 rounded space-y-3">
-
                 <FileUpload
                   value={member.image}
                   onChange={(url) => {
@@ -508,7 +535,6 @@ export default function ContentManagementPage() {
               </div>
             ))}
           </section>
-
         </TabsContent>
 
         {/* ─────────────────────────────── CONTACT TAB ─────────────────────────────── */}
@@ -531,37 +557,49 @@ export default function ContentManagementPage() {
             <Textarea
               placeholder="Address"
               value={cms.contact?.address}
-              onChange={(e) => updateNested("contact", "address", e.target.value)}
+              onChange={(e) =>
+                updateNested("contact", "address", e.target.value)
+              }
             />
 
             <Input
               placeholder="Map URL"
               value={cms.contact?.locationMapUrl}
-              onChange={(e) => updateNested("contact", "locationMapUrl", e.target.value)}
+              onChange={(e) =>
+                updateNested("contact", "locationMapUrl", e.target.value)
+              }
             />
 
             <Input
               placeholder="Facebook URL"
               value={cms.contact?.facebookUrl}
-              onChange={(e) => updateNested("contact", "facebookUrl", e.target.value)}
+              onChange={(e) =>
+                updateNested("contact", "facebookUrl", e.target.value)
+              }
             />
 
             <Input
               placeholder="LinkedIn URL"
               value={cms.contact?.linkedinUrl}
-              onChange={(e) => updateNested("contact", "linkedinUrl", e.target.value)}
+              onChange={(e) =>
+                updateNested("contact", "linkedinUrl", e.target.value)
+              }
             />
 
             <Input
               placeholder="Twitter URL"
               value={cms.contact?.twitterUrl}
-              onChange={(e) => updateNested("contact", "twitterUrl", e.target.value)}
+              onChange={(e) =>
+                updateNested("contact", "twitterUrl", e.target.value)
+              }
             />
 
             <Input
               placeholder="Youtube URL"
               value={cms.contact?.youtubeUrl}
-              onChange={(e) => updateNested("contact", "youtubeUrl", e.target.value)}
+              onChange={(e) =>
+                updateNested("contact", "youtubeUrl", e.target.value)
+              }
             />
           </section>
         </TabsContent>

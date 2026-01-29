@@ -1,13 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { mockAdminStats, mockReportedContent, mockSubscriptionStats } from "@/lib/mock-data";
+import {
+  mockAdminStats,
+  mockReportedContent,
+  mockSubscriptionStats,
+} from "@/lib/mock-data";
+import { authFetch } from "@/lib/auth-fetch";
 import {
   Users,
   FileText,
   AlertTriangle,
   TriangleAlert,
-  Loader2
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { User } from "@/lib/types";
@@ -15,7 +20,9 @@ import { User } from "@/lib/types";
 export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [stats, setStats] = useState(mockAdminStats);
-  const [subscriptionStats, setSubscriptionStats] = useState(mockSubscriptionStats);
+  const [subscriptionStats, setSubscriptionStats] = useState(
+    mockSubscriptionStats,
+  );
   const [users, setUsers] = useState<User[]>([]);
   const [reportedContent, setReportedContent] = useState(mockReportedContent);
   const [requirements, setRequirements] = useState([]);
@@ -28,16 +35,17 @@ export default function DashboardPage() {
         setIsLoading(true);
         const [
           //statsRes, subRes,
-           usersRes, requirementsRes,
+          usersRes,
+          requirementsRes,
           //  reportsRes
-          ] = await Promise.all([
-        //   fetch("/api/admin/stats"),
-        //   fetch("/api/admin/subscriptions"),
-          fetch("/api/users"),
-        fetch("/api/requirements"),
-        //   fetch("/api/admin/reports"),
+        ] = await Promise.all([
+          //   authFetch("/api/admin/stats"),
+          //   authFetch("/api/admin/subscriptions"),
+          authFetch("/api/users"),
+          authFetch("/api/requirements"),
+          //   authFetch("/api/admin/reports"),
         ]);
-       const usersData = await usersRes.json();
+        const usersData = await usersRes.json();
         setUsers(usersData.users);
 
         const requirementsData = await requirementsRes.json();
@@ -53,20 +61,28 @@ export default function DashboardPage() {
     fetchDashboardData();
   }, []);
 
-  const pendingReports = reportedContent.filter((r) => r.status === "pending").length;
+  const pendingReports = reportedContent.filter(
+    (r) => r.status === "pending",
+  ).length;
   const pendingUsers = users.filter((u) => !u.isVerified).length;
-  const activeRequirements = requirements.filter((r) => r.status === "Allocated").length;
+  const activeRequirements = requirements.filter(
+    (r) => r.status === "Allocated",
+  ).length;
   return (
     <div className="space-y-10">
       {/* Page Heading */}
       <div className="py-4 border-b border-slate-300 mb-6 flex items-center justify-between">
         <div>
-        <h1 className="text-4xl font-bold text-orangeButton">Admin Dashboard</h1>
-        <p className="text-gray-500 text-xl">Platform management and insights</p>
+          <h1 className="text-4xl font-bold text-orangeButton">
+            Admin Dashboard
+          </h1>
+          <p className="text-gray-500 text-xl">
+            Platform management and insights
+          </p>
         </div>
         <div className="flex flex-row justify-center items-center gap-4">
           <Button className="bg-orangeButton rounded-full text-white mt-4 hover:bg-orange-600 flex items-center gap-2">
-           <TriangleAlert className="h-4 w-4" /> Reports 
+            <TriangleAlert className="h-4 w-4" /> Reports
           </Button>
           <Button className="bg-[#278DEC] rounded-full text-white mt-4 hover:bg-blue-800 flex items-center gap-2">
             <Users className="h-4 w-4" /> Pending
@@ -106,7 +122,12 @@ export default function DashboardPage() {
         {/* Monthly Revenue */}
         <DashboardCard
           title="Monthly Revenue"
-          icon={<img src="/images/revenue-icon.png" className="h-4 w-4 text-orangeButton" />}
+          icon={
+            <img
+              src="/images/revenue-icon.png"
+              className="h-4 w-4 text-orangeButton"
+            />
+          }
           gradient="from-purple-100 to-purple-200"
           value={`$${subscriptionStats.monthlyRecurring.toLocaleString()}`}
           helper={`+${stats.monthlyGrowth}% growth`}
@@ -114,11 +135,10 @@ export default function DashboardPage() {
       </div>
 
       {/* Recent activity  */}
-     <div className="flex flex-col lg:flex-row gap-6">
-  <RecentUserActivityCard />
-  <ContentReportsCard/>
-</div>
-
+      <div className="flex flex-col lg:flex-row gap-6">
+        <RecentUserActivityCard />
+        <ContentReportsCard />
+      </div>
     </div>
   );
 }
@@ -240,9 +260,7 @@ function ContentReportsCard() {
               <p className="font-semibold text-orangeButton">
                 Inappropriate content
               </p>
-              <p className="text-sm text-gray-500">
-                review • 20/01/2024
-              </p>
+              <p className="text-sm text-gray-500">review • 20/01/2024</p>
             </div>
             <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-green-100 text-green-700">
               Resolved
@@ -252,9 +270,7 @@ function ContentReportsCard() {
           <div className="flex items-center justify-between border rounded-xl px-4 py-3">
             <div>
               <p className="font-semibold text-orangeButton">Spam</p>
-              <p className="text-sm text-gray-500">
-                proposal • 19/01/2024
-              </p>
+              <p className="text-sm text-gray-500">proposal • 19/01/2024</p>
             </div>
             <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-green-100 text-green-700">
               Resolved
@@ -266,9 +282,7 @@ function ContentReportsCard() {
               <p className="font-semibold text-orangeButton">
                 Fraudulent activity
               </p>
-              <p className="text-sm text-gray-500">
-                user • 15/01/2024
-              </p>
+              <p className="text-sm text-gray-500">user • 15/01/2024</p>
             </div>
             <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-yellow-100 text-yellow-700">
               Pending
@@ -277,12 +291,8 @@ function ContentReportsCard() {
 
           <div className="flex items-center justify-between border rounded-xl px-4 py-3">
             <div>
-              <p className="font-semibold text-orangeButton">
-                Alice Johnson
-              </p>
-              <p className="text-sm text-gray-500">
-                alice@example.com
-              </p>
+              <p className="font-semibold text-orangeButton">Alice Johnson</p>
+              <p className="text-sm text-gray-500">alice@example.com</p>
             </div>
             <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-yellow-100 text-yellow-700">
               Pending

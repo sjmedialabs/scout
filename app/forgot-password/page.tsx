@@ -16,7 +16,7 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/forgot-password", {
+      const res = await authFetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -26,10 +26,10 @@ export default function ForgotPasswordPage() {
         throw new Error("Something went wrong");
       }
 
-      const data = await res.json()
+      const data = await res.json();
       if (data.resetUrl) {
-        router.push(data.resetUrl)
-        return
+        router.push(data.resetUrl);
+        return;
       }
 
       setSuccess(true);

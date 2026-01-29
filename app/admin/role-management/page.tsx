@@ -6,12 +6,18 @@ import { Button } from "@/components/ui/button";
 import { mockAdminUsers } from "@/lib/mock-data";
 import { Shield, UserCheck, UserMinus } from "lucide-react";
 
-const ROLE_OPTIONS = ["super-admin", "admin", "moderator", "provider", "seeker"];
+const ROLE_OPTIONS = [
+  "super-admin",
+  "admin",
+  "moderator",
+  "provider",
+  "seeker",
+];
 interface RoleManagement {
-    userId: string;
-    newRole: string;
+  userId: string;
+  newRole: string;
 }
-export default function RoleManagementPage( ) {
+export default function RoleManagementPage() {
   const [users, setUsers] = useState(mockAdminUsers);
   const [loading, setLoading] = useState(false);
 
@@ -21,7 +27,7 @@ export default function RoleManagementPage( ) {
   --------------------------------------------------
   useEffect(() => {
     async function loadRoles() {
-      const res = await fetch("/api/admin/roles");
+      const res = await authFetch("/api/admin/roles");
       const data = await res.json();
       setUsers(data);
     }
@@ -34,7 +40,7 @@ export default function RoleManagementPage( ) {
 
     // Update locally
     setUsers((prev) =>
-      prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
+      prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u)),
     );
 
     console.log(`Role updated for ${userId}: ${newRole}`);
@@ -43,7 +49,7 @@ export default function RoleManagementPage( ) {
     --------------------------------------------------
     OPTIONAL: Save role update to backend
     --------------------------------------------------
-    await fetch("/api/admin/roles/update", {
+    await authFetch("/api/admin/roles/update", {
       method: "POST",
       body: JSON.stringify({ userId, role: newRole }),
     });
@@ -56,7 +62,7 @@ export default function RoleManagementPage( ) {
     setLoading(true);
 
     setUsers((prev) =>
-      prev.map((u) => (u.id === userId ? { ...u, role: "seeker" } : u))
+      prev.map((u) => (u.id === userId ? { ...u, role: "seeker" } : u)),
     );
 
     console.log(`Role revoked for ${userId}`);
@@ -69,7 +75,9 @@ export default function RoleManagementPage( ) {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold">Role Management</h1>
-        <p className="text-gray-500">Assign roles and manage user permissions.</p>
+        <p className="text-gray-500">
+          Assign roles and manage user permissions.
+        </p>
       </div>
 
       {/* User Roles Table */}
@@ -134,14 +142,28 @@ export default function RoleManagementPage( ) {
       {/* Role Definitions Section */}
       <div className="bg-white p-6 rounded-xl shadow border">
         <h2 className="text-xl font-semibold mb-2">Role Definitions</h2>
-        <p className="text-gray-500 mb-4">Permission levels for each type of role.</p>
+        <p className="text-gray-500 mb-4">
+          Permission levels for each type of role.
+        </p>
 
         <ul className="space-y-2 text-gray-700">
-          <li><strong>Super Admin</strong> — Full system access, billing, platform-wide control.</li>
-          <li><strong>Admin</strong> — Manage users, categories, moderation, settings.</li>
-          <li><strong>Moderator</strong> — Handles content moderation only.</li>
-          <li><strong>Provider</strong> — Businesses offering services.</li>
-          <li><strong>Seeker</strong> — Businesses seeking services.</li>
+          <li>
+            <strong>Super Admin</strong> — Full system access, billing,
+            platform-wide control.
+          </li>
+          <li>
+            <strong>Admin</strong> — Manage users, categories, moderation,
+            settings.
+          </li>
+          <li>
+            <strong>Moderator</strong> — Handles content moderation only.
+          </li>
+          <li>
+            <strong>Provider</strong> — Businesses offering services.
+          </li>
+          <li>
+            <strong>Seeker</strong> — Businesses seeking services.
+          </li>
         </ul>
       </div>
     </div>
