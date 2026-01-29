@@ -12,10 +12,18 @@ import {
   Moon,
   Sun,
   Database,
+  Plus,
   Wrench,
 } from "lucide-react";
 
 export default function SettingsPage() {
+  const [categories, setCategories] = useState([
+    "Website Development",
+    "UI/UX design",
+    "Digital Marketing",
+    "Content Writing",
+    "SEO Services",
+  ]);
   const [autoApprove, setAutoApprove] = useState(false);
   const [reviewModeration, setReviewModeration] = useState(true);
   const [maintenanceMode, setMaintenanceMode] = useState(false);
@@ -58,161 +66,106 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="space-y-10">
-      {/* HEADER */}
+    <div className="space-y-6">
+      {/* PAGE HEADER */}
       <div>
-        <h1 className="text-3xl font-bold">Platform Settings</h1>
-        <p className="text-gray-500">
-          Manage system-wide preferences and configurations.
+        <h1 className="text-3xl font-bold text-orangeButton my-custom-class">
+          Platform Settings
+        </h1>
+        <p className="text-gray-500 my-custom-class">
+          Platform management and oversight
         </p>
       </div>
 
-      {/* Platform Controls */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border space-y-6">
-        <h2 className="text-xl font-semibold flex items-center gap-2">
-          <Settings className="w-5 h-5 text-blue-600" />
-          General Platform Controls
-        </h2>
+      {/* CATEGORY MANAGEMENT */}
+      <div className="bg-white rounded-2xl border shadow-sm p-6 pt-3 space-y-6">
+        <div>
+          <h2 className="text-lg font-semibold text-orangeButton my-custom-class">
+            Category Management
+          </h2>
+          <p className="text-gray-500 text-sm my-custom-class">
+            Manage service categories available on the platform
+          </p>
+        </div>
 
-        {/* Auto Approval */}
-        <SettingRow
-          title="Auto-Approve New Providers"
-          description="Automatically approve provider profiles without admin review."
-        >
-          <Switch checked={autoApprove} onCheckedChange={setAutoApprove} />
-        </SettingRow>
-
-        {/* Review Moderation */}
-        <SettingRow
-          title="Review Moderation"
-          description="Require admin approval for user-submitted reviews."
-        >
-          <Switch
-            checked={reviewModeration}
-            onCheckedChange={setReviewModeration}
-          />
-        </SettingRow>
-
-        {/* Maintenance Mode */}
-        <SettingRow
-          title="Maintenance Mode"
-          description="Temporarily disable platform access for all users."
-        >
-          <Switch
-            checked={maintenanceMode}
-            onCheckedChange={setMaintenanceMode}
-          />
-        </SettingRow>
-      </div>
-
-      {/* Email Configuration */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border space-y-6">
-        <h2 className="text-xl font-semibold flex items-center gap-2">
-          <Bell className="w-5 h-5 text-purple-600" />
-          Email & Notification Settings
-        </h2>
-
-        <SettingRow
-          title="Email Sender Address"
-          description="Outgoing emails will appear from this address."
-        >
+        <div className="flex flex-col md:flex-row gap-4">
           <Input
-            className="w-64"
-            value={emailSender}
-            onChange={(e) => setEmailSender(e.target.value)}
+            placeholder="Add New Category"
+            className="flex-1 rounded-xl placeholder:text-gray-400 border-gray-200 my-custom-class"
           />
-        </SettingRow>
+          <Button className="bg-orangeButton hover:bg-orange-600 flex items-center gap-2 rounded-xl">
+            <Plus className="w-4 h-4" />
+            Add Category
+          </Button>
+        </div>
 
-        <SettingRow
-          title="Enable Email Alerts"
-          description="Allows system notifications to be delivered by email."
-        >
-          <Switch />
-        </SettingRow>
+        <div className="flex flex-wrap gap-2">
+          {categories.map((cat) => (
+            <span
+              key={cat}
+              className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full flex items-center gap-1"
+            >
+              {cat}
+              <span className="cursor-pointer text-white">×</span>
+            </span>
+          ))}
+        </div>
       </div>
 
-      {/* Security & Retention */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border space-y-6">
-        <h2 className="text-xl font-semibold flex items-center gap-2">
-          <Shield className="w-5 h-5 text-green-600" />
-          Security & Data Retention
-        </h2>
+      {/* PLATFORM SETTINGS */}
+      <div className="bg-white rounded-2xl border shadow-sm p-6 space-y-6">
+        <div>
+          <h2 className="text-lg font-semibold text-orangeButton my-custom-class">
+            Platform Settings
+          </h2>
+          <p className="text-gray-500 text-sm my-custom-class">
+            Manage service categories available on the platform
+          </p>
+        </div>
 
-        <SettingRow
-          title="Data Retention Period"
-          description="Number of days user data is stored before auto-deletion."
-        >
-          <Input
-            type="number"
-            className="w-24"
-            value={retentionDays}
-            onChange={(e) => setRetentionDays(Number(e.target.value))}
-          />
-        </SettingRow>
+        {/* Auto approve */}
+        <SettingItem
+          title="Auto-approve new providers"
+          description="Automatically approve new service provider registrations"
+        />
 
-        <SettingRow
-          title="Automatic Backup"
-          description="Enable weekly automatic platform backups."
-        >
-          <Switch />
-        </SettingRow>
-      </div>
+        {/* Review moderation */}
+        <SettingItem
+          title="Review moderation"
+          description="Require admin approval for all reviews"
+        />
 
-      {/* UI Customization */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border space-y-6">
-        <h2 className="text-xl font-semibold flex items-center gap-2">
-          <Wrench className="w-5 h-5 text-orange-600" />
-          UI Customization
-        </h2>
-
-        <SettingRow
-          title="Theme Mode"
-          description="Choose how the admin panel appearance should behave."
-        >
-          <select
-            className="border rounded-xl px-3 py-2"
-            value={theme}
-            onChange={(e) => setTheme(e.target.value)}
-          >
-            <option value="light">Light Mode ☀️</option>
-            <option value="dark">Dark Mode 🌙</option>
-            <option value="system">System Default 🖥️</option>
-          </select>
-        </SettingRow>
-      </div>
-
-      {/* Save Button */}
-      <div className="flex justify-end">
-        <Button
-          onClick={saveSettings}
-          className="px-6 py-3 bg-blue-600 hover:bg-blue-700"
-        >
-          Save Settings
-        </Button>
+        {/* Subscription management */}
+        <SettingItem
+          title="Subscription management"
+          description="Manage subscription tiers and pricing"
+        />
       </div>
     </div>
   );
 }
 
 /* ---------------------------------------------------------
-   Setting Row Component
+   SETTING ITEM ROW
 --------------------------------------------------------- */
-function SettingRow({
+function SettingItem({
   title,
   description,
-  children,
 }: {
   title: string;
   description: string;
-  children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between py-4 border-b last:border-none">
+    <div className="flex items-center justify-between border rounded-2xl p-4">
       <div>
-        <h3 className="font-medium text-gray-800">{title}</h3>
-        <p className="text-gray-500 text-sm">{description}</p>
+        <h3 className="font-bold text-sm text-gray-900 my-custom-class">{title}</h3>
+        <p className="text-sm text-gray-500 my-custom-class">{description}</p>
       </div>
-      <div>{children}</div>
+
+      <Button className="bg-orangeButton hover:bg-orange-600 rounded-xl px-6">
+        Configure
+      </Button>
     </div>
   );
 }
+
