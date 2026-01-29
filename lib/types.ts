@@ -1,5 +1,5 @@
 export type RequirementStatus = "open" | "shortlisted" | "negotiation" | "closed"
-export type ProposalStatus = "pending" | "shortlisted" | "accepted" | "rejected"
+export type ProposalStatus = "pending" | "shortlisted" | "accepted" | "rejected" | "negotation"
 export type ProjectStatus = "active" | "completed" | "cancelled"
 export type SubscriptionTier = "basic" | "standard" | "premium"
 

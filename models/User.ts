@@ -12,6 +12,13 @@ export interface IUser extends Document {
   isVerified: boolean
   isActive: boolean
   lastLogin?: Date
+
+  subscriptionPlanId?: mongoose.Types.ObjectId
+  subscriptionStartDate?: Date
+  subscriptionEndDate?: Date
+  billingCycle?:"Yearly" | "Monthly"
+
+  
   createdAt: Date
   updatedAt: Date
   resetPasswordToken?: string
@@ -29,6 +36,10 @@ const UserSchema = new Schema<IUser>(
     avatar: { type: String },
     isVerified: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
+    subscriptionPlanId:{type: Schema.Types.ObjectId,ref:"Subscription"},
+    subscriptionStartDate:{type:Date},
+    subscriptionEndDate:{type:Date},
+    billingCycle:{type:String,enum:["Yearly","Monthly"],default:"Monthly"},
     lastLogin: { type: Date },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
