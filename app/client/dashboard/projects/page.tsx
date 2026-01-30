@@ -924,14 +924,14 @@ const ProjectsPage = () => {
 
               {/* Ratings (unchanged UI) */}
               {[
-                { label: "Rating", key: "rating" },
-                { label: "Cost Rating", key: "costRating" },
-                { label: "Quality Rating", key: "qualityRating" },
+                { label: "Rating 0/5", key: "rating" },
+                { label: "Cost Rating 0/5", key: "costRating" },
+                { label: "Quality Rating 0/5", key: "qualityRating" },
                 {
-                  label: "Willing To Refer Rating",
+                  label: "Willing To Refer Rating 0/5",
                   key: "willingToReferRating",
                 },
-                { label: "Schedule Rating", key: "scheduleRating" },
+                { label: "Schedule Rating 0/5", key: "scheduleRating" },
               ].map((item) => (
                 <div className="space-y-2" key={item.key}>
                   <Label className="text-[#000] text-[14px] font-bold">
@@ -944,12 +944,18 @@ const ProjectsPage = () => {
                     step={0.1}
                     value={reviewForm[item.key]}
                     className="border-2 border-[#D0D5DD] rounded-[8px]"
-                    onChange={(e) =>
-                      setReviewForm((prev) => ({
-                        ...prev,
-                        [item.key]: parseFloat(e.target.value),
-                      }))
-                    }
+                    onChange={(e) => {
+                    let value = parseFloat(e.target.value)
+
+                    if (isNaN(value)) value = 0
+                    if (value > 5) value = 5
+                    if (value < 0.1) value = 0.1
+
+                    setReviewForm((prev) => ({
+                      ...prev,
+                      [item.key]: value,
+                    }))
+                  }}
                     required
                   />
                 </div>

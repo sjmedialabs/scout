@@ -18,8 +18,8 @@ export interface IMessage extends Document {
 export interface IConversation extends Document {
   _id: mongoose.Types.ObjectId
   participants: mongoose.Types.ObjectId[]
-  projectId?: mongoose.Types.ObjectId
-  proposalId?: mongoose.Types.ObjectId
+  proposalIds?: mongoose.Types.ObjectId[]
+  projectIds?: mongoose.Types.ObjectId[]
   lastMessage?: string
   lastMessageAt?: Date
   unreadCount: Map<string, number>
@@ -55,19 +55,29 @@ const MessageSchema = new Schema<IMessage>(
 const ConversationSchema = new Schema<IConversation>(
   {
     participants: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
-    projectId: { type: Schema.Types.ObjectId, ref: "Requirement" },
-    proposalId: { type: Schema.Types.ObjectId, ref: "Proposal" },
+
+    proposalIds: [{ type: Schema.Types.ObjectId, ref: "Proposal" }],
+    projectIds: [{ type: Schema.Types.ObjectId, ref: "Requirement" }],
+
     lastMessage: { type: String },
     lastMessageAt: { type: Date },
+
     unreadCount: { type: Map, of: Number, default: {} },
     isActive: { type: Boolean, default: true },
   },
-  { timestamps: true },
+  { timestamps: true }
 )
+
+ConversationSchema.index(
+  { participants: 1 },
+  { unique: true }
+)
+
 
 MessageSchema.index({ conversationId: 1, createdAt: -1 })
 MessageSchema.index({ senderId: 1 })
 MessageSchema.index({ receiverId: 1 })
+
 
 ConversationSchema.index({ participants: 1 })
 ConversationSchema.index({ lastMessageAt: -1 })
@@ -75,3 +85,4 @@ ConversationSchema.index({ lastMessageAt: -1 })
 export const Message: Model<IMessage> = mongoose.models.Message || mongoose.model<IMessage>("Message", MessageSchema)
 export const Conversation: Model<IConversation> =
   mongoose.models.Conversation || mongoose.model<IConversation>("Conversation", ConversationSchema)
+ 

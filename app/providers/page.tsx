@@ -23,7 +23,7 @@ import { FaLocationDot } from "react-icons/fa6";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import { authFetch } from "@/lib/auth-fetch";
 export default function ProvidersPage() {
   const providers = [
     {
@@ -171,7 +171,7 @@ export default function ProvidersPage() {
     setLoading(true);
     setFailed(false);
     try {
-      const response = await authFetch("/api/providers");
+      const response = await fetch("/api/providers");
       const data = await response.json();
       console.log("Fetched  Data:::", data);
       setProvidersData(data.providers);
@@ -184,7 +184,7 @@ export default function ProvidersPage() {
         "All",
       ];
       setUniqueLocations(uniqueLocations);
-      const res = await authFetch("/api/service-categories");
+      const res = await fetch("/api/service-categories");
       const servicData = await res.json();
       setServiceCategories(servicData.data || []);
 

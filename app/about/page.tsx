@@ -1,148 +1,53 @@
+"use client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import { headers } from "next/headers"
+import { useEffect, useState } from "react"
 
-async function getAboutData() {
-  let baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
-  // if (!baseUrl) {
-  //   const headersList = headers();
-  //   const host = headersList.get("host") || "localhost:3000";
-  //   const protocol = host.includes("localhost") ? "http" : "https";
-  //   baseUrl = `${protocol}://${host}`;
-  // }
 
-  const REVALIDATE_TIME = Number(process.env.CMS_REVALIDATE_TIME) || 10;
-  const options = { next: { revalidate: REVALIDATE_TIME } };
-
-  try {
-    const res = await fetch(`${baseUrl}/api/cms`, options);
-    const result = await res.json();
-    return result?.success ? result.data : null;
-  } catch (e) {
-    console.error("[AboutPage] CMS Fetch Error:", e);
-    return null;
-  }
-}
 
 export default async function AboutPage() {
-  const cms = await getAboutData();
-  // const stats = [
-  //   { label: "Active Users", value: "50,000+", imageUrl:"/stat1.png" },
-  //   { label: "Projects Completed", value: "25,000+",  imageUrl:"/stat2.png" },
-  //   { label: "Success Rate", value: "98%",  imageUrl:"/stat3.png" },
-  //   { label: "Countries", value: "120+",  imageUrl:"/stat4.png" },
-  // ]
-  // const aboutPageData={
-  //   heroSection:{
-  //     heroImage:'/aboutBanner.png',
-  //     heroTitle:"About Spark",
-  //     description:"We're building the future of B2B service connections, making it easier for businesses to find and work with qualified agencies."
-  //   },
-  //   sectionOne:{
-  //     descriptionOne:"Spark was founded in 2020 when our team experienced firsthand the challenge of finding reliable agencies for business services. We created a platform to connect clients with verified agencies, creating a transparent marketplace where quality work meets fair pricing.",
-  //     descriptionTwo:"Our goal is to make B2B service connections simple by providing qualified agencies and clients with the tools they need to succeed:",
-  //     points:[
-  //       {
-  //         _id:"1",
-  //         description:"Connect with pros collabator better succeed faster",
-  //       },
-  //       {
-  //         _id:"2",
-  //         description:"Connect with pros collabator better succeed faster",
-  //       },
-  //        {
-  //         _id:"3",
-  //         description:"Connect with pros collabator better succeed faster",
-  //       }
-  //     ],
-  //     imageUrl:"/aboutSectionOne.png"
-  //   },
-  //   sectionTwo:{
-  //     ourVision:{
-  //       imageUrl:"/ourVission.png",
-  //       title:"Our Vission",
-  //       description:" At Spark, we believe that every business deserves access to high-quality services that help them grow and succeed. Our platform connects clients with verified agencies, creating a transparent marketplace where quality work meets fair pricing."
-  //     },
-  //     ourMission:{
-  //       imageUrl:"/ourMission.png",
-  //       title:"Our Misssion",
-  //       description:" At Spark, we believe that every business deserves access to high-quality services that help them grow and succeed. Our platform connects clients with verified agencies, creating a transparent marketplace where quality work meets fair pricing."
-  //     }
-  //   },
-  //   sectionThree:{
-  //      title:"Our Proffessional Team",
-  //      description:"Meet the team behind the agency success",
-  //      teamMembers:[
-  //       {
-  //         _id:1,
-  //         name:"Rahul",
-  //         role:"CEO & Founder",
-  //         imageUrl:"/team1.png"
-  //       },
-  //       {
-  //         _id:2,
-  //         name:"Rahul",
-  //         role:"CEO & Founder",
-  //         imageUrl:"/team2.png"
-  //       },
-  //       {
-  //         _id:3,
-  //         name:"Rahul",
-  //         role:"CEO & Founder",
-  //         imageUrl:"/team3.png"
-  //       },
-  //      ]
-  //   },
-  //   valuesSection:{
-  //     title:"Our Values",
-  //     description:"Collabrate and Succeed",
-  //     values:[
-  //       {
-  //         _id:"1",
-  //         imageUrl:"/value1.png",
-  //         title:"Trancpearncy",
-  //         description:"Clear pricing, detailed proposal and honest reviews to create the trust between all parties"
-  //       },
-  //       {
-  //         _id:"2",
-  //         imageUrl:"/value2.png",
-  //         title:"Trancpearncy",
-  //         description:"Clear pricing, detailed proposal and honest reviews to create the trust between all parties"
-  //       },
-  //       {
-  //         _id:"3",
-  //         imageUrl:"/value3.png",
-  //         title:"Trancpearncy",
-  //         description:"Clear pricing, detailed proposal and honest reviews to create the trust between all parties"
-  //       },
-  //       {
-  //         _id:"4",
-  //         imageUrl:"/value4.png",
-  //         title:"Trancpearncy",
-  //         description:"Clear pricing, detailed proposal and honest reviews to create the trust between all parties"
-  //       },
-  //     ]
-  //   }
-  // }
-  // const team = [
-  //   {
-  //     name: "Sarah Chen",
-  //     role: "CEO & Founder",
-  //     bio: "Former VP of Engineering at TechCorp with 15 years of experience building scalable platforms.",
-  //   },
-  //   {
-  //     name: "Marcus Rodriguez",
-  //     role: "CTO",
-  //     bio: "Full-stack architect passionate about connecting businesses with the right talent.",
-  //   },
-  //   {
-  //     name: "Emily Watson",
-  //     role: "Head of Operations",
-  //     bio: "Operations expert focused on creating seamless experiences for all platform users.",
-  //   },
-  // ]
+  const [resLoading, setResLoading] = useState(false);
+  const [cms, setCms] = useState<any>(null);
 
+  async function getAboutData() {
+    let baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+
+    const REVALIDATE_TIME = Number(process.env.CMS_REVALIDATE_TIME) || 10;
+    const options = { next: { revalidate: REVALIDATE_TIME } };
+
+    try {
+      setResLoading(true);
+
+      const res = await fetch(`/api/cms`, options);
+      const result = await res.json();
+
+      return result?.success ? result.data : null;
+    } catch (e) {
+      console.error("[AboutPage] CMS Fetch Error:", e);
+      return null;
+    } finally {
+      setResLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    async function fetchData() {
+      const data = await getAboutData();
+      setCms(data);
+    }
+
+    fetchData();
+  }, []);
+
+  if (resLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
   return (
     <div className="bg-background">
        {/* Hero Section */}

@@ -109,7 +109,7 @@ export function PostRequirementForm({ onSubmit,sendingStatus}: PostRequirementFo
               required
             />
           </div>
-
+          {/*categories */}
           <div className="space-y-2">
             <Label htmlFor="category" className="text-[#98A0B4] text-[14px] font-normal">Category</Label>
            <Select

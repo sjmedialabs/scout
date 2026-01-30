@@ -70,14 +70,14 @@ const menuItems: MenuItem[] = [
     ],
   },
 
-  {
-    id: "marketing",
-    label: "MARKETING",
-    icon: Megaphone,
-    children: [
-      { id: "lead-generation", label: "Lead Management", icon: Download, path: "/agency/dashboard/marketing/lead-generation" },
-    ],
-  },
+  // {
+  //   id: "marketing",
+  //   label: "MARKETING",
+  //   icon: Megaphone,
+  //   children: [
+  //     { id: "lead-generation", label: "Lead Management", icon: Download, path: "/agency/dashboard/marketing/lead-generation" },
+  //   ],
+  // },
 
   {
     id: "account-settings",
@@ -85,6 +85,7 @@ const menuItems: MenuItem[] = [
     icon: Settings,
     children: [
       { id: "billing-subscription", label: "Billing & Subscription", icon: CreditCard, path: "/agency/dashboard/account/billing" },
+      { id: "subscription", label: "Subscription", icon:Briefcase, path: "/agency/dashboard/account/subscriptions" },
       { id: "notifications", label: "Notifications", icon: Bell, path: "/agency/dashboard/account/notifications" },
     ],
   },

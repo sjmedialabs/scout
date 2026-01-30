@@ -31,7 +31,7 @@ export default function ContactPage() {
 
   useEffect(() => {
     const fetchCMS = async () => {
-      const res = await authFetch("/api/cms");
+      const res = await fetch("/api/cms");
       const data = await res.json();
       setCms(data);
     };
@@ -58,7 +58,7 @@ export default function ContactPage() {
     setLoading(true);
 
     try {
-      const res = await authFetch("/api/contact", {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -140,7 +140,7 @@ export default function ContactPage() {
             </p>
             <button
               onClick={() => router.push("/register")}
-              className="mt-3 rounded-full bg-orangeButton px-6 py-2 text-white text-sm"
+              className="mt-3 cursor-pointer rounded-full bg-orangeButton px-6 py-2 text-white text-sm"
             >
               Get Listed
             </button>
@@ -223,7 +223,7 @@ export default function ContactPage() {
 
             <div className="mt-0 leading-0">
               <label className="text-xs font-medium">
-                Select Country<span className="text-red-500">*</span>
+                Country Name<span className="text-red-500">*</span>
               </label>
               <input
                 placeholder="Select"
@@ -260,7 +260,7 @@ export default function ContactPage() {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="mt-0 max-w-[190px] rounded-full bg-orangeButton px-6 py-3 text-white text-[10px]"
+              className="mt-0 max-w-[190px]  cursor-pointer rounded-full bg-orangeButton px-6 py-3 text-white text-[10px]"
             >
               {loading ? "Submitting..." : "Submit Request"}
             </button>

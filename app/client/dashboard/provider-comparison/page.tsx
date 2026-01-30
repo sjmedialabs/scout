@@ -674,7 +674,7 @@ const ProviderComparisonPage = () => {
                         Willing to Refer
                       </span>
                       <span className="font-bold text-[#6B6B6B] text-md">
-                        {(proposal.agency.willingToReferRating / 5) * 100 || 0}{" "}
+                        {Math.round((proposal.agency.willingToReferRating / 5) * 100 )|| 0}{" "}
                         %
                       </span>
                     </div>
@@ -691,9 +691,9 @@ const ProviderComparisonPage = () => {
 
                 {/* Key Strengths */}
                 <div className="space-y-2 bg-[#fffff] p-6">
-                  <h4 className="text-[#F54A0C] font-bold text-lg">
+                  {/* <h4 className="text-[#F54A0C] font-bold text-lg">
                     Key Strengths
-                  </h4>
+                  </h4> */}
                   <div className="flex flex-wrap gap-2">
                     {/* <Badge variant="secondary" className="bg-[#1C96F4] rounded-full text-xs my-custom-class min-h-[40px] min-w-[100px] text-[#fff]">Fast Delivery</Badge>
                         <Badge variant="secondary" className="bg-[#1C96F4] rounded-full text-xs my-custom-class min-h-[40px] min-w-[100px] text-[#fff]">Great Communication</Badge>

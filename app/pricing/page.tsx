@@ -41,7 +41,7 @@ export default function PricingPage() {
       setLoading(true);
       setFailed(false);
       try {
-        const res = await authFetch("/api/subscription");
+        const res = await fetch("/api/subscription");
 
         if (res.ok) {
           const data: CmsPlan[] = await res.json();

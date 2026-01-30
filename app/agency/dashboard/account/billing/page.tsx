@@ -4,12 +4,25 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Download } from "lucide-react"
-
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/auth-context"
+import { useState,useEffect } from "react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { ImageUpload } from "@/components/ui/image-upload"
 
 
 const billingContact = {
   name: "Jhon Williams",
-  email: "Jhon@gmail.com",
+  email: "Jhon@gmail.com", 
   altEmail: "billing@gmail.com",
   phone: "+91-1234567890",
   avatar:
@@ -40,6 +53,139 @@ const billingHistory = [
 
 
 export default function BillingPage() {
+  const router=useRouter();
+   const { user, loading } = useAuth()
+
+   const[resLoading,setResLoading]=useState(false);
+   const[failed,setFailed]=useState(false);
+
+   const[userDetails,setUserDetails]=useState({});
+   const[subscriptionDetails,setSubscriptionDetails]=useState({});
+
+   const[formData,setFormData]=useState({
+    name:"",
+    phone:"",
+    avtar:""
+   })
+   const[showModel,setShowModel]=useState(false)
+   const[errorStatus,setErrorStatus]=useState({
+    status:"success",
+    msg:""
+   })
+   const[sending,setSending]=useState(false);
+
+   const loadData=async()=>{
+      setResLoading(true);
+      setFailed(false);
+      try{
+        const res=await fetch(`/api/users/${user?.id}`)
+        if(!res.ok) throw new Error()
+        const data =await res.json();
+        console.log("Fetched User Detaisl in Billing Cycyle:::",data);
+        setUserDetails(data.user);
+        setSubscriptionDetails(data.subscription);
+        setFormData({name:data.user?.name || "",
+          phone:data.user?.phone || "",
+          avtar:data.user?.avatar || ""
+        })
+      }catch(error){
+        console.log("Failed to fetch the userdetails::",error)
+        setFailed(true)
+      }finally{
+        setResLoading(false)
+      }
+   }
+   useEffect(() => {
+       if (!loading && (!user || user.role !== "agency")) {
+         router.push("/login")
+       }
+       if(user && user.role === "agency"){
+          loadData()
+       }
+     }, [user, loading, router])
+
+    const handleSubmit = async (e) => {
+      e.preventDefault()
+      setSending(false)
+
+      setErrorStatus({ status: "success", msg: "" })
+
+      //Name validation
+      if (!formData.name.trim()) {
+        setErrorStatus({
+          status: "failed",
+          msg: "Name is required",
+        })
+        return
+      }
+
+      // Mobile validation
+      if (!formData.phone.trim()) {
+        setErrorStatus({
+          status: "failed",
+          msg: "Mobile number is required",
+        })
+        return
+      }
+
+      const phoneRegex = /^[6-9]\d{9}$/
+      if (!phoneRegex.test(formData.phone)) {
+        setErrorStatus({
+          status: "failed",
+          msg: "Enter a valid 10-digit mobile number",
+        })
+        return
+      }
+
+      try {
+        const response = await fetch(`/api/users/${user?.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name.trim(),
+            phone: formData.phone.trim(),
+            avatar: formData.avtar,
+          }),
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          setErrorStatus({
+            status: "failed",
+            msg: data?.message || "Update failed",
+          })
+          return
+        }
+
+        // Success
+        setErrorStatus({
+          status: "success",
+          msg: "Profile updated successfully",
+        })
+
+        setShowModel(false)
+        await loadData();
+      } catch (error) {
+        setErrorStatus({
+          status: "failed",
+          msg: "Something went wrong. Please try again.",
+        })
+      }finally{
+        setSending(false)
+      }
+}
+
+   if(resLoading || loading){
+        return(
+             <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+        )
+    }
+    
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -65,27 +211,27 @@ export default function BillingPage() {
                 Who should we contact if necessary?
               </p>
             </div>
-            <Button className="rounded-xl" variant="outline" size="sm">
+            <Button className="rounded-xl" variant="outline" size="sm" onClick={()=>setShowModel(true)}>
               Update/Edit
             </Button>
           </CardHeader>
 
           <CardContent className="flex gap-4 items-center">
             <img
-              src={billingContact.avatar}
+              src={userDetails?.avatar || "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200"}
               alt="avatar"
               className="h-20 w-20 rounded-full object-cover"
             />
             <div className="space-y-1">
-              <p className="font-semibold">{billingContact.name}</p>
+              <p className="font-semibold">{userDetails.name}</p>
               <p className="text-sm text-gray-500">
-                Email: {billingContact.email}
+                Email: {userDetails.email}
               </p>
-              <p className="text-sm text-gray-500">
+              {/* <p className="text-sm text-gray-500">
                 Alt : {billingContact.altEmail}
-              </p>
+              </p> */}
               <p className="text-sm text-gray-500">
-                {billingContact.phone}
+                {userDetails?.phone || "N/A"}
               </p>
             </div>
           </CardContent>
@@ -97,19 +243,19 @@ export default function BillingPage() {
             <CardHeader className="flex flex-row items-center justify-between">
               <div className="h-10">
                 <CardTitle className="text-orangeButton h-6 my-custom-class text-lg">
-                  Plan: {planDetails.name}
+                  Plan: {subscriptionDetails?.title}
                 </CardTitle>
                 <p className="text-xs text-gray-500 leading-tight">
                   Take your portfolio to next level with more features
                 </p>
               </div>
-              <Button className="rounded-xl" variant="outline" size="sm">
+              <Button className="rounded-xl" variant="outline" size="sm" onClick={()=>router.push("/agency/dashboard/account/subscriptions")}>
                 Upgrade Plan
               </Button>
             </CardHeader>
             <CardContent>
               <p className="text-blue-600 font-medium">
-                {planDetails.price}
+                {`${subscriptionDetails?.price || 0} / ${subscriptionDetails?.billingCycle || "Monthly"}`}
               </p>
             </CardContent>
           </Card>
@@ -196,6 +342,83 @@ export default function BillingPage() {
           </CardContent>
         </Card>
       </div>
+      
+      {/*Edit Modal */}
+
+       {showModel && (
+                    <Dialog open={showModel} onOpenChange={setShowModel}>
+                     <DialogContent className=" md:max-w-xl rounded-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl font-bold text-[#F4561C]">
+                      Update Your Personal Details 
+                    </DialogTitle>
+                  </DialogHeader>
+      
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                             {/*Avtar Image*/}
+                             <div className="space-y-2">
+                                <ImageUpload
+                                label="Profile Image"
+                                value={formData.avtar}
+                                onChange={(value) => setFormData({ ...formData, avtar: value })}
+                                description="Upload your Profile image (PNG, JPG) or provide a URL"
+                                previewClassName="w-24 h-24"
+                                />
+                             </div>
+
+                             {/*name */}
+
+                              <div className="space-y-2">
+                                <Label htmlFor="nameUser" className="text-[#000]  text-[14px] font-bold">Name</Label>
+                                <Input
+                                  id="nameUser" 
+                                  value={formData.name}
+                                  className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
+                                
+                                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                                  placeholder="e.g.,John Doe"
+                                  required
+                                />
+                              </div>
+
+                              {/*phone */}
+                              <div className="space-y-2">
+                                  <Label htmlFor="phone" className="text-[#000]  text-[14px] font-bold">Phone</Label>
+                                  <Input
+                                    id="phone"
+                                    
+                                    value={formData.phone}
+                                    className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
+                                    onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
+                                    placeholder="8765907656"
+                                    
+                                  />
+                                </div>
+                                {
+                                  errorStatus.status!=="success" &&(
+                                    <p className="text-sm text-red-400">{errorStatus.msg}</p>
+                                  )
+                                }
+                    
+                              <div className="flex gap-4 pt-4">
+                                <DialogClose>
+                                   <Button  className=" bg-[#000] hover:bg-[#000] active:bg-[#000] rounded-full">
+                                    Cancle
+                                  </Button>
+                                </DialogClose>
+                                <Button type="submit" 
+                                className="  bg-[#2C34A1] hover:bg-[#2C34A1] active:bg-[#2C34A1] rounded-full" 
+                                disabled={sending}>
+                                  {`${sending?"Updating":"Update"}`}
+                                </Button>
+                                
+                                
+                              </div>
+                            </form>
+                          </DialogContent>
+                        </Dialog>
+                     
+        )}
     </div>
   )
 }

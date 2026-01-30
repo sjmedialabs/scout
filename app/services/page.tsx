@@ -110,7 +110,7 @@ export default function ServicesPage() {
 
   useEffect(() => {
     async function fetchCategories() {
-      const res = await authFetch("/api/service-categories");
+      const res = await fetch("/api/service-categories");
       const data = await res.json();
       if (data.success) {
         const mainCats = data.data.filter((c: any) => c.parent === null);
@@ -123,7 +123,7 @@ export default function ServicesPage() {
 
   useEffect(() => {
     async function fetchCategories() {
-      const res = await authFetch("/api/cms");
+      const res = await fetch("/api/cms");
       const data = await res.json();
       setCms(data);
     }

@@ -42,11 +42,9 @@ export default function SubmitProposalPage() {
         setFailed(false);
         setRequirement(data.requirements[0]);
         console.log("proposals data:::::", proposalData.proposals);
-        const proposalsCount = (proposalData.proposals || []).filter(
-          (eachItem) =>
-            id === eachItem.requirement.id && eachItem.agencyId === user?.id,
-        ).length;
-        setShowForm(proposalsCount === 0);
+       const proposalsCount=(proposalData.proposals || []).filter((eachItem)=>id===eachItem.requirement.id && eachItem.agencyId===user?.id).length
+       console.log("The propossaal count is::::",proposalsCount)
+        setShowForm(proposalsCount===0)
 
         // setProposals(proposalData.proposals.filter((eachItem)=>id===eachItem.requirement.id && eachItem.agencyId===user?.id))
       }

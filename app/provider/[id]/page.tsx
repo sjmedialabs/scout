@@ -34,6 +34,7 @@ import {
 import { mockProviders } from "@/lib/mock-data";
 import RatingStars from "@/components/rating-star";
 import { useEffect, useState } from "react";
+import { authFetch } from "@/lib/auth-fetch";
 
 export default function ProviderProfilePage({
   params,
@@ -51,6 +52,7 @@ export default function ProviderProfilePage({
   const [filteredReviews, setFilteredReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
+  
   useEffect(() => {
     loadData();
   }, []);
@@ -58,9 +60,9 @@ export default function ProviderProfilePage({
     setLoading(true);
     setFailed(false);
     try {
-      const response = await authFetch(`/api/providers/${id}`);
+      const response = await fetch(`/api/providers/${id}`);
       const data = await response.json();
-      const reviewsResponse = await authFetch(
+      const reviewsResponse = await fetch(
         `/api/reviews/${data.provider.userId}`,
       );
       const reviewsdata = await reviewsResponse.json();

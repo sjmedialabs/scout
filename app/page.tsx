@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState,useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -75,38 +75,42 @@ const colorMap: Record<string, { bg: string; hover: string; text: string }> = {
   },
 };
 
+
+
+export default async function HomePage() {
+const [data, setData] = useState({
+  cms: null,
+  providers: [],
+  projects: [],
+  categories: [],
+});
+
+const [resLoading, setResLoading] = useState(false);
+
 async function getData() {
-  // 1. Dynamically determine the base URL to avoid port mismatches
   let baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
-  // if (!baseUrl) {
-  //   const headersList = headers();
-  //   const host = headersList.get("host") || "localhost:3000";
-  //   const protocol = host.includes("localhost") ? "http" : "https";
-  //   baseUrl = `${protocol}://${host}`;
-  // }
-  // const options: RequestInit = { cache: "no-store" }; for instant changes
-  // 2. Use ISR with revalidation (e.g., every hour)
+
   const REVALIDATE_TIME = Number(process.env.CMS_REVALIDATE_TIME) || 10;
   const options = { next: { revalidate: REVALIDATE_TIME } };
 
   try {
-    console.log(`[HomePage] Fetching data from: ${baseUrl}`);
+    setResLoading(true);
+
     const [cmsRes, providersRes, projectsRes, categoriesRes] =
       await Promise.all([
-        authFetch(`${baseUrl}/api/cms`, options),
-        authFetch(`${baseUrl}/api/providers`, options),
-        authFetch(`${baseUrl}/api/requirements`, options),
-        authFetch(`${baseUrl}/api/service-categories`, options),
+        fetch(`/api/cms`, options),
+        fetch(`/api/providers`, options),
+        fetch(`/api/requirements`, options),
+        fetch(`/api/service-categories`, options),
       ]);
 
     const cms = cmsRes.ok ? (await cmsRes.json()).data : null;
+
     const providers = providersRes.ok
       ? (await providersRes.json()).providers?.slice(0, 3)
       : [];
-    console.log("Fetched Providers::::::", providers);
 
     const projectsData = projectsRes.ok ? await projectsRes.json() : {};
-    // Try finding the array in 'requirements' OR 'data'
     const projects = (projectsData.requirements || projectsData.data || [])
       .filter((eachItem: any) => eachItem.status.toLowerCase() === "open")
       .slice(0, 3);
@@ -117,14 +121,31 @@ async function getData() {
 
     return { cms, providers, projects, categories };
   } catch (error) {
-    // This log will appear in your VS Code TERMINAL, not the browser
     console.error("[HomePage] Data Fetch Error:", error);
     return { cms: null, providers: [], projects: [], categories: [] };
+  } finally {
+    setResLoading(false);
   }
 }
 
-export default async function HomePage() {
-  const { cms, providers, projects, categories } = await getData();
+useEffect(() => {
+  async function fetchData() {
+    const res = await getData();
+    setData(res);
+  }
+
+  fetchData();
+}, []);
+
+if (resLoading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>
+  );
+}
+
+const { cms, providers, projects, categories } = data;
   return (
     <div className="bg-background">
       {/* Hero Section */}
@@ -451,7 +472,7 @@ export default async function HomePage() {
                   </div>
                   <div className="pb-10 px-8 flex flex-col flex-1">
                     <p className="text-sm text-gray-500 mb-4 line-clamp-2">
-                      {provider.description}
+                      {provider.description.slice(0,30)}
                     </p>
                     <div className="flex flex-col h-full gap-4">
                       {/* SERVICES BADGES */}
