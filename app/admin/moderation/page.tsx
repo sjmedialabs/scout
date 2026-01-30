@@ -17,7 +17,7 @@ interface ReportItem {
   id: string;
   type: string;
   reason: string;
-  status: "pending" | "resolved" | "dismissed";
+  status: "all" | "pending" | "resolved" | "dismissed";
   createdAt: string;
   reporter: string;
   itemId: string;
@@ -26,6 +26,11 @@ interface ReportItem {
 export default function ModerationPage() {
   const [reports, setReports] = useState<ReportItem[]>(mockReportedContent);
   const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("All types");
+  const [statusFilter, setStatusFilter] = useState("All");
+
+  // Get unique types from the reports data
+  const uniqueTypes = Array.from(new Set(reports.map(report => report.type)));
 
   const [openModal, setOpenModal] = useState(false);
 const [selectedReport, setSelectedReport] = useState<ReportItem | null>(null);
@@ -62,12 +67,27 @@ const [selectedReport, setSelectedReport] = useState<ReportItem | null>(null);
     );
   };
 
-  const filteredReports = reports.filter(
-    (r) =>
+  const filteredReports = reports.filter((r) => {
+    const matchesSearch =
       r.reason.toLowerCase().includes(search.toLowerCase()) ||
       r.type.toLowerCase().includes(search.toLowerCase()) ||
-      r.reporter.toLowerCase().includes(search.toLowerCase()),
-  );
+      r.reporter?.toLowerCase().includes(search.toLowerCase());
+
+    const matchesType = typeFilter === "All types" || r.type === typeFilter.toLowerCase();
+
+    const matchesStatus = statusFilter === "All" ? true :
+                         statusFilter === "Pending" ? r.status === "pending" :
+                         statusFilter === "Resolved" ? r.status === "resolved" :
+                         statusFilter === "Dismissed" ? r.status === "dismissed" : true;
+
+    return matchesSearch && matchesType && matchesStatus;
+  });
+
+  const clearFilters = () => {
+    setSearch("");
+    setTypeFilter("All types");
+    setStatusFilter("All");
+  };
 
  
   return (
@@ -95,21 +115,36 @@ const [selectedReport, setSelectedReport] = useState<ReportItem | null>(null);
         />
       </div>
 
-      {/* Type Filter (UI only) */}
-      <select className="w-full lg:w-1/5 border rounded-lg px-3 py-2 text-sm">
+      {/* Type Filter */}
+      <select
+        className="w-full lg:w-1/5 border rounded-lg px-3 py-2 text-sm pr-2"
+        value={typeFilter}
+        onChange={(e) => setTypeFilter(e.target.value)}
+      >
         <option>All types</option>
-        <option>Review</option>
-        <option>Proposal</option>
+        {uniqueTypes.map((type) => (
+          <option key={type} value={type}>
+            {type.charAt(0).toUpperCase() + type.slice(1)}
+          </option>
+        ))}
       </select>
 
-      {/* Status Filter (UI only) */}
-      <select className="w-full lg:w-1/5 border rounded-lg px-3 py-2 text-sm">
+      {/* Status Filter */}
+      <select
+        className="w-full lg:w-1/5 border rounded-lg px-3 py-2 text-sm"
+        value={statusFilter}
+        onChange={(e) => setStatusFilter(e.target.value)}
+      >
+        <option>All</option>
         <option>Pending</option>
         <option>Resolved</option>
         <option>Dismissed</option>
       </select>
 
-      <Button className="lg:ml-auto bg-black text-white rounded-full px-6">
+      <Button
+        className="lg:ml-auto bg-black text-white rounded-full px-6"
+        onClick={clearFilters}
+      >
         Clear filter
       </Button>
     </div>
@@ -158,8 +193,18 @@ const [selectedReport, setSelectedReport] = useState<ReportItem | null>(null);
 
               {/* Status */}
               <td className="px-6 py-4">
-                <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-yellow-100 text-yellow-700">
-                  Pending
+                <span
+                  className={`inline-flex items-center px-3 py-1 rounded-md text-xs font-medium ${
+                    report.status === "pending"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : report.status === "resolved"
+                      ? "bg-green-100 text-green-700"
+                      : report.status === "dismissed"
+                      ? "bg-red-100 text-red-700"
+                      : "bg-gray-100 text-gray-700"
+                  }`}
+                >
+                  {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
                 </span>
               </td>
 
