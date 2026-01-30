@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { AlertTriangle, Search, Check, X } from "lucide-react";
+import { AlertTriangle, Search, Check, X,Calendar, Eye} from "lucide-react";
 
 import { mockReportedContent } from "@/lib/mock-data";
 
@@ -59,110 +59,122 @@ export default function ModerationPage() {
     (r) =>
       r.reason.toLowerCase().includes(search.toLowerCase()) ||
       r.type.toLowerCase().includes(search.toLowerCase()) ||
-      r.reporter.toLowerCase().includes(search.toLowerCase()),
+      r.reporter?.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-4">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Content Moderation</h1>
-        <p className="text-gray-500">
-          Review and take action on reported content.
+        <h1 className="text-3xl font-bold text-orangeButton my-custom-class">
+          Reported Content
+        </h1>
+        <p className="text-gray-500 my-custom-class">
+          Platform management and oversight
         </p>
       </div>
 
       {/* Search Bar */}
       <div className="bg-white p-4 rounded-xl shadow border flex gap-3 items-center">
-        <Search className="w-5 h-5 text-gray-500" />
+        <Search className="w-4 h-4 ml-2 text-gray-500 absolute" />
         <Input
           placeholder="Search reports by type, reason, reporter..."
-          className="w-full"
+          className="w-full pl-8 placeholder:pl-2 placeholder:text-500 border shadow relative placeholder:text-xs"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
-      {/* Reports List */}
-      <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-6">
-        <h2 className="text-xl font-semibold flex gap-2 items-center">
-          <AlertTriangle className="w-6 h-6 text-orange-500" />
-          Reported Items
-        </h2>
+      {/* Reports Table */}
+      <div className="bg-white rounded-2xl border shadow-lg overflow-x-auto">
+        <table className="w-full min-w-[900px] text-sm">
+          <thead className="border-b border-red-100">
+            <tr className="text-left">
+              <th className="px-6 py-4 font-semibold text-black my-custom-class">Type</th>
+              <th className="px-6 py-4 font-semibold text-black my-custom-class">Reason</th>
+              <th className="px-6 py-4 font-semibold text-black my-custom-class">Status</th>
+              <th className="px-6 py-4 font-semibold text-black my-custom-class">
+                Reported Date
+              </th>
+              <th className="px-6 py-4 font-semibold text-black text-center my-custom-class">
+                Actions
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {filteredReports.map((report) => (
+              <tr
+                key={report.id}
+                className="border-b border-red-100 hover:bg-gray-50 transition"
+              >
+                {/* Type */}
+                <td className="px-6 py-4">
+                  <Badge className="bg-[#dbd9f0] text-[#4a37d6] my-custom-class rounded-md px-3 py-1">
+                    {report.type}
+                  </Badge>
+                </td>
+
+                {/* Reason */}
+                <td className="px-6 py-4">
+                  <p className="font-semibold text-black my-custom-class">
+                    {report.reason}
+                  </p>
+                  <p className="text-sm text-gray-500 my-custom-class">
+                    Reported by {report.reporter}
+                  </p>
+                </td>
+
+                {/* Status */}
+                <td className="px-6 py-4">
+                  <span className="inline-flex px-4 py-1 my-custom-class text-sm font-medium bg-yellow-200 text-yellow-800 rounded-sm">
+                    Pending
+                  </span>
+                </td>
+
+                {/* Date */}
+                <td className="px-6 py-4 text-black my-custom-class flex gap-2 items-center">
+                  <Calendar className="w-4 h-4 text-gray-900" />
+                  <span>
+                  {new Date(report.createdAt).toLocaleDateString("en-IN")}
+                  </span>
+                </td>
+
+                {/* Actions */}
+                <td className="px-6 py-4">
+                  <div className="flex justify-center gap-6 text-black">
+                    <button>
+                      <Eye className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() =>
+                        resolveReport(report.id, "approve")
+                      }
+                      className="hover:text-green-600"
+                    >
+                      <Check className="w-5 h-5" />
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        resolveReport(report.id, "reject")
+                      }
+                      className="hover:text-red-600"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
         {filteredReports.length === 0 && (
-          <p className="text-center py-6 text-gray-500">No reports found.</p>
+          <p className="text-center py-8 text-gray-500">
+            No reports found.
+          </p>
         )}
-
-        {filteredReports.map((report) => (
-          <div
-            key={report.id}
-            className="p-5 border rounded-xl hover:shadow transition bg-white flex flex-col md:flex-row justify-between"
-          >
-            {/* Left Section */}
-            <div>
-              <div className="flex items-center gap-4">
-                <Badge
-                  className={
-                    report.status === "pending"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : report.status === "resolved"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-100 text-gray-700"
-                  }
-                >
-                  {report.status.toUpperCase()}
-                </Badge>
-              </div>
-
-              <p className="text-gray-700 mt-3">
-                <span className="font-semibold">Type:</span> {report.type}
-              </p>
-
-              <p className="text-gray-700">
-                <span className="font-semibold">Reason:</span> {report.reason}
-              </p>
-
-              <p className="text-gray-700">
-                <span className="font-semibold">Reporter:</span>{" "}
-                {report.reporter}
-              </p>
-
-              <p className="text-gray-500 text-sm mt-2">
-                Reported on{" "}
-                {new Date(report.createdAt).toLocaleDateString("en-IN")}
-              </p>
-            </div>
-
-            {/* Right Actions */}
-            <div className="flex gap-3 mt-4 md:mt-0 self-end md:self-center">
-              {report.status === "pending" ? (
-                <>
-                  <Button
-                    className="bg-green-600 hover:bg-green-700 flex items-center gap-2"
-                    onClick={() => resolveReport(report.id, "approve")}
-                  >
-                    <Check className="w-4 h-4" />
-                    Approve
-                  </Button>
-
-                  <Button
-                    variant="destructive"
-                    className="flex items-center gap-2"
-                    onClick={() => resolveReport(report.id, "reject")}
-                  >
-                    <X className="w-4 h-4" />
-                    Reject
-                  </Button>
-                </>
-              ) : (
-                <Button variant="outline" disabled>
-                  Action Completed
-                </Button>
-              )}
-            </div>
-          </div>
-        ))}
       </div>
     </div>
   );
