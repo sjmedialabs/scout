@@ -92,6 +92,14 @@ import RatingStars from "@/components/rating-star";
 import { Linden_Hill } from "next/font/google";
 import { useSearchParams } from "next/navigation";
 import { authFetch } from "@/lib/auth-fetch";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 interface ProjectProposal {
   id: string;
@@ -284,6 +292,16 @@ const ProposalPage = () => {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
     null,
   );
+  // negotation modal and message
+    const[showNegotationModal,setShowNegotationModal]=useState(false);
+    const[negotationMessage,setNegotationMessage]=useState("");
+    const[sending,setSending]=useState(false);
+    const[conversationId,setConversationId]=useState("");
+    const[selectedProposalId,setSelectedProposalId]=useState('')
+    const[errorMsg,setErrorMsg]=useState({
+      status:"success",
+      msg:""
+    })
 
   const LoadData = async (userId: string) => {
     setResponseLoading(true);
@@ -363,6 +381,36 @@ const ProposalPage = () => {
         await response.json,
         proposalId,
       );
+      if(!response.ok) throw new Error()
+      
+      //create a conversation between the agency and client and send the message
+       //chat concersation start api
+            const conRes=await authFetch(`/api/chat/conversation`,{
+              method:"POST",
+              headers:{
+                "Content-Type":"application/json"
+              },
+              body:JSON.stringify({proposalId})
+  
+            })
+            const convData=await conRes.json();
+
+            const negotatiteProposal=(proposals || []).find((eachItem:any)=>eachItem.id===proposalId)
+            
+            const messRes=await authFetch(`/api/chat/message`,{
+              method:"POST",
+              headers:{
+                "Content-Type":"application/json"
+              },
+              body:JSON.stringify({
+                conversationId:convData.conversationId,
+                senderType:"SEEKER",
+                receiverId:negotatiteProposal?.agency?.userId,
+                content:`Congratulations your proposal is accepted for the ${negotatiteProposal?.requirement.title} and project is allocated to you please stay in touch`,
+                messageType:"TEXT"
+
+              })})
+
       setProposals((prev) =>
         prev.map((p) =>
           p.id === proposalId ? { ...p, status: "accepted" as const } : p,
@@ -438,6 +486,79 @@ const ProposalPage = () => {
     setViewingPortfolio(false);
     setActiveSection("company-profile");
   };
+  const handlNegotation=async(proposalId:string)=>{
+         console.log("Entered to accept fun:::",proposalId)
+        // const negotatiteProposal=proposals.find((eachItem:any)=>eachItem.id===proposalId)
+         try{
+           const  response=await authFetch(`/api/proposals/${proposalId}`,{
+            method:"PUT",
+            body:JSON.stringify({status:"negotation"})})
+
+            console.log("negotation action response::::",await response.json,proposalId)
+            setProposals((prev) => prev.map((p) => (p.id === proposalId ? { ...p, status: "negotation" as const } : p)))
+            //chat concersation start api
+            const conRes=await authFetch(`/api/chat/conversation`,{
+              method:"POST",
+              headers:{
+                "Content-Type":"application/json"
+              },
+              body:JSON.stringify({proposalId})
+   
+            })
+            const convData=await conRes.json();
+            setConversationId(convData.conversationId)
+            
+            setSelectedProposalId(proposalId)
+            setShowNegotationModal(true)
+            
+            console.log("Conversation Started")
+        }catch(error){
+          console.log("failed to update the  status",error)
+          alert("Staus failed to shortlist the proposal")
+        }
+      }
+  const handleSendMessage=async()=>{
+    if(!negotationMessage.trim()) {
+      setErrorMsg({
+        status:"failed",
+      msg:"Required"          
+    })
+    }
+      setSending(true);
+      const negotatiteProposal=proposals.find((eachItem:any)=>eachItem.id===selectedProposalId)
+      try{
+          //send message to the agency in the chat
+        const messRes=await authFetch(`/api/chat/message`,{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify({
+            conversationId:conversationId,
+            senderType:"SEEKER",
+            receiverId:negotatiteProposal?.agency?.userId,
+            content:negotationMessage,
+            messageType:"TEXT"
+
+          })
+
+        })
+        if(messRes.ok){
+          setNegotationMessage("");
+          setShowNegotationModal(false);
+
+        }
+      }catch(error){
+          console.log("Failed to send the message")
+          setErrorMsg({
+          status:"failed",
+          msg:"Failed to send the message"
+          })
+      }finally{
+        setSending(false)
+      }
+  }
+    
 
   if (loading || responseLoading) {
     return (
@@ -653,7 +774,7 @@ const ProposalPage = () => {
                                     size="sm"
                                     onClick={() =>
                                       router.push(
-                                        `projects/${proposal.requirement.id}`,
+                                        `proposals/${proposal.id}`,
                                       )
                                     }
                                     className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
@@ -663,7 +784,7 @@ const ProposalPage = () => {
                                   
                                     {/*Shprtlist */}
                                       {
-                                        (proposal.status!=="shortlisted" && proposal.status!=="negotation" && proposal.status!=="accepted") && (
+                                        (proposal.status!=="shortlisted"  && proposal.status!=="accepted" && proposal.status!=="rejected") && (
                                           <Button
                                         variant="outline"
                                         size="sm"
@@ -676,6 +797,21 @@ const ProposalPage = () => {
                                       </Button>
                                         )
                                       }
+                                      {/*negotation */}
+                                        {proposal.status !== "accepted" &&
+                                        proposal.status !== "rejected" && 
+                                        proposal.status!=="shortlisted" &&
+                                        proposal.status!=="negotation" &&
+                                        proposal.status !== "completed" &&(
+                                          <Button
+                                            variant="default"
+                                            size="sm"
+                                            onClick={() => handlNegotation(proposal.id)}
+                                            className="bg-[#F5A30C] rounded-full text-xs font-bold hover:bg-[#F5A30C] active:bg-[#F5A30C]"
+                                          >
+                                            Negotation
+                                          </Button>
+                                        )}
                                       {/*Accept */}
                                       {
                                         (proposal.status!=="accepted" && proposal.status!=="rejected") &&(
@@ -694,6 +830,7 @@ const ProposalPage = () => {
                                       </Button>
                                         )
                                       }
+
                                       {/*Reject */}
                                       {
                                         (proposal.status!=="rejected" &&  proposal.status!=="accepted") && (
@@ -736,6 +873,55 @@ const ProposalPage = () => {
           )}
         </CardContent>
       </Card>
+          {/*Negotaatiion Modal */}
+
+           {showNegotationModal && (
+              <Dialog open={showNegotationModal} onOpenChange={setShowNegotationModal}>
+              <DialogContent className="md:max-w-xl rounded-2xl  flex flex-col p-0">
+
+                {/* ✅ FIXED HEADER */}
+                <DialogHeader className="px-6 py-4 border-b shrink-0">
+                  <DialogTitle className="text-xl font-bold text-[#F4561C]">
+                   Send Message to Agency
+                  </DialogTitle>
+                </DialogHeader>
+
+                {/* ✅ SCROLLABLE FORM FIELDS */}
+              
+                 <div className="mt-3 p-4 w-full">
+                  <p className="text-md text-gray-400">Message</p>
+                  <textarea
+                  value={negotationMessage}
+                  onChange={(e)=>setNegotationMessage(e.target.value)}
+                  className="border-1 border-gray-500 p-3 w-100 rounded-md"
+                  rows={6}
+                  cols={30}
+                  placeholder="Enter Your Message"
+                  >
+
+                  </textarea>
+                  {
+                    errorMsg.status==="failed" &&(
+                      <p className="text-sm text-red-400">{errorMsg.msg}</p>
+
+                    )
+                  }
+                 </div>
+
+                {/* ✅ FIXED FOOTER */}
+                <div className="px-6 py-4 border-t flex gap-5 shrink-0">
+                  <Button type="submit" disabled={sending} onClick={handleSendMessage} className="bg-[#2C34A1] rounded-full">
+                    {sending ? "Sending..." : "Send"}
+                  </Button>
+                  <DialogClose asChild>
+                    <Button className="bg-[#000] rounded-full">Cancel</Button>
+                  </DialogClose>
+                </div>
+
+              </DialogContent>
+            </Dialog>
+
+            )}
     </div>
   );
 };

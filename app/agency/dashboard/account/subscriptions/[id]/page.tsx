@@ -10,6 +10,7 @@ import { useState,useEffect } from "react"
 import { useParams, useSearchParams,useRouter } from "next/navigation"
 import { features } from "process"
 import { useAuth } from "@/contexts/auth-context"
+import { authFetch } from "@/lib/auth-fetch"
 
 
 
@@ -35,6 +36,10 @@ export default function SubscribePage({params}:SubscribePageProps) {
   console.log("Billing:", billing)
 
   const[selectedPlan,setSelectedPlan]=useState();
+  const[userDetails,setUserDetails]=useState({});
+  const[subscriptionDetails,setSubscriptionDetails]=useState({});
+  const[remainingAmount,setRemaianingAMount]=useState(0);
+  const[payableAmount,setPaymableAmount]=useState(0);
 
   const[resLoading,setResLoading]=useState(false);
   const[failed,setFailed]=useState(false);
@@ -42,18 +47,66 @@ export default function SubscribePage({params}:SubscribePageProps) {
   const[showMoreFeatures,setShowMoreFeatures]=useState(false);
   const [paymentRequestStatus,setPaymentRequestStatus]=useState(false)
 
+   //it returns the total amount of the after dedudction the remainng amount
+  const calculateUpgradeAmount=(
+    currentPrice: number,
+    billingCycle: "Monthly" | "Yearly",
+    startDate: string | Date,
+    endDate: string | Date,
+    newPlanPrice: number,
+  )=>{
+    console.log("Entered")
+    const now = new Date()
+    const start = new Date(startDate)
+    const end = new Date(endDate)
+  
+    if (now >= end) {
+      return newPlanPrice // subscription expired
+    }
+  
+    const totalDays =
+      billingCycle === "Yearly" ? 365 : 30
+      
+  
+    const remainingDays = Math.ceil(
+      (end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    )
+    console.log("end time is:::::",end.getTime())
+  
+    const perDayCost = currentPrice / totalDays
+    const unusedAmount = perDayCost * remainingDays
+    setRemaianingAMount(unusedAmount)
+  
+    const payableAmount = Math.max(
+      Math.round(newPlanPrice - unusedAmount),
+      0
+    )
+    setPaymableAmount(payableAmount)
+  
+    return payableAmount
+  }
+  
+
   const  loadData=async()=>{
     setResLoading(true);
     setFailed(false);
     try{
       const response = await fetch(`/api/subscription/${params.id}`);
-      if(!response.ok){
+      //user details which have the subscription ammount to use substract from th intial amount
+      const res=await authFetch(`/api/users/${user?.id}`)
+      if(!response.ok || !res.ok){
         throw new Error('Failed to fetch subscription plan data');
       }else{
         const data = await response.json();
-        console.log("Fetched subscription plan data:", data);
-        setSelectedPlan(data.data);
+         const userDetails =await res.json();
+        console.log("Fetched subscription details:", userDetails);
+        
+         setUserDetails(userDetails.user);
+        setSubscriptionDetails(userDetails.subscription);
+        
+          setSelectedPlan(data.data);
         setFailed(false);
+       
       }
     }catch(error){
       console.error("Error fetching subscription plan data:", error);
@@ -70,6 +123,33 @@ export default function SubscribePage({params}:SubscribePageProps) {
           loadData()
        }
      }, [user, loading, router])
+   useEffect(() => {
+    console.log(subscriptionDetails?.price)
+  if (
+    !subscriptionDetails?.price ||
+    !subscriptionDetails?.billingCycle ||
+    !userDetails?.subscriptionEndDate ||
+    !userDetails?.subscriptionStartDate
+  ) {
+    return
+  }
+console.log("calling")
+  const newPlanPrice =
+    billing === "yearly"
+      ? selectedPlan.pricePerYear
+      : selectedPlan.pricePerMonth
+
+  const payable = calculateUpgradeAmount(
+    subscriptionDetails.price,
+    subscriptionDetails.billingCycle,
+    userDetails.subscriptionStartDate,
+    userDetails.subscriptionEndDate,
+    newPlanPrice
+  )
+
+  console.log("Payable amount:", payable)
+}, [subscriptionDetails, selectedPlan, billing,userDetails])
+
 
   if(resLoading){
      return(
@@ -78,7 +158,8 @@ export default function SubscribePage({params}:SubscribePageProps) {
       </div>
         )
   }
-  console.log("paramas:::::::::::",params)
+  // 
+  console.log("Remaing aamount is:::",remainingAmount,)
   const loadRazorpay = () =>
   new Promise((resolve) => {
     const script = document.createElement("script")
@@ -96,7 +177,7 @@ const handlePayment = async () => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       planId: params.id,
-      amount: billing==="yearly"?selectedPlan?.pricePerYear:selectedPlan?.pricePerMonth|| 0,
+      amount: payableAmount>0?payableAmount:billing==="yearly"?selectedPlan.pricePerYear:selectedPlan.pricePerMonth|| 0,
     }),
   })
 
@@ -138,6 +219,7 @@ const handlePayment = async () => {
 
   new (window as any).Razorpay(options).open()
 }
+
 
 
   // if (!selectedPlan) {
@@ -268,9 +350,21 @@ const handlePayment = async () => {
                 {/* Total*/}
                 <div className="border-t pt-4">
                   <div className="flex items-center justify-between font-extrabold text-zinc-900">
+                    <span>Price Plan</span>
+                    <span>
+                      ${billing==="yearly"?selectedPlan.pricePerYear:selectedPlan.pricePerMonth}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between font-extrabold text-zinc-900">
+                    <span>Previous Plan Amount</span>
+                    <span>
+                      ${remainingAmount || 0}
+                    </span>
+                  </div>
+                   <div className="flex items-center justify-between font-extrabold text-zinc-900">
                     <span>Total</span>
                     <span>
-                      ${billing==="yearly"?selectedPlan.pricePerYear:selectedPlan.pricePerMonth}/{billing==="yearly"?"yearly":"monthly"}
+                      ${payableAmount>0?payableAmount:billing==="yearly"?selectedPlan.pricePerYear:selectedPlan.pricePerMonth}
                     </span>
                   </div>
                   <p className="text-xs text-zinc-5000 mt-0">
@@ -282,20 +376,24 @@ const handlePayment = async () => {
                 <div className="flex items-center gap-2 pt-1">
                   {/* Proceed to pay */}
                   <button
-                    type="button"
-                    className="h-9 px-8 rounded-full
-                              bg-orangeButton text-white text-[10px] font-medium
-                              hover:bg-orange-600
-                              transition-colors"
-                    disabled={paymentRequestStatus}
-                    onClick={() => {
-                      // BACKEND CHECKOUT HOOK (to be implemented)
-                      handlePayment()
-                    //   router.push('/register');
-                    }}
-                  >
-                    {paymentRequestStatus?"Proceed to paying...":"Proceed to pay"}
-                  </button>
+                      type="button"
+                      disabled={paymentRequestStatus}
+                      onClick={handlePayment}
+                      className={`
+                        h-9 px-8 rounded-full
+                        text-[10px] font-medium
+                        transition-all duration-200
+
+                        ${
+                          paymentRequestStatus
+                            ? "bg-orangeButton/20 cursor-not-allowed " 
+                            : "bg-orangeButton text-white hover:bg-orange-600 cursor-pointer"
+                        }
+                      `}
+                    >
+                      {paymentRequestStatus ? "Proceeding to pay..." : "Proceed to pay"}
+                    </button>
+
 
                   {/* Cancel / Exit */}
                   <Link href="/agency/dashboard/account/subscriptions">

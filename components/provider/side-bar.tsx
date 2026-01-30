@@ -241,7 +241,7 @@ const handleLogout = async () => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => router.push("/pricing")}
+          onClick={() => router.push("/agency/dashboard/account/subscriptions")}
           className="flex-1 bg-blueButton text-white flex gap-0 rounded-2xl justify-start"
         >
           <Settings className="h-4 w-4 mr-2" />

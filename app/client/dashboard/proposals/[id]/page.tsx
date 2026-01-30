@@ -9,6 +9,9 @@ import { Loader2 } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import type { Proposal } from "@/lib/types"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { BsArrowLeft } from "react-icons/bs";
+
 
 export default function ProposalViewDetailsPage() {
   const { id } = useParams<{ id: string }>()
@@ -89,7 +92,7 @@ const textareaClass =
         <CardContent className="px-12 py-0 space-y-6">
 
           {/* Heading */}
-          <div className="space-y-3">
+          <div className="space-y-3 flex justify-between">
             {/* <p className="text-[20px] font-extrabold text-black h-2">
               Submitting Proposal For
             </p> */}
@@ -97,6 +100,10 @@ const textareaClass =
             <h1 className="text-[28px] font-extrabold text-orange-600 h-8">
               {proposal.requirement.title}
             </h1>
+            <Button className="bg-[#000] rounded-full w-[100px] hover:bg-[#000] cursor-pointer " onClick={()=>router.push('/client/dashboard/proposals')} >
+              <BsArrowLeft color="#fff" height={8} width={8}/>
+              Back
+            </Button>
           </div>
 
           {/* Meta row */}

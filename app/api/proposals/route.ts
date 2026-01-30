@@ -211,6 +211,9 @@ export async function POST(request: NextRequest) {
       status: "pending",
     });
 
+     // Update project proposal count
+      await Requirement.findByIdAndUpdate(requirementId, { $inc: { proposals: 1 } })
+
     await Notification.create({
       userId: clientId,
       triggeredBy: user.userId,
