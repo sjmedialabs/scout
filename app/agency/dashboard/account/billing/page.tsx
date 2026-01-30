@@ -18,6 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { ImageUpload } from "@/components/ui/image-upload"
+import { authFetch } from "@/lib/auth-fetch"
 
 
 const billingContact = {
@@ -59,8 +60,10 @@ export default function BillingPage() {
    const[resLoading,setResLoading]=useState(false);
    const[failed,setFailed]=useState(false);
 
-   const[userDetails,setUserDetails]=useState({});
+   const[userDetails,setUserDetails]=useState({}); 
    const[subscriptionDetails,setSubscriptionDetails]=useState({});
+   const[paymentDetails,setPaymentDetails]=useState([]);
+   
 
    const[formData,setFormData]=useState({
     name:"",
@@ -74,22 +77,28 @@ export default function BillingPage() {
    })
    const[sending,setSending]=useState(false);
 
+  
    const loadData=async()=>{
       setResLoading(true);
       setFailed(false);
       try{
-        const res=await fetch(`/api/users/${user?.id}`)
-        if(!res.ok) throw new Error()
+        const res=await authFetch(`/api/users/${user?.id}`)
+        const paymentRes=await fetch(`/api/payment/${user?.id}`)
+        if(!res.ok || !paymentRes.ok) throw new Error()
         const data =await res.json();
+        const paymentData=await paymentRes.json();
         console.log("Fetched User Detaisl in Billing Cycyle:::",data);
+        console.log("Payment details in the billing cycle:::",paymentData)
         setUserDetails(data.user);
         setSubscriptionDetails(data.subscription);
+        setPaymentDetails(paymentData.payments)
+       
         setFormData({name:data.user?.name || "",
           phone:data.user?.phone || "",
           avtar:data.user?.avatar || ""
         })
       }catch(error){
-        console.log("Failed to fetch the userdetails::",error)
+        console.log("Failed to fetch the userdetails or the paymentDetails::",error)
         setFailed(true)
       }finally{
         setResLoading(false)
@@ -177,6 +186,17 @@ export default function BillingPage() {
         setSending(false)
       }
 }
+const formatDate=(dateString: string)=> {
+  const date = new Date(dateString)
+
+  return date.toLocaleDateString("en-US", {
+    month: "short", // Jan, Feb, Mar
+    day: "2-digit",
+    year: "numeric",
+  })
+}
+
+
 
    if(resLoading || loading){
         return(
@@ -308,25 +328,27 @@ export default function BillingPage() {
                   <th className="px-4 py-3 text-right">Plan</th>
                 </tr>
               </thead>
-              <tbody>
-                {billingHistory.map((row) => (
+              {
+                (paymentDetails || []).length>0?
+                (<tbody>
+                {paymentDetails.map((row) => (
                   <tr
-                    key={row.invoice}
+                    key={row._id}
                     className="border-t last:border-b"
                   >
                     <td className="px-4 py-3">
-                      Invoice {row.invoice}
+                      Invoice {row.razorpayPaymentId}
                     </td>
-                    <td className="px-4 py-3">{row.date}</td>
+                    <td className="px-4 py-3">{formatDate(row.createdAt)}</td>
                     <td className="px-4 py-3">
                       <Badge
                         className={
-                          row.status === "Paid"
+                          row.status === "success"
                             ? "bg-green-100 text-green-700"
                             : "bg-red-100 text-red-600"
                         }
                       >
-                        ● {row.status}
+                        ● {row.status === "success"?row.status:"failed"}
                       </Badge>
                     </td>
                     <td className="px-4 py-3">{row.amount}</td>
@@ -337,7 +359,22 @@ export default function BillingPage() {
                     </td>
                   </tr>
                 ))}
-              </tbody>
+              </tbody>)
+                :
+                (
+                  <tbody>
+                    <tr>
+                      <td
+                        colSpan={5}
+                        className="px-4 py-6 text-xl text-center text-gray-500"
+                      >
+                        No payments done up to now
+                      </td>
+                    </tr>
+                  </tbody>
+
+                )
+              }
             </table>
           </CardContent>
         </Card>

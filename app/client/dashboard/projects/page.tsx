@@ -634,7 +634,10 @@ const ProjectsPage = () => {
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <Button
+                  {
+                   project.status.toLowerCase() !== "closed" &&
+                    project.status.toLowerCase() !== "completed"  &&(
+                      <Button
                     variant="outline"
                     size="sm"
                     onClick={() =>
@@ -645,6 +648,8 @@ const ProjectsPage = () => {
                     View Proposals
                     <FaArrowRightLong className="h-1 w-1" color="#fff" />
                   </Button>
+                    )
+                  }
                   {project.status.toLowerCase() !== "allocated" &&
                     project.status.toLowerCase() !== "closed" &&
                     project.status.toLowerCase() !== "completed" && (

@@ -74,20 +74,21 @@ export async function GET(
     const providerMap = new Map(providers.map((p) => [p.userId.toString(), p]));
 
     // ✅ Mark proposals as viewed if client
-    // if (user.role === "client") {
-    //   await Proposal.updateMany(
-    //     {
-    //       _id: { $in: proposals.map((p) => p._id) },
-    //       clientViewed: false,
-    //     },
-    //     {
-    //       $set: {
-    //         clientViewed: true,
-    //         clientViewedAt: new Date(),
-    //       },
-    //     }
-    //   )
-    // }
+    
+    if (user.role === "client") {
+            await Proposal.updateOne(
+          {
+            _id: new mongoose.Types.ObjectId(id),
+            clientViewed: false,
+          },
+          {
+            $set: {
+              clientViewed: true,
+              clientViewedAt: new Date(),
+            },
+          }
+        )
+    }
 
     // ✅ Format response
     return NextResponse.json({
@@ -211,7 +212,7 @@ export async function PUT(
 
       if (
         body.status &&
-        ["viewed", "shortlisted", "accepted", "rejected"].includes(body.status)
+        ["viewed", "shortlisted", "accepted", "rejected","negotation"].includes(body.status)
       ) {
         updates.status = body.status;
         updates.clientResponded = true;
@@ -241,16 +242,16 @@ export async function PUT(
               { status: 400 },
             );
           }
-
-          // await Proposal.updateMany(
-          //   {
-          //     requirementId:proposal.requirementId,
-          //     _id: { $ne:id } // exclude accepted proposal
-          //   },
-          //   {
-          //     $set: { status: "rejected" }
-          //   }
-          // )
+          //it will automatically reject all the proposal whcih are recieved for this requirement once one proposal is accepted
+          await Proposal.updateMany(
+            {
+              requirementId:proposal.requirementId,
+              _id: { $ne:id } // exclude accepted proposal
+            },
+            {
+              $set: { status: "rejected" }
+            }
+          )
         }
         //Notification creation
         await Notification.create({
