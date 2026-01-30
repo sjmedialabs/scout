@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { UserManagement } from "@/components/admin/user-management";
 import { AdminUser } from "@/lib/types";
+import { authFetch } from "@/lib/auth-fetch";
 
 export default function Page() {
   const [users, setUsers] = useState([]);
