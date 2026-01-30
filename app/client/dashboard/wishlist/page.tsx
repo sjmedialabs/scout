@@ -210,7 +210,7 @@ const WishListPage = () => {
           {wishListData.map((provider) => (
             <Card
               key={provider._id}
-              className="rounded-4xl overflow-hidden border-2 border-[#E0E0E0]  py-0 shadow-sm hover:shadow-md transition-shadow"
+              className="rounded-4xl flex flex-col overflow-hidden border-2 border-[#E0E0E0]  py-0 shadow-sm hover:shadow-md transition-shadow"
             >
               {/* Image flush to top */}
               <div className="w-full">
@@ -268,9 +268,12 @@ const WishListPage = () => {
                     </Badge>
                   ))}
                 </div>
+                </div>
 
                 {/* Info row */}
+                <div className="justify-end mt-auto px-4 mb-3">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-xs sm:text-sm">
+                
                   <div className="flex items-center gap-2">
                     <img src="/location-filled.jpg" className="h-5 w-4" />
                     <span className="text-[#808080] font-semibold break-words">
@@ -298,13 +301,13 @@ const WishListPage = () => {
 
                 <div className="mt-3 flex flex-col sm:flex-row gap-2">
                   <Button
-                    className="w-full sm:w-[140px] bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white"
+                    className="w-full sm:w-30 bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white"
                     onClick={() => handleViewProfile(provider.agency._id)}
                   >
                     View Profile
                   </Button>
 
-                  <Button className="w-full sm:w-[160px] bg-[#4d4d4d] rounded-3xl text-white">
+                  <Button className="w-full sm:w-30 bg-[#4d4d4d] rounded-3xl text-white">
                     Contact Provider
                   </Button>
                   <Button
