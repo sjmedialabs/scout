@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import FileUpload from "@/components/file-upload";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { authFetch } from "@/lib/auth-fetch";
 
 export default function ContentManagementPage() {
   const [cms, setCMS] = useState<any>(null);
@@ -67,10 +68,10 @@ export default function ContentManagementPage() {
 
   return (
     <div className="bg-white rounded-lg shadow p-6 space-y-6">
-      <h1 className="text-2xl font-bold">CMS Management</h1>
+      <h1 className="text-2xl font-bold my-custom-class text-orangeButton">CMS Management</h1>
 
       <Tabs defaultValue="home" className="w-full">
-        <TabsList className="grid grid-cols-4 mb-6">
+        <TabsList className="grid grid-cols-4 mb-6 border rounded-xl shadow-lg">
           <TabsTrigger value="home">Home</TabsTrigger>
           <TabsTrigger value="about">About</TabsTrigger>
           <TabsTrigger value="team">Team</TabsTrigger>
@@ -80,8 +81,8 @@ export default function ContentManagementPage() {
         {/* ─────────────────────────────── HOME TAB ─────────────────────────────── */}
         <TabsContent value="home" className="space-y-6">
           {/* HERO SECTION */}
-          <section className="space-y-4 border p-4 rounded">
-            <h2 className="text-xl font-semibold">Hero Section</h2>
+          <section className="space-y-4 border p-4 rounded-xl shadow-lg">
+            <h2 className="text-xl font-semibold my-custom-class text-orangeButton">Hero Section</h2>
 
             <FileUpload
               value={cms.homeBannerImg}
@@ -91,12 +92,14 @@ export default function ContentManagementPage() {
 
             <Input
               placeholder="Home Banner Title"
+              className="border-gray-200 rounded-xl"
               value={cms.homeBannerTitle}
               onChange={(e) => updateField("homeBannerTitle", e.target.value)}
             />
 
             <Input
               placeholder="Home Banner Subtitle"
+              className="border-gray-200 rounded-xl"
               value={cms.homeBannerSubtitle}
               onChange={(e) =>
                 updateField("homeBannerSubtitle", e.target.value)
@@ -105,10 +108,11 @@ export default function ContentManagementPage() {
           </section>
 
           {/* HOME WORK SECTION */}
-          <section className="space-y-4 border p-4 rounded">
+          <section className="space-y-4 border p-4 rounded-xl shadow-lg">
             <div className="flex justify-between">
-              <h2 className="text-xl font-semibold">How Spark Works</h2>
+              <h2 className="text-xl font-semibold my-custom-class text-orangeButton">How Spark Works</h2>
               <Button
+              className="rounded-full"
                 onClick={() =>
                   handleAdd("homeWorkSection", {
                     title: "",
@@ -122,16 +126,8 @@ export default function ContentManagementPage() {
             </div>
 
             {cms.homeWorkSection?.map((item: any, index: number) => (
-              <div key={index} className="border p-3 rounded space-y-2">
-                <Input
-                  placeholder="Title"
-                  value={item.title}
-                  onChange={(e) => {
-                    const updated = [...cms.homeWorkSection];
-                    updated[index].title = e.target.value;
-                    updateField("homeWorkSection", updated);
-                  }}
-                />
+              <div key={index} className="border p-3 rounded-xl space-y-2">
+                
 
                 <FileUpload
                   value={item.image}
@@ -143,7 +139,19 @@ export default function ContentManagementPage() {
                   accept="image/*"
                 />
 
+                <Input
+                  placeholder="Title"
+                  className="border-gray-200 rounded-xl"
+                  value={item.title}
+                  onChange={(e) => {
+                    const updated = [...cms.homeWorkSection];
+                    updated[index].title = e.target.value;
+                    updateField("homeWorkSection", updated);
+                  }}
+                />
+
                 <Textarea
+                className="border-gray-200 rounded-xl"
                   placeholder="Description"
                   value={item.description}
                   onChange={(e) => {
@@ -154,6 +162,7 @@ export default function ContentManagementPage() {
                 />
 
                 <Button
+                className="rounded-full"
                   variant="destructive"
                   onClick={() => handleRemove("homeWorkSection", index)}
                 >
@@ -164,7 +173,7 @@ export default function ContentManagementPage() {
           </section>
 
           {/* HOME SERVICE CATEGORIES */}
-          <section className="space-y-4 border p-4 rounded">
+          <section className="space-y-4 border p-4 rounded-xl shadow-lg">
             <div className="flex justify-between">
               <h2 className="text-xl font-semibold">Home Service Categories</h2>
               <Button onClick={() => handleAdd("homeServicesCategories", "")}>
