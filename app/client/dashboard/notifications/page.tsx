@@ -1,22 +1,98 @@
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Settings } from "lucide-react"
-const ClientNotificationsPage=()=>{
-    return(
-         <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold capitalize"></h1>
-              <p className="text-muted-foreground">This section is coming soon</p>
-            </div>
-            <Card>
-              <CardContent className="p-6">
-                <div className="text-center py-8">
-                  <Settings className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <p className="text-muted-foreground">Feature under development</p>
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Bell } from "lucide-react";
+
+const ClientNotificationsPage = () => {
+  
+  const [resLoading] = useState(false);
+  const [failed] = useState(false);
+  const [dynamicNotifications] = useState<any[]>([]);
+
+  const handleMarkNotificationAsRead = (id: string, linkUrl?: string) => {
+    console.log("Notification clicked:", id, linkUrl);
+  };
+
+  return (
+    <div className="space-y-8">
+      {/* HEADER */}
+      <div>
+        <h1 className="text-3xl font-bold text-orangeButton my-custom-class">
+          System Notifications
+        </h1>
+        <p className="text-gray-500 text-base">
+          Platform management and oversight
+        </p>
+      </div>
+
+      {/* NOTIFICATIONS LIST */}
+      {!resLoading && !failed && dynamicNotifications.length > 0 && (
+        <Card className="rounded-2xl bg-[#f7f7f7] border">
+          <CardContent className="p-6 space-y-4">
+            {dynamicNotifications.map((item) => (
+              <div
+                key={item._id}
+                className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white rounded-xl px-5 py-4 shadow-sm"
+              >
+                {/* LEFT */}
+                <div className="flex items-start gap-4">
+                  {item.image ? (
+                    <img
+                      src={item.image}
+                      alt="avatar"
+                      className="h-9 w-9 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-9 w-9 rounded-full bg-gray-100 flex items-center justify-center">
+                      <Bell className="h-4 w-4 text-gray-400" />
+                    </div>
+                  )}
+
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">
+                      {item.message}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      {new Date(item.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-    )
-}
-export default ClientNotificationsPage
+
+                {/* RIGHT */}
+                <Button
+                  variant="secondary"
+                  className="rounded-xl bg-gray-100 text-black"
+                  onClick={() =>
+                    handleMarkNotificationAsRead(item._id, item.linkUrl)
+                  }
+                >
+                  View
+                </Button>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* EMPTY STATE */}
+      {!resLoading && !failed && dynamicNotifications.length === 0 && (
+        <div className="text-center py-16">
+          <p className="text-gray-500 text-lg">
+            No Notifications Yet
+          </p>
+        </div>
+      )}
+
+      {/* LOADING */}
+      {resLoading && (
+        <div className="min-h-[300px] flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ClientNotificationsPage;
