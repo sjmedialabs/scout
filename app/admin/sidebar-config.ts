@@ -45,8 +45,8 @@ export const adminMenu = [
     children: [
       { id: "revenue-dashboard", label: "Revenue Dashboard", icon: DollarSign },
       { id: "financial-reports", label: "Financial Reports", icon: BarChart3 },
-      { id: "growth-metrics", label: "Growth Metrics", icon: TrendingUp },
-      { id: "performance-insights", label: "Performance Insights", icon: Eye },
+      // { id: "growth-metrics", label: "Growth Metrics", icon: TrendingUp },
+      // { id: "performance-insights", label: "Performance Insights", icon: Eye },
     ],
   },
   {
@@ -54,7 +54,7 @@ export const adminMenu = [
     label: "CONTENT & MODERATION",
     icon: Shield,
     children: [
-      // { id: "moderation", label: "Content Moderation", icon: AlertTriangle },
+      { id: "moderation", label: "Content Moderation", icon: AlertTriangle },
       { id: "reported-content", label: "Reported Content", icon: FileText },
       { id: "content-policies", label: "Content Policies", icon: Shield },
       { id: "automated-filters", label: "Automated Filters", icon: Database },
