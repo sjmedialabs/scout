@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   BarChart,
   Bar,
@@ -24,6 +24,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { User } from "@/lib/types";
+import { authFetch } from "@/lib/auth-fetch"
 
 /* ---------------- Tabs ---------------- */
 const TABS = ["Overview", "Revenue", "Users", "Services"] as const
@@ -127,13 +129,24 @@ function KPICard({
     </div>
   )
 }
-function RevenueTrendChart() {
+function RevenueTrendChart({lastTweleveMonthsRevenue}) {
+  const maxRevenue= Math.max(...lastTweleveMonthsRevenue.map(d => d?.users),0)
+  // const maxRevenue=20000;
+  
+
+const step = getYAxisStep(maxRevenue)
+
+const yAxisMax = Math.ceil(maxRevenue / step) * step
+const yAxisTicks = Array.from(
+  { length: yAxisMax / step + 1 },
+  (_, i) => i * step
+)
   return (
     <ChartContainer
       className="h-72 w-full"
       config={{ revenue: { label: "Revenue" } }}
     >
-      <BarChart data={revenueTrendData}>
+      <BarChart data={lastTweleveMonthsRevenue}>
         <defs>
           <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
             <stop offset="-13.56%" stopColor="#FD749B" />
@@ -151,10 +164,13 @@ function RevenueTrendChart() {
         />
 
         <YAxis
-          axisLine
-          tickLine={false}
-          tick={{ fill: "#9CA3AF", fontSize: 10 }}
-        />
+        domain={[0, yAxisMax]}
+        ticks={yAxisTicks}
+        allowDecimals={false}
+        tick={{ fill: "#858585", fontSize: 10 }}
+        axisLine={true}
+        tickLine={false}
+      />
 
         <ChartTooltip content={<ChartTooltipContent />} />
 
@@ -432,9 +448,308 @@ function exportToCSV(filename: string, rows: Record<string, any>[]) {
   link.click()
   document.body.removeChild(link)
 }
+const getYAxisStep = (max) => {
+  if (max <= 10) return 1
+  if (max <= 50) return 5
+  if (max <= 100) return 10
+  if (max <= 500) return 50
+  if (max <= 1000) return 100
+  if (max <= 5000) return 500
+  
+  return 1000
+}
 
 export default function ReportsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("Overview")
+
+  const[resLoading,setResLoading]=useState(false);
+  const[failed,setFailed]=useState(false)
+
+  const[users,setUsers]=useState<User[]>([]);
+  const[revenue,setRevenue]=useState([]);
+
+
+  const[topCardStats,setTopCardStats]=useState({
+    totalRevenue:0,
+    lastMonthRevenuePercentage:0,
+    activeUsers:0,
+    lastMonthActiveUsersPercentage:0
+  })
+
+  const[lastSixMonthsRevenueData,setLastSixMonthsRevenueData]=useState([]);
+  const[lastTwelevMonthsRevenueData,setLastTwelveMonthsRevenueData]=useState([]);
+  const[dynamicUsersGrowthData,setDynamicUsersGrowthData]=useState([]);
+
+  const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+  const maxUsers = Math.max(...dynamicUsersGrowthData.map(d => d?.users),0)
+  const maxRevenue= Math.max(...lastSixMonthsRevenueData.map(d => d?.users),0)
+  // const maxUsers=200;
+  
+  console.log("Max users are:::::",maxUsers);
+
+  
+
+const step = getYAxisStep(maxUsers)
+
+const yAxisMax = Math.ceil(maxUsers / step) * step
+const yAxisTicks = Array.from(
+  { length: yAxisMax / step + 1 },
+  (_, i) => i * step
+)
+
+ const revenueStep=getYAxisStep(maxRevenue);
+ const revenueYaxisMax=Math.ceil(maxRevenue / revenueStep) * revenueStep
+ const revenueYaxisTicks=Array.from(
+  { length: revenueYaxisMax / revenueStep + 1 },
+  (_, i) => i * revenueStep
+)
+
+
+
+
+  //month wise revenue to show in the graph
+ const getLastNMonths = (n) => {
+  const months = []
+
+  for (let i = n - 1; i >= 0; i--) {
+    const date = new Date()
+    date.setMonth(date.getMonth() - i)
+
+    months.push({
+      label: date.toLocaleString("en-US", { month: "short" }),
+      month: date.getMonth(),
+      year: date.getFullYear(),
+    })
+  }
+
+  return months
+}
+
+const getRollingRevenueData = (payments, monthsCount = 6) => {
+  const months = getLastNMonths(monthsCount)
+
+  return months.map(({ label, month, year }) => {
+    const revenue = payments.reduce((sum, payment) => {
+      if (payment.status !== "success") return sum
+
+      const date = new Date(payment.createdAt)
+
+      if (
+        date.getMonth() === month &&
+        date.getFullYear() === year
+      ) {
+        return sum + payment.amount
+      }
+
+      return sum
+    }, 0)
+
+    return {
+      month: label,
+      revenue,
+    }
+  })
+}
+
+
+// user growth for the charts
+
+const getUserGrowthData = (users, year = new Date().getFullYear()) => {
+  return MONTHS.map((month, index) => {
+    const monthStart = new Date(year, index, 1)
+    const monthEnd = new Date(year, index + 1, 0)
+
+    const activeUsers = users.filter(user => {
+      if (!user.subscriptionStartDate || !user.subscriptionEndDate) return false
+
+      const start = new Date(user.subscriptionStartDate)
+      const end = new Date(user.subscriptionEndDate)
+
+      return start <= monthEnd && end >= monthStart
+    }).length
+
+    return {
+      month,
+      users: activeUsers,
+    }
+  })
+}
+
+
+  const[bottomCardStats,setBottomCardStats]=useState({
+           monthlyRecurringRevenue:0,
+           activeSubscriberCount:0,
+           avgRevenuePereUser:0,
+           platformGrowthPercentage:0
+     })
+
+  const loadData=async ()=>{
+    setResLoading(true);
+    setFailed(false);
+    try{
+      const[usersRes,paymentRes]=await Promise.all([
+        authFetch("/api/users"),
+        authFetch("/api/payment")
+      ])
+      if(!usersRes.ok || !paymentRes.ok) throw new Error();
+      const userData=await usersRes.json();
+      const  paymentData=await paymentRes.json();
+
+      setUsers(userData.users);
+      setRevenue(paymentData?.data);
+
+      const totalRevenue = getTotalRevenue(paymentData.data)
+      const currentMonthRevenue = getMonthlyRevenue(paymentData.data, 0)
+      const lastMonthRevenue = getMonthlyRevenue(paymentData.data, 1)
+
+      const revenueGrowthPercentage =
+        lastMonthRevenue === 0
+          ? 100
+          : ((currentMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
+
+      const activeUsersCount = getActiveUsersCount(userData.users)
+
+      const currentActiveUsers = getActiveUsersByMonth(userData.users, 0)
+      const lastMonthActiveUsers = getActiveUsersByMonth(userData.users, 1)
+
+      const activeUsersGrowth =
+        lastMonthActiveUsers === 0
+          ? 100
+          : ((currentActiveUsers - lastMonthActiveUsers) / lastMonthActiveUsers) * 100
+
+      setTopCardStats({
+        totalRevenue:totalRevenue,
+        lastMonthRevenuePercentage:revenueGrowthPercentage,
+        activeUsers:activeUsersCount,
+        lastMonthActiveUsersPercentage:activeUsersGrowth
+      })
+
+      //Bottom card stats
+
+      //botom cards stats
+          const currentMRR = getCurrentMonthMRR(paymentData.data)
+          const arpu = getARPU(paymentData.data)
+          const growth=lastMonthRevenue>0?((currentMonthRevenue- lastMonthRevenue) /lastMonthRevenue) * 100:0
+          setBottomCardStats({
+            monthlyRecurringRevenue:currentMRR,
+            activeSubscriberCount:userData.users.filter((eachItem)=>eachItem. subscriptionPlanId).length,
+            avgRevenuePereUser:arpu,
+            platformGrowthPercentage:growth
+          })
+
+      //Last 6 months revenue for the graph
+      const last6MonthsRevenue = getRollingRevenueData(paymentData.data, 6)
+      setLastSixMonthsRevenueData(last6MonthsRevenue)
+
+      //Last 12 months revenue data for the graphs
+      const last12MonthsRevenue = getRollingRevenueData(paymentData.data, 12)
+      setLastTwelveMonthsRevenueData(last12MonthsRevenue);
+
+
+      //active users per month for the graphs
+
+      const userGrowthData = getUserGrowthData(userData.users)
+      setDynamicUsersGrowthData(userGrowthData);
+      
+
+
+
+    }catch(error){
+      console.log('Failed to fetch the data:::',error)
+    }finally{
+      setResLoading(false);
+    }
+  }
+  useEffect(()=>{
+    loadData()
+  },[])
+
+  const getTotalRevenue = (payments) => {
+  return payments
+    .filter(p => p.status === "success")
+    .reduce((sum, p) => sum + p.amount, 0)
+}
+
+const getMonthlyRevenue = (payments, monthOffset = 0) => {
+  const date = new Date()
+  date.setMonth(date.getMonth() - monthOffset)
+
+  const targetMonth = date.getMonth()
+  const targetYear = date.getFullYear()
+
+  return payments
+    .filter(p =>
+      p.status === "success" &&
+      new Date(p.createdAt).getMonth() === targetMonth &&
+      new Date(p.createdAt).getFullYear() === targetYear
+    )
+    .reduce((sum, p) => sum + p.amount, 0)
+}
+
+const getActiveUsersCount = (users) => {
+  const today = new Date()
+
+  return users.filter(user =>
+    user.subscriptionPlanId &&
+    user.subscriptionEndDate &&
+    new Date(user.subscriptionEndDate) >= today
+  ).length
+}
+
+const getActiveUsersByMonth = (users, monthOffset = 0) => {
+  const date = new Date()
+  date.setMonth(date.getMonth() - monthOffset)
+
+  const month = date.getMonth()
+  const year = date.getFullYear()
+
+  return users.filter(user => {
+    if (!user.subscriptionStartDate || !user.subscriptionEndDate) return false
+
+    const start = new Date(user.subscriptionStartDate)
+    const end = new Date(user.subscriptionEndDate)
+
+    return (
+      start.getMonth() <= month &&
+      end.getMonth() >= month &&
+      start.getFullYear() <= year &&
+      end.getFullYear() >= year
+    )
+  }).length
+}
+
+//monthly recursiing revenue
+const getCurrentMonthMRR = (payments) => {
+  const now = new Date()
+  const currentMonth = now.getMonth()
+  const currentYear = now.getFullYear()
+
+  return payments
+    .filter(p => 
+      p.status === "success" &&
+      new Date(p.createdAt).getMonth() === currentMonth &&
+      new Date(p.createdAt).getFullYear() === currentYear
+    )
+    .reduce((sum, p) => sum + p.amount, 0)
+}
+// average revenuw per head
+const getARPU = (payments) => {
+  const successfulPayments = payments.filter(p => p.status === "success")
+
+  const totalRevenue = successfulPayments.reduce(
+    (sum, p) => sum + p.amount,
+    0
+  )
+
+  const uniqueUsers = new Set(
+    successfulPayments.map(p => p.userId)
+  )
+
+  return uniqueUsers.size === 0
+    ? 0
+    : totalRevenue / uniqueUsers.size
+}
+
   const handleExport = () => {
     switch (activeTab) {
       case "Revenue":
@@ -482,6 +797,13 @@ export default function ReportsPage() {
     }
   }
 
+  if(resLoading){
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
   return (
     <div className="space-y-8">
       {/* ---------- Header ---------- */}
@@ -513,7 +835,33 @@ export default function ReportsPage() {
 
       </div>
       {/* Top KPIs */}
-      <RevenueKPIs />
+      {/* <RevenueKPIs /> */}
+
+      {/**top status cards */}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <KPICard
+        title="Total Revenue"
+        value={topCardStats.totalRevenue.toString()}
+        subtitle={`${topCardStats.lastMonthRevenuePercentage.toFixed(2).toString()}% from last month`}
+      />
+      <KPICard
+        title="Active Users"
+        value={topCardStats.activeUsers.toString()}
+        subtitle={`${topCardStats.lastMonthActiveUsersPercentage.toFixed().toString()}% from last month`}
+      />
+      <KPICard
+        title="Services Completed"
+        value="03"
+        subtitle="+9.3% from last month"
+      />
+      <KPICard
+        title="Avg. Response Time"
+        value="$23,700"
+        subtitle="-15.8% improvement"
+      />
+    </div>
+
       {/* ---------- Tabs ---------- */}
       <div className="bg-gray-100 rounded-full p-1 flex w-fit">
         {TABS.map((tab) => (
@@ -540,7 +888,7 @@ export default function ReportsPage() {
             title="Revenue Overview"
             subtitle="Monthly revenue trends for the last 6 months"
           >
-            <RevenueChart />
+             <RevenueChart revenueData={lastSixMonthsRevenueData} yAxisMax={revenueYaxisMax} yAxisTicks={revenueYaxisTicks}/>
           </ChartCard>
 
           {/* User Growth */}
@@ -548,7 +896,7 @@ export default function ReportsPage() {
             title="User Growth"
             subtitle="Active users growth over time"
           >
-            <UserGrowthChart />
+            <UserGrowthChart userData={dynamicUsersGrowthData} yAxisMax={yAxisMax} yAxisTicks={yAxisTicks}/>
           </ChartCard>
         </div>
       )}
@@ -563,7 +911,7 @@ export default function ReportsPage() {
             <p className="text-sm text-gray-500 mb-4">
               Detailed revenue analysis over the past 12 months
             </p>
-            <RevenueTrendChart />
+            <RevenueTrendChart lastTweleveMonthsRevenue={lastTwelevMonthsRevenueData}/>
           </div>
         </div>
       )}
@@ -613,8 +961,28 @@ export default function ReportsPage() {
 
 
       {/* Bottom Metrics */}
-      <RevenueSummaryCards />
+      {/* <RevenueSummaryCards /> */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <SummaryCard
+        title="Monthly Recurring Revenue"
+        value={bottomCardStats.monthlyRecurringRevenue.toFixed(2).toString()}
+        subtitle={`From ${bottomCardStats.activeSubscriberCount} active subscriptions`}
+        icon="/images/admin-monthlyRevenue.png"
+      />
+      <SummaryCard
+        title="Average Revenue Per User"
+        value={bottomCardStats.avgRevenuePereUser.toFixed(2).toString()}
+        subtitle="Per paying user"
+        icon="/images/admin-user.png"
+      />
+      <SummaryCard
+        title="Platform Growth"
+        value={`${bottomCardStats.platformGrowthPercentage.toFixed(2).toString()}%`}
+        subtitle="Month over month growth"
+        icon="/images/admin-monthlyRevenue.png"
+      />
     </div>
+  </div>
   )
 }
 
@@ -642,7 +1010,7 @@ function ChartCard({
 }
 
 /* ---------------- Revenue Chart ---------------- */
-function RevenueChart() {
+function RevenueChart({revenueData,yAxisMax,yAxisTicks}) {
   return (
     <ChartContainer
       config={{
@@ -670,10 +1038,13 @@ function RevenueChart() {
         />
 
         <YAxis
-          tick={{ fill: "#858585", fontSize: 10, className: "text-gray-300" }}
-          axisLine={true}
-          tickLine={false}
-        />
+        domain={[0, yAxisMax]}
+        ticks={yAxisTicks}
+        allowDecimals={false}
+        tick={{ fill: "#858585", fontSize: 10 }}
+        axisLine={true}
+        tickLine={false}
+      />
         <ChartTooltip content={<ChartTooltipContent />} />
 
         <Bar
@@ -689,7 +1060,7 @@ function RevenueChart() {
 
 
 /* ---------------- User Growth Chart ---------------- */
-function UserGrowthChart() {
+function UserGrowthChart({userData,yAxisMax,yAxisTicks}) {
   return (
     <ChartContainer
       config={{
@@ -699,7 +1070,7 @@ function UserGrowthChart() {
       }}
       className="h-64"
     >
-      <BarChart data={userGrowthData} barCategoryGap={20}>
+      <BarChart data={userData} barCategoryGap={20}>
         <defs>
           <linearGradient id="userGradient" x1="0" y1="0" x2="0" y2="1">
             <stop offset="-13.56%" stopColor="#FD749B" />
@@ -715,11 +1086,16 @@ function UserGrowthChart() {
           tickLine={false}
         />
 
-        <YAxis
-          tick={{ fill: "#858585", fontSize: 10, className: "text-gray-300" }}
-          axisLine={true}
-          tickLine={false}
-        />
+       <YAxis
+        domain={[0, yAxisMax]}
+        ticks={yAxisTicks}
+        allowDecimals={false}
+        tick={{ fill: "#858585", fontSize: 10 }}
+        axisLine={true}
+        tickLine={false}
+      />
+
+
         <ChartTooltip content={<ChartTooltipContent />} />
 
         <Bar
