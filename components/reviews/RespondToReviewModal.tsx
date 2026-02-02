@@ -3,6 +3,7 @@
 import { X, Loader2, CheckCircle } from "lucide-react";
 import { Content } from "next/font/google";
 import { useEffect, useState } from "react";
+import { authFetch } from "@/lib/auth-fetch";
 
 interface RespondToReviewModalProps {
   open: boolean;

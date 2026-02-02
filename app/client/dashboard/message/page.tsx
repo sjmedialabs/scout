@@ -32,6 +32,8 @@ import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { authFetch } from "@/lib/auth-fetch";
+import { io } from "socket.io-client"
+
 
 type Attachment = {
   id: string;
@@ -155,7 +157,28 @@ export default function MessagesPage() {
   const [chatLaoding, setChatLoading] = useState(false);
   const [sendMsgLoading, setSendMsgLoading] = useState(false);
   const [failed, setFailed] = useState(false);
+  const socketRef = useRef<any>(null)
 
+        useEffect(() => {
+      if (socketRef.current) return
+
+      socketRef.current = io(
+        process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000",
+        {
+          path: "/socket.io",
+          transports: ["websocket"],
+        }
+      )
+
+      socketRef.current.on("connect", () => {
+        console.log("✅ Socket connected:", socketRef.current.id)
+      })
+
+      return () => {
+        socketRef.current.disconnect()
+        socketRef.current = null
+      }
+    }, [])
   const loadData = async () => {
     setResLoading(true);
     setFailed(false);
@@ -202,6 +225,28 @@ export default function MessagesPage() {
       loadData();
     }
   }, [user, loading, router]);
+useEffect(() => {
+  const socket = socketRef.current
+  if (!socket) return
+  if (!dynamicActiveConversation?.conversationId) return
+
+  socket.emit(
+    "join-conversation",
+    dynamicActiveConversation.conversationId
+  )
+
+  const handler = (message: any) => {
+    setDynamicMessages((prev) => [...prev, message])
+  }
+
+  socket.on("receive-message", handler)
+
+  return () => {
+    socket.off("receive-message", handler)
+  }
+}, [dynamicActiveConversation?.conversationId])
+
+
 
   const sendMessage = async () => {
     if (!messageInput.trim() && !uplodedUrl.url.trim()) return;
@@ -248,6 +293,11 @@ export default function MessagesPage() {
         body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error();
+      const { message } = await res.json()
+      console.log('Send Message Response::::::',message)
+
+      //  REAL-TIME UPDATE
+      socketRef.current.emit("send-message", message)
       await fetchMessages(dynamicActiveConversation.conversationId);
       setUploadedUrl({
         url: "",

@@ -15,9 +15,12 @@ import { useToast } from "@/components/ui/use-toast";
 import { Proposal, Requirement } from "@/lib/types";
 import { useAuth } from "@/contexts/auth-context";
 import { authFetch } from "@/lib/auth-fetch";
+import { BsArrowLeft } from "react-icons/bs";
+
 
 export default function SubmitProposalPage() {
   const { user, loading } = useAuth();
+  
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { toast } = useToast();
@@ -42,9 +45,9 @@ export default function SubmitProposalPage() {
         setFailed(false);
         setRequirement(data.requirements[0]);
         console.log("proposals data:::::", proposalData.proposals);
-       const proposalsCount=(proposalData.proposals || []).filter((eachItem)=>id===eachItem.requirement.id && eachItem.agencyId===user?.id).length
+       const proposalsCount=(proposalData.proposals || []).filter((eachItem)=>id===eachItem.requirement.id && eachItem.agency.userId===user?.id)
        console.log("The propossaal count is::::",proposalsCount)
-        setShowForm(proposalsCount===0)
+        setShowForm(proposalsCount.length === 0)
 
         // setProposals(proposalData.proposals.filter((eachItem)=>id===eachItem.requirement.id && eachItem.agencyId===user?.id))
       }
@@ -204,14 +207,22 @@ export default function SubmitProposalPage() {
       <Card className="rounded-[36px] border border-gray-300 bg-white">
         <CardContent className="px-12 py-0 space-y-6">
           {/* Heading */}
-          <div className="space-y-3">
-            <p className="text-[20px] font-extrabold text-black h-2">
-              Submitting Proposal For
-            </p>
+          <div className="space-y-3 flex justify-between">
+            <div>
+              <p className="text-[20px] font-extrabold text-black ">
+                 Submitting Proposal For
+              </p>
 
-            <h1 className="text-[28px] font-extrabold text-orange-600 h-8">
-              {requirement.title}
-            </h1>
+                <h1 className="text-[28px] font-extrabold text-orange-600 ">
+                  {requirement.title}
+                </h1>
+            </div>
+            <div>
+               <Button className="bg-[#000] rounded-full hover:bg-[#000] text-[#fff] w-[100px]" onClick={()=>router.push("/agency/dashboard/project-inquiries/")}>
+                  <BsArrowLeft color="#fff"  height={4} width={4}/>
+                   Back
+               </Button>
+            </div>
           </div>
 
           {/* Meta row */}
