@@ -19,94 +19,125 @@ import { Calendar, Plus } from "lucide-react";
 /* ---------------- TYPES ---------------- */
 
 type Subscriber = {
+  id: string;
   company: string;
   email: string;
+  role: "client" | "agency";
   plan: "Enterprise" | "Pro" | "Basic";
   status: "Active" | "Inactive" | "Suspended";
   users: number;
   revenue: number;
   joined: string;
+  billingCycle?: "Monthly" | "Yearly";
 };
 
-/* ---------------- FALLBACK DATA ---------------- */
 
-const fallbackSubscribers: Subscriber[] = [
-  {
-    company: "Tech Corp",
-    email: "seeker@example.com",
-    plan: "Enterprise",
-    status: "Active",
-    users: 45,
-    revenue: 5000,
-    joined: "2024-01-15",
-  },
-  {
-    company: "Tech Corp",
-    email: "seeker@example.com",
-    plan: "Pro",
-    status: "Active",
-    users: 12,
-    revenue: 1500,
-    joined: "2024-02-20",
-  },
-  {
-    company: "Tech Corp",
-    email: "seeker@example.com",
-    plan: "Basic",
-    status: "Active",
-    users: 5,
-    revenue: 500,
-    joined: "2024-03-10",
-  },
-  {
-    company: "Tech Corp",
-    email: "seeker@example.com",
-    plan: "Enterprise",
-    status: "Inactive",
-    users: 18,
-    revenue: 0,
-    joined: "2023-11-05",
-  },
-  {
-    company: "Tech Corp",
-    email: "seeker@example.com",
-    plan: "Pro",
-    status: "Suspended",
-    users: 120,
-    revenue: 2000,
-    joined: "2023-09-12",
-  },
-];
 
 export default function AllSubscribersPage() {
-  const [subscribers, setSubscribers] =
-    useState<Subscriber[]>(fallbackSubscribers);
+  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+  const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
+  const [role, setRole] = useState<"all" | "client" | "agency">("all");
 
-  //   useEffect(() => {
-  //     async function loadSubscribers() {
-  //       try {
-  //         const res = await authFetch("/api/admin/subscribers");
-  //         if (!res.ok) throw new Error();
-  //         const data = await res.json();
-  //         setSubscribers(data);
-  //       } catch {
+ const toggleStatus = async (index: number) => {
+  const sub = subscribers[index];
+  const newIsActive = sub.status === "Active" ? false : true;
 
-  //       }
-  //     }
-  //     loadSubscribers();
-  //   }, []);
+  try {
+    const res = await fetch(`/api/users/${sub.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        isActive: newIsActive,
+      }),
+    });
+
+    if (!res.ok) throw new Error("Update failed");
+
+    // Update UI after DB success
+    setSubscribers((prev) =>
+      prev.map((s, i) =>
+        i === index
+          ? { ...s, status: newIsActive ? "Active" : "Inactive" }
+          : s
+      )
+    );
+  } catch (error) {
+    alert("Failed to update user status");
+  }
+};
+
+
+
+  useEffect(() => {
+  async function loadSubscribers() {
+    try {
+      setLoading(true)
+
+      const roleQuery = role !== "all" ? `&role=${role}` : ""
+
+      const res = await fetch(
+        `/api/users?limit=50&page=1${roleQuery}`,
+        { credentials: "include" } 
+      );
+
+      if (!res.ok) throw new Error("Failed to fetch users");
+
+      const data = await res.json();
+
+      // Convert backend users → table format
+      const formatted = data.users
+      .filter((u: any) => u.role !== "admin") // ✅ hide admins
+      .map((u: any) => {
+        let plan: "Basic" | "Pro" | "Enterprise" = "Basic";
+
+        if (u.subscriptionPlanId) {
+          plan = u.billingCycle === "Yearly" ? "Enterprise" : "Pro";
+        }
+
+        return {
+          id: u.id,
+          company: u.company || u.name,
+          email: u.email,
+          role: u.role,
+          plan, 
+          status: u.isActive ? "Active" : "Inactive",
+          users: 1,
+          revenue: 0,
+          joined: u.createdAt.split("T")[0],
+          billingCycle: u.billingCycle,
+        };
+      });
+
+      setSubscribers(formatted);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  loadSubscribers();
+}, [role]);
+
 
   const filtered = subscribers.filter((s) => {
-    const matchesSearch =
-      s.company.toLowerCase().includes(search.toLowerCase()) ||
-      s.email.toLowerCase().includes(search.toLowerCase());
+  const matchesSearch =
+    s.company.toLowerCase().includes(search.toLowerCase()) ||
+    s.email.toLowerCase().includes(search.toLowerCase());
 
-    const matchesStatus = status === "all" || s.status.toLowerCase() === status;
+  const matchesStatus =
+    status === "all" || s.status.toLowerCase() === status;
 
-    return matchesSearch && matchesStatus;
-  });
+  const matchesRole =
+    role === "all" || s.role === role;
+
+  return matchesSearch && matchesStatus && matchesRole;
+});
+
+
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-0 space-y-4">
@@ -149,6 +180,19 @@ export default function AllSubscribersPage() {
               <SelectItem value="active">Active</SelectItem>
               <SelectItem value="inactive">Inactive</SelectItem>
               <SelectItem value="suspended">Suspended</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="rounded-xl border">
+          <Select value={role} onValueChange={(v) => setRole(v as any)}>
+            <SelectTrigger className="md:w-48 my-custom-class">
+              <SelectValue placeholder="All Roles" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Users</SelectItem>
+              <SelectItem value="client">Clients</SelectItem>
+              <SelectItem value="agency">Agencies</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -224,7 +268,14 @@ export default function AllSubscribersPage() {
                 <td className="p-4">
                   <div className="flex items-center gap-3">
                     <EditSubscriberModal subscriber={sub} />
-                    <UserX className="h-4 w-4 cursor-pointer text-gray-700 hover:text-black" />
+                    <UserX
+                    onClick={() => toggleStatus(i)}
+                    className={`h-4 w-4 cursor-pointer ${
+                      sub.status === "Active"
+                        ? "text-red-600 hover:text-red-800"
+                        : "text-green-600 hover:text-green-800"
+                    }`}
+                  />
                   </div>
                 </td>
               </tr>

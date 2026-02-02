@@ -47,6 +47,8 @@ export async function GET(request: NextRequest) {
       isActive: u.isActive,
       lastLogin: u.lastLogin,
       createdAt: u.createdAt,
+      subscriptionPlanId: u.subscriptionPlanId,
+      billingCycle: u.billingCycle,
     }));
 
     return NextResponse.json({
