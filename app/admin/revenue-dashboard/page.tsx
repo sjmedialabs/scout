@@ -22,6 +22,8 @@ import {
   Cell,
 } from "recharts";
 import { DollarSign, TrendingUp, PieChart, Filter } from "lucide-react";
+import { User } from "@/lib/types";
+import { authFetch } from "@/lib/auth-fetch";
 
 // -------------------------------------------------
 // MOCK DATA (Replace with API later)
@@ -48,13 +50,338 @@ const mrrTrend = [
   { month: "Jun", value: 110, scatter: 55 },
 ];
 
+const COLORS = [
+  "#60a5fa", // blue
+  "#34d399", // green
+  "#fbbf24", // yellow
+  "#f472b6", // pink
+  "#a78bfa", // purple
+  "#fb7185", // rose
+  "#38bdf8", // sky
+  "#4ade80", // emerald
+];
+
+
 export default function RevenueDashboardPage() {
   const [stats, setStats] = useState(mockSubscriptionStats);
   const [history, setHistory] = useState(null);
   const [planRevenue, setPlanRevenue] = useState(mockRevenueByPlan);
 
+  const[resLoading,setResLoading]=useState(false);
+  const[failed,setFailed]=useState(false)
+
+  const[users,setUsers]=useState<User[]>([]);
+  const[revenue,setRevenue]=useState([]);
+  const[subsriptions,setSubscriptions]=useState([])
+
+  const [topCardStats, setTopCardStats] = useState({
+  currentMonthRecurringRevenue: 0,
+  recurringRevenuePercentageIncLastMonth: 0,
+  annualRevenue: 0,
+  annualRevenuePercentageIncLastYear: 0,
+  atterationRate: 0,
+  atterationRatePercentageInc: 0,
+});
+
+  const[monthlyRcurringRevenueGrowth,setMonthlyRcurringRevenueGrowth]=useState<{
+    month:string,
+    revenue:number
+  }[]>([])
+
+ const [revenueByPlan, setRevenueByPlan] = useState<{
+  plan: string;
+  revenue: number;
+}[]>([]);
+
+
+   const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+   const loadData=async ()=>{
+      setResLoading(true);
+      setFailed(false);
+      try{
+        const[usersRes,paymentRes,subscriptionRes]=await Promise.all([
+          authFetch("/api/users"),
+          authFetch("/api/payment"),
+          authFetch("/api/subscription")
+        ])
+        if(!usersRes.ok || !paymentRes.ok) throw new Error();
+        const userData=await usersRes.json();
+        const  paymentData=await paymentRes.json();
+        const subscriptionData=await subscriptionRes.json();
+  
+        setUsers(userData.users);
+        setRevenue(paymentData?.data);
+        setSubscriptions(subscriptionData);
+   
+  
+      }catch(error){
+        console.log('Failed to fetch the data:::',error)
+      }finally{
+        setResLoading(false);
+      }
+    }
+    useEffect(()=>{
+      loadData()
+    },[])
+    // console.log("Subscriptions :::::::::",subsriptions)
+
+    const isSameMonth = (d1: Date, d2: Date) =>
+      d1.getMonth() === d2.getMonth() &&
+      d1.getFullYear() === d2.getFullYear();
+
+    const percentChange = (current: number, previous: number) => {
+      if (previous === 0) return current === 0 ? 0 : 100;
+      return ((current - previous) / previous) * 100;
+    };
+
+    useEffect(() => {
+      const now = new Date();
+
+      const successfulPayments = revenue.filter(
+        (p: any) => p.status === "success"
+      );
+
+      // ---------- MRR ----------
+      const currentMonthRevenue = successfulPayments
+        .filter((p: any) => isSameMonth(new Date(p.createdAt), now))
+        .reduce((sum: number, p: any) => sum + p.amount, 0);
+
+      const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+      const lastMonthRevenue = successfulPayments
+        .filter((p: any) => isSameMonth(new Date(p.createdAt), lastMonth))
+        .reduce((sum: number, p: any) => sum + p.amount, 0);
+
+      const mrrGrowth = percentChange(currentMonthRevenue, lastMonthRevenue);
+
+      // ---------- Annual Revenue ----------
+      const last12MonthsRevenue = successfulPayments
+        .filter((p: any) => {
+          const d = new Date(p.createdAt);
+          return d >= new Date(now.getFullYear() - 1, now.getMonth(), 1);
+        })
+        .reduce((sum: number, p: any) => sum + p.amount, 0);
+
+      const prev12MonthsRevenue = successfulPayments
+        .filter((p: any) => {
+          const d = new Date(p.createdAt);
+          return (
+            d >= new Date(now.getFullYear() - 2, now.getMonth(), 1) &&
+            d < new Date(now.getFullYear() - 1, now.getMonth(), 1)
+          );
+        })
+        .reduce((sum: number, p: any) => sum + p.amount, 0);
+
+      const annualGrowth = percentChange(
+        last12MonthsRevenue,
+        prev12MonthsRevenue
+      );
+
+      // ---------- Attrition (Churn) ----------
+        const subscribedUsers = users.filter(
+          (u) => u.subscriptionPlanId
+        );
+
+        const activeSubscribers = subscribedUsers.filter(
+          (u) => u.subscriptionEndDate && new Date(u.subscriptionEndDate) > now
+        );
+
+        const retentionRate =
+          subscribedUsers.length === 0
+            ? 0
+            : (activeSubscribers.length / subscribedUsers.length) * 100;
+
+        const currentAttritionRate = 100 - retentionRate;
+
+        // last month attrition
+        const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+        const lastMonthActive = subscribedUsers.filter(
+          (u) =>
+            u.subscriptionEndDate &&
+            new Date(u.subscriptionEndDate) > lastMonthDate
+        );
+
+        const lastMonthRetention =
+          subscribedUsers.length === 0
+            ? 0
+            : (lastMonthActive.length / subscribedUsers.length) * 100;
+
+        const lastMonthAttritionRate = 100 - lastMonthRetention;
+
+        const attritionGrowth = percentChange(
+          currentAttritionRate,
+          lastMonthAttritionRate
+        );
+
+      // ---------- Set state ----------
+     setTopCardStats({
+      currentMonthRecurringRevenue: currentMonthRevenue,
+      recurringRevenuePercentageIncLastMonth: Number(mrrGrowth.toFixed(2)),
+      annualRevenue: last12MonthsRevenue,
+      annualRevenuePercentageIncLastYear: Number(annualGrowth.toFixed(2)),
+      atterationRate: Number(currentAttritionRate.toFixed(2)),
+      atterationRatePercentageInc: Number(attritionGrowth.toFixed(2)),
+    });
+
+    }, [users, revenue]);
+
+    //last 6 months data for graph MRR
+    useEffect(() => {
+        const now = new Date();
+
+        // Step 1: create last 6 months buckets
+        const last6Months = Array.from({ length: 6 }).map((_, i) => {
+          const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
+          return {
+            monthIndex: d.getMonth(),
+            year: d.getFullYear(),
+            month: MONTHS[d.getMonth()],
+            revenue: 0,
+          };
+        });
+
+        // Step 2: accumulate revenue
+        revenue.forEach((payment: any) => {
+          if (payment.status !== "success") return;
+
+          const d = new Date(payment.createdAt);
+
+          last6Months.forEach((m) => {
+            if (d.getMonth() === m.monthIndex && d.getFullYear() === m.year) {
+              m.revenue += payment.amount;
+            }
+          });
+        });
+
+        // Step 3: format for chart
+        setMonthlyRcurringRevenueGrowth(
+          last6Months.map(({ month, revenue }) => ({
+            month,
+            revenue,
+          }))
+        );
+      }, [revenue]);
+
+    //Revenue by plan
+    useEffect(() => {
+  if (!revenue.length || !subsriptions.length) return;
+
+  // 1️⃣ Initialize revenue map for each subscription
+  const revenueMap: Record<string, number> = {};
+
+  subsriptions.forEach((sub: any) => {
+    revenueMap[sub._id] = 0;
+  });
+
+  // 2️⃣ Accumulate successful payments
+  revenue.forEach((payment: any) => {
+    if (payment.status !== "success") return;
+
+    const planId = payment.planId;
+
+    if (revenueMap[planId] !== undefined) {
+      revenueMap[planId] += payment.amount;
+    }
+  });
+
+  // 3️⃣ Format for charts / UI
+  const formatted = subsriptions.map((sub: any) => ({
+    plan: sub.title,                // ✅ correct field
+    revenue: revenueMap[sub._id] || 0,
+  }));
+
+  setRevenueByPlan(formatted);
+}, [revenue, subsriptions]);
+
+
+
+    console.log("Top Card STats::::::",topCardStats)
+
+    const isActiveSubscription = (endDate?: Date) => {
+      if (!endDate) return false;
+      return new Date(endDate) >= new Date();
+    };
+
+
+type PlanActiveCount = {
+  planId: string;
+  planName: string;
+  activeUsers: number;
+};
+
+
+const getActiveUsersByPlan = (
+  users: User[],
+  plans: any[]
+): {
+  planWiseActive: PlanActiveCount[];
+  freeTrialUsers: number;
+} => {
+  console.log("users::::::::",users)
+  const planMap: Record<string, PlanActiveCount> = {};
+  let freeTrialUsers = 0;
+
+  // initialize plans
+  plans.forEach(plan => {
+    planMap[plan._id] = {
+      planId: plan._id,
+      planName: plan.title,
+      activeUsers: 0,
+    };
+  });
+
+  users.forEach(user => {
+    // 🆓 free trial
+    if (!user.subscriptionPlanId) {
+      freeTrialUsers++;
+      return;
+    }
+
+    // paid user
+    if (isActiveSubscription(user.subscriptionEndDate)) {
+      const planId = String(user.subscriptionPlanId._id);
+      if (planMap[planId]) {
+        planMap[planId].activeUsers++;
+      }
+    }
+  });
+
+  return {
+    planWiseActive: Object.values(planMap),
+    freeTrialUsers,
+  };
+};
+
+const { planWiseActive, freeTrialUsers } = getActiveUsersByPlan(users.filter((e)=>e.role==="agency"), subsriptions);
+
+const PALETTE = [
+  "#FFAE4C", "#8979FF", "#FF928A",
+  "#3CC3DF","#8979FF"
+];
+
+const pieData = [
+  ...planWiseActive.map((p, index) => ({
+    name: p.planName,
+    value: p.activeUsers,
+    color: PALETTE[index],
+  })),
+  {
+    name: "Free Trial",
+    value: freeTrialUsers,
+    color: "#9CA3AF",
+  },
+];
+
+console.log("Caluclated pie data is::::::",pieData)
+
+
+
+
   /*
-  -------------------------------------------------
+  
+  ------------------------------------------------- 
   OPTIONAL: Fetch Real Revenue Data from Backend
   -------------------------------------------------
   useEffect(() => {
@@ -68,6 +395,14 @@ export default function RevenueDashboardPage() {
     loadRevenue();
   }, []);
   */
+
+   if(resLoading){
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -93,25 +428,25 @@ export default function RevenueDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 my-custom-class gap-6">
         <KpiCard 
           title="Current MRR"
-          value="$18,000"
-          note="↑ 15% from last month"
-          noteColor="text-green-600"
+          value={topCardStats.currentMonthRecurringRevenue}
+          note={`${topCardStats.recurringRevenuePercentageIncLastMonth}% from last month`}
+          noteColor={topCardStats.recurringRevenuePercentageIncLastMonth>=0?"text-green-600":"text-red-600"}
           icon={< RiExchangeDollarFill className="text-orangeButton bg-[#eef7fe]" />}
         />
 
         <KpiCard
           title="Annual Revenue"
-          value="$216,000"
-          note="↑ 18% growth YoY"
-          noteColor="text-green-600"
+          value={topCardStats.annualRevenue}
+          note={`${topCardStats.annualRevenuePercentageIncLastYear}% growth YoY`}
+          noteColor={topCardStats.annualRevenuePercentageIncLastYear>=0?"text-green-600":"text-red-600"}
           icon={<IoMdTrendingUp className="text-orangeButton" />}
         />
 
         <KpiCard
           title="Attrition rate"
-          value="$4,200"
-          note="Improved from 1.8%"
-          noteColor="text-gray-600"
+          value={`${topCardStats.atterationRate} %`}
+          note={`${topCardStats.atterationRatePercentageInc}% from last month`}
+          noteColor={topCardStats.atterationRatePercentageInc>=0?"text-green-600":"text-red-600"}
           icon={<FaArrowUpLong className="text-green-600" />}
         />
       </div>
@@ -126,7 +461,7 @@ export default function RevenueDashboardPage() {
   <div className="h-[340px]">
     <ResponsiveContainer width="100%" height="100%">
       <AreaChart
-        data={mrrTrend}
+        data={monthlyRcurringRevenueGrowth}
         margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
       >
         {/* Grid */}
@@ -161,7 +496,7 @@ export default function RevenueDashboardPage() {
         {/* Main Area Line */}
         <Area
           type="monotone"
-          dataKey="value"
+          dataKey="revenue"
           stroke="#38bdf8"
           strokeWidth={2}
           fill="url(#mrrGradient)"
@@ -174,8 +509,9 @@ export default function RevenueDashboardPage() {
           activeDot={{ r: 5 }}
         />
 
+
         {/* Scatter-style dots (purple) */}
-        <Area
+        {/* <Area
           type="monotone"
           dataKey="scatter"
           stroke="transparent"
@@ -186,7 +522,7 @@ export default function RevenueDashboardPage() {
             strokeWidth: 2,
             fill: "#ffffff",
           }}
-        />
+        /> */}
       </AreaChart>
     </ResponsiveContainer>
   </div>
@@ -203,17 +539,13 @@ export default function RevenueDashboardPage() {
 
           <ResponsiveContainer width="100%" height={420}>
             <BarChart
-              data={mockRevenueByPlan}
+              data={revenueByPlan}
               barGap={6}
-              margin={{ top:0, right: 20, left: 0, bottom: 10 }}
+              barSize={50}
+              margin={{ top: 0, right: 20, left: 0, bottom: 10 }}
             >
-              {/* Grid */}
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="#e5e7eb"
-              />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
 
-              {/* X Axis */}
               <XAxis
                 dataKey="plan"
                 tick={{ fill: "#6b7280", fontSize: 13 }}
@@ -221,46 +553,39 @@ export default function RevenueDashboardPage() {
                 tickLine={false}
               />
 
-              {/* Y Axis */}
               <YAxis
                 tick={{ fill: "#6b7280", fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
               />
 
-              <Tooltip />
+              <Tooltip formatter={(value) => `₹${value}`} />
 
-              {/* Legend */}
               <Legend
-                  verticalAlign="top"
-                  align="right"
-                  iconType="square"
-                  iconSize={10}
-                  formatter={(value) => (
-                    <span style={{ color: "#000000", fontSize: "12px" }}>
-                      {value}
-                    </span>
-                  )}
-                />
-
-              {/* Enterprise Revenue */}
-              <Bar
-                dataKey="enterprise"
-                name="Enterprise Revenue"
-                fill="#ffb3a7"
-                radius={[6, 6, 0, 0]}
-                label={{ position: "top", fill: "#374151", fontSize: 12 }}
+                formatter={(value) => (
+                  <span style={{ color: "#000", fontSize: "12px" }}>
+                    {value}
+                  </span>
+                )}
               />
 
-              {/* Revenue */}
+              {/* ✅ Single bar */}
               <Bar
                 dataKey="revenue"
                 name="Revenue"
-                fill="#63d2e6"
                 radius={[6, 6, 0, 0]}
                 label={{ position: "top", fill: "#374151", fontSize: 12 }}
-              />
+              >
+                {revenueByPlan.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                    name={entry.plan}
+                  />
+                ))}
+              </Bar>
             </BarChart>
+
           </ResponsiveContainer>
         </div>
 

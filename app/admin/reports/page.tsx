@@ -487,6 +487,13 @@ export default function ReportsPage() {
   
   console.log("Max users are:::::",maxUsers);
 
+  const [userGrowthData, setUserGrowthData] = useState<
+  { month: string; users: number }[]
+>([]);
+
+const formatMonthYear = (date: Date) =>
+  `${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+
   
 
 const step = getYAxisStep(maxUsers)
@@ -574,6 +581,11 @@ const getUserGrowthData = (users, year = new Date().getFullYear()) => {
     }
   })
 }
+const getMonthRange = (year: number, month: number) => {
+  const start = new Date(year, month, 1);
+  const end = new Date(year, month + 1, 0, 23, 59, 59, 999);
+  return { start, end };
+};
 
 
   const[bottomCardStats,setBottomCardStats]=useState({
@@ -582,6 +594,15 @@ const getUserGrowthData = (users, year = new Date().getFullYear()) => {
            avgRevenuePereUser:0,
            platformGrowthPercentage:0
      })
+    
+  const[userTabCardStats,setUserTabCardStats]=useState({
+    totalUsers:0,
+    increaseCount:0,
+    userRetentionPercentage:0,
+    increasedUserRetentionPercentage:0,
+    newUsersCountInThisMonth:0,
+    increasedNewUsersCountThanLastMonth:0,
+  })
 
   const loadData=async ()=>{
     setResLoading(true);
@@ -663,6 +684,150 @@ const getUserGrowthData = (users, year = new Date().getFullYear()) => {
   useEffect(()=>{
     loadData()
   },[])
+
+  //this is for calucltaing the stats values in the user tab for the cards
+  useEffect(() => {
+  if (!users || users.length === 0) return;
+
+  const now = new Date();
+
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+
+  const lastMonthDate = new Date(currentYear, currentMonth - 1);
+  const lastMonth = lastMonthDate.getMonth();
+  const lastMonthYear = lastMonthDate.getFullYear();
+
+  const { start: currStart, end: currEnd } =
+    getMonthRange(currentYear, currentMonth);
+
+  const { start: lastStart, end: lastEnd } =
+    getMonthRange(lastMonthYear, lastMonth);
+
+  // ---------------- TOTAL USERS ----------------
+  const totalUsers = users.length;
+
+  // ---------------- NEW USERS ----------------
+  const currentMonthNewUsers = users.filter((u: any) => {
+    const createdAt = new Date(u.createdAt);
+    return createdAt >= currStart && createdAt <= currEnd;
+  });
+
+  const lastMonthNewUsers = users.filter((u: any) => {
+    const createdAt = new Date(u.createdAt);
+    return createdAt >= lastStart && createdAt <= lastEnd;
+  });
+
+  const newUsersCountInThisMonth = currentMonthNewUsers.length;
+  const increasedNewUsersCountThanLastMonth =
+    newUsersCountInThisMonth - lastMonthNewUsers.length;
+
+  // ---------------- SUBSCRIBERS LAST MONTH ----------------
+  const lastMonthSubscribers = users.filter((u: any) => {
+    if (!u.subscriptionStartDate || !u.subscriptionEndDate) return false;
+
+    const start = new Date(u.subscriptionStartDate);
+    const end = new Date(u.subscriptionEndDate);
+
+    return start <= lastEnd && end >= lastStart;
+  });
+
+  // ---------------- RETAINED THIS MONTH ----------------
+  const retainedSubscribers = lastMonthSubscribers.filter((u: any) => {
+    const end = new Date(u.subscriptionEndDate);
+    return end >= currStart;
+  });
+
+  const userRetentionPercentage =
+    lastMonthSubscribers.length === 0
+      ? 0
+      : Math.round(
+          (retainedSubscribers.length / lastMonthSubscribers.length) * 100
+        );
+
+  // ---------------- LAST MONTH RETENTION (FOR COMPARISON) ----------------
+  const prevMonthDate = new Date(lastMonthYear, lastMonth - 1);
+  const { start: prevStart, end: prevEnd } = getMonthRange(
+    prevMonthDate.getFullYear(),
+    prevMonthDate.getMonth()
+  );
+
+  const prevMonthSubscribers = users.filter((u: any) => {
+    if (!u.subscriptionStartDate || !u.subscriptionEndDate) return false;
+
+    const start = new Date(u.subscriptionStartDate);
+    const end = new Date(u.subscriptionEndDate);
+
+    return start <= prevEnd && end >= prevStart;
+  });
+
+  const prevMonthRetained = prevMonthSubscribers.filter((u: any) => {
+    const end = new Date(u.subscriptionEndDate);
+    return end >= lastStart;
+  });
+
+  const lastMonthRetentionPercentage =
+    prevMonthSubscribers.length === 0
+      ? 0
+      : Math.round(
+          (prevMonthRetained.length / prevMonthSubscribers.length) * 100
+        );
+
+  const increasedUserRetentionPercentage =
+    userRetentionPercentage - lastMonthRetentionPercentage;
+
+  // ---------------- SET STATE ----------------
+  setUserTabCardStats({
+    totalUsers,
+    increaseCount: increasedNewUsersCountThanLastMonth,
+    userRetentionPercentage,
+    increasedUserRetentionPercentage,
+    newUsersCountInThisMonth,
+    increasedNewUsersCountThanLastMonth,
+  });
+}, [users]);
+ // this is for the graph user growth
+useEffect(() => {
+  if (!users || users.length === 0) return;
+
+  const now = new Date();
+  const growthData: { month: string; users: number }[] = [];
+
+  for (let i = 11; i >= 0; i--) {
+    const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+
+    const monthStart = new Date(
+      monthDate.getFullYear(),
+      monthDate.getMonth(),
+      1
+    );
+
+    const monthEnd = new Date(
+      monthDate.getFullYear(),
+      monthDate.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999
+    );
+
+    const usersCount = users.filter((u: any) => {
+      const createdAt = new Date(u.createdAt);
+      return createdAt >= monthStart && createdAt <= monthEnd;
+    }).length;
+
+    growthData.push({
+      month: formatMonthYear(monthDate),
+      users: usersCount,
+    });
+  }
+
+  setUserGrowthData(growthData);
+}, [users]);
+
+
+console.log("User Tab cards Stats::::",userTabCardStats);
 
   const getTotalRevenue = (payments) => {
   return payments
@@ -919,7 +1084,13 @@ const getARPU = (payments) => {
       {activeTab === "Users" && (
         <div className="space-y-8">
           {/* Top KPIs */}
-          <UsersKPIs />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <KPICard title="Total Users" value={userTabCardStats.totalUsers.toString()} subtitle={`${userTabCardStats.increaseCount} this month`} />
+              <KPICard title="User Retention Rate" value={`${userTabCardStats.userRetentionPercentage.toFixed(1).toString()}%`} subtitle={`${userTabCardStats.increasedUserRetentionPercentage}% last month`} />
+              <KPICard title="New User Signups" value={userTabCardStats.newUsersCountInThisMonth.toString()} subtitle={`${userTabCardStats.increasedNewUsersCountThanLastMonth} this month`} />
+              {/* <KPICard title="Active Sessions" value="3,421" subtitle="Currently Active" /> */}
+
+          </div>
 
           {/* User Growth Chart */}
           <div className="bg-white rounded-2xl p-6 shadow-sm">
@@ -929,7 +1100,7 @@ const getARPU = (payments) => {
             <p className="text-sm text-gray-500 mb-4">
               Track user acquisition and trends report
             </p>
-            <UserGrowthChart2 />
+            <UserGrowthChart2 userGrowthData={userGrowthData} />
           </div>
         </div>
       )}
@@ -1108,7 +1279,7 @@ function UserGrowthChart({userData,yAxisMax,yAxisTicks}) {
     </ChartContainer>
   )
 }
-function UserGrowthChart2() {
+function UserGrowthChart2({userGrowthData}) {
   return (
     <ChartContainer
       className="h-72 w-full"
