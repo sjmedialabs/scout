@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
+import Subscription from "@/models/Subscription";
 import { getCurrentUser } from "@/lib/auth/jwt";
 
 export async function GET(request: NextRequest) {
@@ -9,7 +10,7 @@ export async function GET(request: NextRequest) {
     if (!user || user.role !== "admin") {
       return NextResponse.json(
         { error: "Admin access required" },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -17,8 +18,8 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const role = searchParams.get("role");
-    const limit = Number.parseInt(searchParams.get("limit") || "50");
-    const page = Number.parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "50");
+    const page = parseInt(searchParams.get("page") || "1");
 
     const query: any = {};
     if (role) query.role = role;
@@ -27,30 +28,21 @@ export async function GET(request: NextRequest) {
 
     const [users, total] = await Promise.all([
       User.find(query)
-        .select("-password")
+        .select("-password") // exclude password only
+        .populate({
+          path: "subscriptionPlanId",
+          select: "title pricePerMonth pricePerYear", // only fetch title from Subscription
+        })
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .lean(),
+
       User.countDocuments(query),
     ]);
 
-    const formattedUsers = users.map((u: any) => ({
-      id: u._id.toString(),
-      email: u.email,
-      name: u.name,
-      role: u.role,
-      company: u.company,
-      phone: u.phone,
-      avatar: u.avatar,
-      isVerified: u.isVerified,
-      isActive: u.isActive,
-      lastLogin: u.lastLogin,
-      createdAt: u.createdAt,
-    }));
-
     return NextResponse.json({
-      users: formattedUsers,
+      users,
       pagination: {
         total,
         page,
@@ -62,7 +54,8 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching users:", error);
     return NextResponse.json(
       { error: "Failed to fetch users" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
+
