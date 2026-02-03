@@ -23,7 +23,7 @@ type Subscriber = {
   company: string;
   email: string;
   role: "client" | "agency";
-  plan: "Enterprise" | "Pro" | "Basic";
+  plan: string;
   status: "Active" | "Inactive" | "Suspended";
   users: number;
   revenue: number;
@@ -40,8 +40,9 @@ export default function AllSubscribersPage() {
   const [status, setStatus] = useState("all");
   const [role, setRole] = useState<"all" | "client" | "agency">("all");
 
- const toggleStatus = async (index: number) => {
-  const sub = subscribers[index];
+ const toggleStatus = async (sub: Subscriber) => {
+  // const sub = subscribers[index];
+  console.log("recived sub::::",sub)
   const newIsActive = sub.status === "Active" ? false : true;
 
   try {
@@ -59,7 +60,7 @@ export default function AllSubscribersPage() {
     // Update UI after DB success
     setSubscribers((prev) =>
       prev.map((s, i) =>
-        i === index
+        s.id === sub.id
           ? { ...s, status: newIsActive ? "Active" : "Inactive" }
           : s
       )
@@ -86,30 +87,44 @@ export default function AllSubscribersPage() {
       if (!res.ok) throw new Error("Failed to fetch users");
 
       const data = await res.json();
+      console.log ("RAW USER FROM API:" , data.users[0])
 
       // Convert backend users → table format
       const formatted = data.users
-      .filter((u: any) => u.role !== "admin") // ✅ hide admins
-      .map((u: any) => {
-        let plan: "Basic" | "Pro" | "Enterprise" = "Basic";
+  .filter((u: any) => u.role !== "admin")
+  .map((u: any) => {
+    let plan = "—";
+    let revenue = 0;
 
-        if (u.subscriptionPlanId) {
-          plan = u.billingCycle === "Yearly" ? "Enterprise" : "Pro";
-        }
+    if (u.role === "agency") {
+      if (u.subscriptionPlanId) {
+        plan = u.subscriptionPlanId.title;
 
-        return {
-          id: u.id,
-          company: u.company || u.name,
-          email: u.email,
-          role: u.role,
-          plan, 
-          status: u.isActive ? "Active" : "Inactive",
-          users: 1,
-          revenue: 0,
-          joined: u.createdAt.split("T")[0],
-          billingCycle: u.billingCycle,
-        };
-      });
+        // ✅ Dynamic Monthly Revenue (MRR)
+        revenue =
+          u.billingCycle === "Yearly"
+            ? Math.round(u.subscriptionPlanId.pricePerYear / 12)
+            : u.subscriptionPlanId.pricePerMonth;
+      } else {
+        plan = "Trial";
+        revenue = 0;
+      }
+    }
+
+    return {
+      id: u._id,
+      company: u.company || u.name,
+      email: u.email,
+      role: u.role,
+      plan,
+      status: u.isActive ? "Active" : "Inactive",
+      users: 1,
+      revenue,
+      joined: u.createdAt.split("T")[0],
+      billingCycle: u.billingCycle,
+    };
+  });
+
 
       setSubscribers(formatted);
     } catch (err) {
@@ -121,6 +136,7 @@ export default function AllSubscribersPage() {
 
   loadSubscribers();
 }, [role]);
+
 
 
   const filtered = subscribers.filter((s) => {
@@ -229,15 +245,18 @@ export default function AllSubscribersPage() {
                 <td className="p-4">
                   <Badge
                     className={
-                      sub.plan === "Enterprise"
-                        ? "bg-blue-100 text-blue-600 rounded-2xl"
+                      sub.plan === "Trial"
+                        ? "bg-yellow-100 text-yellow-700 rounded-2xl"
+                        : sub.plan === "—"
+                        ? "bg-gray-50 text-gray-400 rounded-2xl"
                         : sub.plan === "Pro"
-                          ? "bg-pink-100 text-pink-600 rounded-2xl"
-                          : "bg-gray-100 text-gray-600 rounded-2xl"
+                        ? "bg-pink-100 text-pink-600 rounded-2xl"
+                        : "bg-blue-100 text-blue-600 rounded-2xl"
                     }
                   >
                     {sub.plan}
                   </Badge>
+
                 </td>
 
                 <td className="p-4">
@@ -266,10 +285,10 @@ export default function AllSubscribersPage() {
                 </td>
 
                 <td className="p-4">
-                  <div className="flex items-center gap-3">
-                    <EditSubscriberModal subscriber={sub} />
+                  <div className="flex items-center justify-center gap-3">
+                    {/* <EditSubscriberModal subscriber={sub} /> */}
                     <UserX
-                    onClick={() => toggleStatus(i)}
+                    onClick={() => toggleStatus(sub)}
                     className={`h-4 w-4 cursor-pointer ${
                       sub.status === "Active"
                         ? "text-red-600 hover:text-red-800"

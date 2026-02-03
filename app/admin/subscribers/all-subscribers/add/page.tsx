@@ -28,35 +28,29 @@ export default function AddSubscriberPage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    // Validation (all mandatory)
-    if (
-      !form.company ||
-      !form.email ||
-      !form.plan ||
-      !form.status ||
-      !form.users
-    ) {
-      setError("All fields are required.");
-      setSuccess(false);
-      return;
-    }
-
-    //  Success simulation (backend-ready)
-    setError("");
-    setSuccess(true);
-
-    //  Reset form
-    setForm({
-      company: "",
-      email: "",
-      plan: "",
-      status: "",
-      users: "",
+  try {
+    const res = await fetch("/api/admin/create-agency", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        company: form.company,
+        email: form.email,
+      }),
     });
-  };
+
+    if (!res.ok) throw new Error();
+
+    setSuccess(true);
+    setError("");
+  } catch {
+    setError("Failed to add subscriber");
+  }
+};
+
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-2 py-0">
