@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
-import Subscription from "@/models/Subscription";
+import "@/models/Subscription";
 import { getCurrentUser } from "@/lib/auth/jwt";
 
 export async function GET(request: NextRequest) {

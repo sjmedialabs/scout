@@ -121,12 +121,12 @@ export default function SubscribersManagementPage() {
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
       // ✅ ACTIVE SUBSCRIBED AGENCIES
-      const activeAgencies = users.filter(
-        (u: any) =>
-          u.subscriptionPlanId &&
-          u.subscriptionEndDate &&
-          new Date(u.subscriptionEndDate) > now
-      );
+            const activeAgencies = users.filter((u: any) => {
+        if (!u.subscriptionPlanId) return false;
+        if (!u.subscriptionEndDate) return true;
+        return new Date(u.subscriptionEndDate) > now;
+      });
+
 
       const totalActiveSubscribers = activeAgencies.length;
 
@@ -137,41 +137,61 @@ export default function SubscribersManagementPage() {
           new Date(u.subscriptionStartDate) >= startOfMonth
       ).length;
 
-       /* ---------- PAYMENTS ---------- */
-        const paymentRes = await authFetch("/api/payment/admin");
-        const paymentData = await paymentRes.json();
-        const payments = paymentData.payments ?? [];
+      /* ---------- MONTHLY REVENUE (AGENCIES WHO PAID) ---------- */
+
+        let thisMonthRevenue = 0;
+        let lastMonthRevenue = 0;
 
         const startOfLastMonth = new Date(
           now.getFullYear(),
           now.getMonth() - 1,
           1
         );
+
         const endOfLastMonth = new Date(
           now.getFullYear(),
           now.getMonth(),
           0
         );
 
-        const thisMonthRevenue = payments
-          .filter(
-            (p: any) =>
-              p.status === "success" &&
-              new Date(p.createdAt) >= startOfMonth
-          )
-          .reduce((sum: number, p: any) => sum + p.amount, 0);
+        // 🔥 ONLY AGENCIES
+        for (const user of users) {
+          const payRes = await authFetch(`/api/payment/${user._id}`);
+          const payData = await payRes.json();
+          const payments = payData.payments ?? [];
 
-        const lastMonthRevenue = payments
-          .filter(
-            (p: any) =>
-              p.status === "success" &&
-              new Date(p.createdAt) >= startOfLastMonth &&
-              new Date(p.createdAt) <= endOfLastMonth
-          )
-          .reduce((sum: number, p: any) => sum + p.amount, 0);
+          thisMonthRevenue += payments
+            .filter(
+              (p: any) =>
+                p.status === "success" &&
+                new Date(p.createdAt) >= startOfMonth
+            )
+            .reduce((sum: number, p: any) => sum + p.amount, 0);
 
-        let percent = 0;
+          lastMonthRevenue += payments
+            .filter(
+              (p: any) =>
+                p.status === "success" &&
+                new Date(p.createdAt) >= startOfLastMonth &&
+                new Date(p.createdAt) <= endOfLastMonth
+            )
+            .reduce((sum: number, p: any) => sum + p.amount, 0);
+        }
+
+       let percent = 0;
         let trend: "up" | "down" | "same" = "same";
+
+        if (lastMonthRevenue === 0 && thisMonthRevenue > 0) {
+          // First revenue ever
+          percent = 100;
+          trend = "up";
+        } else if (lastMonthRevenue > 0) {
+          percent = Math.round(
+            ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
+          );
+          trend = percent > 0 ? "up" : percent < 0 ? "down" : "same";
+        }
+
 
         if (lastMonthRevenue > 0) {
           percent = Math.round(
