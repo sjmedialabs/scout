@@ -68,8 +68,10 @@ export default function BrowsePage() {
         if (res.ok) {
           const mapped = data.requirements.filter(
             (eachItem) =>
-              eachItem.status.toLowerCase() != "closed" ||
-              eachItem.status.toLowerCase() != "allocated",
+              eachItem.status.toLowerCase() != "closed" &&
+              eachItem.status.toLowerCase() != "allocated" &&
+              eachItem.status.toLowerCase() != "underreview" &&
+              eachItem.status.toLowerCase() !="notapproved"
           );
           setRequriments(mapped);
           setFilteredRequirements(mapped);

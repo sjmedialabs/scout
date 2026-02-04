@@ -1,4 +1,4 @@
-export type RequirementStatus = "open" | "shortlisted" | "negotiation" | "closed"
+export type RequirementStatus = "open" | "shortlisted" | "negotiation" | "closed" | "UnderReview" | "NotApproved"
 export type ProposalStatus = "pending" | "shortlisted" | "accepted" | "rejected" | "negotation"
 export type ProjectStatus = "active" | "completed" | "cancelled"
 export type SubscriptionTier = "basic" | "standard" | "premium"
@@ -31,6 +31,7 @@ export interface Requirement {
   updatedAt: Date
   seekerId: string
   attachments?: string[]
+  notApprovedMsg:String
 }
 
 export interface Proposal {

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { authFetch } from "@/lib/auth-fetch";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");

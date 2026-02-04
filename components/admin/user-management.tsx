@@ -11,10 +11,13 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Textarea } from "@/components/ui/textarea"
 import { Search, UserCheck, UserX, Eye, Mail, Calendar, TriangleAlert, Users } from "lucide-react"
 import type { AdminUser } from "@/lib/types"
+import { User } from "@/lib/types"
+import { authFetch } from "@/lib/auth-fetch"
+import { toast } from "@/lib/toast";
 
 interface UserManagementProps {
-  users: AdminUser[]
-  onUpdateUserStatus: (userId: string, status: AdminUser["status"]) => void
+  users: User[]
+  onUpdateUserStatus: (userId: string, status: boolean) => void
   onSendMessage: (userId: string, message: string) => void
 }
 
@@ -26,25 +29,30 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
   const [messageDialog, setMessageDialog] = useState<{ open: boolean; userId: string }>({ open: false, userId: "" })
   const [message, setMessage] = useState("")
 
+  const[sendingStatus,setSendingStatus]=useState(false);
+  const[sendMssgFailed,setSendMssgFailed]=useState({
+    status:"success",
+    msg:""
+  })
+
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.companyName?.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesRole = roleFilter === "all" || user.role === roleFilter
-    const matchesStatus = statusFilter === "all" || user.status === statusFilter
+    const matchesStatus = statusFilter === "all" || user.isActive === (statusFilter==="active"?true:false)
 
     return matchesSearch && matchesRole && matchesStatus
   })
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status:boolean) => {
     switch (status) {
-      case "active":
+      case true:
         return "bg-green-100 text-green-800"
-      case "suspended":
+      case false:
         return "bg-red-100 text-red-800"
-      case "pending":
-        return "bg-yellow-100 text-yellow-800"
+      
       default:
         return "bg-gray-100 text-gray-800"
     }
@@ -63,10 +71,35 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
     }
   }
 
-  const handleSendMessage = () => {
-    onSendMessage(messageDialog.userId, message)
-    setMessageDialog({ open: false, userId: "" })
-    setMessage("")
+  const handleSendMessage = async() => {
+    // onSendMessage(messageDialog.userId, message)
+    console.log("Message to send:::",messageDialog.userId, message)
+    const userToSendMail=users.find((eachItem)=>eachItem._id===messageDialog.userId)
+    setSendingStatus(true);
+    try{
+      const res=await authFetch("/api/send-mail",{
+        method:"POST",
+        body:JSON.stringify({email:userToSendMail?.email,message})
+      })
+      if(!res.ok){
+        throw new Error()
+      }
+
+     setMessageDialog({ open: false, userId: "" })
+     setMessage("")
+     toast.success("Successfully delivered the msg to subscriber through email")
+
+
+    }catch(error){
+        console.log("Failed to sen dthe email:::",error)
+        setSendMssgFailed({
+          status:"failed",
+          msg:"Failed to send the msg please try after some time"
+        })
+    }finally{
+       setSendingStatus(false)
+    }
+   
   }
 
   return (
@@ -118,8 +151,7 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
               <SelectContent>
                 <SelectItem value="all">All Statuses</SelectItem>
                 <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="suspended">Suspended</SelectItem>
+                <SelectItem value="inactive">InActive</SelectItem>
               </SelectContent>
             </Select>
 
@@ -152,7 +184,7 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
               </TableHeader>
               <TableBody>
                 {filteredUsers.map((user) => (
-                  <TableRow key={user.id}>
+                  <TableRow key={user._id}>
                     <TableCell>
                       <div>
                         <div className="font-semibold">{user.name}</div>
@@ -166,15 +198,15 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge className={getStatusColor(user.status)} variant="secondary">
-                        {user.status}
+                      <Badge className={getStatusColor(user.isActive)} variant="secondary">
+                        {user.isActive?"Active":"InActive"}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {user.subscriptionTier ? (
-                        <Badge variant="outline">{user.subscriptionTier}</Badge>
+                      {user?.subscriptionPlanId?.title ? (
+                        <Badge variant="outline">{user.subscriptionPlanId.title}</Badge>
                       ) : (
-                        <span className="text-muted-foreground">-</span>
+                        <span className="text-muted-foreground">Free Trail</span>
                       )}
                     </TableCell>
                     <TableCell>
@@ -204,16 +236,16 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => setMessageDialog({ open: true, userId: user.id })}
+                          onClick={() => setMessageDialog({ open: true, userId: user._id })}
                         >
                           <Mail className="h-4 w-4" />
                         </Button>
-                        {user.status === "active" ? (
-                          <Button variant="ghost" size="sm" onClick={() => onUpdateUserStatus(user.id, "suspended")}>
+                        {user.isActive ? (
+                          <Button variant="ghost" size="sm" onClick={() => onUpdateUserStatus(user._id, false)}>
                             <UserX className="h-4 w-4" />
                           </Button>
                         ) : (
-                          <Button variant="ghost" size="sm" onClick={() => onUpdateUserStatus(user.id, "active")}>
+                          <Button variant="ghost" size="sm" onClick={() => onUpdateUserStatus(user._id, true)}>
                             <UserCheck className="h-4 w-4" />
                           </Button>
                         )}
@@ -253,8 +285,8 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
                 </div>
                 <div className="flex flex-row gap-2 items-center pb-8 pl-4">
                   <label className="text-sm font-medium">Status :</label>
-                  <Badge className={getStatusColor(selectedUser.status)} variant="secondary">
-                    {selectedUser.status}
+                  <Badge className={getStatusColor(selectedUser.isActive)} variant="secondary">
+                    {selectedUser.isActive?"Active":"InActive"}
                   </Badge>
                 </div>
                 {selectedUser.companyName && (
@@ -290,8 +322,13 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
               style={{backgroundColor: "#ECECEC", borderRadius: "10px"}}
               rows={6}
             />
+            {
+              sendMssgFailed.status!=="success"&&(
+                <p className="text-sm text-red-500">{sendMssgFailed.msg}</p>
+              )
+            }
             <div className="flex gap-2">
-              <Button onClick={handleSendMessage} className="rounded-full bg-[#FF0000] text-white">Send Message</Button>
+              <Button onClick={handleSendMessage} className={`rounded-full ${sendingStatus?"bg-[#ee4242] cursor-not-allowed":"bg-[#FF0000] cursor-pointer`"} text-white`} disabled={sendingStatus}>{sendingStatus?"Sending...":"Send Message"}</Button>
               <Button className="rounded-full" onClick={() => setMessageDialog({ open: false, userId: "" })}>
                 Cancel
               </Button>
