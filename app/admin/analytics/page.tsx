@@ -18,12 +18,13 @@ import {
   type Review,
   Proposal,
 } from "@/lib/types";
+import { authFetch } from "@/lib/auth-fetch";
 
 export default function AnalyticsPage() {
   const [stats, setStats] = useState(mockAdminStats);
-  const [subscriptionStats, setSubscriptionStats] = useState(
-    mockSubscriptionStats,
-  );
+  // const [subscriptionStats, setSubscriptionStats] = useState(
+  //   mockSubscriptionStats,
+  // );
   const [topProviders, setTopProviders] = useState([mockProvider]);
   const [isLoading, setIsLoading] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
@@ -34,10 +35,36 @@ export default function AnalyticsPage() {
     clientsCountPercentage: 0,
     agenciesCount: 0,
     agenciesCountPercentage: 0,
+    pendingApproval:0,
+    monthlyRevenue:0,
+    percentageIncrease:0
   });
   const [topPerformingAgencies, setTopPerformingAgencies] = useState<
     Provider[]
   >([]);
+
+      const [subscriptionStats, setSubscriptionStats] = useState<{
+      planId: string;
+      planName: string;
+      count: number;
+      percentage: number;
+    }[]>([]);
+
+    const [freeTrialStats, setFreeTrialStats] = useState<{
+      count: number;
+      percentage: number;
+    }>({ count: 0, percentage: 0 });
+
+   const[bottomCardStats,setBottomCardStats]=useState({
+         monthlyRecurringRevenue:0,
+         activeSubscriberCount:0,
+         avgRevenuePereUser:0,
+         platformGrowthPercentage:0
+   })
+  // const[dynamicSubscriptionStats,setDynamicSubscriptionStats]=useState({
+
+  // })
+
 
   useEffect(() => {
     async function fetchDashboardData() {
@@ -50,6 +77,8 @@ export default function AnalyticsPage() {
           usersRes,
           requirementsRes,
           providersRes,
+          paymentRes,
+          subscriptionRes,
           //  reportsRes
         ] = await Promise.all([
           //   authFetch("/api/admin/stats"),
@@ -57,6 +86,8 @@ export default function AnalyticsPage() {
           authFetch("/api/users"),
           authFetch("/api/requirements"),
           authFetch("/api/providers"),
+          authFetch("/api/payment"),
+          authFetch("/api/subscription")
           //   authFetch("/api/admin/reports"),
         ]);
         const usersData = await usersRes.json();
@@ -70,18 +101,19 @@ export default function AnalyticsPage() {
         let agencyCountPercentage =
           totalUsers > 0 ? Math.round((agenciesCount / totalUsers) * 100) : 0;
 
-        console.log("Total users count::::", totalUsers);
-        console.log("clients counts::::", clientCounts);
-        console.log("clients counts percentage::::", clientsCountPercentage);
-        console.log("Agencies count:::::", agenciesCount);
-        console.log("Agencies percentage:::::", agencyCountPercentage);
+        // console.log("Total users count::::", totalUsers);
+        // console.log("clients counts::::", clientCounts);
+        // console.log("clients counts percentage::::", clientsCountPercentage);
+        // console.log("Agencies count:::::", agenciesCount);
+        // console.log("Agencies percentage:::::", agencyCountPercentage);
 
-        setUserDistribution({
-          clientsCount: clientCounts,
-          clientsCountPercentage: clientsCountPercentage,
-          agenciesCount: agenciesCount,
-          agenciesCountPercentage: agencyCountPercentage,
-        });
+        // setUserDistribution({
+        //   clientsCount: clientCounts,
+        //   clientsCountPercentage: clientsCountPercentage,
+        //   agenciesCount: agenciesCount,
+        //   agenciesCountPercentage: agencyCountPercentage,
+        //   pendingApproval:usersData.users.filter((eachItem)=>!eachItem.isVerified).length
+        // });
 
         setUsers(usersData.users);
 
@@ -99,6 +131,123 @@ export default function AnalyticsPage() {
         console.log("top performers::::::", topThreePerformers);
         setTopPerformingAgencies(topThreePerformers);
         setRequirements(requirementsData.requirements);
+
+        //Monthly payment
+
+        const paymentsData=await paymentRes.json();
+        const payments=paymentsData.data;
+
+        const successfulPayments = payments.filter(
+          (p: any) => p.status === "success"
+        )
+        const now = new Date()
+
+        const currentYear = now.getFullYear()
+        const currentMonth = now.getMonth()
+
+        const lastMonthDate = new Date(currentYear, currentMonth - 1)
+        const lastMonth = lastMonthDate.getMonth()
+        const lastMonthYear = lastMonthDate.getFullYear()
+
+        const currentMonthRevenue = getMonthlyRevenue(
+          successfulPayments,
+          currentYear,
+          currentMonth
+        )
+
+        const lastMonthRevenue = getMonthlyRevenue(
+          successfulPayments,
+          lastMonthYear,
+          lastMonth
+        )
+
+        let revenueIncreasePercentage = 0
+
+        if (lastMonthRevenue > 0) {
+          revenueIncreasePercentage =
+            ((currentMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
+        }
+
+         setUserDistribution({
+          clientsCount: clientCounts,
+          clientsCountPercentage: clientsCountPercentage,
+          agenciesCount: agenciesCount,
+          agenciesCountPercentage: agencyCountPercentage,
+          pendingApproval:usersData.users.filter((eachItem)=>!eachItem.isVerified).length,
+          monthlyRevenue:currentMonthRevenue,
+          percentageIncrease:Number(revenueIncreasePercentage.toFixed(2)),
+        });
+
+        const subscriptionData=await subscriptionRes.json();
+        const users = usersData.users;                 // all users
+        const plans = subscriptionData;  // available plans
+
+        const totalRegisteredUsers = users.length;
+
+        const planCountMap: Record<string, number> = {};
+        let freeTrialCount = 0;
+
+        // Step 1: classify users
+        users.forEach((user: any) => {
+          if (user.subscriptionPlanId) {
+            const planId = user.subscriptionPlanId;
+            planCountMap[planId] = (planCountMap[planId] || 0) + 1;
+          } else {
+            freeTrialCount++;
+          }
+        });
+
+        console.log("Plans Map is :::",planCountMap)
+
+          // Step 2: build subscription plan stats
+          const planStats = plans.map((plan: any) => {
+            const count = planCountMap[plan._id] || 0;
+            const percentage =
+              totalRegisteredUsers > 0
+                ? Number(((count / totalRegisteredUsers) * 100).toFixed(2))
+                : 0;
+
+            return {
+              planId: plan._id,
+              planName: plan.title,
+              count,
+              percentage,
+            };
+          });
+
+          // Step 3: free trial stats
+          const freeTrialPercentage =
+            totalRegisteredUsers > 0
+              ? Number(((freeTrialCount / totalRegisteredUsers) * 100).toFixed(2))
+              : 0;
+          
+          
+          setSubscriptionStats(()=>[...planStats,{
+            planId:"123",
+            planName:"Free trail",
+            count:freeTrialCount,
+            percentage:freeTrialPercentage
+          }]);
+          setFreeTrialStats({
+            count: freeTrialCount,
+            percentage: freeTrialPercentage,
+          });
+
+          //botom cards stats
+          const currentMRR = getCurrentMonthMRR(payments)
+          const arpu = getARPU(payments)
+          const growth=lastMonthRevenue>0?((currentMonthRevenue- lastMonthRevenue) /lastMonthRevenue) * 100:0
+          setBottomCardStats({
+            monthlyRecurringRevenue:currentMRR,
+            activeSubscriberCount:usersData.users.filter((eachItem)=>eachItem. subscriptionPlanId).length,
+            avgRevenuePereUser:arpu,
+            platformGrowthPercentage:growth
+          })
+
+
+
+
+
       } catch (error) {
         console.error("Failed to fetch dashboard data", error);
       } finally {
@@ -116,6 +265,63 @@ export default function AnalyticsPage() {
   const activeRequirements = requirements.filter(
     (r) => r.status === "Open",
   ).length;
+console.log("Subscription statst:::::::",subscriptionStats);
+  function getMonthlyRevenue(payments: any[], year: number, month: number) {
+  return payments
+    .filter((p) => {
+      const date = new Date(p.createdAt)
+      return (
+        date.getFullYear() === year &&
+        date.getMonth() === month // 0-based
+      )
+    })
+    .reduce((sum, p) => sum + p.amount, 0)
+}
+
+const percentage = userDistribution.percentageIncrease || 0
+
+let helperText = "0%"
+let helperColor = "text-orangeButton"
+
+if (percentage > 0) {
+  helperText = `${percentage}% growth`
+  helperColor = "text-green-600"
+} else if (percentage < 0) {
+  helperText = `${Math.abs(percentage)}% drop`
+  helperColor = "text-red-600"
+}
+const getCurrentMonthMRR = (payments) => {
+  const now = new Date()
+  const currentMonth = now.getMonth()
+  const currentYear = now.getFullYear()
+
+  return payments
+    .filter(p => 
+      p.status === "success" &&
+      new Date(p.createdAt).getMonth() === currentMonth &&
+      new Date(p.createdAt).getFullYear() === currentYear
+    )
+    .reduce((sum, p) => sum + p.amount, 0)
+}
+const getARPU = (payments) => {
+  const successfulPayments = payments.filter(p => p.status === "success")
+
+  const totalRevenue = successfulPayments.reduce(
+    (sum, p) => sum + p.amount,
+    0
+  )
+
+  const uniqueUsers = new Set(
+    successfulPayments.map(p => p.userId)
+  )
+
+  return uniqueUsers.size === 0
+    ? 0
+    : totalRevenue / uniqueUsers.size
+}
+
+
+
 
   return (
     <div className="space-y-6">
@@ -134,7 +340,7 @@ export default function AnalyticsPage() {
           icon={<Users className="h-4 w-4 text-orangeButton" />}
           gradient="from-blue-100 to-blue-200"
           value={users.length}
-          helper={`${pendingUsers} pending approval`}
+          helper={`${userDistribution.pendingApproval} pending approval`}
         />
 
         {/* Active Projects */}
@@ -165,8 +371,8 @@ export default function AnalyticsPage() {
             />
           }
           gradient="from-purple-100 to-purple-200"
-          value={`$${subscriptionStats.monthlyRecurring.toLocaleString()}`}
-          helper={`+${stats.monthlyGrowth}% growth`}
+          value={`$${userDistribution.monthlyRevenue.toLocaleString()}`}
+          helper={<span className={helperColor}>{helperText}</span>}
         />
       </div>
       <AnalyticsDashboard
@@ -181,25 +387,25 @@ export default function AnalyticsPage() {
           title="Average Revenue Per User"
           icon={<Users className="h-4 w-4 text-orangeButton" />}
           gradient="from-blue-100 to-blue-200"
-          value={`${subscriptionStats.monthlyRecurring.toLocaleString()}`}
-          helper={`From ${subscriptionStats.totalSubscriptions} active subscriptions`}
+          value={`${bottomCardStats.monthlyRecurringRevenue.toLocaleString() || 0}`}
+          helper={`From ${bottomCardStats.activeSubscriberCount || 0} active subscriptions`}
         />
 
-        {/* Active Projects */}
+        {/* Average Revenue per user */}
         <DashboardCard
           title="Average Revenue Per User"
           icon={<FileText className="h-4 w-4 text-orangeButton" />}
           gradient="from-green-100 to-green-200"
-          value={`${Math.round(subscriptionStats.totalRevenue / subscriptionStats.totalSubscriptions)}`}
+          value={bottomCardStats.avgRevenuePereUser}
           helper={`Per paying user`}
         />
 
-        {/* Pending Reports */}
+        {/* Platform Growth percentage */}
         <DashboardCard
           title="Platform Growth"
           icon={<AlertTriangle className="h-4 w-4 text-orangeButton" />}
           gradient="from-orange-100 to-orange-200"
-          value={`+${stats.monthlyGrowth}%`}
+          value={`${bottomCardStats.platformGrowthPercentage}%`}
           helper="Month over month growth"
         />
       </div>

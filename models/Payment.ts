@@ -11,7 +11,7 @@ const PaymentSchema = new Schema(
 
     planId: {
       type: Schema.Types.ObjectId,
-      ref: "Plan",
+      ref: "Subscription",
       required: true,
     },
 

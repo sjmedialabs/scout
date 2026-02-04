@@ -8,12 +8,21 @@ import { Star } from "lucide-react"
 
 interface AnalyticsDashboardProps {
   stats: AdminStats
-  subscriptionStats: SubscriptionStats
+  subscriptionStats: SubscriptionStats[]
   topProviders: Provider[]
 }
 
 export function AnalyticsDashboard({ stats, subscriptionStats, topProviders }: AnalyticsDashboardProps) {
-  const subscriptionTotal = subscriptionStats.basic + subscriptionStats.standard + subscriptionStats.premium
+  // const subscriptionTotal = subscriptionStats.basic + subscriptionStats.standard + subscriptionStats.premium
+  const getSubscriptionName=(recivedId:string)=>{
+      let name="Free Trailer"
+       subscriptionStats.map((ecahItem)=>{
+        if(ecahItem.planId===recivedId){
+          name=ecahItem.planName
+        }
+       })
+      return name;
+  }
 
   return (
     <div className="space-y-6">
@@ -54,17 +63,21 @@ export function AnalyticsDashboard({ stats, subscriptionStats, topProviders }: A
             <CardDescription className="text-gray-500 text-base">Revenue breakdown by subscription tier</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
+            {
+              (subscriptionStats || []).map((eachItem)=>(
+                <div className="space-y-2" key={eachItem._id}>
               <div className="flex justify-between text-sm">
-                <span>Basic Plan</span>
+                <span>{eachItem.planName}</span>
                 <span>
-                  {subscriptionStats.basic} ({Math.round((subscriptionStats.basic / subscriptionTotal) * 100)}%)
+                  {eachItem.count} ({eachItem.percentage}%)
                 </span>
               </div>
-              <Progress value={(subscriptionStats.basic / subscriptionTotal) * 100} className="h-2" />
+              <Progress value={eachItem.percentage} className="h-2" />
             </div>
+              ))
+            }
 
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Standard Plan</span>
                 <span>
@@ -82,7 +95,7 @@ export function AnalyticsDashboard({ stats, subscriptionStats, topProviders }: A
                 </span>
               </div>
               <Progress value={(subscriptionStats.premium / subscriptionTotal) * 100} className="h-2" />
-            </div>
+            </div> */}
           </CardContent>
         </Card>
       </div>
@@ -132,7 +145,7 @@ export function AnalyticsDashboard({ stats, subscriptionStats, topProviders }: A
                   <div className="flex gap-2">
                     {provider.isVerified && <Badge className="rounded-lg bg-[#1C96F4]">Verified</Badge>}
                     {provider.isFeatured && <Badge className="bg-[#39A935] rounded-lg">Featured</Badge>}
-                    <Badge className="bg-[#EA7E1F] rounded-lg">{provider.subscriptionTier}</Badge>
+                    {provider?.subscriptionPlanId?<Badge className="bg-[#EA7E1F] rounded-lg">{getSubscriptionName(provider?.subscriptionPlanId)}</Badge>:<Badge className="bg-[#EA7E1F] rounded-lg">Free Trail</Badge>}
                   </div>
                 </div>
               </div>
