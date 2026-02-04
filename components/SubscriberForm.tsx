@@ -79,19 +79,22 @@ export default function SubscriberForm({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Input
+        className="border-gray-200 rounded-xl"
           value={form.company}
           onChange={(e) => handleChange("company", e.target.value)}
           placeholder="Company Name"
         />
 
         <Input
+        className="border-gray-200 rounded-xl"
           value={form.email}
           onChange={(e) => handleChange("email", e.target.value)}
           placeholder="Email address"
         />
 
         <Select value={form.plan} onValueChange={(v) => handleChange("plan", v)}>
-          <SelectTrigger>
+          <SelectTrigger
+          className="border-gray-200 rounded-xl">
             <SelectValue placeholder="Select Plan" />
           </SelectTrigger>
           <SelectContent>
@@ -102,7 +105,8 @@ export default function SubscriberForm({
         </Select>
 
         <Select value={form.status} onValueChange={(v) => handleChange("status", v)}>
-          <SelectTrigger>
+          <SelectTrigger
+          className="border-gray-200 rounded-xl">
             <SelectValue placeholder="Select Status" />
           </SelectTrigger>
           <SelectContent>
@@ -113,6 +117,7 @@ export default function SubscriberForm({
         </Select>
 
         <Input
+        className="border-gray-200 rounded-xl"
           type="number"
           value={form.users}
           onChange={(e) => handleChange("users", e.target.value)}

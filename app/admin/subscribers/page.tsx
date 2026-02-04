@@ -3,6 +3,7 @@
 import { LabelList } from "recharts";
 import { ArrowRight } from "lucide-react";
 import { PiUsersThreeBold } from "react-icons/pi";
+import { useEffect, useState } from "react";
 import { RiExchangeDollarLine } from "react-icons/ri";
 import Link from "next/link";
 import { LuTrendingUpDown } from "react-icons/lu";
@@ -38,34 +39,9 @@ import {
   CartesianGrid,
   Tooltip,
 } from "recharts";
+import { authFetch } from "@/lib/auth-fetch";
 
 
-const stats = [
-  {
-    title: "Total Subscribers",
-    value: "820",
-    sub: "+15 new this month",
-    icon: <PiUsersThreeBold className="h-4 w-4"/>,
-  },
-  {
-    title: "Monthly Revenue",
-    value: "$18,500",
-    sub: "+8% increase",
-    icon: <RiExchangeDollarLine className="h-4 w-4"/>,
-  },
-  {
-    title: "Cancellation Rate",
-    value: "1.4%",
-    sub: "Improved from 1.8%",
-    icon: <LuTrendingUpDown className="h-4 w-4"/>,
-  },
-  {
-    title: "Pending Invoices",
-    value: "13",
-    sub: "$4,200 outstanding",
-    icon: <AlertTriangle className="h-4 w-4"/>,
-  },
-];
 
 const weeklyRevenue = [
   { day: "Mon", value: 60000 },
@@ -101,6 +77,145 @@ const cancellations = [
 ];
 
 export default function SubscribersManagementPage() {
+
+  const [revenueTrend, setRevenueTrend] = 
+  useState<"up" | "down" | "same">("same");
+
+
+  const [stats, setStats] = useState([
+  {
+    title: "Total Subscribers",
+    value: "0",
+    sub: "Loading...",
+    icon: <PiUsersThreeBold className="h-4 w-4"/>,
+  },
+  {
+    title: "Monthly Revenue",
+    value: "₹0",
+    sub: "Loading...",
+    icon: <RiExchangeDollarLine className="h-4 w-4"/>,
+  },
+  {
+    title: "Cancellation Rate",
+    value: "0%",
+    sub: "Loading...",
+    icon: <LuTrendingUpDown className="h-4 w-4"/>,
+  },
+  {
+    title: "Pending Invoices",
+    value: "0",
+    sub: "Loading...",
+    icon: <AlertTriangle className="h-4 w-4"/>,
+  },
+]);
+
+   useEffect(() => {
+  const loadStats = async () => {
+    try {
+      const res = await authFetch("/api/users?role=agency&limit=10000");
+
+      const data = await res.json();
+      const users = data.users ?? [];
+
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+      // ✅ ACTIVE SUBSCRIBED AGENCIES
+      const activeAgencies = users.filter(
+        (u: any) =>
+          u.subscriptionPlanId &&
+          u.subscriptionEndDate &&
+          new Date(u.subscriptionEndDate) > now
+      );
+
+      const totalActiveSubscribers = activeAgencies.length;
+
+      // ✅ NEW THIS MONTH
+      const newThisMonth = activeAgencies.filter(
+        (u: any) =>
+          u.subscriptionStartDate &&
+          new Date(u.subscriptionStartDate) >= startOfMonth
+      ).length;
+
+       /* ---------- PAYMENTS ---------- */
+        const paymentRes = await authFetch("/api/payment/admin");
+        const paymentData = await paymentRes.json();
+        const payments = paymentData.payments ?? [];
+
+        const startOfLastMonth = new Date(
+          now.getFullYear(),
+          now.getMonth() - 1,
+          1
+        );
+        const endOfLastMonth = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          0
+        );
+
+        const thisMonthRevenue = payments
+          .filter(
+            (p: any) =>
+              p.status === "success" &&
+              new Date(p.createdAt) >= startOfMonth
+          )
+          .reduce((sum: number, p: any) => sum + p.amount, 0);
+
+        const lastMonthRevenue = payments
+          .filter(
+            (p: any) =>
+              p.status === "success" &&
+              new Date(p.createdAt) >= startOfLastMonth &&
+              new Date(p.createdAt) <= endOfLastMonth
+          )
+          .reduce((sum: number, p: any) => sum + p.amount, 0);
+
+        let percent = 0;
+        let trend: "up" | "down" | "same" = "same";
+
+        if (lastMonthRevenue > 0) {
+          percent = Math.round(
+            ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
+          );
+          trend = percent > 0 ? "up" : percent < 0 ? "down" : "same";
+        }
+
+        setRevenueTrend(trend);
+
+      setStats(prev => [
+        {
+          ...prev[0],
+          value: totalActiveSubscribers.toString(),
+          sub:
+            newThisMonth > 0
+              ? `↑ ${newThisMonth} new this month`
+              : prev[0].sub,
+        },
+        {
+            ...prev[1],
+            value: `₹${thisMonthRevenue.toLocaleString()}`,
+            sub:
+              trend === "up"
+                ? `↑ ${percent}% increase`
+                : trend === "down"
+                ? `↓ ${Math.abs(percent)}% decrease`
+                : "0% change",
+          },
+        prev[2],
+        prev[3],
+      ]);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  loadStats();
+}, []);
+
+
+
+
+
   return (
     <div className="mx-auto max-w-7xl space-y-4 px-4 sm:px-6 lg:px-2">
       {/* HEADER */}
