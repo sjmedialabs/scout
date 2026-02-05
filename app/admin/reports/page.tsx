@@ -616,7 +616,7 @@ const getMonthRange = (year: number, month: number) => {
       const userData=await usersRes.json();
       const  paymentData=await paymentRes.json();
 
-      setUsers(userData.users);
+      setUsers(userData.users.filter((e)=>e.role!=="admin"));
       setRevenue(paymentData?.data);
 
       const totalRevenue = getTotalRevenue(paymentData.data)

@@ -262,6 +262,9 @@ const ProjectsPage = () => {
       setSending(true);
       // API CALL
       if (editingProject) {
+        if(editingProject.status==="NotApproved"){
+          payload.status = "UnderReview";
+        }
         const res = await authFetch(`/api/requirements/${editingProject._id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -442,6 +445,10 @@ const ProjectsPage = () => {
   };
   const getBgColor = (status: string) => {
     switch (status.toLowerCase()) {
+      case "notapproved":
+        return "bg-red-500 text-[#fff]"
+      case "underreview":
+        return "bg-blue-500 text-[#fff]"
       case "open":
         return "bg-[#CFEED2] text-[#39761E]";
       case "shortlisted":
@@ -519,35 +526,37 @@ const ProjectsPage = () => {
         >
           <SelectTrigger
             className="
-                                            mt-1
-                                            border-0
-                                            border-2
-                                            border-[#b2b2b2]
-                                            
-                                            rounded-full
+            mt-1
+            border-0
+            border-2
+            border-[#b2b2b2]
+            
+            rounded-full
 
-                                            shadow-none
-                                            focus:outline-none focus:ring-0 focus:ring-offset-0
-                                            focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
-                                            focus:border-[#b2b2b2]
-                                            placeholder:text-[#b2b2b2]
-                                            px-6
-                                            w-[150px]
-                                            h-12
-                                            text-sm
-                                            md:text-base
-                                          "
+            shadow-none
+            focus:outline-none focus:ring-0 focus:ring-offset-0
+            focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
+            focus:border-[#b2b2b2]
+            placeholder:text-[#b2b2b2]
+            px-6
+            w-[180px]
+            h-12
+            text-sm
+            md:text-base
+          "
           >
             <SelectValue placeholder="Rating" />
           </SelectTrigger>
 
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
+            <SelectItem value="underreview">UnderReview</SelectItem>
             <SelectItem value="open">Open</SelectItem>
             <SelectItem value="shortlisted">Shortlisted</SelectItem>
             <SelectItem value="negotation">Negotiation</SelectItem>
             <SelectItem value="allocated">Allocated</SelectItem>
             <SelectItem value="closed">Closed</SelectItem>
+             <SelectItem value="notapproved">NotApproved</SelectItem>
           </SelectContent>
         </Select>
         {(filteredRequirements || []).length !== 0 &&
@@ -563,13 +572,13 @@ const ProjectsPage = () => {
                   </Badge>
                   <Badge
                     className={`text-xs rounded-full ${getBgColor(project.status)}`}
-                    variant={
-                      project.status === "Completed"
-                        ? "default"
-                        : project.status === "In Progress"
-                          ? "secondary"
-                          : "outline"
-                    }
+                    // variant={
+                    //   project.status === "Completed"
+                    //     ? "default"
+                    //     : project.status === "In Progress"
+                    //       ? "secondary"
+                    //       : "outline"
+                    // }
                   >
                     {project.status}
                   </Badge>
@@ -636,7 +645,8 @@ const ProjectsPage = () => {
                 <div className="flex justify-between items-center">
                   {
                    project.status.toLowerCase() !== "closed" &&
-                    project.status.toLowerCase() !== "completed"  &&(
+                    project.status.toLowerCase() !== "completed" && 
+                    project.status.toLowerCase()!="underreview" && (
                       <Button
                     variant="outline"
                     size="sm"
@@ -678,6 +688,12 @@ const ProjectsPage = () => {
                       </Button>
                     )}
                 </div>
+                
+                {
+              (project.status==="NotApproved") && (
+                <p className="teext-md text-red-500 mt-5">{project?.notApprovedMsg}</p>
+              )
+              }
               </CardContent>
             </Card>
           ))}
