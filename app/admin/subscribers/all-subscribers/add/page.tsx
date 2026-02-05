@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { authFetch } from "@/lib/auth-fetch";
 
 export default function AddSubscriberPage() {
 
@@ -32,10 +33,10 @@ export default function AddSubscriberPage() {
   e.preventDefault();
 
   try {
-    const res = await fetch("/api/admin/create-agency", {
+    const res = await authFetch("/api/admin/create-agency", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
+     
       body: JSON.stringify({
         company: form.company,
         email: form.email,
@@ -102,61 +103,6 @@ export default function AddSubscriberPage() {
           className="placeholder:text-gray-500 border-gray-300 rounded-xl my-custom-class placeholder:text-xs" 
           placeholder="Enter email address" 
           type="email"
-          />
-        </div>
-
-        {/* Plan */}
-        <div className="space-y-2">
-          <label className="text-sm font-bold my-custom-class text-gray-400">
-            Plan
-          </label>
-          <Select
-            value={form.plan}
-            onValueChange={(value) => handleChange("plan", value)}
-            >
-            <SelectTrigger className="text-gray-700 my-custom-class border-gray-300 rounded-xl">
-              <SelectValue placeholder="Select Plan"/>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="enterprise">Enterprise</SelectItem>
-              <SelectItem value="pro">Pro</SelectItem>
-              <SelectItem value="basic">Basic</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Status */}
-        <div className="space-y-2">
-          <label className="text-sm font-bold my-custom-class text-gray-400">
-            Status
-          </label>
-          <Select
-            value={form.status}
-            onValueChange={(value) => handleChange("status", value)}
-            >
-            <SelectTrigger className="text-gray-700 my-custom-class border-gray-300 rounded-xl">
-              <SelectValue placeholder="Select Status"/>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
-              <SelectItem value="suspended">Suspended</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Number of Users */}
-        <div className="space-y-2">
-          <label className="text-sm font-bold my-custom-class text-gray-400">
-            No. of users
-          </label>
-          <Input 
-          value={form.users}
-          onChange={(e) => handleChange("users", e.target.value)}
-          className="placeholder:text-gray-500 border-gray-300 rounded-xl my-custom-class placeholder:text-xs" 
-          placeholder="Enter No. of users" 
-          type="number"
-          min={1}
           />
         </div>
       </div>
