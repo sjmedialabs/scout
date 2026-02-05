@@ -20,6 +20,10 @@ interface RequirementListProps {
 export function RequirementList({ requirements, onViewProposals, onViewDetails }: RequirementListProps) {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
+      case "notapproved":
+        return "bg-red-500 text-[#fff]"
+      case "underreview":
+        return "bg-blue-500 teext-[#fff]"
       case "open":
         return "bg-[#CFEED2] text-[#39761E]"
       case "shortlisted":
@@ -83,12 +87,22 @@ export function RequirementList({ requirements, onViewProposals, onViewDetails }
                 View Details
                  <FaArrowRightLong className="h-3 w-3" color="#fff"/>
               </Button>
-              <Button variant="outline" size="sm" onClick={() => onViewProposals(requirement._id)} className="bg-[#000000] max-w-[180px] rounded-full text-[#fff] text-[14px] hover:bg-[#000000] h-[40px]">
+              {
+                (requirement.status!=="UnderReview" && requirement.status!=="NotApproved") && (
+                  <Button variant="outline" size="sm" onClick={() => onViewProposals(requirement._id)} className="bg-[#000000] max-w-[180px] rounded-full text-[#fff] text-[14px] hover:bg-[#000000] h-[40px]">
                 
                 View Proposals
                 <FaArrowRightLong className="h-3 w-3" color="#fff"/>
               </Button>
+                )
+              }
+              
             </div>
+             {
+              (requirement.status==="NotApproved") && (
+                <p className="teext-md text-red-500">{requirement?.notApprovedMsg}</p>
+              )
+              }
           </CardContent>
         </Card>
       ))}

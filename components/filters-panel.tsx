@@ -45,7 +45,7 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
   ]
   
 
-  const statues = ["Open", "Closed", "shortlisted", "negotation", "Allocated"]
+  const statues = ["UnderReview","Open", "Closed", "shortlisted", "negotation", "Allocated","NotApproved"]
 
   const handleFilterChange = (key: keyof FiltersState, value: any) => {
     const newFilters = { ...filters, [key]: value }

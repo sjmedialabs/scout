@@ -11,12 +11,13 @@ export interface IRequirement extends Document {
   postedDate: Date
   documentUrl:string
   proposals: number
-  status: "Open" | "Closed" | "shortlisted" | "negotation" | "Allocated"
+  status:"UnderReview" | "NotApproved" | "Open" | "Closed" | "shortlisted" | "negotation" | "Allocated"
   clientId: mongoose.Types.ObjectId // always client ID
   allocatedToId:mongoose.Types.ObjectId
   createdAt: Date
   updatedAt: Date
-  isReviewed?: boolean
+  isReviewed?: boolean,
+  notApprovedMsg:String
 
 }
 
@@ -35,11 +36,12 @@ const RequirementSchema = new Schema<IRequirement>(
 
     documentUrl:{type:String},
 
-    status: { type: String, enum: ["Open", "Closed","shortlisted","negotation","Allocated"], default: "Open" },
+    status: { type: String, enum: ["UnderReview" , "NotApproved" ,"Open", "Closed","shortlisted","negotation","Allocated"], default: "UnderReview" },
 
     clientId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     allocatedToId:{ type: Schema.Types.ObjectId, ref: "User" },
     isReviewed: { type: Boolean, default: false },
+    notApprovedMsg:{type:String}
     
   }, 
   { timestamps: true },
