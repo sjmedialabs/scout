@@ -779,12 +779,12 @@ const ProposalPage = () => {
                                     }
                                     className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
                                   >
-                                    View Project Details
+                                    View Proposal Details
                                   </Button>
                                   
                                     {/*Shprtlist */}
                                       {
-                                        (proposal.status!=="shortlisted"  && proposal.status!=="accepted" && proposal.status!=="rejected") && (
+                                        (proposal.status!=="shortlisted"  && proposal.status!=="accepted" && proposal.status!=="rejected" && proposal.status!=="completed") && (
                                           <Button
                                         variant="outline"
                                         size="sm"
@@ -814,7 +814,7 @@ const ProposalPage = () => {
                                         )}
                                       {/*Accept */}
                                       {
-                                        (proposal.status!=="accepted" && proposal.status!=="rejected") &&(
+                                        (proposal.status!=="accepted" && proposal.status!=="rejected" && proposal.status!=="completed") &&(
                                                 <Button
                                         variant="default"
                                         size="sm"
@@ -833,7 +833,7 @@ const ProposalPage = () => {
 
                                       {/*Reject */}
                                       {
-                                        (proposal.status!=="rejected" &&  proposal.status!=="accepted") && (
+                                        (proposal.status!=="rejected" &&  proposal.status!=="accepted" && proposal.status!=="completed") && (
                                           <Button
                                         variant="destructive"
                                         size="sm"

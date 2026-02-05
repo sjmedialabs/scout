@@ -208,6 +208,7 @@ export async function PUT(
       "currentMonthKey",
       "awards",
       "socialLinks",
+      "isVerified",
     ];
 
     const updates: any = {};

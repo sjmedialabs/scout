@@ -33,7 +33,9 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { authFetch } from "@/lib/auth-fetch";
 import { io } from "socket.io-client"
-
+import { Button } from "@/components/ui/button";
+import ReportContentModal from "@/components/report-modal";
+ 
 
 type Attachment = {
   id: string;
@@ -140,6 +142,7 @@ export default function MessagesPage() {
   const [messageInput, setMessageInput] = useState("");
   const [typing, setTyping] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false);
 
   const [dynamicConversation, setDynamicConversation] = useState<
     Conversation[]
@@ -647,12 +650,13 @@ useEffect(() => {
                   {/* <p className="text-xs text-gray-500">@mary_johnson</p> */}
                 </div>
               </div>
-              <div className="flex gap-10">
+              <div className="flex gap-10 items-center">
                 <Phone className="h-5 w-5 text-blue-600" />
                 <Video className="h-5 w-5 text-blue-600" />
-                <span className="text-xs bg-green-500 text-white px-3 py-1 rounded-full">
+                {/* <span className="text-xs bg-green-500 text-white px-3 py-1 rounded-full">
                   Active
-                </span>
+                </span> */}
+                <Button onClick={() => setOpen(true)} className="text-xs bg-red-500 text-white px-3 py-1 rounded-full">Report</Button>
               </div>
             </div>
 
@@ -810,6 +814,20 @@ useEffect(() => {
           </div>
         )}
       </div>
+
+      {/*Modal for the report */}
+      {
+        open &&(
+          <ReportContentModal
+          open={open}
+          onClose={() => setOpen(false)}
+          reportedTo={`${filteredDynamicConversation[0].participantsAre[0]===user.id?
+          filteredDynamicConversation[0].participantsAre[1]
+          :
+          filteredDynamicConversation[0].participantsAre[0]}`}
+        />
+        )
+      }
     </div>
   );
 }

@@ -115,6 +115,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import Provider from "@/models/Provider";
+import User from "@/models/User"
 
 /* -----------------------------
    CORS CONFIG
@@ -177,6 +178,32 @@ export async function GET(request: NextRequest) {
       Provider.countDocuments(query),
     ]);
 
+    const userIds = providers
+      .map((p: any) => p.userId)
+      .filter(Boolean);
+
+      const users = await User.find(
+      { _id: { $in: userIds } },
+      {
+        subscriptionPlanId: 1,
+        subscriptionStartDate: 1,
+        subscriptionEndDate: 1,
+      }
+    ).lean();
+
+    const userSubscriptionMap = new Map(
+  users.map((u: any) => [
+    u._id.toString(),
+    {
+      subscriptionPlanId: u.subscriptionPlanId,
+      subscriptionStartDate: u.subscriptionStartDate,
+      subscriptionEndDate: u.subscriptionEndDate,
+    },
+  ])
+);
+
+
+
     const formattedProviders = providers.map((p: any) => ({
       id: p._id.toString(),
       userId: p.userId?.toString(),
@@ -213,6 +240,12 @@ export async function GET(request: NextRequest) {
       isFeatured: p.isFeatured,
       isVerified: p.isVerified,
       createdAt: p.createdAt,
+
+      // ✅ NEW (non-breaking)
+  subscriptionDetails:
+    p.userId && userSubscriptionMap.get(p.userId.toString())
+      ? userSubscriptionMap.get(p.userId.toString())
+      : null,
     }));
 
     return NextResponse.json(

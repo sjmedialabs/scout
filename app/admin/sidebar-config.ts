@@ -23,7 +23,7 @@ export const adminMenu = [
     children: [
       { id: "users", label: "All Users", icon: Users },
       // { id: "role-management", label: "Role Management", icon: Shield },
-      // { id: "user-verification", label: "User Verification", icon: UserCheck },
+       { id: "user-verification", label: "User Verification", icon: UserCheck },
       // { id: "user-activity", label: "User Activity", icon: Activity },
     ],
   },
@@ -57,7 +57,7 @@ export const adminMenu = [
       { id: "moderation", label: "Content Moderation", icon: AlertTriangle },
       { id: "reported-content", label: "Reported Content", icon: FileText },
       { id: "content-policies", label: "Content Policies", icon: Shield },
-      { id: "automated-filters", label: "Automated Filters", icon: Database },
+      // { id: "automated-filters", label: "Automated Filters", icon: Database },
       { id: "contentMang", label: "Web Content Management", icon: Database },
     ],
   },
@@ -69,16 +69,16 @@ export const adminMenu = [
       { id: "settings", label: "Platform Settings", icon: Settings },
       { id: "categories", label: "Category Management", icon: Building2 },
       { id: "notifications", label: "System Notifications", icon: Bell },
-      { id: "maintenance", label: "Maintenance Mode", icon: Settings },
+       { id: "careers", label: "Careers", icon: Shield },
     ],
   },
-  {
-    id: "communication",
-    label: "COMMUNICATION",
-    icon: MessageSquare,
-    children: [
-      { id: "announcements", label: "Announcements", icon: Bell },
-      { id: "support-tickets", label: "Support Tickets", icon: MessageSquare },
-      { id: "email-campaigns", label: "Email Campaigns", icon: FileText },],
-  },
+  // {
+  //   id: "communication",
+  //   label: "COMMUNICATION",
+  //   icon: MessageSquare,
+  //   children: [
+  //     { id: "announcements", label: "Announcements", icon: Bell },
+  //     { id: "support-tickets", label: "Support Tickets", icon: MessageSquare },
+  //     { id: "email-campaigns", label: "Email Campaigns", icon: FileText },],
+  // },
 ];
