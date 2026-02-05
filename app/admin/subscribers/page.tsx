@@ -43,23 +43,37 @@ import { authFetch } from "@/lib/auth-fetch";
 
 
 
-const weeklyRevenue = [
-  { day: "Mon", value: 60000 },
-  { day: "Tue", value: 70000 },
-  { day: "Wed", value: 30000 },
-  { day: "Thu", value: 50000 },
-  { day: "Fri", value: 62000 },
-  { day: "Sat", value: 54000 },
-  { day: "Sun", value: 38000 },
+const monthlyRevenue = [
+  { month: "Jan", value: 0 },
+  { month: "Feb", value: 0 },
+  { month: "Mar", value: 0 },
+  { month: "Apr", value: 0 },
+  { month: "May", value: 0 },
+  { month: "Jun", value: 0 },
+  { month: "Jul", value: 0 },
+  { month: "Aug", value: 0 },
+  { month: "Sep", value: 0 },
+  { month: "Oct", value: 0 },
+  { month: "Nov", value: 0 },
+  { month: "Dec", value: 0 },
 ];
 
+
 const subscriberGrowth = [
-  { week: "Week-1", value: 40 },
-  { week: "Week-2", value: 92 },
-  { week: "Week-3", value: 38 },
-  { week: "Week-4", value: 96 },
-  { week: "Week-5", value: 22 },
+  { month: "Jan", value: 0 },
+  { month: "Feb", value: 0 },
+  { month: "Mar", value: 0 },
+  { month: "Apr", value: 0 },
+  { month: "May", value: 0 },
+  { month: "Jun", value: 0 },
+  { month: "Jul", value: 0 },
+  { month: "Aug", value: 0 },
+  { month: "Sep", value: 0 },
+  { month: "Oct", value: 0 },
+  { month: "Nov", value: 0 },
+  { month: "Dec", value: 0 },
 ];
+
 
 const cancellations = [
   { month: "Jan", a: 47.25, b: 47.8, c: 62.75 },
@@ -78,11 +92,35 @@ const cancellations = [
 
 export default function SubscribersManagementPage() {
 
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
+
+  const [monthlyCancellationData, setMonthlyCancellationData] =
+  useState(monthlyRevenue); 
+
+
+const [selectedYear, setSelectedYear] = useState(currentYear);
+const [monthlyRevenueData, setMonthlyRevenueData] = useState(monthlyRevenue);
+
+const [subscriberGrowthData, setSubscriberGrowthData] =
+  useState(subscriberGrowth);
+
+
+
+
   const [revenueTrend, setRevenueTrend] = 
   useState<"up" | "down" | "same">("same");
 
 
-  const [stats, setStats] = useState([
+  const [stats, setStats] = useState<
+    {
+    title: string;
+    value: string;
+    sub: string;
+    icon: JSX.Element;
+    color?: string; 
+  }[]
+  >([
   {
     title: "Total Subscribers",
     value: "0",
@@ -202,6 +240,204 @@ export default function SubscribersManagementPage() {
 
         setRevenueTrend(trend);
 
+        /* ---------- CANCELLATION RATE (MONTHLY) ---------- */
+
+        const cancelStartOfMonth = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          1
+        );
+
+        const cancelStartOfLastMonth = new Date(
+          now.getFullYear(),
+          now.getMonth() - 1,
+          1
+        );
+
+        const cancelEndOfLastMonth = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          0
+        );
+
+        // cancellations
+        const cancelledThisMonth = users.filter(
+          (u: any) =>
+            u.subscriptionEndDate &&
+            new Date(u.subscriptionEndDate) >= cancelStartOfMonth
+        ).length;
+
+        const cancelledLastMonth = users.filter(
+          (u: any) =>
+            u.subscriptionEndDate &&
+            new Date(u.subscriptionEndDate) >= cancelStartOfLastMonth &&
+            new Date(u.subscriptionEndDate) <= cancelEndOfLastMonth
+        ).length;
+
+          let cancelPercent = 0;
+          let cancelSub = "0%";
+          let cancelColor = "text-green-600";
+
+        // rates (based on active subscribers)
+        // subscribers active at start of this month
+        const activeAtStartOfThisMonth = users.filter((u: any) => {
+          if (!u.subscriptionStartDate) return false;
+          const start = new Date(u.subscriptionStartDate);
+          return start < cancelStartOfMonth &&
+            (!u.subscriptionEndDate || new Date(u.subscriptionEndDate) >= cancelStartOfMonth);
+        }).length;
+
+        // subscribers active at start of last month
+        const activeAtStartOfLastMonth = users.filter((u: any) => {
+          if (!u.subscriptionStartDate) return false;
+          const start = new Date(u.subscriptionStartDate);
+          return start < cancelStartOfLastMonth &&
+            (!u.subscriptionEndDate || new Date(u.subscriptionEndDate) >= cancelStartOfLastMonth);
+        }).length;
+
+        const thisMonthCancelRate =
+          activeAtStartOfThisMonth > 0
+            ? Math.round((cancelledThisMonth / activeAtStartOfThisMonth) * 100)
+            : 0;
+
+        const lastMonthCancelRate =
+          activeAtStartOfLastMonth > 0
+            ? Math.round((cancelledLastMonth / activeAtStartOfLastMonth) * 100)
+            : 0;
+
+
+        //  NO cancellations last month
+        if (lastMonthCancelRate === 0) {
+          cancelSub = "No cancellations";
+          cancelColor = "text-green-600";
+        }
+
+        //  Improved compared to last month
+        else if (thisMonthCancelRate < lastMonthCancelRate) {
+          cancelSub = `↓ ${lastMonthCancelRate - thisMonthCancelRate}% improved`;
+          cancelColor = "text-green-600";
+        }
+
+        //  Increased compared to last month
+        else if (thisMonthCancelRate > lastMonthCancelRate) {
+          cancelSub = `↑ ${thisMonthCancelRate - lastMonthCancelRate}% increased`;
+          cancelColor = "text-red-500";
+        }
+
+        // No change
+        else {
+          cancelSub = "0% change";
+          cancelColor = "text-green-600";
+        }
+
+        /* ---------- PENDING INVOICES (CANCELLED USERS) ---------- */
+
+        let pendingInvoicesCount = 0;
+        let pendingInvoicesAmount = 0;
+
+        // cancelled users (already aligned with your logic)
+        const cancelledUsers = users.filter(
+          (u: any) =>
+            u.subscriptionEndDate &&
+            new Date(u.subscriptionEndDate) < now
+        );
+
+        pendingInvoicesCount = cancelledUsers.length;
+
+        // calculate outstanding from payments
+        for (const user of cancelledUsers) {
+          const payRes = await authFetch(`/api/payment/${user._id}`);
+          const payData = await payRes.json();
+          const payments = payData.payments ?? [];
+
+          const lastSuccessfulPayment = payments
+          .filter((p: any) => p.status === "success")
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )[0];
+
+        if (lastSuccessfulPayment) {
+          pendingInvoicesAmount += lastSuccessfulPayment.amount;
+        }
+
+        }
+
+        const revenueByMonth = Array(12).fill(0);
+
+        for (const user of users) {
+          const payRes = await authFetch(`/api/payment/${user._id}`);
+          const payData = await payRes.json();
+          const payments = payData.payments ?? [];
+
+          payments.forEach((p: any) => {
+            const d = new Date(p.createdAt);
+            if (
+              p.status === "success" &&
+              d.getFullYear() === selectedYear
+            ) {
+              revenueByMonth[d.getMonth()] += p.amount;
+            }
+          });
+        }
+
+        const yearlyRevenueData = monthlyRevenue.map((m, i) => ({
+          ...m,
+          value: revenueByMonth[i],
+        }));
+
+        setMonthlyRevenueData(yearlyRevenueData);
+
+        /* ---------- SUBSCRIBER GROWTH (YEARLY / MONTHLY) ---------- */
+
+          const subscribersByMonth = Array(12).fill(0);
+
+          users.forEach((u: any) => {
+            if (!u.subscriptionStartDate) return;
+
+            const d = new Date(u.subscriptionStartDate);
+
+            if (d.getFullYear() === selectedYear) {
+              subscribersByMonth[d.getMonth()] += 1;
+            }
+          });
+
+          const yearlySubscriberGrowth = subscriberGrowth.map((m, i) => ({
+            ...m,
+            value: subscribersByMonth[i],
+          }));
+
+          setSubscriberGrowthData(yearlySubscriberGrowth);
+
+          /* ---------- CANCELLATION TREND (YEARLY / MONTHLY COUNT) ---------- */
+
+        const cancelledByMonth = Array(12).fill(0);
+        const nowMonthIndex =
+          selectedYear === currentYear ? new Date().getMonth() : 11;
+
+        users.forEach((u: any) => {
+          if (!u.subscriptionEndDate) return;
+
+          const d = new Date(u.subscriptionEndDate);
+
+          if (
+            d.getFullYear() === selectedYear &&
+            d.getMonth() <= nowMonthIndex
+          ) {
+            cancelledByMonth[d.getMonth()] += 1;
+          }
+        });
+
+        const yearlyCancellationTrend = monthlyRevenue
+          .map((m, i) => ({
+            ...m,
+            value: cancelledByMonth[i],
+          }))
+          .slice(0, nowMonthIndex + 1);
+
+        setMonthlyCancellationData(yearlyCancellationTrend);
+
+
       setStats(prev => [
         {
           ...prev[0],
@@ -221,8 +457,24 @@ export default function SubscribersManagementPage() {
                 ? `↓ ${Math.abs(percent)}% decrease`
                 : "0% change",
           },
-        prev[2],
-        prev[3],
+        {
+          ...prev[2],
+          value:
+            lastMonthCancelRate === 0
+              ? "0%"
+              : `${thisMonthCancelRate}%`,
+          sub: cancelSub,
+          color: cancelColor,
+        },
+        
+        {
+          ...prev[3],
+          value: pendingInvoicesCount.toString(),
+          sub:
+            pendingInvoicesAmount > 0
+              ? `₹${pendingInvoicesAmount.toLocaleString()} outstanding`
+              : "No outstanding amount",
+        },
       ]);
     } catch (err) {
       console.error(err);
@@ -230,11 +482,7 @@ export default function SubscribersManagementPage() {
   };
 
   loadStats();
-}, []);
-
-
-
-
+}, [selectedYear]);
 
   return (
     <div className="mx-auto max-w-7xl space-y-4 px-4 sm:px-6 lg:px-2">
@@ -270,7 +518,7 @@ export default function SubscribersManagementPage() {
             </CardHeader>
             <CardContent className="pt-2 pb-6">
               <div className="text-2xl font-bold my-custom-class">{item.value}</div>
-              <p className="mt-2 my-custom-class text-xs text-green-600">
+              <p className={`mt-2 my-custom-class text-xs ${item.color ?? "text-green-600"}`}>
                 {item.sub}
               </p>
             </CardContent>
@@ -279,11 +527,17 @@ export default function SubscribersManagementPage() {
       </div>
 
       {/* CHARTS ROW */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2">
         {/* WEEKLY REVENUE */}
-        <DashboardCard title="Weekly Revenue">
+        <DashboardCard
+          title="Revenue"
+          selectedYear={selectedYear}
+          setSelectedYear={setSelectedYear}
+          currentYear={currentYear}
+          years={years}
+        >
           <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={weeklyRevenue} barSize={14}>
+        <BarChart data={monthlyRevenueData} barSize={14}>
           <defs>
             <linearGradient id="weeklyGrad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#ec4899" />
@@ -298,7 +552,7 @@ export default function SubscribersManagementPage() {
           />
 
           <XAxis
-            dataKey="day"
+            dataKey="month"
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#6b7280", fontSize: 12 }}
@@ -323,9 +577,15 @@ export default function SubscribersManagementPage() {
         </DashboardCard>
 
         {/* SUBSCRIBER GROWTH */}
-        <DashboardCard title="Subscriber Growth">
+        <DashboardCard
+            title="Subscriber Growth"
+            selectedYear={selectedYear}
+            setSelectedYear={setSelectedYear}
+            currentYear={currentYear}
+            years={years}
+          >
           <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={subscriberGrowth}>
+            <AreaChart data={subscriberGrowthData}>
               <defs>
                 <linearGradient id="growthFill" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#7c7cff" stopOpacity={0.35} />
@@ -340,7 +600,7 @@ export default function SubscribersManagementPage() {
               />
 
               <XAxis
-                dataKey="week"
+                dataKey="month"
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: "#6b7280", fontSize: 12 }}
@@ -375,76 +635,74 @@ export default function SubscribersManagementPage() {
 
       {/* CANCELLATIONS */}
 
-      <DashboardCard title="Cancellations Trend (Last 12 Months)">
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={cancellations} barSize={9}>
-            <CartesianGrid
-              strokeDasharray="3 3"
-              vertical={false}
-              stroke="#e5e7eb"
-            />
+      <DashboardCard
+  title="Cancellations Trend"
+  selectedYear={selectedYear}
+  setSelectedYear={setSelectedYear}
+  currentYear={currentYear}
+  years={years}
+>
+  <ResponsiveContainer width="100%" height={300}>
+    <BarChart data={monthlyCancellationData} barSize={14}>
+      <defs>
+        <linearGradient id="cancelGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fb7185" />
+          <stop offset="100%" stopColor="#f43f5e" />
+        </linearGradient>
+      </defs>
 
-            <XAxis
-              dataKey="month"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "#6b7280", fontSize: 12 }}
-            />
+      <CartesianGrid
+        strokeDasharray="3 3"
+        vertical={false}
+        stroke="#e5e7eb"
+      />
 
-            <YAxis
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "#6b7280", fontSize: 12 }}
-            />
+      <XAxis
+        dataKey="month"
+        axisLine={false}
+        tickLine={false}
+        tick={{ fill: "#6b7280", fontSize: 12 }}
+      />
 
-            <Tooltip />
+      <YAxis
+        axisLine={false}
+        tickLine={false}
+        tick={{ fill: "#6b7280", fontSize: 12 }}
+        allowDecimals={false}
+      />
 
-            {/* BAR A */}
-            <Bar dataKey="a" fill="#9f9cff" radius={[6, 6, 0, 0]}>
-              <LabelList
-                dataKey="a"
-                position="top"
-                fill="#6b7280"
-                fontSize={11}
-              />
-            </Bar>
+      <Tooltip />
 
-            {/* BAR B */}
-            <Bar dataKey="b" fill="#ffb4a2" radius={[6, 6, 0, 0]}>
-              <LabelList
-                dataKey="b"
-                position="top"
-                fill="#6b7280"
-                fontSize={11}
-              />
-            </Bar>
+      <Bar
+        dataKey="value"
+        radius={[8, 8, 0, 0]}
+        fill="url(#cancelGrad)"
+      />
+    </BarChart>
+  </ResponsiveContainer>
+</DashboardCard>
 
-            {/* BAR C */}
-            <Bar dataKey="c" fill="#67d1e8" radius={[6, 6, 0, 0]}>
-              <LabelList
-                dataKey="c"
-                position="top"
-                fill="#6b7280"
-                fontSize={11}
-              />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </DashboardCard>
 
     </div>
   );
 }
 
-
-
 function DashboardCard({
   title,
   children,
+  selectedYear,
+  setSelectedYear,
+  currentYear,
+  years,
 }: {
   title: string;
   children: React.ReactNode;
+  selectedYear?: number;
+  setSelectedYear?: (y: number) => void;
+  currentYear?: number;
+  years?: number[];
 }) {
+
   return (
     <Card className="rounded-3xl bg-white p-0 shadow-lg">
       <CardHeader className="flex flex-row items-center justify-between px-10 pt-4 pb-4">
@@ -452,15 +710,25 @@ function DashboardCard({
           {title}
         </CardTitle>
 
-        <Select defaultValue="weekly">
-          <SelectTrigger className="h-12 w-40 rounded-xl border-gray-200 text-sm">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="weekly">Weekly</SelectItem>
-            <SelectItem value="monthly">Monthly</SelectItem>
-          </SelectContent>
-        </Select>
+        {selectedYear !== undefined && setSelectedYear && currentYear && (
+          <Select
+            value={String(selectedYear)}
+            onValueChange={(v) => setSelectedYear(Number(v))}
+          >
+            <SelectTrigger className="h-12 w-32 rounded-xl border-gray-200 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {years!.map((y) => (
+                <SelectItem key={y} value={String(y)}>
+                  {y}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+
+
       </CardHeader>
 
       <CardContent className="px-2">

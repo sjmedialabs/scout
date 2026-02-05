@@ -34,11 +34,11 @@ export async function POST(req: NextRequest) {
       name: company,
       role: "agency",
       company,
-      password: "TEMP_PASSWORD", // never used
+      password: "TEMP_PASSWORD", 
       isVerified: false,
       isActive: true,
       resetPasswordToken: resetToken,
-      resetPasswordExpires: Date.now() + 1000 * 60 * 60, // 1 hour
+      resetPasswordExpires: Date.now() + 1000 * 60 * 60 * 24 * 7, // 7 Days
     });
 
     // create Provider profile (same as register)
