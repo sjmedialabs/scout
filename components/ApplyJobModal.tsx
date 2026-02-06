@@ -92,24 +92,62 @@ export default function ApplyJobModal({
   }
 
   /* ---------------- SUBMIT ---------------- */
-  const handleSubmit = (e: any) => {
-    e.preventDefault()
-    if (!validate()) return
+  const handleSubmit = async (e: any) => {
+  e.preventDefault()
+  if (!validate()) return
 
-    setLoading(true)
+  setLoading(true)
 
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false)
-      setSuccess(true)
+  let resumeUrl = ""
+  let coverLetterUrl = ""
 
-      // Show success message, then reset & close
-      setTimeout(() => {
-        resetForm()
-        onClose()
-      }, 2000)
-    }, 2000)
+  if (form.resume) {
+    const fd = new FormData()
+    fd.append("file", form.resume)
+
+    const uploadRes = await fetch("/api/upload", {
+      method: "POST",
+      body: fd,
+    })
+
+    const uploadData = await uploadRes.json()
+    resumeUrl = uploadData.url
   }
+
+  if (form.coverLetter) {
+    const fd = new FormData()
+    fd.append("file", form.coverLetter)
+
+    const uploadRes = await fetch("/api/upload", {
+      method: "POST",
+      body: fd,
+    })
+
+    const uploadData = await uploadRes.json()
+    coverLetterUrl = uploadData.url
+  }
+
+  await fetch("/api/applications", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      jobTitle,
+      ...form,
+      resumeUrl,
+      coverLetterUrl,
+    }),
+  })
+
+  setLoading(false)
+  setSuccess(true)
+
+  setTimeout(() => {
+    resetForm()
+    onClose()
+  }, 1500)
+}
+
+
 
   /* ---------------- UI ---------------- */
   return (

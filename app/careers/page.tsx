@@ -36,7 +36,7 @@ export default function CareersPage() {
             href={`/careers/${job.slug}`}
           >
           <div
-            className="border border-gray-400 rounded-3xl px-6 py-6 md:px-10 md:py-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
+            className="border mb-3 border-gray-400 rounded-3xl px-6 py-6 md:px-10 md:py-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
           >
             {/* Left */}
             <div className="lg:w-1/3">
@@ -44,7 +44,7 @@ export default function CareersPage() {
               {job.title}
             </h2>
             <p className="text-sm text-gray-500 mt-1">
-              {job.department}
+              Department: {job.department}
             </p>
           </div>
 
@@ -58,14 +58,16 @@ export default function CareersPage() {
           </div>
 
             {/* Middle 2 */}
+            {/* Middle 2 */}
             <div className="lg:w-1/4 pt-0">
               <p className="text-lg font-medium text-gray-500">
-                {job.role}
+                {job.experience}
               </p>
               <p className="text-sm text-gray-500 mt-1">
-                {job.type}
+                {job.employmentType}
               </p>
             </div>
+
 
             {/* CTA */}
             <div className="lg:w-auto">
