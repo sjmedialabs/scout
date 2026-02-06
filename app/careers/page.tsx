@@ -1,15 +1,19 @@
 "use client"
 
 import Link from "next/link"
-import { jobs } from "@/lib/jobs"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import ApplyJobModal from "@/components/ApplyJobModal"
 
-
 export default function CareersPage() {
+  const [jobs, setJobs] = useState<any[]>([])
+  const [open, setOpen] = useState(false)
+  const [selectedJob, setSelectedJob] = useState("")
 
-const [open, setOpen] = useState(false)
-const [selectedJob, setSelectedJob] = useState("")
+  useEffect(() => {
+    fetch("/api/careers")
+      .then((res) => res.json())
+      .then(setJobs)
+  }, [])
 
   return (
     <>
@@ -30,30 +34,28 @@ const [selectedJob, setSelectedJob] = useState("")
           <Link
             key={job.slug}
             href={`/careers/${job.slug}`}
-            className="block"
           >
           <div
             className="border border-gray-400 rounded-3xl px-6 py-6 md:px-10 md:py-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
           >
             {/* Left */}
             <div className="lg:w-1/3">
-              <h2 className="text-lg font-semibold text-gray-800">
-                {job.title}
-              </h2>
-              <p className="text-sm text-gray-500 mt-1">
-                {job.category}
-              </p>
-            </div>
+            <h2 className="text-lg font-semibold text-gray-800">
+              {job.title}
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              {job.department}
+            </p>
+          </div>
 
-            {/* Middle 1 */}
-            <div className="lg:w-1/4">
-              <p className="text-lg font-medium text-gray-500">
-                {job.mode}
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
-                {job.location}
-              </p>
-            </div>
+          <div className="lg:w-1/4">
+            <p className="text-lg font-medium text-gray-500">
+              {job.employmentType}
+            </p>
+            <p className="text-sm text-gray-500 mt-1">
+              {job.location}
+            </p>
+          </div>
 
             {/* Middle 2 */}
             <div className="lg:w-1/4 pt-0">

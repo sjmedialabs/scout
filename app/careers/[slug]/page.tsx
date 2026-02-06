@@ -1,24 +1,32 @@
 "use client"
 
-import { jobs } from "@/lib/jobs"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import ApplyJobModal from "@/components/ApplyJobModal"
 
-
-export default function JobDetailsPage( {
-      params,
+export default function JobDetailsPage({
+  params,
 }: {
   params: { slug: string }
 }) {
-  const job = jobs.find((job) => job.slug === params.slug)
- 
-  if (!job) {
-    notFound()
-  }
+  const [job, setJob] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [open, setOpen] = useState(false)
 
-    const [open, setOpen] = useState(false)
+  useEffect(() => {
+    fetch(`/api/careers/${params.slug}`)
+      .then((res) => {
+        if (!res.ok) throw new Error()
+        return res.json()
+      })
+      .then(setJob)
+      .catch(() => setJob(null))
+      .finally(() => setLoading(false))
+  }, [params.slug])
+
+  if (loading) return <p className="p-10">Loading...</p>
+  if (!job) return notFound()
 
   return (
     <>
@@ -49,31 +57,20 @@ export default function JobDetailsPage( {
             Key Responsibilities
           </h2>
 
-          <div className="space-y-6 text-gray-400 text-sm">
-            {job.responsibilities.map((res, i) => (
-            <div key={i}>
-              <p className="font-medium text-gray-500 mb-1">
-                {i + 1}. {res.title}
-              </p>
-              <ul className="list-disc pl-5 space-y-1">
-                {res.points.map((point, idx) => (
-                    <li key={idx}>{point}</li>
-                ))}
-              </ul>
-            </div>
-            ))}
-         </div>
+          <div
+            className="space-y-6 text-gray-400 text-sm"
+            dangerouslySetInnerHTML={{ __html: job.responsibilities }}
+          />
 
           {/* Skills */}
           <h2 className="text-xl font-semibold mt-12 mb-4">
             Required Skills & Capabilities
           </h2>
 
-          <ul className="list-disc pl-5 space-y-2 text-gray-400 text-sm">
-            {job.skills.map((skill, i) => (
-                <li key={i}>{skill}</li>
-            ))}
-          </ul>
+          <div
+            className="list-disc pl-5 space-y-2 text-gray-400 text-sm"
+            dangerouslySetInnerHTML={{ __html: job.skills }}
+          />
         </div>
 
         {/* RIGHT SIDEBAR */}
@@ -82,23 +79,23 @@ export default function JobDetailsPage( {
             <div className="divide-y text-sm text-gray-500 space-y-0">
               <div className="p-6">
                 <p className="font-bold">Date Posted</p>
-                <p>{job.meta.datePosted}</p>
+                <p>{new Date(job.createdAt).toDateString()}</p>
               </div>
               <div className="p-6">
                 <p className="font-bold">Experience</p>
-                <p>{job.meta.experience}</p>
+                <p>{job.experience}</p>
               </div>
               <div className="p-6">
                 <p className="font-bold">Salary Range</p>
-                <p>{job.meta.salary}</p>
+                <p>{job.salaryRange}</p>
               </div>
               <div className="p-6">
                 <p className="font-bold">Department</p>
-                <p>{job.meta.department}</p>
+                <p>{job.department}</p>
               </div>
               <div className="p-6">
                 <p className="font-Bold">Employment Type</p>
-                <p>{job.meta.employmentType}</p>
+                <p>{job.employmentType}</p>
               </div>
             </div>
 
