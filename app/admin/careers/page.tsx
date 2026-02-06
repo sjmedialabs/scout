@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import dynamic from "next/dynamic"
+import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -11,7 +12,13 @@ const ReactQuill = dynamic(() => import("react-quill"), { ssr: false })
 import "react-quill/dist/quill.snow.css"
 
 export default function AdminCareersPage() {
+  const [jobs, setJobs] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
+  const [openModal, setOpenModal] = useState(false)
+  const [counts, setCounts] = useState<any[]>([])
+  const [editingJob, setEditingJob] = useState<any>(null)
+
+
 
   const [formData, setFormData] = useState({
     title: "",
@@ -28,6 +35,53 @@ export default function AdminCareersPage() {
   const [responsibilities, setResponsibilities] = useState("")
   const [skills, setSkills] = useState("")
 
+  useEffect(() => {
+    fetch("/api/careers")
+      .then((res) => res.json())
+      .then(setJobs)
+  }, [])
+
+  useEffect(() => {
+  fetch("/api/applications/count")
+    .then(res => res.json())
+    .then(setCounts)
+}, [])
+
+const getCount = (title: string) => {
+  const found = counts.find((c) => c._id === title)
+  return found ? found.count : 0
+}
+
+const deleteJob = async (id: string) => {
+  await fetch("/api/admin/careers/delete", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id }),
+  })
+
+  setJobs((prev) => prev.filter((j) => j._id !== id))
+}
+
+
+const openEdit = (job: any) => {
+    setEditingJob(job)
+    setFormData({
+      title: job.title || "",
+      description: job.description || "",
+      location: job.location || "",
+      email: job.email || "",
+      website: job.website || "",
+      experience: job.experience || "",
+      salaryRange: job.salaryRange || "",
+      department: job.department || "",
+      employmentType: job.employmentType || "",
+    })
+    setResponsibilities(job.responsibilities || "")
+    setSkills(job.skills || "")
+    setOpenModal(true)
+  }
+
+
   const handleChange = (e: any) => {
     setFormData({
       ...formData,
@@ -35,208 +89,273 @@ export default function AdminCareersPage() {
     })
   }
 
+   const resetForm = () => {
+    setFormData({
+      title: "",
+      description: "",
+      location: "",
+      email: "",
+      website: "",
+      experience: "",
+      salaryRange: "",
+      department: "",
+      employmentType: "",
+    })
+    setResponsibilities("")
+    setSkills("")
+    setEditingJob(null)
+  }
+
   const handleSubmit = async () => {
-    try {
-      setLoading(true)
+  try {
+    setLoading(true)
 
-      const payload = {
-        ...formData,
-        responsibilities,
-        skills,
-      }
+    const payload = {
+      ...formData,
+      responsibilities,
+      skills,
+    }
 
+    // EDIT MODE
+    if (editingJob) {
+      const res = await fetch("/api/admin/careers/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: editingJob._id,
+          data: payload,
+        }),
+      })
+
+      const updatedJob = await res.json()
+
+      setJobs((prev) =>
+        prev.map((j) => (j._id === updatedJob._id ? updatedJob : j))
+      )
+    } else {
       const res = await fetch("/api/admin/careers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
 
-      if (!res.ok) throw new Error("Failed to create job")
-
-      alert("Job posted successfully!")
-
-      setFormData({
-        title: "",
-        description: "",
-        location: "",
-        email: "",
-        website: "",
-        experience: "",
-        salaryRange: "",
-        department: "",
-        employmentType: "",
-      })
-      setResponsibilities("")
-      setSkills("")
-    } catch (err) {
-      console.error(err)
-      alert("Something went wrong")
-    } finally {
-      setLoading(false)
+      const newJob = await res.json()
+      setJobs([newJob, ...jobs])
     }
+
+    resetForm()
+    setOpenModal(false)
+  } catch {
+    alert("Failed to save job")
+  } finally {
+    setLoading(false)
   }
+}
+
 
   return (
     <div className="p-0 max-w-7xl">
-    <div className="mt-auto">
-    <h1 className=" font-bold text-orangeButton text-3xl my-custom-class">
-     Job Listing
-    </h1>
-    <p>
-        Listed Jobs
-    </p>
-    </div>
-      <Card className="mt-3 rounded-2xl">
-        <CardHeader>
-          <CardTitle className="text-2xl my-custom-class text-orangeButton">Post Job</CardTitle>
-        </CardHeader>
 
-        <CardContent className="space-y-6">
-          {/* Job Title */}
-          <div className="space-y-2">
-            <Label className="my-custom-class">Job Title</Label>
-            <Input
-            className="rounded-xl border-gray-200 shadow-md"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-            />
+      {/* HEADER */}
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h1 className="font-bold text-orangeButton text-3xl my-custom-class">
+            Job Listing
+          </h1>
+          <p>Listed Jobs</p>
+        </div>
+
+      <Button
+          onClick={() => {
+            resetForm()
+            setOpenModal(true)
+          }}
+          className="rounded-full bg-orange-600 hover:bg-orange-500"
+        >
+          Post Job
+        </Button>
+      </div>
+
+      {/* JOB LIST */}
+      <div className="space-y-4">
+        {jobs.map((job) => (
+          <Card key={job._id} className="p-6 rounded-2xl bg-white shadow-md">
+            <Link href={`/admin/careers/${job.slug}`}>
+            <div className="flex justify-between items-center">
+
+              <div>
+                <h2 className="font-semibold text-lg cursor-pointer">
+                  {job.title}
+                </h2>
+            
+            <div className="flex gap-4">
+            <p className="text-sm text-gray-500">
+              <span className="font-semibold text-gray-700">Department:</span> {job.department}
+            </p>
+
+            <p className="text-sm text-gray-500">
+              <span className="font-semibold text-gray-700">Employment Type:</span> {job.employmentType}
+            </p>
+
+            <p className="text-sm text-gray-500">
+              <span className="font-semibold text-gray-700">Location:</span> {job.location}
+            </p>
           </div>
 
-          {/* Description */}
-          <div className="space-y-2">
-            <Label className="my-custom-class">Job Description</Label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="w-full border rounded-xl p-3 shadow-md"
-              rows={4}
-            />
-          </div>
 
-          {/* Location */}
-          <div className="space-y-2">
-            <Label className="my-custom-class">Location</Label>
-            <Input
-            className="rounded-xl border-gray-200 shadow-md"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-            />
-          </div>
+              <span className="inline-block mt-2 text-xs bg-green-400 text-white px-2 py-1 rounded-full">
+                Applications: {getCount(job.title)}
+              </span>
+            </div>
 
-          {/* Email */}
-          <div className="space-y-2">
-            <Label className="my-custom-class">Email</Label>
-            <Input
-            className="rounded-xl border-gray-200 shadow-md"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-            />
-          </div>
-
-          {/* Website */}
-          <div className="space-y-2">
-            <Label className="my-custom-class">Website</Label>
-            <Input
-            className="rounded-xl border-gray-200 shadow-md"
-              name="website"
-              value={formData.website}
-              onChange={handleChange}
-            />
-          </div>
-
-          {/* Responsibilities Editor */}
-          <div className="space-y-2 rounded-xl">
-            <Label className="my-custom-class">Key Responsibilities</Label>
-            <ReactQuill
-            className="rounded-xl border-gray-200 shadow-md"
-              value={responsibilities}
-              onChange={setResponsibilities}
-              placeholder="Enter responsibilities..."
-            />
-          </div>
-
-          {/* Skills Editor */}
-          <div className="space-y-2">
-            <Label className="my-custom-class">Required Skills</Label>
-            <ReactQuill
-            className="rounded-xl border-gray-200 shadow-md"
-              value={skills}
-              onChange={setSkills}
-              placeholder="Enter required skills..."
-            />
-          </div>
-
-          {/* Experience */}
-          <div className="space-y-2">
-            <Label className="my-custom-class">Experience</Label>
-            <Input
-            className="rounded-xl border-gray-200 shadow-md"
-              name="experience"
-              value={formData.experience}
-              onChange={handleChange}
-            />
-          </div>
-
-          {/* Salary */}
-          <div className="space-y-2">
-            <Label className="my-custom-class">Salary Range</Label>
-            <Input
-            className="rounded-xl border-gray-200 shadow-md"
-              name="salaryRange"
-              value={formData.salaryRange}
-              onChange={handleChange}
-            />
-          </div>
-
-          {/* Department */}
-          <div className="space-y-2">
-            <Label className="my-custom-class">Department</Label>
-            <select
-              name="department"
-              value={formData.department}
-              onChange={handleChange}
-              className="w-full border shadow-md rounded-xl p-3"
+            <div className="flex gap-2">
+            <Button
+            className="rounded-full bg-black text-white hover:bg-gray-800"
+              variant="outline"
+              onClick={() => openEdit(job)}
             >
-              <option value="">Select Department</option>
-              <option>Engineering</option>
-              <option>Design</option>
-              <option>Marketing</option>
-              <option>Sales</option>
-              <option>HR</option>
-            </select>
-          </div>
+              Edit
+            </Button>
 
-          {/* Employment Type */}
-          <div className="space-y-2">
-            <Label className="my-custom-class">Employment Type</Label>
-            <select
-              name="employmentType"
-              value={formData.employmentType}
-              onChange={handleChange}
-              className="w-full border shadow-md rounded-xl p-3"
+            <Button
+            className="rounded-full bg-blueButton hover:bg-blue-500 hover:text-white"
+              variant="destructive"
+              onClick={() => deleteJob(job._id)}
             >
-              <option value="">Select Type</option>
-              <option>Full-time</option>
-              <option>Part-time</option>
-              <option>Contract</option>
-              <option>Internship</option>
-              <option>Remote</option>
-            </select>
-          </div>
+              Delete
+            </Button>
+          
+              <Link href={`/admin/careers/${job.title}/applications`}>
+                <Button className="rounded-full bg-orangeButton">Applications</Button>
+              </Link>
+            </div>
+            </div>
+            </Link>
+          </Card>
+        ))}
+      </div>
 
-          <Button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="w-30 rounded-full bg-orange-600 hover:bg-orange-500 text-white"
+      {/* POST JOB MODAL */}
+      {openModal && (
+          <div
+            className="fixed inset-0 bg-black/40 flex justify-center items-center z-50"
+            onClick={() => setOpenModal(false)}
           >
-            {loading ? "Posting..." : "Post Job"}
-          </Button>
-        </CardContent>
-      </Card>
+            <div
+              className="bg-white rounded-3xl p-8 w-full max-w-3xl max-h-[90vh] overflow-y-auto relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+            <CardHeader>
+              <CardTitle className="text-2xl text-orangeButton">
+                {editingJob ? "Edit Job" : "Post Job"}
+              </CardTitle>
+
+              <button
+              onClick={() => setOpenModal(false)}
+              className="absolute top-6 right-6 text-gray-500 cursor-pointer"
+            >
+              ✕
+            </button>
+
+            </CardHeader>
+
+            <CardContent className="space-y-6">
+              <Input 
+              className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
+              name="title" 
+              value={formData.title} 
+              onChange={handleChange} 
+              placeholder="Job Title" />
+
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="w-full  shadow-md border rounded-xl p-3"
+                placeholder="Description"
+              />
+
+              <Input
+              className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
+               name="location" 
+               value={formData.location} 
+               onChange={handleChange} 
+               placeholder="Location" 
+               />
+              <Input 
+              className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
+              name="email" 
+              value={formData.email} 
+              onChange={handleChange} 
+              placeholder="Email" 
+              />
+              <Input 
+              className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
+              name="website" 
+              value={formData.website} 
+              onChange={handleChange} 
+              placeholder="Website" 
+              />
+
+              <ReactQuill 
+              className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
+              value={responsibilities} 
+              onChange={setResponsibilities} 
+              />
+              <ReactQuill 
+              className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
+              value={skills} 
+              onChange={setSkills} 
+              />
+
+              <Input 
+              className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
+              name="experience" 
+              value={formData.experience}
+               onChange={handleChange} 
+               placeholder="Experience" 
+               />
+              <Input 
+              className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
+              name="salaryRange" 
+              value={formData.salaryRange} 
+              onChange={handleChange} 
+              placeholder="Salary" 
+              />
+              <Input 
+              className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
+              name="department" 
+              value={formData.department} 
+              onChange={handleChange} 
+              placeholder="Department" 
+              />
+              <Input 
+              className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
+              name="employmentType" 
+              value={formData.employmentType} 
+              onChange={handleChange} 
+              placeholder="Employment Type" 
+              />
+               
+               <div className="flex gap-3">
+              <Button 
+              onClick={handleSubmit} 
+              disabled={loading} 
+              className="w-30 bg-orange-600 text-white rounded-full">
+                {loading ? "Saving..." : editingJob ? "Update Job" : "Post Job"}
+              </Button>
+
+              <Button 
+              className="w-30 bg-black text-white rounded-full"
+              variant="outline" 
+              onClick={() => setOpenModal(false)}>
+                Cancel
+              </Button>
+              </div>
+            </CardContent>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

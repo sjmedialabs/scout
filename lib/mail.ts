@@ -24,3 +24,47 @@ export async function sendSetPasswordEmail(email: string, token: string) {
     `,
   });
 }
+
+export async function sendApplicationStatusEmail(
+  email: string,
+  name: string,
+  jobTitle: string,
+  status: "accepted" | "rejected"
+) {
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
+  const subject =
+    status === "accepted"
+      ? "Application Update — Selected"
+      : "Application Update"
+
+  const html =
+    status === "accepted"
+      ? `
+        <p>Hi ${name},</p>
+        <p>We’re happy to inform you that your application for <b>${jobTitle}</b> has been <b>accepted</b>.</p>
+        <p>Our team will contact you soon with next steps.</p>
+      `
+      : `
+        <p>Hi ${name},</p>
+        <p>Thank you for applying for <b>${jobTitle}</b>.</p>
+        <p>After careful review, we will not be moving forward with your application.</p>
+        <p>We appreciate your interest in our company.</p>
+      `
+
+  await transporter.sendMail({
+    from: `"Careers Team" <${process.env.SMTP_USER}>`,
+    to: email,
+    subject,
+    html,
+  });
+}
+
