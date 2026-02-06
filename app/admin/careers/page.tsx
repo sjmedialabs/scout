@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { Input } from "@/components/ui/input"
+import { authFetch } from "@/lib/auth-fetch"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -36,13 +37,13 @@ export default function AdminCareersPage() {
   const [skills, setSkills] = useState("")
 
   useEffect(() => {
-    fetch("/api/careers")
+    authFetch("/api/careers")
       .then((res) => res.json())
       .then(setJobs)
   }, [])
 
   useEffect(() => {
-  fetch("/api/applications/count")
+  authFetch("/api/applications/count")
     .then(res => res.json())
     .then(setCounts)
 }, [])
@@ -53,7 +54,7 @@ const getCount = (title: string) => {
 }
 
 const deleteJob = async (id: string) => {
-  await fetch("/api/admin/careers/delete", {
+  await authFetch("/api/admin/careers/delete", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id }),
