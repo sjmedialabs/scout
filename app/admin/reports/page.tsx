@@ -342,13 +342,13 @@ function KpiCard({
     </div>
   )
 }
-function AgencyPerformanceChart() {
+function AgencyPerformanceChart({topAgencies}) {
   return (
     <ChartContainer
       className="h-64"
       config={{ value: { label: "Performance" } }}
     >
-      <BarChart data={agencyPerformanceData}>
+      <BarChart data={topAgencies}>
         <defs>
           <linearGradient id="serviceGradient" x1="0" y1="0" x2="0" y2="1">
             <stop offset="-13.56%" stopColor="#FD749B" />
@@ -382,7 +382,7 @@ function AgencyPerformanceChart() {
   )
 }
 
-function TopServicesTable() {
+function TopServicesTable({categories}) {
   return (
     <div className="bg-white rounded-2xl shadow-sm p-6">
       <h3 className="text-xl font-semibold text-orange-500">
@@ -398,23 +398,23 @@ function TopServicesTable() {
             <tr className="border-b text-gray-500 text-xs">
               <th className="text-left py-2">#</th>
               <th className="text-left">Service Name</th>
-              <th>Category</th>
+              {/* <th>Category</th> */}
               <th>Orders</th>
-              <th>Revenue</th>
+              {/* <th>Revenue</th> */}
               <th>Rating</th>
             </tr>
           </thead>
           <tbody>
-            {topServices.slice(0, 6).map((service) => (
+            {categories.slice(0, 6).map((service,i) => (
               <tr
-                key={service.id}
+                key={i}
                 className="border-b last:border-none text-xs"
               >
                 <td className="py-3">{service.id}</td>
-                <td>{service.name}</td>
-                <td className="text-center">{service.category}</td>
-                <td className="text-center">{service.orders}</td>
-                <td className="text-center">{service.revenue}</td>
+                <td>{service.category}</td>
+                {/* <td className="text-center">{service.category}</td> */}
+                <td className="text-center">{service.count}</td>
+                {/* <td className="text-center">{service.revenue}</td> */}
                 <td className="text-center flex justify-center py-3 items-center gap-1">
                   {service.rating}
                   <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
@@ -476,6 +476,29 @@ export default function ReportsPage() {
     lastMonthActiveUsersPercentage:0
   })
 
+  const[topLastTwoCardStats,setTopLastTwoCardStats]=useState({
+    freeTrailUserCount:0,
+    incFreeTrailUserCountPercentageThanLastMonth:0,
+    planExpiredUsersCount:0,
+    incPercentagePlanExpiredUsersThanLatMonth:0
+  })
+
+  const[serviceTabTopCardStats,setServiceTabTopCardStats]=useState({
+    totalServices:0,
+    projectCompletionPercentage:0,
+    incPercentageCompletionProjects:0,
+    avgRating:0,
+    ratingFromAgenciesCount:0
+  })
+
+  const[services,setServices]=useState([]);
+  const[requirements,setRequirements]=useState([])
+  const[providers,setProviders]=useState([]);
+  const[reviews,setReviews]=useState([]);
+  const [topCategories, setTopCategories] = useState([]);
+  const[topFiveAgencies,setTopFiveAgencies]=useState([]);
+  const [chartData, setChartData] = useState([]);
+
   const[lastSixMonthsRevenueData,setLastSixMonthsRevenueData]=useState([]);
   const[lastTwelevMonthsRevenueData,setLastTwelveMonthsRevenueData]=useState([]);
   const[dynamicUsersGrowthData,setDynamicUsersGrowthData]=useState([]);
@@ -485,7 +508,7 @@ export default function ReportsPage() {
   const maxRevenue= Math.max(...lastSixMonthsRevenueData.map(d => d?.users),0)
   // const maxUsers=200;
   
-  console.log("Max users are:::::",maxUsers);
+  // console.log("Max users are:::::",maxUsers);
 
   const [userGrowthData, setUserGrowthData] = useState<
   { month: string; users: number }[]
@@ -608,11 +631,15 @@ const getMonthRange = (year: number, month: number) => {
     setResLoading(true);
     setFailed(false);
     try{
-      const[usersRes,paymentRes]=await Promise.all([
+      const[usersRes,paymentRes,categoriesRes,requirementsRes,providersRes,reviewRes]=await Promise.all([
         authFetch("/api/users"),
-        authFetch("/api/payment")
+        authFetch("/api/payment"),
+        authFetch("/api/service-categories"),
+        authFetch("/api/requirements"),
+        authFetch("/api/providers"),
+        authFetch("/api/reviews")
       ])
-      if(!usersRes.ok || !paymentRes.ok) throw new Error();
+      if(!usersRes.ok || !paymentRes.ok || !categoriesRes || !requirementsRes) throw new Error();
       const userData=await usersRes.json();
       const  paymentData=await paymentRes.json();
 
@@ -671,6 +698,18 @@ const getMonthRange = (year: number, month: number) => {
 
       const userGrowthData = getUserGrowthData(userData.users)
       setDynamicUsersGrowthData(userGrowthData);
+
+      const servicesData=await categoriesRes.json();
+      setServices(servicesData.data);
+
+      const requirementsData=await requirementsRes.json();
+      setRequirements(requirementsData.requirements);
+
+      const providersData=await providersRes.json();
+      setProviders(providersData.providers);
+
+      const reviewsData=await reviewRes.json();
+      setReviews(reviewsData.reviews);
       
 
 
@@ -826,8 +865,268 @@ useEffect(() => {
   setUserGrowthData(growthData);
 }, [users]);
 
+//this is for caluclating the topcards last stats
+useEffect(() => {
+  if (!users.length) return;
 
-console.log("User Tab cards Stats::::",userTabCardStats);
+  const now = new Date();
+
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  const lastMonthDate = new Date(currentYear, currentMonth - 1);
+  const lastMonth = lastMonthDate.getMonth();
+  const lastMonthYear = lastMonthDate.getFullYear();
+
+  let currentMonthFreeTrial = 0;
+  let lastMonthFreeTrial = 0;
+
+  let currentMonthExpired = 0;
+  let lastMonthExpired = 0;
+
+  users.forEach(user => {
+    const createdAt = new Date(user.createdAt);
+
+    const isCurrentMonth =
+      createdAt.getMonth() === currentMonth &&
+      createdAt.getFullYear() === currentYear;
+
+    const isLastMonth =
+      createdAt.getMonth() === lastMonth &&
+      createdAt.getFullYear() === lastMonthYear;
+
+    const hasSubscription =
+      user.subscriptionStartDate && user.subscriptionEndDate;
+
+    const isExpired =
+      hasSubscription &&
+      new Date(user.subscriptionEndDate) < now;
+
+    // 🟡 Free trial users
+    if (!hasSubscription) {
+      if (isCurrentMonth) currentMonthFreeTrial++;
+      if (isLastMonth) lastMonthFreeTrial++;
+    }
+
+    // 🔴 Plan expired users
+    if (isExpired) {
+      if (isCurrentMonth) currentMonthExpired++;
+      if (isLastMonth) lastMonthExpired++;
+    }
+  });
+
+  const calcPercentage = (current: number, last: number) => {
+    if (last === 0) return current > 0 ? 100 : 0;
+    return Number((((current - last) / last) * 100).toFixed(2));
+  };
+
+  setTopLastTwoCardStats({
+    freeTrailUserCount: currentMonthFreeTrial,
+    incFreeTrailUserCountPercentageThanLastMonth: calcPercentage(
+      currentMonthFreeTrial,
+      lastMonthFreeTrial
+    ),
+    planExpiredUsersCount: currentMonthExpired,
+    incPercentagePlanExpiredUsersThanLatMonth: calcPercentage(
+      currentMonthExpired,
+      lastMonthExpired
+    ),
+  });
+}, [users]);
+
+// to caaluclate top stats cards in the service tab page
+useEffect(() => {
+  if (!services.length && !requirements.length && !providers.length) return;
+
+  const now = new Date();
+
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  const lastMonthDate = new Date(currentYear, currentMonth - 1);
+  const lastMonth = lastMonthDate.getMonth();
+  const lastMonthYear = lastMonthDate.getFullYear();
+
+  /* =========================
+     TOTAL SERVICES
+  ========================= */
+  const totalServices = services.reduce((count: number, service: any) => {
+    service.children?.forEach((child: any) => {
+      count += child.items?.length || 0;
+    });
+    return count;
+  }, 0);
+
+  /* =========================
+      PROJECT COMPLETION %
+     COMPLETION GROWTH %
+  ========================= */
+  let totalProjects = 0;
+  let closedProjects = 0;
+
+  let currentMonthClosed = 0;
+  let lastMonthClosed = 0;
+
+  requirements.forEach((req: any) => {
+    totalProjects++;
+
+    const createdAt = new Date(req.createdAt);
+    const isClosed = req.status === "Closed";
+
+    if (isClosed) {
+      closedProjects++;
+
+      if (
+        createdAt.getMonth() === currentMonth &&
+        createdAt.getFullYear() === currentYear
+      ) {
+        currentMonthClosed++;
+      }
+
+      if (
+        createdAt.getMonth() === lastMonth &&
+        createdAt.getFullYear() === lastMonthYear
+      ) {
+        lastMonthClosed++;
+      }
+    }
+  });
+
+  const projectCompletionPercentage =
+    totalProjects === 0
+      ? 0
+      : Number(((closedProjects / totalProjects) * 100).toFixed(2));
+
+  const incPercentageCompletionProjects =
+    lastMonthClosed === 0
+      ? currentMonthClosed > 0
+        ? 100
+        : 0
+      : Number(
+          (
+            ((currentMonthClosed - lastMonthClosed) / lastMonthClosed) *
+            100
+          ).toFixed(2)
+        );
+
+  /* =========================
+      AVG RATING
+      RATING COUNT
+  ========================= */
+  let totalRating = 0;
+  let ratingCount = 0;
+
+  providers.forEach((provider: any) => {
+    if (typeof provider.rating === "number" && provider.rating > 0) {
+      totalRating += provider.rating;
+      ratingCount++;
+    }
+  });
+
+  const avgRating =
+    ratingCount === 0
+      ? 0
+      : Number((totalRating / ratingCount).toFixed(1));
+
+  /* =========================
+     SET FINAL STATE
+  ========================= */
+  setServiceTabTopCardStats({
+    totalServices,
+    projectCompletionPercentage,
+    incPercentageCompletionProjects,
+    avgRating,
+    ratingFromAgenciesCount: ratingCount,
+  });
+}, [services, requirements, providers]);
+
+
+const getTopCategories = (reviews) => {
+  const categoryMap = {};
+
+  reviews.forEach((review) => {
+    const category = review?.project?.category;
+    const title = review?.project?.title;
+    const rating = review?.rating;
+
+    if (!category || rating == null) return;
+
+    if (!categoryMap[category]) {
+      categoryMap[category] = {
+        category,
+        count: 0,
+        totalRating: 0,
+        highestRatedProject: {
+          title,
+          rating,
+        },
+      };
+    }
+
+    categoryMap[category].count += 1;
+    categoryMap[category].totalRating += rating;
+
+    // Track highest-rated project per category
+    if (rating > categoryMap[category].highestRatedProject.rating) {
+      categoryMap[category].highestRatedProject = {
+        title,
+        rating,
+      };
+    }
+  });
+
+  return Object.values(categoryMap)
+    .map((cat) => ({
+      category: cat.category,
+      count: cat.count,
+      rating: Number((cat.totalRating / cat.count).toFixed(1)),
+      projectTitle: cat.highestRatedProject.title,
+    }))
+    .sort((a, b) => b.rating - a.rating)
+    .slice(0, 5);
+};
+useEffect(() => {
+  if ((reviews || []).length > 0) {
+    console.log('Entered to reviews if block')
+    const result = getTopCategories(reviews);
+    setTopCategories(result);
+  }
+}, [reviews]);
+
+
+// to caluclate the top 5 agencies for the graph
+useEffect(() => {
+  if (!providers || providers.length === 0) return;
+
+  const topFive = [...providers]
+    .sort((a, b) => b.reviewCount - a.reviewCount)
+    .slice(0, 5)
+    .map((provider) => ({
+      name: provider.name,
+      reviewCount: provider.reviewCount,
+      rating: provider.rating,
+    }));
+
+  setTopFiveAgencies(topFive);
+}, [providers]);
+
+const buildAgencyChartData = (agencies) => {
+  return agencies.map((a) => ({
+    agency: a.name,
+   value: a.reviewCount === 0 ? 0.1 : a.reviewCount,
+    rating: a.rating,
+  }));
+};
+
+useEffect(() => {
+  if (!topFiveAgencies.length) return;
+
+  setChartData(buildAgencyChartData(topFiveAgencies));
+}, [topFiveAgencies]);
+
+
+
+console.log("top agencies::::",topFiveAgencies);
 
   const getTotalRevenue = (payments) => {
   return payments
@@ -1016,14 +1315,14 @@ const getARPU = (payments) => {
         subtitle={`${topCardStats.lastMonthActiveUsersPercentage.toFixed().toString()}% from last month`}
       />
       <KPICard
-        title="Services Completed"
-        value="03"
-        subtitle="+9.3% from last month"
+        title="Free Trail Users"
+        value={topLastTwoCardStats.freeTrailUserCount.toString()}
+        subtitle={`${topLastTwoCardStats.incFreeTrailUserCountPercentageThanLastMonth}% from last month`}
       />
       <KPICard
-        title="Avg. Response Time"
-        value="$23,700"
-        subtitle="-15.8% improvement"
+        title="Plan Expired Users"
+        value={topLastTwoCardStats.planExpiredUsersCount.toString()}
+        subtitle={`${topLastTwoCardStats.incPercentagePlanExpiredUsersThanLatMonth}% improvement`}
       />
     </div>
 
@@ -1109,7 +1408,24 @@ const getARPU = (payments) => {
       {activeTab === "Services" && (
         <div className="space-y-8">
           {/* Top KPIs */}
-          <ServicesKPIs />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <KpiCard
+                title="Total Services"
+                value={serviceTabTopCardStats.totalServices.toString()}
+                subtitle="Across all categories"
+              />
+              <KpiCard
+                title="Completion Rate"
+                value={`${serviceTabTopCardStats.projectCompletionPercentage}%`}
+                subtitle={`${serviceTabTopCardStats.incPercentageCompletionProjects}% last month`}
+                positive
+              />
+              <KpiCard
+                title="Avg Rating"
+                value={`${serviceTabTopCardStats.avgRating} / 5.0`}
+                subtitle={`From ${serviceTabTopCardStats.ratingFromAgenciesCount} users`}
+              />
+            </div>
 
           {/* Main Content */}
           <div className="flex flex-row gap-6">
@@ -1121,11 +1437,11 @@ const getARPU = (payments) => {
               <p className="text-sm text-gray-500 mb-4">
                 Track service usage and performance
               </p>
-              <AgencyPerformanceChart />
+              <AgencyPerformanceChart topAgencies={chartData} />
             </div>
             <div className="w-full">
               {/* Table */}
-              <TopServicesTable /></div>
+              <TopServicesTable categories={topCategories} /></div>
           </div>
         </div>
       )}

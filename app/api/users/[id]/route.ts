@@ -83,6 +83,7 @@ export async function GET(
             isActive: userData.isActive,
             subscriptionStartDate:userData?.subscriptionStartDate,
             subscriptionEndDate:userData?.subscriptionEndDate,
+            proposalCount:userData?.proposalCount || 0,
             lastLogin: userData.lastLogin,
             createdAt: userData.createdAt,
 

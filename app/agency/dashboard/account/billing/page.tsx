@@ -63,6 +63,8 @@ export default function BillingPage() {
    const[userDetails,setUserDetails]=useState({}); 
    const[subscriptionDetails,setSubscriptionDetails]=useState({});
    const[paymentDetails,setPaymentDetails]=useState([]);
+
+   const[isExpired,setIsExpired]=useState(false);
    
 
    const[formData,setFormData]=useState({
@@ -90,6 +92,14 @@ export default function BillingPage() {
         console.log("Fetched User Detaisl in Billing Cycyle:::",data);
         console.log("Payment details in the billing cycle:::",paymentData)
         setUserDetails(data.user);
+
+         const isExpired = data.user?.subscriptionStartDate
+          ? new Date(data.user.subscriptionEndDate) < new Date()
+          : (data.user?.proposalCount || 0) > 1
+
+        setIsExpired(isExpired)
+
+        
         setSubscriptionDetails(data.subscription);
         setPaymentDetails(paymentData.payments)
        
@@ -259,11 +269,12 @@ const formatDate=(dateString: string)=> {
 
         {/* Plan + Card */}
         <div className="space-y-2">
+          {isExpired&&<span className="text-red-500 text-sm">{`Your plan is expired take a new plan (or) renew plan`}</span>}
           <Card className="rounded-2xl bg-white py-2">
             <CardHeader className="flex flex-row items-center justify-between">
               <div className="h-10">
                 <CardTitle className="text-orangeButton h-6 my-custom-class text-lg">
-                  Plan: {subscriptionDetails?.title}
+                  Plan: {subscriptionDetails?.title} 
                 </CardTitle>
                 <p className="text-xs text-gray-500 leading-tight">
                   Take your portfolio to next level with more features

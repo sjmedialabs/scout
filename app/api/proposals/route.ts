@@ -8,6 +8,7 @@ import Provider from "@/models/Provider";
 import Seeker from "@/models/Seeker";
 import Requirement from "@/models/Requirement";
 import Notification from "@/models/Notification";
+import User from "@/models/User"
 
 export async function GET(request: NextRequest) {
   try {
@@ -213,6 +214,9 @@ export async function POST(request: NextRequest) {
 
      // Update project proposal count
       await Requirement.findByIdAndUpdate(requirementId, { $inc: { proposals: 1 } })
+
+      //update users proposal count
+      await User.findByIdAndUpdate(user.userId,{$inc:{proposalCount:1}})
 
     await Notification.create({
       userId: clientId,

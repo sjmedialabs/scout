@@ -19,6 +19,7 @@ import {
   Proposal,
 } from "@/lib/types";
 import { authFetch } from "@/lib/auth-fetch";
+import { FaAws } from "react-icons/fa";
 
 export default function AnalyticsPage() {
   const [stats, setStats] = useState(mockAdminStats);
@@ -65,6 +66,8 @@ export default function AnalyticsPage() {
 
   // })
 
+  const[reports,setReports]=useState([]);
+
 
   useEffect(() => {
     async function fetchDashboardData() {
@@ -79,7 +82,7 @@ export default function AnalyticsPage() {
           providersRes,
           paymentRes,
           subscriptionRes,
-          //  reportsRes
+          reportsRes
         ] = await Promise.all([
           //   authFetch("/api/admin/stats"),
           //   authFetch("/api/admin/subscriptions"),
@@ -87,8 +90,8 @@ export default function AnalyticsPage() {
           authFetch("/api/requirements"),
           authFetch("/api/providers"),
           authFetch("/api/payment"),
-          authFetch("/api/subscription")
-          //   authFetch("/api/admin/reports"),
+          authFetch("/api/subscription"),
+          authFetch("/api/reported-content")
         ]);
         const usersData = await usersRes.json();
         let totalUsers = usersData.users.length;
@@ -115,7 +118,7 @@ export default function AnalyticsPage() {
         //   pendingApproval:usersData.users.filter((eachItem)=>!eachItem.isVerified).length
         // });
 
-        setUsers(usersData.users);
+        setUsers(usersData.users.filter((item)=>item.role!=="admin"));
 
         const requirementsData = await requirementsRes.json();
         console.log("Fetched requirements data:", requirementsData);
@@ -173,7 +176,7 @@ export default function AnalyticsPage() {
           clientsCountPercentage: clientsCountPercentage,
           agenciesCount: agenciesCount,
           agenciesCountPercentage: agencyCountPercentage,
-          pendingApproval:usersData.users.filter((eachItem)=>!eachItem.isVerified).length,
+          pendingApproval:providersData.providers.filter((eachItem)=>!eachItem.isVerified).length,
           monthlyRevenue:currentMonthRevenue,
           percentageIncrease:Number(revenueIncreasePercentage.toFixed(2)),
         });
@@ -190,7 +193,7 @@ export default function AnalyticsPage() {
         // Step 1: classify users
         users.forEach((user: any) => {
           if (user.subscriptionPlanId) {
-            const planId = user.subscriptionPlanId;
+            const planId = user.subscriptionPlanId._id;
             planCountMap[planId] = (planCountMap[planId] || 0) + 1;
           } else {
             freeTrialCount++;
@@ -241,9 +244,11 @@ export default function AnalyticsPage() {
             monthlyRecurringRevenue:currentMRR,
             activeSubscriberCount:usersData.users.filter((eachItem)=>eachItem. subscriptionPlanId).length,
             avgRevenuePereUser:arpu,
-            platformGrowthPercentage:growth
+            platformGrowthPercentage:growth.toFixed(2)
           })
 
+          const reportsData=await reportsRes.json();
+          setReports(reportsData.reports.filter((item)=>item.status==="pending"));
 
 
 
@@ -263,7 +268,7 @@ export default function AnalyticsPage() {
   ).length;
   const pendingUsers = users.filter((u) => !u.isVerified).length;
   const activeRequirements = requirements.filter(
-    (r) => r.status === "Open",
+    (r) => r.status === "Allocated",
   ).length;
 console.log("Subscription statst:::::::",subscriptionStats);
   function getMonthlyRevenue(payments: any[], year: number, month: number) {

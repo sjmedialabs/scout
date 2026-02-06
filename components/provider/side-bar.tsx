@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
@@ -31,6 +31,7 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { authFetch } from "@/lib/auth-fetch";
 
 interface MenuItem {
   id: string;
@@ -40,63 +41,63 @@ interface MenuItem {
   children?: MenuItem[];
 }
 
-const menuItems: MenuItem[] = [
-  {
-    id: "overview",
-    label: "OVERVIEW",
-    icon: Home,
-    children: [
-      { id: "dashboard", label: "Dashboard", icon: Home, path: "/agency/dashboard" },
+// const menuItems: MenuItem[] = [
+//   {
+//     id: "overview",
+//     label: "OVERVIEW",
+//     icon: Home,
+//     children: [
+//       { id: "dashboard", label: "Dashboard", icon: Home, path: "/agency/dashboard" },
 
-      {id:"editprofile",label:"EditProfile",icon: Briefcase, path: "/agency/dashboard/editprofile"},
+//       {id:"editprofile",label:"EditProfile",icon: Briefcase, path: "/agency/dashboard/editprofile"},
 
-      { id: "portfolio", label: "Portfolio", icon: Briefcase, path: "/agency/dashboard/portfolio" },
-      { id: "reviews", label: "Reviews", icon: Star, path: "/agency/dashboard/reviews" },
-      { id: "messages", label: "Messages", icon: MessageSquare, path: "/agency/dashboard/messages" },
-      { id: "project-inquiries", label: "Project Inquiries", icon: FileSearch, path: "/agency/dashboard/project-inquiries" },
-      { id: "proposals", label: "Proposals", icon: FileText, path: "/agency/dashboard/proposals" },
-      { id: "projects", label: "Projects", icon: Briefcase, path: "/agency/dashboard/projects" },
-    ],
-  },
+//       { id: "portfolio", label: "Portfolio", icon: Briefcase, path: "/agency/dashboard/portfolio" },
+//       { id: "reviews", label: "Reviews", icon: Star, path: "/agency/dashboard/reviews" },
+//       { id: "messages", label: "Messages", icon: MessageSquare, path: "/agency/dashboard/messages" },
+//       { id: "project-inquiries", label: "Project Inquiries", icon: FileSearch, path: "/agency/dashboard/project-inquiries" },
+//       { id: "proposals", label: "Proposals", icon: FileText, path: "/agency/dashboard/proposals" },
+//       { id: "projects", label: "Projects", icon: Briefcase, path: "/agency/dashboard/projects" },
+//     ],
+//   },
 
-  {
-    id: "performance",
-    label: "PERFORMANCE",
-    icon: BarChart3,
-    children: [
-      { id: "performance-analytics", label: "Performance Analytics", icon: TrendingUp, path: "/agency/dashboard/performance/analytics" },
-      { id: "audience-insights", label: "Audience Insights", icon: Eye, path: "/agency/dashboard/performance/audience-insights" },
-      { id: "competitor-comparison", label: "Competitor Comparison", icon: GitCompare, path: "/agency/dashboard/performance/competitor-comparison" },
-    ],
-  },
+//   {
+//     id: "performance",
+//     label: "PERFORMANCE",
+//     icon: BarChart3,
+//     children: [
+//       { id: "performance-analytics", label: "Performance Analytics", icon: TrendingUp, path: "/agency/dashboard/performance/analytics" },
+//       { id: "audience-insights", label: "Audience Insights", icon: Eye, path: "/agency/dashboard/performance/audience-insights" },
+//       { id: "competitor-comparison", label: "Competitor Comparison", icon: GitCompare, path: "/agency/dashboard/performance/competitor-comparison" },
+//     ],
+//   },
 
-  // {
-  //   id: "marketing",
-  //   label: "MARKETING",
-  //   icon: Megaphone,
-  //   children: [
-  //     { id: "lead-generation", label: "Lead Management", icon: Download, path: "/agency/dashboard/marketing/lead-generation" },
-  //   ],
-  // },
+//   // {
+//   //   id: "marketing",
+//   //   label: "MARKETING",
+//   //   icon: Megaphone,
+//   //   children: [
+//   //     { id: "lead-generation", label: "Lead Management", icon: Download, path: "/agency/dashboard/marketing/lead-generation" },
+//   //   ],
+//   // },
 
-  {
-    id: "account-settings",
-    label: "ACCOUNT & SETTINGS",
-    icon: Settings,
-    children: [
-      { id: "billing-subscription", label: "Billing & Subscription", icon: CreditCard, path: "/agency/dashboard/account/billing" },
-      { id: "subscription", label: "Subscription", icon:Briefcase, path: "/agency/dashboard/account/subscriptions" },
-      { id: "notifications", label: "Notifications", icon: Bell, path: "/agency/dashboard/account/notifications" },
-    ],
-  },
-];
+//   {
+//     id: "account-settings",
+//     label: "ACCOUNT & SETTINGS",
+//     icon: Settings,
+//     children: [
+//       { id: "billing-subscription", label: "Billing & Subscription", icon: CreditCard, path: "/agency/dashboard/account/billing" },
+//       { id: "subscription", label: "Subscription", icon:Briefcase, path: "/agency/dashboard/account/subscriptions" },
+//       { id: "notifications", label: "Notifications", icon: Bell, path: "/agency/dashboard/account/notifications" },
+//     ],
+//   },
+// ];
 
 interface SidebarProps {
   user: any;
-  provider: any;
+  menuItems: any;
 }
 
-export default function Sidebar({ user, provider }: SidebarProps) {
+export default function Sidebar({ user, menuItems }: SidebarProps) {
   const router = useRouter();
 
   const { logout } = useAuth()
@@ -110,6 +111,45 @@ const handleLogout = async () => {
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [activeSubSection, setActiveSubSection] = useState<string | null>(null);
+  const[userDetails,setUserDetails]=useState({});
+  const[expired,setExpired]=useState(false);
+  const[filteredMenuItem,setFilteredMenuItems]=useState<MenuItem[]>([])
+  
+    // const loadData=async()=>{
+  
+    //   try{
+    //    const res=await authFetch(`/api/users/${user.id}`);
+    //    const data=await res.json();
+    //    if(!res.ok) throw new Error();
+
+    //    if(data.user?.subscriptionStartDate){
+    //     const today = new Date();
+    //       const endDate = new Date(data.user?.subscriptionEndDate);
+
+    //       setExpired(endDate < today);
+    //    }else{
+    //       setExpired((data.user?.proposalCount || 0)>1)
+    //    }
+
+    //    console.log("the fetched user details from the side bar is :::::",data)
+    //   }catch(error){
+    //        console.log("Failed to get the user details::::::",error);
+    //   }
+  
+    // }
+  
+    // useEffect(()=>{
+    //   loadData()
+    // },[])
+
+    // useEffect(()=>{
+    //   if(expired){
+    //     setFilteredMenuItems([menuItems[menuItems.length-1]])
+        
+    //   }else{
+    //     setFilteredMenuItems([...menuItems])
+    //   }
+    // },[expired])
 
   const toggleSection = (id: string) => {
     setExpandedSections((prev) =>
@@ -125,6 +165,7 @@ const handleLogout = async () => {
       router.push(item.path);   // <===== REDIRECT HERE
     }
   };
+  console.log("Filterded menu items are :::",filteredMenuItem)
 
   return (
     <div className="fixed left-0 top-0 h-full w-80 bg-card border-r border-border flex flex-col z-10">
@@ -132,7 +173,7 @@ const handleLogout = async () => {
       {/* Header */}
       <div className="p-6 border-b border-border">
         <h2 className="text-xl font-bold">Agency Dashboard</h2>
-        <p className="text-sm text-muted-foreground">Welcome back, {user.name}</p>
+        <p className="text-sm text-muted-foreground">Welcome back, {user?.name}</p>
 
         <div className="flex items-center gap-2 mt-3">
           {/* <Badge
@@ -152,8 +193,8 @@ const handleLogout = async () => {
             &nbsp;Plan
           </Badge> */}
 
-          {user.isVerified && <Badge variant="secondary" className="bg-red-500">Verified</Badge>}
-          {user.isActive && <Badge className="bg-green-500">Active</Badge>}
+          {user?.isVerified && <Badge variant="secondary" className="bg-red-500">Verified</Badge>}
+          {user?.isActive && <Badge className="bg-green-500">Active</Badge>}
         </div>
       </div>
 

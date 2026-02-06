@@ -18,6 +18,8 @@ export interface IUser extends Document {
   subscriptionEndDate?: Date
   billingCycle?:"Yearly" | "Monthly"
 
+  proposalCount:Number
+
   
   createdAt: Date
   updatedAt: Date
@@ -40,6 +42,7 @@ const UserSchema = new Schema<IUser>(
     subscriptionStartDate:{type:Date},
     subscriptionEndDate:{type:Date},
     billingCycle:{type:String,enum:["Yearly","Monthly"],default:"Monthly"},
+    proposalCount:{type:Number,default:0},
     lastLogin: { type: Date },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
