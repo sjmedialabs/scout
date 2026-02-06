@@ -4,6 +4,8 @@ import { useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { authFetch } from "@/lib/auth-fetch";
+
 
 export default function SetPasswordPage() {
   const searchParams = useSearchParams()
