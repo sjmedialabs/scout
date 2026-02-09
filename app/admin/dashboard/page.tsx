@@ -15,7 +15,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { User } from "@/lib/types";
+import { Provider, User } from "@/lib/types";
+import { Switch } from "@radix-ui/react-switch";
 
 export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,8 +25,15 @@ export default function DashboardPage() {
     mockSubscriptionStats,
   );
   const [users, setUsers] = useState<User[]>([]);
-  const [reportedContent, setReportedContent] = useState(mockReportedContent);
+  const[providers,setProviders]=useState<Provider[]>([]);
+  const [reportedContent, setReportedContent] = useState([]);
   const [requirements, setRequirements] = useState([]);
+
+  const[revenue,setRevenue]=useState([]);
+  const[revenueStats,setRevenueStats]=useState({
+    monthlyRevenue:0,
+    increasedPercentageThanLastMonth:0
+  });
 
   useEffect(() => {
     async function fetchDashboardData() {
@@ -34,40 +42,128 @@ export default function DashboardPage() {
       try {
         setIsLoading(true);
         const [
-          //statsRes, subRes,
+          
           usersRes,
           requirementsRes,
-          //  reportsRes
+          reportsRes,
+          providersRes,
+          paymentRes,
         ] = await Promise.all([
-          //   authFetch("/api/admin/stats"),
-          //   authFetch("/api/admin/subscriptions"),
           authFetch("/api/users"),
           authFetch("/api/requirements"),
-          //   authFetch("/api/admin/reports"),
+          authFetch("/api/reported-content"),
+          authFetch("/api/providers"),
+          authFetch("/api/payment")
         ]);
         const usersData = await usersRes.json();
-        setUsers(usersData.users);
+        setUsers(usersData.users.filter((item)=>item.role!=="admin"));
+
+        const reportedData=await reportsRes.json();
+        setReportedContent(reportedData.reports)
 
         const requirementsData = await requirementsRes.json();
         console.log("Fetched requirements data:", requirementsData);
         setRequirements(requirementsData.requirements);
+
+        const providersData=await providersRes.json();
+        setProviders(providersData.providers)
+
+        const paymentsData=await paymentRes.json();
+        setRevenue(paymentsData.data);
+
       } catch (error) {
         console.error("Failed to fetch dashboard data", error);
       } finally {
-        // setIsLoading(false);
+        setIsLoading(false);
       }
     }
 
     fetchDashboardData();
   }, []);
 
+  {/*Revenue stats caluclation */}
+  useEffect(() => {
+  if (revenue.length === 0) return;
+
+  const now = new Date();
+
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  const lastMonthDate = new Date(currentYear, currentMonth - 1);
+  const lastMonth = lastMonthDate.getMonth();
+  const lastMonthYear = lastMonthDate.getFullYear();
+
+  let currentMonthRevenue = 0;
+  let lastMonthRevenue = 0;
+
+  revenue.forEach(item => {
+    if (item.status !== "success") return;
+
+    const date = new Date(item.createdAt);
+    const month = date.getMonth();
+    const year = date.getFullYear();
+
+    if (month === currentMonth && year === currentYear) {
+      currentMonthRevenue += item.amount;
+    }
+
+    if (month === lastMonth && year === lastMonthYear) {
+      lastMonthRevenue += item.amount;
+    }
+  });
+
+  const increasedPercentageThanLastMonth =
+    lastMonthRevenue === 0
+      ? currentMonthRevenue > 0
+        ? 100
+        : 0
+      : ((currentMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100;
+
+  setRevenueStats({
+    monthlyRevenue: currentMonthRevenue,
+    increasedPercentageThanLastMonth: Number(
+      increasedPercentageThanLastMonth.toFixed(2)
+    ),
+  });
+}, [revenue]);
+
   const pendingReports = reportedContent.filter(
     (r) => r.status === "pending",
   ).length;
-  const pendingUsers = users.filter((u) => !u.isVerified).length;
+  const pendingUsers = providers.filter((u) => !u.isVerified).length;
   const activeRequirements = requirements.filter(
     (r) => r.status === "Allocated",
-  ).length;
+  );
+  console.log("ACtive Requirements are ::::::::",activeRequirements)
+
+  const now = new Date();
+
+const usersRegisteredThisMonth = users.filter(user => {
+  const date = new Date(user.createdAt);
+  return (
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear()
+  );
+})
+
+const reportsInThisMonth=(reportedContent || []).filter(report => {
+  const date = new Date(report.createdAt);
+  return (
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear()
+  );
+})
+
+if(isLoading){
+  return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+}
+
+
   return (
     <div className="space-y-10">
       {/* Page Heading */}
@@ -106,7 +202,7 @@ export default function DashboardPage() {
           title="Active Projects"
           icon={<FileText className="h-4 w-4 text-orangeButton" />}
           gradient="from-green-100 to-green-200"
-          value={activeRequirements}
+          value={activeRequirements.length}
           helper={`${requirements.length} requirements posted`}
         />
 
@@ -129,15 +225,15 @@ export default function DashboardPage() {
             />
           }
           gradient="from-purple-100 to-purple-200"
-          value={`$${subscriptionStats.monthlyRecurring.toLocaleString()}`}
-          helper={`+${stats.monthlyGrowth}% growth`}
+          value={`$${revenueStats.monthlyRevenue.toLocaleString()}`}
+          helper={`+${revenueStats.increasedPercentageThanLastMonth}% growth`}
         />
       </div>
 
       {/* Recent activity  */}
-      <div className="flex flex-col lg:flex-row gap-6">
-        <RecentUserActivityCard />
-        <ContentReportsCard />
+      <div className="flex flex-col lg:flex-row gap-6 h-full w-full">
+        <RecentUserActivityCard recentUsers={usersRegisteredThisMonth} />
+        <ContentReportsCard reportContent={reportsInThisMonth}/>
       </div>
     </div>
   );
@@ -170,9 +266,9 @@ function DashboardCard({ title, value, icon, helper, gradient }: any) {
   );
 }
 
-function RecentUserActivityCard() {
+function RecentUserActivityCard({recentUsers}) {
   return (
-    <div className="w-full">
+    <div className="w-full h-full">
       <div className="bg-white rounded-2xl shadow-md p-6">
         {/* Header */}
         <div className="mb-4">
@@ -187,53 +283,48 @@ function RecentUserActivityCard() {
         {/* User List */}
         <div className="space-y-3">
           {/* User Item */}
-          <div className="flex items-center justify-between border rounded-xl px-4 py-3">
-            <div>
-              <p className="font-semibold text-orangeButton">John Doe</p>
-              <p className="text-sm text-gray-500">seeker@example.com</p>
+          {
+            (recentUsers || []).length!==0?
+           <div>
+            {
+              recentUsers.slice(0,4).map((eachItem)=>(
+                 <div className="flex items-center justify-between border mb-3 rounded-xl px-4 py-3">
+                  <div>
+                    <p className="font-semibold text-orangeButton">{eachItem.name}</p>
+                    <p className="text-sm text-gray-500">{eachItem.email}</p>
+                  </div>
+                  <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-green-100 text-green-700">
+                  {eachItem.role}
+                  </span>
+                </div>
+              ))
+            }
+           </div>
+            :
+            <div className="text-center ">
+              <p className="text-sm text-gray-500">No users registered in this month</p>
             </div>
-            <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-green-100 text-green-700">
-              Active
-            </span>
-          </div>
+          }
 
-          <div className="flex items-center justify-between border rounded-xl px-4 py-3">
-            <div>
-              <p className="font-semibold text-orangeButton">Jane Smith</p>
-              <p className="text-sm text-gray-500">provider@example.com</p>
-            </div>
-            <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-green-100 text-green-700">
-              Active
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between border rounded-xl px-4 py-3">
-            <div>
-              <p className="font-semibold text-orangeButton">Bob Wilson</p>
-              <p className="text-sm text-gray-500">bob@example.com</p>
-            </div>
-            <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-yellow-100 text-yellow-700">
-              Pending
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between border rounded-xl px-4 py-3">
-            <div>
-              <p className="font-semibold text-orangeButton">Alice Johnson</p>
-              <p className="text-sm text-gray-500">alice@example.com</p>
-            </div>
-            <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-red-100 text-red-700">
-              Suspending
-            </span>
-          </div>
+          
         </div>
       </div>
     </div>
   );
 }
-function ContentReportsCard() {
+function ContentReportsCard({reportContent}) {
+  const getReportStatusColor = (receivedStatus: string): string => {
+  switch (receivedStatus.toLowerCase()) {
+    case "pending":
+      return "bg-yellow-100 text-yellow-700";
+    case "resolved":
+      return "bg-green-100 text-green-700";
+    default:
+      return "bg-gray-100 text-gray-700";
+  }
+};
   return (
-    <div className="w-full">
+    <div className="w-full h-full">
       <div
         className="
           bg-white rounded-2xl p-6
@@ -255,49 +346,36 @@ function ContentReportsCard() {
         {/* Report List */}
         <div className="space-y-3">
           {/* Item */}
-          <div className="flex items-center justify-between border rounded-xl px-4 py-3">
-            <div>
-              <p className="font-semibold text-orangeButton">
-                Inappropriate content
-              </p>
-              <p className="text-sm text-gray-500">review • 20/01/2024</p>
+          {
+            (reportContent || []).length!==0?
+             <div>
+              {
+                reportContent.slice(0,4).map((item)=>(
+                  <div className="flex items-center justify-between border  mb-3 rounded-xl px-4 py-3">
+                    <div>
+                      <p className="font-semibold text-orangeButton">
+                        {item.reason}
+                      </p>
+                      <p className="text-sm text-gray-500">{item.reportedTo.email}</p>
+                    </div>
+                    <span className={`text-xs font-semibold px-3 py-1 rounded-lg ${getReportStatusColor(item.status)}`}>
+                    {item.status}
+                    </span>
+                  </div>
+                ))
+              }
+             </div>
+            :
+            <div className="text-center">
+               <p className="text-gray-500 text-xl">Their is no recent reports in this month </p>
             </div>
-            <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-green-100 text-green-700">
-              Resolved
-            </span>
-          </div>
 
-          <div className="flex items-center justify-between border rounded-xl px-4 py-3">
-            <div>
-              <p className="font-semibold text-orangeButton">Spam</p>
-              <p className="text-sm text-gray-500">proposal • 19/01/2024</p>
-            </div>
-            <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-green-100 text-green-700">
-              Resolved
-            </span>
-          </div>
+          }
 
-          <div className="flex items-center justify-between border rounded-xl px-4 py-3">
-            <div>
-              <p className="font-semibold text-orangeButton">
-                Fraudulent activity
-              </p>
-              <p className="text-sm text-gray-500">user • 15/01/2024</p>
-            </div>
-            <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-yellow-100 text-yellow-700">
-              Pending
-            </span>
-          </div>
+          
+          
 
-          <div className="flex items-center justify-between border rounded-xl px-4 py-3">
-            <div>
-              <p className="font-semibold text-orangeButton">Alice Johnson</p>
-              <p className="text-sm text-gray-500">alice@example.com</p>
-            </div>
-            <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-yellow-100 text-yellow-700">
-              Pending
-            </span>
-          </div>
+          
         </div>
       </div>
     </div>

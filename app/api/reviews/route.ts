@@ -19,23 +19,30 @@ export async function GET(req: NextRequest) {
 
     await connectToDatabase();
 
-    const id = user.userId;
+    const isAdmin = user.role === "admin";
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json(
-        { error: "Invalid provider ID" },
-        { status: 400 },
-      );
+    // 🔹 Build match condition dynamically
+    const matchStage: any = {
+      isPublic: true,
+    };
+
+    // 🔹 Only providers are restricted by providerId
+    if (!isAdmin) {
+      const id = user.userId;
+
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return NextResponse.json(
+          { error: "Invalid provider ID" },
+          { status: 400 },
+        );
+      }
+
+      matchStage.providerId = new mongoose.Types.ObjectId(id);
     }
-
-    const providerObjectId = new mongoose.Types.ObjectId(id);
 
     const reviews = await Review.aggregate([
       {
-        $match: {
-          providerId: providerObjectId,
-          isPublic: true,
-        },
+        $match: matchStage,
       },
 
       // 🔹 Join Seeker (client details)
@@ -70,7 +77,7 @@ export async function GET(req: NextRequest) {
         },
       },
 
-      // 🔹 Shape final response
+      // 🔹 Final response shape (UNCHANGED)
       {
         $project: {
           rating: 1,
@@ -124,6 +131,7 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
 
 export async function POST(request: NextRequest) {
   try {
