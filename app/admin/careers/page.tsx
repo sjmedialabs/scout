@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { authFetch } from "@/lib/auth-fetch"
 import { Button } from "@/components/ui/button"
+import { useMemo } from "react"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -82,6 +83,33 @@ const openEdit = (job: any) => {
     setOpenModal(true)
   }
 
+  const modules = useMemo(() => ({
+  toolbar: [
+    [{ header: [1, 2, 3, false] }],
+    ["bold", "italic", "underline"],
+    [{ color: [] }, { background: [] }],
+    [{ list: "ordered" }, { list: "bullet" }],
+    [{ indent: "-1" }, { indent: "+1" }],
+    ["link"],
+    ["clean"],
+  ],
+}), [])
+
+const formats = [
+  "header",
+  "bold",
+  "italic",
+  "underline",
+  "color",
+  "background",
+  "list",
+  "bullet",
+  "indent",
+  "link",
+]
+
+
+
 
   const handleChange = (e: any) => {
     setFormData({
@@ -119,7 +147,7 @@ const openEdit = (job: any) => {
 
     // EDIT MODE
     if (editingJob) {
-      const res = await fetch("/api/admin/careers/update", {
+      const res = await authFetch("/api/admin/careers/update", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -134,7 +162,7 @@ const openEdit = (job: any) => {
         prev.map((j) => (j._id === updatedJob._id ? updatedJob : j))
       )
     } else {
-      const res = await fetch("/api/admin/careers", {
+      const res = await authFetch("/api/admin/careers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -181,9 +209,9 @@ const openEdit = (job: any) => {
       <div className="space-y-4">
         {jobs.map((job) => (
           <Card key={job._id} className="p-6 rounded-2xl bg-white shadow-md">
-            <Link href={`/admin/careers/${job.slug}`}>
+            
             <div className="flex justify-between items-center">
-
+            <Link href={`/admin/careers/${job.slug}`}>
               <div>
                 <h2 className="font-semibold text-lg cursor-pointer">
                   {job.title}
@@ -208,6 +236,7 @@ const openEdit = (job: any) => {
                 Applications: {getCount(job.title)}
               </span>
             </div>
+            </Link>
 
             <div className="flex gap-2">
             <Button
@@ -231,7 +260,7 @@ const openEdit = (job: any) => {
               </Link>
             </div>
             </div>
-            </Link>
+            
           </Card>
         ))}
       </div>
@@ -240,7 +269,11 @@ const openEdit = (job: any) => {
       {openModal && (
           <div
             className="fixed inset-0 bg-black/40 flex justify-center items-center z-50"
-            onClick={() => setOpenModal(false)}
+            onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setOpenModal(false)
+            }
+          }}
           >
             <div
               className="bg-white rounded-3xl p-8 w-full max-w-3xl max-h-[90vh] overflow-y-auto relative"
@@ -298,16 +331,24 @@ const openEdit = (job: any) => {
               placeholder="Website" 
               />
 
-              <ReactQuill 
-              className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
-              value={responsibilities} 
-              onChange={setResponsibilities} 
+              <ReactQuill
+                className="rounded-xl placeholder:text-gray-300 shadow-md border-gray-200"
+                value={responsibilities}
+                placeholder="Enter Key Responsibilities"
+                onChange={setResponsibilities}
+                modules={modules}
+                formats={formats}
               />
-              <ReactQuill 
-              className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
-              value={skills} 
-              onChange={setSkills} 
+
+              <ReactQuill
+                className="rounded-xl shadow-md border-gray-200"
+                value={skills}
+                placeholder="Enter Requried Skills & Capabilities"
+                onChange={setSkills}
+                modules={modules}
+                formats={formats}
               />
+
 
               <Input 
               className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
