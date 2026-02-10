@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { authFetch } from "@/lib/auth-fetch"
 
 export default function AdminJobDetailsPage() {
   const params = useParams()
@@ -15,7 +16,7 @@ export default function AdminJobDetailsPage() {
   useEffect(() => {
     if (!slug) return
 
-    fetch(`/api/careers/${slug}`)
+    authFetch(`/api/careers/${slug}`)
       .then((res) => res.json())
       .then((data) => {
         setJob(data)

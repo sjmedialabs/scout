@@ -5,6 +5,7 @@ import { useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { FileText } from "lucide-react"
+import { authFetch } from "@/lib/auth-fetch"
 
 export default function ApplicationsPage() {
   const params = useParams()
@@ -15,13 +16,13 @@ export default function ApplicationsPage() {
   useEffect(() => {
     if (!slug) return
 
-    fetch(`/api/applications/${slug}`)
+    authFetch(`/api/applications/${slug}`)
       .then((res) => res.json())
       .then(setApps)
   }, [slug])
 
   const updateStatus = async (id: string, status: string) => {
-    await fetch("/api/applications/update", {
+    await authFetch("/api/applications/update", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, status }),
