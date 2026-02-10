@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { PlusCircle, Trash, Pencil,  } from "lucide-react";
 import FileUpload from "@/components/file-upload";
 import { FaRegEdit } from "react-icons/fa";
+import { authFetch } from "@/lib/auth-fetch";
 
 interface ServiceItem {
   title: string;
@@ -59,7 +60,7 @@ const [collapsedSubs, setCollapsedSubs] = useState<string[]>([])
   // Fetch all categories from API
   const fetchCategories = async () => {
     try {
-      const res = await fetch("/api/service-categories");
+      const res = await authFetch("/api/service-categories");
       const data = await res.json();
       if (data.success) setCategories(data.data);
     } catch (error) {
@@ -86,7 +87,7 @@ const [collapsedSubs, setCollapsedSubs] = useState<string[]>([])
       children: [],
     };
 
-    const res = await fetch("/api/service-categories", {
+    const res = await authFetch("/api/service-categories", {
       method: "POST",
       body: JSON.stringify(newCat),
     });
@@ -136,7 +137,7 @@ const [collapsedSubs, setCollapsedSubs] = useState<string[]>([])
   // Remove anything (main category, subcategory or service item)
   const removeCategory = async (catId: string) => {
   try {
-    const res = await fetch(`/api/service-categories/${catId}`, {
+    const res = await authFetch(`/api/service-categories/${catId}`, {
       method: "DELETE",
     });
 
