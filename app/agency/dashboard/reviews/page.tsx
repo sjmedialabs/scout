@@ -203,7 +203,12 @@ const ReviewsPage = () => {
                 </div>
               )}
             </Card>
-          ))}
+        ))}
+
+        {reviews.length ===0 && (
+          <p className="text-gray-500 text-center text-xl mt-5">No reviews have been received yet.</p>
+        )}
+        
       </div>
 
       {/* MODAL */}

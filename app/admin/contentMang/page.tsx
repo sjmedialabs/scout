@@ -1022,6 +1022,14 @@ const isValidPhone = (phone) => {
               }
               className="border-gray-200 rounded-xl placeholder:text-gray-400"
             />
+            <Input
+              placeholder="Footer Copy right message"
+              value={cms.contact?.footerCopyRightMsg}
+              onChange={(e) =>
+                updateNested("contact", "footerCopyRightMsg", e.target.value)
+              }
+              className="border-gray-200 rounded-xl placeholder:text-gray-400"
+            />
           </section>
         </TabsContent>
 

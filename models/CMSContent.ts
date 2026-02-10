@@ -56,6 +56,7 @@ export interface ICMSContent extends Document {
     linkedinUrl?: string
     twitterUrl?: string
     youtubeUrl?: string
+    footerCopyRightMsg?:string
   }
   helpCenter?:{
     title?:string
@@ -138,7 +139,9 @@ const CMSContentSchema = new Schema<ICMSContent>(
       facebookUrl: { type: String },
       linkedinUrl: { type: String },
       twitterUrl: { type: String },
-      youtubeUrl: { type: String }
+      youtubeUrl: { type: String },
+      footerCopyRightMsg:{type:String}
+
     },
     helpCenter:{
     title:{type:String},

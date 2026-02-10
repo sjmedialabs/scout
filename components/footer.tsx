@@ -260,7 +260,7 @@ export function Footer() {
               <img src="/images/youtube.png" alt="" className="h-8" />
             </Link>
           </div>
-          <p>&copy; 2025 Spark. All rights reserved.</p>
+          <p>&copy; {cms?.contact?.footerCopyRightMsg || "2025 Spark. All rights reserved."} </p>
         </div>
       </div>
     </footer>
