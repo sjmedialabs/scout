@@ -66,9 +66,9 @@ export const adminMenu = [
     label: "PLATFORM",
     icon: Globe,
     children: [
-      { id: "settings", label: "Platform Settings", icon: Settings },
+      // { id: "settings", label: "Platform Settings", icon: Settings },
       { id: "categories", label: "Category Management", icon: Building2 },
-      { id: "notifications", label: "System Notifications", icon: Bell },
+      // { id: "notifications", label: "System Notifications", icon: Bell },
        { id: "careers", label: "Careers", icon: Shield },
     ],
   },

@@ -41,6 +41,7 @@ const pieData = [
   { name: "Integration Fees", value: 64.31, color: "#ffb84d" },
 ];
 
+
 const mrrTrend = [
   { month: "Jan", value: 190, scatter: 70 },
   { month: "Feb", value: 120, scatter: 65 },
@@ -63,9 +64,19 @@ const COLORS = [
 
 
 export default function RevenueDashboardPage() {
+
+  const [filterOpen, setFilterOpen] = useState(false);
+
+const [dateFilter, setDateFilter] = useState({
+  year: "",
+  month: "",
+  from: "",
+  to: "",
+});
   const [stats, setStats] = useState(mockSubscriptionStats);
   const [history, setHistory] = useState(null);
   const [planRevenue, setPlanRevenue] = useState(mockRevenueByPlan);
+  
 
   const[resLoading,setResLoading]=useState(false);
   const[failed,setFailed]=useState(false)
@@ -121,6 +132,38 @@ export default function RevenueDashboardPage() {
         setResLoading(false);
       }
     }
+
+    const getFilteredRevenue = () => {
+  if (!revenue.length) return [];
+
+  return revenue.filter((payment: any) => {
+    const d = new Date(payment.createdAt);
+
+    if (dateFilter.year && d.getFullYear() !== Number(dateFilter.year)) {
+      return false;
+    }
+
+    if (dateFilter.month && d.getMonth() !== Number(dateFilter.month)) {
+      return false;
+    }
+
+    if (dateFilter.from) {
+      const fromDate = new Date(dateFilter.from);
+      fromDate.setHours(0, 0, 0, 0);
+      if (d < fromDate) return false;
+    }
+
+    if (dateFilter.to) {
+      const toDate = new Date(dateFilter.to);
+      toDate.setHours(23, 59, 59, 999);
+      if (d > toDate) return false;
+    }
+
+    return true;
+  });
+};
+
+
     useEffect(()=>{
       loadData()
     },[])
@@ -138,9 +181,11 @@ export default function RevenueDashboardPage() {
     useEffect(() => {
       const now = new Date();
 
-      const successfulPayments = revenue.filter(
-        (p: any) => p.status === "success"
-      );
+      const filteredRevenue = getFilteredRevenue();
+
+const successfulPayments = filteredRevenue.filter(
+  (p: any) => p.status === "success"
+);
 
       // ---------- MRR ----------
       const currentMonthRevenue = successfulPayments
@@ -225,7 +270,8 @@ export default function RevenueDashboardPage() {
       atterationRatePercentageInc: Number(attritionGrowth.toFixed(2)),
     });
 
-    }, [users, revenue]);
+    }, [users, revenue, dateFilter]);
+
 
     //last 6 months data for graph MRR
     useEffect(() => {
@@ -243,7 +289,7 @@ export default function RevenueDashboardPage() {
         });
 
         // Step 2: accumulate revenue
-        revenue.forEach((payment: any) => {
+       getFilteredRevenue().forEach((payment: any) => {
           if (payment.status !== "success") return;
 
           const d = new Date(payment.createdAt);
@@ -262,7 +308,7 @@ export default function RevenueDashboardPage() {
             revenue,
           }))
         );
-      }, [revenue]);
+      }, [revenue, dateFilter]);
 
     //Revenue by plan
     useEffect(() => {
@@ -276,7 +322,7 @@ export default function RevenueDashboardPage() {
   });
 
   // 2️⃣ Accumulate successful payments
-  revenue.forEach((payment: any) => {
+  getFilteredRevenue().forEach((payment: any) => {
     if (payment.status !== "success") return;
 
     const planId = payment.planId;
@@ -293,7 +339,8 @@ export default function RevenueDashboardPage() {
   }));
 
   setRevenueByPlan(formatted);
-}, [revenue, subsriptions]);
+}, [revenue, subsriptions, dateFilter]);
+
 
 
 
@@ -418,11 +465,88 @@ console.log("Caluclated pie data is::::::",pieData)
           </p>
         </div>
 
-        <button className="flex items-center cursor-pointer gap-2 bg-black text-white px-5 py-2 rounded-full text-sm">
+        <button
+          onClick={() => setFilterOpen(!filterOpen)}
+          className="flex items-center cursor-pointer gap-2 bg-black text-white px-5 py-2 rounded-full text-sm"
+        >
           <Filter className="w-4 h-4" />
           Filter by Date
         </button>
       </div>
+
+      {filterOpen && (
+  <div className="bg-white border rounded-2xl p-4 shadow-md flex flex-wrap gap-4 items-end">
+    
+    {/* Year */}
+    <div>
+      <label className="text-xs text-gray-500">Year</label>
+      <select
+        className="border rounded px-2 py-1"
+        onChange={(e) =>
+          setDateFilter({ ...dateFilter, year: e.target.value })
+        }
+      >
+        <option value="">All</option>
+        <option value="2026">2026</option>
+        <option value="2025">2025</option>
+        <option value="2024">2024</option>
+      </select>
+    </div>
+
+    {/* Month */}
+    <div>
+      <label className="text-xs text-gray-500">Month</label>
+      <select
+        className="border rounded px-2 py-1"
+        onChange={(e) =>
+          setDateFilter({ ...dateFilter, month: e.target.value })
+        }
+      >
+        <option value="">All</option>
+        {MONTHS.map((m, i) => (
+          <option key={m} value={i}>
+            {m}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    {/* From */}
+    <div>
+      <label className="text-xs text-gray-500">From</label>
+      <input
+        type="date"
+        className="border rounded px-2 py-1"
+        onChange={(e) =>
+          setDateFilter({ ...dateFilter, from: e.target.value })
+        }
+      />
+    </div>
+
+    {/* To */}
+    <div>
+      <label className="text-xs text-gray-500">To</label>
+      <input
+        type="date"
+        className="border rounded px-2 py-1"
+        onChange={(e) =>
+          setDateFilter({ ...dateFilter, to: e.target.value })
+        }
+      />
+    </div>
+
+    {/* Reset */}
+    <button
+      onClick={() =>
+        setDateFilter({ year: "", month: "", from: "", to: "" })
+      }
+      className="text-sm bg-gray-200 px-3 py-1 rounded"
+    >
+      Reset
+    </button>
+  </div>
+)}
+
 
       {/* ---------------- KPI CARDS ---------------- */}
       <div className="grid grid-cols-1 md:grid-cols-3 my-custom-class gap-6">
