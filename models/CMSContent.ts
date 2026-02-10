@@ -20,12 +20,18 @@ export interface ICMSContent extends Document {
   homeBannerSubtitle?: string
   homeWorkSection?: Array<{ title: string; description: string; image: string }>
   homeServicesCategories?: string[]
+  homeServiceTitle?:string
+  homeServiceSubTitle?:string
+  recentRequirementTitle?:string
+  recentRequirementSubTitle?:string
+  topProvidersTitle?:string
+  topProvidersSubTitle?:string
   getStartedTitle?: string
   getStartedSubtitle?: string
   aboutBannerImage?: string
   aboutBannerTitle?: string
   aboutBannerSubtitle?: string
-  aboutDescription1?: string
+  aboutDescription1?: string 
   aboutDescription2?: string
   aboutPoints?: string[]
   aboutSideImage?: string
@@ -35,16 +41,41 @@ export interface ICMSContent extends Document {
   aboutValues?: Array<{ title: string; description: string; imageUrl?: string }>
   aboutTeamTitle?: string
   aboutTeamSubtitle?: string
+  aboutBottomSectionTitle?:string
+  aboutBottomSectionSubTitle?:string
   aboutTeam?: Array<{ image: string; name: string; role: string }>
   contact?: {
     email?: string
+    infoEmail?:string
+    supportEmail?:string
     phone?: string
+    phone2?:string
     address?: string
     locationMapUrl?: string
     facebookUrl?: string
     linkedinUrl?: string
     twitterUrl?: string
     youtubeUrl?: string
+    footerCopyRightMsg?:string
+  }
+  helpCenter?:{
+    title?:string
+    subTitle?:string
+    leftSideTitle?:string
+    leftSidePoints?: Array<{ title: string; urlToRedirect: string }>
+    rightSideTitle?:string
+    rightSideDescription?:string
+    rightSideDescription2?:string
+  }
+  privacyPolicy:{
+    title?:string
+    subTitle?:string,
+    descriptionPoints?: Array<{ title: string; description: string }>
+  }
+  termServices:{
+    title?:string
+    subTitle?:string,
+    descriptionPoints?: Array<{ title: string; description: string }>
   }
   createdAt: Date
   updatedAt: Date
@@ -73,6 +104,12 @@ const CMSContentSchema = new Schema<ICMSContent>(
     homeBannerSubtitle: { type: String },
     homeWorkSection: { type: [{ title: String, description: String, image: String }], default: [] },
     homeServicesCategories: { type: [String], default: [] },
+   homeServiceTitle:{type:String},
+   homeServiceSubTitle:{type:String},
+   recentRequirementTitle:{type:String},
+  recentRequirementSubTitle:{type:String},
+  topProvidersTitle:{type:String},
+  topProvidersSubTitle:{type:String},
     getStartedTitle: { type: String },
     getStartedSubtitle: { type: String },
     aboutBannerImage: { type: String },
@@ -89,16 +126,42 @@ const CMSContentSchema = new Schema<ICMSContent>(
     aboutTeamTitle: { type: String },
     aboutTeamSubtitle: { type: String },
     aboutTeam: { type: [{ image: String, name: String, role: String }], default: [] },
+   aboutBottomSectionTitle:{ type: String },
+  aboutBottomSectionSubTitle:{ type: String },
     contact: {
       email: { type: String },
+      infoEmail:{ type: String },
+      supportEmail:{ type: String },
       phone: { type: String },
+      phone2:{type:String},
       address: { type: String },
       locationMapUrl: { type: String },
       facebookUrl: { type: String },
       linkedinUrl: { type: String },
       twitterUrl: { type: String },
-      youtubeUrl: { type: String }
+      youtubeUrl: { type: String },
+      footerCopyRightMsg:{type:String}
+
     },
+    helpCenter:{
+    title:{type:String},
+    subTitle:{type:String},
+    leftSideTitle:{type:String},
+    leftSidePoints:  { type: [{ title: String, urlToRedirect:String }], default: [] },
+    rightSideTitle:{type:String},
+    rightSideDescription:{type:String},
+    rightSideDescription2:{type:String},
+  },
+   privacyPolicy:{
+    title:{type:String},
+    subTitle:{type:String},
+    descriptionPoints: { type: [{ title: String, description:String }], default: [] },
+  },
+  termServices:{
+    title:{type:String},
+    subTitle:{type:String},
+    descriptionPoints: { type: [{ title: String, description:String }], default: [] },
+  }
   },
   { timestamps: true },
 )

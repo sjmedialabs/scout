@@ -7,13 +7,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState,useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Twitter } from "lucide-react";
 
 export function Footer() {
   const pathname = usePathname();
   const isAgencyDashboard = pathname?.startsWith("/agency/dashboard");
   const [email, setEmail] = useState("");
+
+  const [cms, setCms] = useState<any>(null);
+   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+   useEffect(() => {
+    const fetchCMS = async () => {
+      const res = await fetch("/api/cms");
+      const data = await res.json();
+      setCms(data.data);
+    };
+    fetchCMS();
+  }, []);
+
+  console.log("Footer cms",cms)
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -182,7 +197,7 @@ export function Footer() {
                   <span className="flex flex-col font-semibold">
                     Address{" "}
                     <span className="font-normal">
-                      123 Business Ave San Fancisco, CA 94105
+                     {cms?.contact?.address || "123 Business Ave San Fancisco, CA 94105"}
                     </span>
                   </span>
                 </Link>
@@ -190,14 +205,14 @@ export function Footer() {
               <li>
                 <Link href="/providers" className=" hover:text-foreground">
                   <span className="flex flex-col font-semibold">
-                    Phone <span className="font-normal">+1 (123) 456-7890</span>
+                    Phone <span className="font-normal">{cms?.contact?.phone}</span>
                   </span>
                 </Link>
               </li>
               <li>
                 <Link href="/register" className=" hover:text-foreground">
                   <span className="flex flex-col font-semibold">
-                    Email <span className="font-normal">hello@spark.com</span>
+                    Email <span className="font-normal">{cms?.contact?.email || "hello@spark.com"}</span>
                   </span>
                 </Link>
               </li>
@@ -210,7 +225,7 @@ export function Footer() {
         <div className="flex flex-col gap-1 justify-between items-center text-lg text-white font-medium">
           <div className="flex flex-wrap gap-6 mt-4 md:mt-0">
             <Link
-              href="https://facebook.com/sparkplatform"
+              href={`${cms?.contact?.facebookUrl || "https://facebook.com/sparkplatform"}`}
               className="hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"
@@ -218,7 +233,8 @@ export function Footer() {
               <img src="/images/Facebook.png" alt="" className="h-8" />
             </Link>
             <Link
-              href="https://twitter.com/sparkplatform"
+              
+              href={`${cms?.contact?.twitterUrl || "https://twitter.com/sparkplatform"}`}
               className="hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"
@@ -226,7 +242,8 @@ export function Footer() {
               <img src="/images/twitter.png" alt="" className="h-8" />
             </Link>
             <Link
-              href="https://linkedin.com/company/sparkplatform"
+              
+              href={`${cms?.contact?.linkedinUrl || "https://linkedin.com/company/sparkplatform"}`}
               className="hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"
@@ -234,7 +251,8 @@ export function Footer() {
               <img src="/images/Linkedin.png" alt="" className="h-8" />
             </Link>
             <Link
-              href="https://youtube.com/sparkplatform"
+              
+              href={`${cms?.contact?.youtubeUrl || "https://youtube.com/sparkplatform"}`}
               className="hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"
@@ -242,7 +260,7 @@ export function Footer() {
               <img src="/images/youtube.png" alt="" className="h-8" />
             </Link>
           </div>
-          <p>&copy; 2025 Spark. All rights reserved.</p>
+          <p>&copy; {cms?.contact?.footerCopyRightMsg || "2025 Spark. All rights reserved."} </p>
         </div>
       </div>
     </footer>

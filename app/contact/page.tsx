@@ -33,7 +33,7 @@ export default function ContactPage() {
     const fetchCMS = async () => {
       const res = await fetch("/api/cms");
       const data = await res.json();
-      setCms(data);
+      setCms(data.data);
     };
     fetchCMS();
   }, []);
@@ -87,6 +87,7 @@ export default function ContactPage() {
       setLoading(false);
     }
   };
+  console.log("CMS for  the contact::::",cms)
 
   return (
     <div className="min-h-screen pc-4 py-14">
@@ -105,7 +106,7 @@ export default function ContactPage() {
             <div className="flex items-center gap-2">
               <span className="text-3xl font-extrabold">Media Enqueries :</span>
               <span className="text-lg text-gray-500">
-                {cms?.contact?.mediaEmail || "enquiry@scout.com"}
+                {cms?.contact?.email || "enquiry@scout.com"}
               </span>
             </div>
 
@@ -114,7 +115,10 @@ export default function ContactPage() {
             <div className="flex items-center gap-2">
               <span className="text-3xl font-extrabold">Contact Number :</span>
               <span className="text-lg text-gray-500">
-                {cms?.contact?.phone || "+91-9848123456 , 99491237894"}
+                {cms?.contact?.phone || "+91-9848123456"}{","}
+              </span>
+              <span className="text-lg text-gray-500">
+                {cms?.contact?.phone2 || "99491237894"}
               </span>
             </div>
 
@@ -124,7 +128,7 @@ export default function ContactPage() {
               <div className="flex items-center gap-2">
                 <span className="text-3xl font-extrabold">Email :</span>
                 <span className="text-lg text-gray-500">
-                  {cms?.contact?.email || "info@scout.com"}
+                  {cms?.contact?.infoEmail || "info@scout.com"}
                 </span>
               </div>
 

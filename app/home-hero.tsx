@@ -18,6 +18,8 @@ export function HomeHero({ cms }: HomeHeroProps) {
     null,
   );
 
+  console.log("Recieved Props CMS:::",cms);
+
   const handleGetMatched = async () => {
     if (searchQuery.trim()) {
       try {

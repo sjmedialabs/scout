@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { authFetch } from "@/lib/auth-fetch";
 
 interface FileUploadProps {
   value?: string; // URL of uploaded file
@@ -35,9 +36,9 @@ export default function FileUpload({
     img.src = URL.createObjectURL(file);
     img.onload = () => {
       const ratio = img.width / img.height;
-      if (Math.abs(ratio - 4 / 3) > 0.05) {
-        alert("Note: Image is not 4:3 ratio. It may not display optimally.");
-      }
+      // if (Math.abs(ratio - 4 / 3) > 0.05) {
+      //   alert("Note: Image is not 4:3 ratio. It may not display optimally.");
+      // }
     };
 
     setPreview(URL.createObjectURL(file));
