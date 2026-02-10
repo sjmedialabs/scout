@@ -139,6 +139,10 @@ const ProjectsPage = () => {
     }
   }, [user, loading, router]);
 
+
+  const handleMessageClient=(recievedProject)=>{
+    router.push(`/agency/dashboard/messages?clientId=${recievedProject?.clientId}&agencyId=${recievedProject?.agencyId}`)
+  }
   /* =================  ACTIVE PROJECTS ================= */
   const projects = [
     {
@@ -367,7 +371,7 @@ const ProjectsPage = () => {
 
                     {/* ACTIONS */}
                     <div className="flex flex-wrap gap-3">
-                      <Button className="rounded-full bg-[#2C34A1]">
+                      <Button className="rounded-full bg-[#2C34A1]" onClick={()=>handleMessageClient(project)}>
                         <MessageSquare className="h-4 w-4 mr-2" />
                         Message Client
                       </Button>

@@ -555,7 +555,7 @@ const ProviderComparisonPage = () => {
                     <img
                       src={proposal.agency?.logo || "/demilogo.png"}
                       alt={proposal.providerName}
-                      className="min-h-18 min-w-18 max-h-23 max-w-23 object-contain mb-2"
+                      className=" min-w-18 h-[70px] max-w-23 object-contain mb-2"
                     />
                   </div>
                   <div className="items-center mt-2">
@@ -882,102 +882,117 @@ const ProviderComparisonPage = () => {
                       {/* Image flush to top */}
                       <div className="w-full">
                         <img
-                          src={provider.coverImage}
+                          src={provider?.coverImage || "/uploads/15ac2d8f-31f9-48ac-aadd-b67ba9f4d860-Artificial-intelligence-platforms-copy.jpg"}
                           alt={provider.name}
                           className="w-full h-[200px] sm:h-[240px] md:h-[300px] object-cover block"
                         />
                       </div>
 
-                      <div className="p-4 sm:p-6">
-                        {/* Badges + rating */}
-                        <div className="flex  flex-wrap items-start justify-between gap-3">
-                          <div className="flex flex-wrap gap-2">
-                            {provider.isVerified && (
-                              <Badge className="bg-[#2C34A1] text-white h-7 px-3 rounded-2xl">
-                                Verified
-                              </Badge>
-                            )}
-                            {provider.isFeatured && (
-                              <Badge className="bg-[#F54A0C] text-white h-7 px-3 rounded-2xl">
-                                Featured
-                              </Badge>
-                            )}
+                       {/* CONTENT */}
+                        <div className="p-4 sm:p-6 flex flex-col flex-1">
+                          {/* 🔝 TOP CONTENT (normal flow) */}
+                          <div>
+                            {/* Badges + rating */}
+                            <div className="flex flex-wrap items-start justify-between gap-3">
+                              <div className="flex flex-wrap gap-2">
+                                {provider.isVerified && (
+                                  <Badge className="bg-[#2C34A1] text-white h-7 px-3 rounded-2xl">
+                                    Verified
+                                  </Badge>
+                                )}
+                                {provider.isFeatured && (
+                                  <Badge className="bg-[#F54A0C] text-white h-7 px-3 rounded-2xl">
+                                    Featured
+                                  </Badge>
+                                )}
+                              </div>
+      
+                              <div className="flex items-center gap-1 text-sm">
+                                <RatingStars rating={provider.rating} />
+                                <span className="font-semibold">
+                                  {provider.rating}
+                                </span>
+                                <span className="text-muted-foreground">
+                                  ({provider.reviewCount})
+                                </span>
+                              </div>
+                            </div>
+      
+                            {/* Title + description */}
+                            <h3 className="mt-2 text-xl sm:text-2xl font-semibold text-left">
+                              {provider.name}
+                            </h3>
+                            <p className="mt-1 text-sm text-[#b2b2b2] text-left">
+                              {provider.tagline}
+                            </p>
+      
+                            {/* Tags */}
+                            <div className="mt-3 mb-4">
+                              {provider.services.length !== 0 ? (
+                                <div className="flex flex-wrap gap-2">
+                                  {provider.services.map((service) => (
+                                    <Badge
+                                      key={service}
+                                      variant="outline"
+                                      className="h-7 px-3 rounded-2xl bg-[#f2f2f2] text-[#000] text-xs sm:text-sm"
+                                    >
+                                      {service}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              ) : (
+                                <div className="text-center mx-auto">
+                                  <p className="text-xl my-6 text-gray-400">
+                                    No Services
+                                  </p>
+                                </div>
+                              )}
+                            </div>
                           </div>
-
-                          <div className="flex items-center gap-1 text-sm">
-                            <RatingStars rating={provider.rating} />
-                            <span className="font-semibold">
-                              {provider.rating}
-                            </span>
-                            <span className="text-muted-foreground">
-                              ({provider.reviewCount})
-                            </span>
+      
+                          {/* 🔽 BOTTOM CONTENT (sticks to bottom) */}
+                          <div className="mt-auto">
+                            {/* Info row */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-xs sm:text-sm">
+                              <div className="flex items-center gap-2">
+                                <img src="/location-filled.jpg" className="h-4 w-4" />
+                                <span className="text-[#808080] font-semibold break-words">
+                                  {provider?.location || "N/A"}
+                                </span>
+                              </div>
+      
+                              <div className="flex items-center gap-2">
+                                <img src="/briefcase.jpg" className="h-4 w-4" />
+                                <span className="text-[#808080] font-semibold">
+                                  {provider.projectsCompleted} projects
+                                </span>
+                              </div>
+      
+                              <div className="flex items-center gap-2">
+                                <img
+                                  src="/chat-operational.jpg"
+                                  className="h-4 w-4"
+                                />
+                                <span className="text-[#808080] font-semibold">
+                                  Response: {provider?.responseTime || "2 hrs"}
+                                </span>
+                              </div>
+                            </div>
+                            <p className="text-[#808080] text-sm sm:text-base font-semibold mb-3">
+                              From: {provider?.hourlyRate || 0}/hour
+                            </p>
+      
+                            <div className="mt-3 flex flex-col sm:flex-row gap-2">
+                              <Button
+                                className="w-full sm:w-[140px] bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white"
+                                onClick={() => addToCompare(provider.id)}
+                              >
+                                Compare
+                              </Button>
+                              
+                            </div>
                           </div>
                         </div>
-
-                        {/* Title + description (left aligned) */}
-                        <h3 className="mt-2 text-xl sm:text-2xl font-semibold text-left">
-                          {provider.name}
-                        </h3>
-                        <p className="mt-1 text-sm text-[#b2b2b2] text-left">
-                          {provider.tagline}
-                        </p>
-
-                        {/* Tags – tighter gap to description */}
-                        <div className="flex flex-wrap gap-2 mt-3 sm:mt-3 mb-4">
-                          {provider.services.map((service) => (
-                            <Badge
-                              key={service}
-                              variant="outline"
-                              className="h-7 px-3 rounded-2xl bg-[#f2f2f2] text-[#000] text-xs sm:text-sm"
-                            >
-                              {service}
-                            </Badge>
-                          ))}
-                        </div>
-
-                        {/* Info row */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4 text-xs sm:text-sm">
-                          <div className="flex items-center gap-2">
-                            <img
-                              src="/location-filled.jpg"
-                              className="h-5 w-4"
-                            />
-                            <span className="text-[#808080] font-semibold break-words">
-                              {provider?.location || "N/A"}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <img src="/briefcase.jpg" className="h-4 w-4" />
-                            <span className="text-[#808080] font-semibold">
-                              {provider.projectsCompleted} projects
-                            </span>
-                          </div>
-                          {/* <div className="flex items-center gap-2">
-                          <img src="/chat-operational.jpg" className="h-4 w-4" />
-                          <span className="text-[#808080] font-semibold">
-                            Response: {provider?.responseTime || "2 hrs"}
-                          </span>
-                        </div> */}
-                        </div>
-
-                        {/* Price + buttons */}
-                        {/* <p className="text-[#808080] text-sm sm:text-base font-semibold">
-                        From: {provider.hourlyRate}/hour
-                      </p> */}
-
-                        <div className="mt-3 flex flex-col sm:flex-row gap-2">
-                          <Button
-                            className="w-full sm:w-[140px] bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white"
-                            onClick={() => addToCompare(provider.id)}
-                          >
-                            Compare
-                          </Button>
-                          {/* <Button className="w-full sm:w-[160px] bg-[#4d4d4d] rounded-3xl text-white">
-                          Contact Provider
-                        </Button> */}
-                        </div>
-                      </div>
                     </Card>
                   ))}
                 </div>

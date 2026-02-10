@@ -302,6 +302,11 @@ const RequirementsPage = () => {
 
   console.log("Fetched Requirements::::", requirements);
 
+  const normalize = (str: string) =>
+  str
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, ""); // removes space, -, _, etc.
+
   const handleFiltersChange = (filters: any) => {
     let filtered = [...requirements];
     console.log("Applied filters:::::", filters);
@@ -324,10 +329,12 @@ const RequirementsPage = () => {
       );
     }
     if (filters.title) {
-      filtered = filtered.filter((eachItem) =>
-        eachItem.title.toLowerCase().includes(filters.title.toLowerCase()),
-      );
-    }
+  const search = normalize(filters.title);
+
+  filtered = filtered.filter((eachItem) =>
+    normalize(eachItem.title).includes(search)
+  );
+}
 
     setFilteredRequirements(filtered);
   };

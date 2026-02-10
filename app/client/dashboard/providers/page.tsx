@@ -111,6 +111,7 @@ import { FaPhone } from "react-icons/fa6";
 import { FaLocationDot } from "react-icons/fa6";
 import { FaLinkedin } from "react-icons/fa";
 import { RiInstagramFill } from "react-icons/ri";
+import ServiceDropdown from "@/components/select-category-filter";
 interface ProjectProposal {
   id: string;
   projectId: string;
@@ -125,205 +126,11 @@ interface ProjectProposal {
   coverLetter: string;
 }
 
-const mockProjectProposals: ProjectProposal[] = [
-  {
-    id: "pp1",
-    projectId: "proj1",
-    providerId: "prov1",
-    providerName: "TechSolutions Inc",
-    providerRating: 4.8,
-    proposalAmount: 15000,
-    timeline: "8 weeks",
-    description:
-      "We propose to develop a comprehensive e-commerce platform using React, Node.js, and MongoDB. Our team has extensive experience in building scalable web applications with modern technologies. We'll implement advanced features like real-time inventory management, secure payment processing, and analytics dashboard.",
-    submittedAt: "2024-01-15",
-    status: "pending",
-    coverLetter:
-      "We are excited to work on your e-commerce project and deliver a high-quality solution that meets your business needs. Our portfolio includes 20+ successful e-commerce projects.",
-  },
-  {
-    id: "pp2",
-    projectId: "proj1",
-    providerId: "prov2",
-    providerName: "WebCraft Studios",
-    providerRating: 4.6,
-    proposalAmount: 12000,
-    timeline: "10 weeks",
-    description:
-      "Our approach focuses on creating a user-friendly e-commerce platform with advanced features like real-time inventory management, payment gateway integration, and responsive design. We'll use Next.js for optimal performance and SEO.",
-    submittedAt: "2024-01-16",
-    status: "shortlisted",
-    coverLetter:
-      "With 5+ years of e-commerce development experience, we're confident in delivering exceptional results for your project. We guarantee 99.9% uptime and mobile-first design.",
-  },
-  {
-    id: "pp3",
-    projectId: "proj1",
-    providerId: "prov3",
-    providerName: "Digital Commerce Pro",
-    providerRating: 4.7,
-    proposalAmount: 18000,
-    timeline: "6 weeks",
-    description:
-      "Premium e-commerce solution with AI-powered recommendations, advanced analytics, multi-vendor support, and integrated CRM. We'll deliver a future-ready platform that scales with your business.",
-    submittedAt: "2024-01-18",
-    status: "pending",
-    coverLetter:
-      "We specialize in enterprise-level e-commerce solutions and have helped 100+ businesses increase their online revenue by 300% on average.",
-  },
-  {
-    id: "pp4",
-    projectId: "proj2",
-    providerId: "prov4",
-    providerName: "MobileFirst Dev",
-    providerRating: 4.9,
-    proposalAmount: 8000,
-    timeline: "6 weeks",
-    description:
-      "We specialize in React Native development and will create a cross-platform mobile app with native performance, push notifications, offline capabilities, and seamless user experience across iOS and Android.",
-    submittedAt: "2024-01-17",
-    status: "accepted",
-    coverLetter:
-      "Our team has developed 50+ mobile apps with excellent user ratings. We're excited to bring your vision to life with cutting-edge mobile technology.",
-  },
-  {
-    id: "pp5",
-    projectId: "proj2",
-    providerId: "prov5",
-    providerName: "AppCrafters",
-    providerRating: 4.5,
-    proposalAmount: 9500,
-    timeline: "8 weeks",
-    description:
-      "Native iOS and Android development with Flutter framework. We'll create a high-performance mobile app with custom animations, biometric authentication, and cloud synchronization.",
-    submittedAt: "2024-01-19",
-    status: "shortlisted",
-    coverLetter:
-      "We're a team of certified mobile developers with expertise in Flutter, React Native, and native development. Your app will be optimized for performance and user engagement.",
-  },
-  {
-    id: "pp6",
-    projectId: "proj3",
-    providerId: "prov6",
-    providerName: "BrandVision Agency",
-    providerRating: 4.8,
-    proposalAmount: 5000,
-    timeline: "4 weeks",
-    description:
-      "Complete brand identity package including logo design, color palette, typography, brand guidelines, business cards, letterheads, and social media templates. We'll create a memorable brand that resonates with your target audience.",
-    submittedAt: "2024-01-20",
-    status: "pending",
-    coverLetter:
-      "We've created successful brand identities for 200+ companies across various industries. Our designs are modern, timeless, and strategically crafted to drive business growth.",
-  },
-  {
-    id: "pp7",
-    projectId: "proj3",
-    providerId: "prov7",
-    providerName: "Creative Minds Studio",
-    providerRating: 4.6,
-    proposalAmount: 4500,
-    timeline: "3 weeks",
-    description:
-      "Professional brand identity design with focus on minimalist aesthetics and strong visual impact. Includes logo variations, brand style guide, and application mockups across different mediums.",
-    submittedAt: "2024-01-21",
-    status: "rejected",
-    coverLetter:
-      "Our award-winning design team specializes in creating distinctive brand identities that stand out in competitive markets. We guarantee unlimited revisions until you're 100% satisfied.",
-  },
-  {
-    id: "pp8",
-    projectId: "proj4",
-    providerId: "prov8",
-    providerName: "DataFlow Solutions",
-    providerRating: 4.9,
-    proposalAmount: 25000,
-    timeline: "12 weeks",
-    description:
-      "Enterprise CRM system with advanced analytics, automated workflows, customer segmentation, email marketing integration, and comprehensive reporting dashboard. Built with scalability and security in mind.",
-    submittedAt: "2024-01-22",
-    status: "shortlisted",
-    coverLetter:
-      "We're CRM specialists with 10+ years of experience building enterprise solutions for Fortune 500 companies. Our systems handle millions of customer records with 99.99% uptime.",
-  },
-  {
-    id: "pp9",
-    projectId: "proj4",
-    providerId: "prov9",
-    providerName: "Enterprise Tech Hub",
-    providerRating: 4.7,
-    proposalAmount: 22000,
-    timeline: "10 weeks",
-    description:
-      "Custom CRM solution with AI-powered lead scoring, automated sales pipeline management, integration with popular tools (Salesforce, HubSpot), and mobile app for field sales teams.",
-    submittedAt: "2024-01-23",
-    status: "pending",
-    coverLetter:
-      "We understand the complexity of enterprise CRM requirements and have successfully delivered 30+ CRM projects. Our solution will streamline your sales process and boost productivity by 40%.",
-  },
-  {
-    id: "pp10",
-    projectId: "proj5",
-    providerId: "prov10",
-    providerName: "EduTech Innovators",
-    providerRating: 4.8,
-    proposalAmount: 18000,
-    timeline: "10 weeks",
-    description:
-      "Comprehensive learning management system with video streaming, interactive quizzes, progress tracking, certificate generation, discussion forums, and mobile-responsive design for seamless learning experience.",
-    submittedAt: "2024-01-24",
-    status: "pending",
-    coverLetter:
-      "We specialize in educational technology and have built LMS platforms for universities and corporate training programs. Our solutions support 10,000+ concurrent users with excellent performance.",
-  },
-];
 
-interface MenuItem {
-  id: string;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  children?: MenuItem[];
-}
 
-const menuItems: MenuItem[] = [
-  {
-    id: "overview",
-    label: "OVERVIEW",
-    icon: Home,
-    children: [
-      { id: "dashboard", label: "Dashboard", icon: Home },
-      { id: "profile", label: "Profile", icon: User },
-      { id: "requirements", label: "My Requirements", icon: FileText },
-      { id: "proposals", label: "Proposals", icon: MessageSquare },
-      { id: "projects", label: "Projects", icon: Briefcase },
-      { id: "providers", label: "Find Agencies", icon: Users },
-    ],
-  },
-  {
-    id: "performance",
-    label: "PERFORMANCE",
-    icon: BarChart3,
-    children: [
-      { id: "analytics", label: "Project Analytics", icon: TrendingUp },
-      { id: "spending", label: "Spending Insights", icon: Eye },
-      {
-        id: "provider-comparison",
-        label: "Provider Comparison",
-        icon: GitCompare,
-      },
-    ],
-  },
-  {
-    id: "account-settings",
-    label: "ACCOUNT & SETTINGS",
-    icon: Settings,
-    children: [
-      { id: "billing", label: "Billing & Payments", icon: CreditCard },
-      { id: "notifications", label: "Notifications", icon: Bell },
-      { id: "account-settings", label: "Account Settings", icon: Shield },
-    ],
-  },
-];
+
+
+
 
 const ClientProvidersPage = () => {
   const { user, loading } = useAuth();
@@ -407,6 +214,11 @@ const ClientProvidersPage = () => {
     }
     setFilteredData(tempFilteredData);
   };
+
+  useEffect(()=>{
+    searchHandle()
+  },[searchFilter,serviceFilter,locationFilter])
+
   const handleHighestRating = (value: any) => {
     let sortedData = [...filteredData]; // avoid mutating original array
 
@@ -425,7 +237,9 @@ const ClientProvidersPage = () => {
 
     setFilteredData(sortedData);
   };
-
+  useEffect(()=>{
+    handleHighestRating(ratingFilter)
+  },[ratingFilter])
   //end
 
   useEffect(() => {
@@ -454,9 +268,13 @@ const ClientProvidersPage = () => {
   };
 
   const clearFilters = () => {
-    setLocationFilter("");
-    setTechnologyFilter("");
-    setRatingFilter("");
+    // setLocationFilter("");
+    // setTechnologyFilter("");
+    // setRatingFilter("");
+    setSearchFilter("")
+    setServiceFilter("");
+    setLocationFilter("")
+    setRatingFilter('')
   };
   const filteredProviders = mockProviders.filter((provider) => {
     const matchesLocation =
@@ -563,25 +381,13 @@ const ClientProvidersPage = () => {
                 />
               </div>
 
-              <div className="w-full min-w-0">
+              {/*Service selection */}
+
+              {/* <div className="w-full min-w-0">
                 <Select onValueChange={(value) => setServiceFilter(value)}>
                   <SelectTrigger
-                    className="
-                              mt-1
-                              border-0
-                              border-b-2
-                              border-b-[#b2b2b2]
-                              rounded-none
-                              shadow-none
-                              focus:outline-none focus:ring-0 focus:ring-offset-0
-                              focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
-                              focus:border-[#b2b2b2]
-                              placeholder:text-[#b2b2b2]
-                              px-0
-                              w-full
-                              h-12
-                              text-sm
-                              md:text-base
+                    className="mt-1 border-0 border-b-2 border-b-[#b2b2b2] rounded-none shadow-none focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-[#b2b2b2]
+                              placeholder:text-[#b2b2b2] px-0 w-full h-12 text-sm md:text-base
                             "
                   >
                     <SelectValue
@@ -598,10 +404,24 @@ const ClientProvidersPage = () => {
                     <SelectItem value="consulting">Consulting</SelectItem>
                   </SelectContent>
                 </Select>
+              </div> */}
+
+              <div>
+                <ServiceDropdown
+                  value={serviceFilter}
+                  onChange={setServiceFilter}
+                  triggerClassName="mt-1 border-0 border-b-2 border-b-[#b2b2b2] rounded-none shadow-none focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-[#b2b2b2]
+                              placeholder:text-[#000] px-0 w-full h-12 text-sm md:text-base 
+                            "
+                  triggerSpanClassName="text-[#000]"
+                  />
               </div>
 
+
+              {/*rating filte */}
+
               <div className="w-full min-w-0">
-                <Select onValueChange={handleHighestRating}>
+                <Select value={ratingFilter} onValueChange={setRatingFilter}>
                   <SelectTrigger
                     className="
                               mt-1
@@ -635,7 +455,7 @@ const ClientProvidersPage = () => {
                 </Select>
               </div>
 
-              <div className="w-full min-w-0">
+              <div className="w-full min-w-0 flex flex-row gap-3">
                 <Button
                   className="w-full sm:w-[150px] lg:w-[120px] h-10 mt-2 lg:mt-1
                         rounded-3xl bg-[#F54A0C] text-white
@@ -643,6 +463,14 @@ const ClientProvidersPage = () => {
                   onClick={searchHandle}
                 >
                   Search Now
+                </Button>
+                 <Button
+                  className="w-full sm:w-[150px] lg:w-[80px] h-10 mt-2 lg:mt-1
+                        rounded-3xl  text-white
+                        bg-blueButton transition-all duration-300"
+                  onClick={clearFilters}
+                >
+                  Reset
                 </Button>
               </div>
             </div>
@@ -790,12 +618,12 @@ const ClientProvidersPage = () => {
             </div>
 
             <DialogFooter className="text-start">
-              <Button className="bg-[#2C34A1] hover:bg-[#2C34A1]  active:bg-[#2C34A1] text-sm rounded-full text-[#fff] w-[50%]">
+              {/* <Button className="bg-[#2C34A1] hover:bg-[#2C34A1]  active:bg-[#2C34A1] text-sm rounded-full text-[#fff] w-[50%]">
                 Contact Provider{" "}
                 <FaArrowRightLong className="w-4 h-4" color="#fff" />{" "}
-              </Button>
+              </Button> */}
               <DialogClose asChild>
-                <Button className="w-[50%] sm:w-[160px] bg-[#000] rounded-3xl text-white">
+                <Button className="w-[50%] sm:w-[160px] bg-[#000] rounded-3xl text-white mr-auto">
                   Close
                 </Button>
               </DialogClose>
@@ -1047,100 +875,121 @@ const ClientProvidersPage = () => {
               {/* Image flush to top */}
               <div className="w-full">
                 <img
-                  src={provider.coverImage}
+                  src={provider?.coverImage || "/uploads/15ac2d8f-31f9-48ac-aadd-b67ba9f4d860-Artificial-intelligence-platforms-copy.jpg"}
                   alt={provider.name}
                   className="w-full h-[200px] sm:h-[240px] md:h-[300px] object-cover block"
                 />
               </div>
 
-              <div className="p-4 sm:p-6">
-                {/* Badges + rating */}
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="flex flex-wrap gap-2">
-                    {provider.isVerified && (
-                      <Badge className="bg-[#2C34A1] text-white h-7 px-3 rounded-2xl">
-                        Verified
-                      </Badge>
-                    )}
-                    {provider.isFeatured && (
-                      <Badge className="bg-[#F54A0C] text-white h-7 px-3 rounded-2xl">
-                        Featured
-                      </Badge>
-                    )}
+               <div className="p-4 sm:p-6 flex flex-col flex-1">
+                    {/* 🔝 TOP CONTENT (normal flow) */}
+                    <div>
+                      {/* Badges + rating */}
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="flex flex-wrap gap-2">
+                          {provider.isVerified && (
+                            <Badge className="bg-[#2C34A1] text-white h-7 px-3 rounded-2xl">
+                              Verified
+                            </Badge>
+                          )}
+                          {provider.isFeatured && (
+                            <Badge className="bg-[#F54A0C] text-white h-7 px-3 rounded-2xl">
+                              Featured
+                            </Badge>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-1 text-sm">
+                          <RatingStars rating={provider.rating} />
+                          <span className="font-semibold">
+                            {provider.rating}
+                          </span>
+                          <span className="text-muted-foreground">
+                            ({provider.reviewCount})
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Title + description */}
+                      <h3 className="mt-2 text-xl sm:text-2xl font-semibold text-left">
+                        {provider.name}
+                      </h3>
+                      <p className="mt-1 text-sm text-[#b2b2b2] text-left">
+                        {provider.tagline}
+                      </p>
+
+                      {/* Tags */}
+                      <div className="mt-3 mb-4">
+                        {provider.services.length !== 0 ? (
+                          <div className="flex flex-wrap gap-2">
+                            {provider.services.map((service) => (
+                              <Badge
+                                key={service}
+                                variant="outline"
+                                className="h-7 px-3 rounded-2xl bg-[#f2f2f2] text-[#000] text-xs sm:text-sm"
+                              >
+                                {service}
+                              </Badge>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center mx-auto">
+                            <p className="text-xl my-6 text-gray-400">
+                              No Services
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 🔽 BOTTOM CONTENT (sticks to bottom) */}
+                    <div className="mt-auto">
+                      {/* Info row */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-xs sm:text-sm">
+                        <div className="flex items-center gap-2">
+                          <img src="/location-filled.jpg" className="h-4 w-4" />
+                          <span className="text-[#808080] font-semibold break-words">
+                            {provider?.location || "N/A"}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <img src="/briefcase.jpg" className="h-4 w-4" />
+                          <span className="text-[#808080] font-semibold">
+                            {provider.projectsCompleted} projects
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <img
+                            src="/chat-operational.jpg"
+                            className="h-4 w-4"
+                          />
+                          <span className="text-[#808080] font-semibold">
+                            Response: {provider?.responseTime || "2 hrs"}
+                          </span>
+                        </div>
+                      </div>
+                      <p className="text-[#808080] text-sm sm:text-base font-semibold mb-3">
+                        From: {provider?.hourlyRate || 0}/hour
+                      </p>
+
+                      <div className="mt-3 flex flex-col sm:flex-row gap-2">
+                          <Button
+                            className="w-full sm:w-[140px] bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white"
+                            onClick={() => handleViewProvider(provider.id)}
+                          >
+                            View Profile
+                          </Button>
+                          <Button
+                            className="w-full sm:w-[160px] bg-[#4d4d4d] rounded-3xl text-white"
+                            onClick={() => handleContactProvider(provider.id)}
+                          >
+                            Contact Provider
+                          </Button>
+                       </div>
+                    </div>
                   </div>
-
-                  <div className="flex items-center gap-1 text-sm">
-                    <RatingStars rating={provider.rating} />
-                    <span className="font-semibold">{provider.rating}</span>
-                    <span className="text-muted-foreground">
-                      ({provider.reviewCount})
-                    </span>
-                  </div>
-                </div>
-
-                {/* Title + description (left aligned) */}
-                <h3 className="mt-2 text-xl sm:text-2xl font-semibold text-left">
-                  {provider.name}
-                </h3>
-                <p className="mt-1 text-sm text-[#b2b2b2] text-left">
-                  {provider.tagline}
-                </p>
-
-                {/* Tags – tighter gap to description */}
-                <div className="flex flex-wrap gap-2 mt-3 sm:mt-3 mb-4">
-                  {provider.services.map((service) => (
-                    <Badge
-                      key={service}
-                      variant="outline"
-                      className="h-7 px-3 rounded-2xl bg-[#f2f2f2] text-[#000] text-xs sm:text-sm"
-                    >
-                      {service}
-                    </Badge>
-                  ))}
-                </div>
-
-                {/* Info row */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-xs sm:text-sm">
-                  <div className="flex items-center gap-2">
-                    <img src="/location-filled.jpg" className="h-5 w-4" />
-                    <span className="text-[#808080] font-semibold break-words">
-                      {provider?.location || "N/A"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <img src="/briefcase.jpg" className="h-4 w-4" />
-                    <span className="text-[#808080] font-semibold">
-                      {provider.projectsCompleted} projects
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <img src="/chat-operational.jpg" className="h-4 w-4" />
-                    <span className="text-[#808080] font-semibold">
-                      Response: {provider?.responseTime || "2 hrs"}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Price + buttons */}
-                <p className="text-[#808080] text-sm sm:text-base font-semibold">
-                  From: {provider.hourlyRate}/hour
-                </p>
-
-                <div className="mt-3 flex flex-col sm:flex-row gap-2">
-                  <Button
-                    className="w-full sm:w-[140px] bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white"
-                    onClick={() => handleViewProvider(provider.id)}
-                  >
-                    View Profile
-                  </Button>
-                  <Button
-                    className="w-full sm:w-[160px] bg-[#4d4d4d] rounded-3xl text-white"
-                    onClick={() => handleContactProvider(provider.id)}
-                  >
-                    Contact Provider
-                  </Button>
-                </div>
-              </div>
             </Card>
           ))
         ) : (

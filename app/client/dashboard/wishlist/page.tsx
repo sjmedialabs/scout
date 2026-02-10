@@ -212,11 +212,12 @@ const WishListPage = () => {
               key={provider._id}
               className="rounded-4xl flex flex-col overflow-hidden border-2 border-[#E0E0E0]  py-0 shadow-sm hover:shadow-md transition-shadow"
             >
+              
               {/* Image flush to top */}
               <div className="w-full">
                 <img
-                  src={provider.agency.coverImage}
-                  alt={provider.agency.name}
+                  src={provider?.coverImage || "/uploads/15ac2d8f-31f9-48ac-aadd-b67ba9f4d860-Artificial-intelligence-platforms-copy.jpg"}
+                  alt={provider.name}
                   className="w-full h-[200px] sm:h-[240px] md:h-[300px] object-cover block"
                 />
               </div>
@@ -307,7 +308,12 @@ const WishListPage = () => {
                     View Profile
                   </Button>
 
-                  <Button className="w-full sm:w-30 bg-[#4d4d4d] rounded-3xl text-white">
+                  <Button
+                    className="w-full sm:w-30 bg-[#4d4d4d] rounded-3xl text-white"
+                    onClick={() => {
+                      window.location.href = `mailto:${provider.email}`;
+                    }}
+                  >
                     Contact Provider
                   </Button>
                   <Button
