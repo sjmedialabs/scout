@@ -7,6 +7,10 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MdMoreHoriz } from "react-icons/md";
+import { FaBars } from "react-icons/fa";
+
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,6 +31,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 export function Navigation() {
   const { user, logout } = useAuth();
+  const [selectedOverflowCategory, setSelectedOverflowCategory] = useState<any | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const pathname = usePathname();
@@ -138,6 +143,16 @@ export function Navigation() {
   useEffect(() => {
     setOpenMenu(null);
   }, [pathname]);
+
+  const mainCategories = serviceCategories.filter(
+  (c) => c.isMainCategory
+);
+
+const visibleCategories = mainCategories.slice(0, 4);
+const overflowCategories = mainCategories.slice(4);
+
+
+
 
   return (
     <div className="bg-background">
@@ -266,12 +281,12 @@ export function Navigation() {
 > */}
             <div
               className={`hidden flex-1 min-w-0 lg:flex items-center
-  gap-4
-  ${isSticky ? "lg:gap-12" : "lg:gap-16"}
-  lg:gap-20 2xl:gap-24
-  transition-all duration-300`}
-            >
-              {serviceCategories.map((category) => (
+                gap-4
+                ${isSticky ? "lg:gap-12" : "lg:gap-16"}
+                lg:gap-20 2xl:gap-24
+                transition-all duration-300`}
+                          >
+              {visibleCategories.map((category) => (
                 <DropdownMenu
                   key={category.slug}
                   open={openMenu === category.slug}
@@ -319,22 +334,98 @@ export function Navigation() {
                 </DropdownMenu>
               ))}
 
-              <div className="hidden lg:flex gap-4 lg:gap-16 xl:gap-16 2xl:gap-16">
-                {/* Static links – apply same active style if needed */}
-                <Link
-                  href="/pricing"
-                  className="text-md text-gray-500 hover:text-slate-900"
-                >
-                  Pricing & Packages
-                </Link>
 
-                <Link
-                  href="/about"
-                  className="text-md text-gray-500 hover:text-slate-900"
-                >
-                  About us
-                </Link>
-              </div>
+              <div className="hidden lg:flex gap-4 lg:gap-16 xl:gap-16 2xl:gap-16">
+  <Link
+    href="/pricing"
+    className="text-md text-gray-500 hover:text-slate-900"
+  >
+    Pricing & Packages
+  </Link>
+
+  <Link
+    href="/about"
+    className="text-md text-gray-500 hover:text-slate-900"
+  >
+    About us
+  </Link>
+
+  {/* MORE DROPDOWN */}
+  {overflowCategories.length > 0 && (
+    <DropdownMenu
+      open={openMenu === "more"}
+      onOpenChange={(open) => {
+  setOpenMenu(open ? "more" : null);
+  if (!open) setSelectedOverflowCategory(null);
+}}
+
+    >
+      <DropdownMenuTrigger asChild>
+         <button className="p-1">
+            <FaBars className="text-gray-500 cursor-pointer hover:text-slate-900 h-6 w-6" />
+          </button> 
+        </DropdownMenuTrigger>
+
+
+      <DropdownMenuContent className="w-93 p-2 rounded-xl">
+  {!selectedOverflowCategory && (
+    <div className="flex flex-col">
+      {overflowCategories.map((category) => (
+        <button
+          key={category.slug}
+          className="text-left px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 rounded-md"
+          onClick={() => setSelectedOverflowCategory(category)}
+        >
+          {category.title}
+        </button>
+      ))}
+    </div>
+  )}
+
+  {selectedOverflowCategory && (
+    <div>
+      {/* Back button */}
+      <button
+        className="text-xs text-gray-500 mb-2 cursor-pointer"
+        onClick={() => setSelectedOverflowCategory(null)}
+      >
+        ← Back
+      </button>
+
+      <div
+  className={`grid gap-4 ${
+    selectedOverflowCategory.children.length === 1
+      ? "grid-cols-1"
+      : "grid-cols-2"
+  }`}
+>
+  {selectedOverflowCategory.children?.map((sub: any) => (
+    <div key={sub.title}>
+      <p className="text-sm font-semibold mb-1">{sub.title}</p>
+
+      <ul className="space-y-1">
+        {sub.items?.map((child: any) => (
+          <li key={child.slug}>
+            <Link
+              href={`/services/${child.slug}`}
+              className="text-xs text-gray-500 hover:text-slate-900 cursor-pointer"
+            >
+              {child.title}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ))}
+</div>
+
+    </div>
+  )}
+</DropdownMenuContent>
+    </DropdownMenu>
+  )}
+</div>
+
 
               {/* ... other static links ... */}
 
