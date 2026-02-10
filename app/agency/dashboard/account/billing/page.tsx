@@ -65,6 +65,7 @@ export default function BillingPage() {
    const[paymentDetails,setPaymentDetails]=useState([]);
 
    const[isExpired,setIsExpired]=useState(false);
+   const[freeTrailProposalCount,setFreeTrailProposalCount]=useState(0);
    
 
    const[formData,setFormData]=useState({
@@ -85,17 +86,19 @@ export default function BillingPage() {
       setFailed(false);
       try{
         const res=await authFetch(`/api/users/${user?.id}`)
-        const paymentRes=await fetch(`/api/payment/${user?.id}`)
-        if(!res.ok || !paymentRes.ok) throw new Error()
+        const paymentRes=await authFetch(`/api/payment/${user?.id}`)
+        const freeTrailRes=await authFetch("/api/free-trail-config")
+        if(!res.ok || !paymentRes.ok || !freeTrailRes.ok) throw new Error()
         const data =await res.json();
         const paymentData=await paymentRes.json();
+        const freeTrailData=await freeTrailRes.json();
         console.log("Fetched User Detaisl in Billing Cycyle:::",data);
         console.log("Payment details in the billing cycle:::",paymentData)
         setUserDetails(data.user);
 
          const isExpired = data.user?.subscriptionStartDate
           ? new Date(data.user.subscriptionEndDate) < new Date()
-          : (data.user?.proposalCount || 0) > 1
+          : (data.user?.proposalCount || 0) >= freeTrailData.proposalLimit
 
         setIsExpired(isExpired)
 

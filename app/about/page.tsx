@@ -188,10 +188,10 @@ export default async function AboutPage() {
           {/* Title Section */}
           <div className="text-center mb-12">
             <h4 className="text-[#F54A0C] text-lg font-medium">
-              {cms?.aboutValuesTitle}
+               Our Values
             </h4>
             <h2 className="text-3xl md:text-4xl font-normal text-gray-800">
-              Collaborate & Succeed
+              {cms?.aboutValuesTitle || "Collaborate & Succeed"} 
             </h2>
           </div>
 
@@ -226,9 +226,9 @@ export default async function AboutPage() {
           
         {/* CTA */}
         <div className="text-center">
-          <h2 className="text-2xl font-semibold mb-4">Ready to Join Spark?</h2>
+          <h2 className="text-2xl font-semibold mb-4">{cms?.aboutBottomSectionTitle || "Ready to Join Spark?"}</h2>
           <p className="text-[#b2b2b2] text-sm mb-6">
-            Whether you're looking for services or offering them, we'd love to have you in our community.
+            {cms?. aboutBottomSectionSubTitle || "Whether you're looking for services or offering them, we'd love to have you in our community."}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg"  style={{borderRadius:"26px",fontSize:"14px",backgroundColor:" #F54A0C"}} asChild>

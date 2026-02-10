@@ -96,6 +96,8 @@ export default function AgencyDashboardLayout({ children }) {
   const [expired, setExpired] = useState<boolean | null>(null)
   const [filteredMenuItems, setFilteredMenuItems] = useState<MenuItem[]>([])
 
+  const[freeTrailProposalCount,setFreeTrailProposalCount]=useState(0);
+
   const isSubscriptionPage =
     pathname.startsWith("/agency/dashboard/account/subscriptions") ||
     pathname === "/agency/dashboard/account/billing"
@@ -112,12 +114,15 @@ export default function AgencyDashboardLayout({ children }) {
     const loadData = async () => {
       try {
         const res = await authFetch(`/api/users/${user.id}`)
-        if (!res.ok) throw new Error()
+        const freeTrailRes=await authFetch("/api/free-trail-config")
+        if (!res.ok || !freeTrailRes.ok) throw new Error()
         const data = await res.json()
+        const freeTrailData=await freeTrailRes.json();
+        console.log("Free Taril Data::::::",freeTrailData)
 
         const isExpired = data.user?.subscriptionStartDate
           ? new Date(data.user.subscriptionEndDate) < new Date()
-          : (data.user?.proposalCount || 0) > 1
+          : (data.user?.proposalCount || 0) >= freeTrailData.proposalLimit
 
         setExpired(isExpired)
 

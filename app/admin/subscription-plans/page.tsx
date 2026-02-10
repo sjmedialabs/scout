@@ -9,11 +9,17 @@ import { cn } from "@/lib/utils";
 import { Edit, Check, X, CreditCard, PlusCircle, Loader2 } from "lucide-react";
 import { ISubscription } from "@/lib/types";
 import { authFetch } from "@/lib/auth-fetch";
+import { AuthGuard } from "@/components/auth-guard";
+import { toast } from "@/lib/toast";
 
 export default function SubscriptionPlansPage() {
   const [plans, setPlans] = useState<ISubscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  const[freeTrailProposalCount,setFreeTrailProposalCount]=useState(0);
+  const[freeTrailSending,setFreeTrailSending]=useState(false);
+
 
   const [newPlan, setNewPlan] = useState({
     title: "",
@@ -31,9 +37,13 @@ export default function SubscriptionPlansPage() {
   const fetchPlans = async () => {
     try {
       const res = await authFetch("/api/subscription");
-      if (res.ok) {
+      const freeTrailRes=await authFetch("/api/free-trail-config")
+      if (res.ok && freeTrailRes.ok) {
         const data = await res.json();
+        const freeTrailData=await freeTrailRes.json();
+        console.log("Free Trail Plans Data::::",freeTrailData);
         setPlans(data);
+        setFreeTrailProposalCount(freeTrailData.proposalLimit);
       }
     } catch (error) {
       console.error("Failed to fetch plans", error);
@@ -102,6 +112,30 @@ export default function SubscriptionPlansPage() {
     await saveEdit(plan._id, { isActive: !plan.isActive });
   };
 
+  // free trail plan updation
+  
+  const freeTrailProposalCountUpdate=async()=>{
+    setFreeTrailSending(true)
+    try{
+      const res=await authFetch("/api/free-trail-config",{
+        method:"PUT",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({proposalLimit:freeTrailProposalCount})
+      })
+      if(res.ok){
+        toast.success("Updated the Free trail proposal count")
+      }
+
+    }catch(error){
+      console.log("Failed to update the free trail proposal count::::",error)
+      toast.error("Failed to update please try again")
+    }finally{
+      setFreeTrailSending(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* HEADER */}
@@ -114,6 +148,29 @@ export default function SubscriptionPlansPage() {
           at any time.
         </p>
       </div>
+
+      {/*Free Plan */}
+
+       <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-2">
+        <h2 className="text-xl font-semibold flex my-custom-class items-center gap-2">
+          Update Free Trail Proposal Count
+        </h2>
+           <Input
+            className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+            type="number"
+            min={1}
+            placeholder="Number of free proposals"
+            value={freeTrailProposalCount}
+            onChange={(e) => setFreeTrailProposalCount(parseInt(e.target.value))}
+          />
+
+          <Button
+          className={`${freeTrailSending?"bg-orange-400 cursor-not-allowed":"bg-orangeButton cursor-pointer"} rounded-2xl h-8 hover:bg-orange-600`} disabled={freeTrailSending}
+          onClick={freeTrailProposalCountUpdate}
+        >
+           {`${freeTrailSending?"Updating...":"Update"}`}
+        </Button>
+        </div>
 
       {/* ADD PLAN */}
       <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-2">

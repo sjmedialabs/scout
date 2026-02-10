@@ -189,18 +189,13 @@ const { cms, providers, projects, categories } = data;
               </span>
             </div>
             <h2 className="stext-mediun uppercase my-custom-class font-bold text-black ">
-              The perfect partner for{" "}
-              <span className="text-blueButton font-bold my-custom-class">
+             {cms?.homeServiceTitle}
+              {/* <span className="text-blueButton font-bold my-custom-class">
                 any project
-              </span>
+              </span> */}
             </h2>
             <p className="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">
-              Whatever your business challenge, browse our most in-demand
-              service categories to find top-ranked companies in{" "}
-              <span className="font-semibold text-blueButton">
-                over 2,000 specialized service lines
-              </span>
-              .
+             {cms?.homeServiceSubTitle}
             </p>
           </div>
 
@@ -275,11 +270,10 @@ const { cms, providers, projects, categories } = data;
                 </span>
               </div>
               <h2 className="stext-mediun uppercase font-extrabold text-black ">
-                Recent Requirements
+                {cms?.recentRequirementTitle || "Requirements"}
               </h2>
               <p className="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">
-                Discover opportunities from businesses lookking for your
-                services
+                {cms?.recentRequirementSubTitle || "Discover opportunities from businesses lookking for your services"}
               </p>
             </div>
             {/* <div className="grid md:grid-cols-3 gap-6">
@@ -401,11 +395,10 @@ const { cms, providers, projects, categories } = data;
                 </span>
               </div>
               <h2 className="stext-mediun uppercase font-extrabold text-black ">
-                Top Providers
+                {cms?.topProvidersTitle || "Top Providers"}
               </h2>
               <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
-                Discover opportunities from businesses lookking for your
-                services
+                {cms?.topProvidersSubTitle || "Discover opportunities from businesses lookking for your services"}
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
@@ -533,10 +526,10 @@ const { cms, providers, projects, categories } = data;
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h3 className="text-2xl md:text-4xl font-extralight">
-            {cms?.getStartedTitle}
+            {cms?.getStartedTitle || "Ready to Get Started?"}
           </h3>
           <p className="text-base max-w-sm mx-auto text-slate-500">
-            {cms?.getStartedSubtitle}
+            {cms?.getStartedSubtitle || "Join thousands of businesses finding the right service providers on Spark."}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
             <Button
