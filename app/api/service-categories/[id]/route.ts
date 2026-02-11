@@ -44,3 +44,45 @@ export async function PUT(request: Request, { params }: any) {
     );
   }
 }
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    await connectToDatabase();
+
+    // 1. Find category first
+    const category = await ServiceCategory.findById(params.id);
+
+    if (!category) {
+      return NextResponse.json(
+        { success: false, message: "Category not found" },
+        { status: 404 }
+      );
+    }
+
+    // 2. Prevent delete if subcategories exist
+    if (category.children?.length > 0) {
+      return NextResponse.json(
+        { success: false, message: "Category has subcategories" },
+        { status: 400 }
+      );
+    }
+
+    // 3. Delete only after validation
+    await ServiceCategory.findByIdAndDelete(params.id);
+
+    return NextResponse.json({
+      success: true,
+      message: "Category deleted successfully",
+    });
+  } catch (error) {
+    console.error("DELETE Category Error:", error);
+    return NextResponse.json(
+      { success: false, message: "Failed to delete category" },
+      { status: 500 }
+    );
+  }
+}
+
