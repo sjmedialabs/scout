@@ -527,7 +527,7 @@ const ClientAnalyticsPage = () => {
         </CardHeader>
         <CardContent className="px-0">
           <div className="space-y-6  px-0 ">
-            <div className="py-4  rounded-lg px-8">
+            {/* <div className="py-4  rounded-lg px-8">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-lg text-[#000] font-bold my-custom-class">
                   Your Stated Budget
@@ -536,7 +536,7 @@ const ClientAnalyticsPage = () => {
                   $50,000
                 </span>
               </div>
-            </div>
+            </div> */}
             <hr className="border-[1px] border-[#E4E4E4] w-full" />
             <div className="space-y-4 px-8">
               <h4 className="text-xl font-bold text-[#000] my-custom-class">

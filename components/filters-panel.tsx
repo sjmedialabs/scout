@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState,useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -33,6 +33,42 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
     title:"",
   })
   const [skillInput, setSkillInput] = useState("")
+
+   //dropdown search for the services offered
+  const [serviceCategories, setServiceCategories] = useState([]);
+  const [activeSubCategory, setActiveSubCategory] = useState(null);
+  const [selectedService, setSelectedService] = useState("");
+
+  const [open, setOpen] = useState(false);
+  const ITEMS_PER_LOAD = 4;
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_LOAD);
+
+  const [selectedSubCategory, setSelectedSubCategory] = useState(null);
+  const [items, setItems] = useState([]);
+  const subCategories = (serviceCategories || []).flatMap(
+    (category) => category?.children,
+  );
+   useEffect(() => {
+      loadData();
+    }, []);
+   
+    const loadData = async () => {
+    
+      try {
+        
+        const res = await fetch("/api/service-categories");
+        const servicData = await res.json();
+        setServiceCategories(servicData.data || []);
+  
+       
+  
+        
+      } catch (error) {
+        console.log("Failded To retrive the data:::", error);
+       
+      } 
+    };
+  
 
   const serviceTypes = [
     "Web Development",
@@ -93,7 +129,7 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Service Type */}
-        <div className="space-y-2 my-custom-class">
+        {/* <div className="space-y-2 my-custom-class">
           <Label className="text-[14px] mb-0 text-[#98A0B4] font-semibold">Service Type</Label>
           <Select value={filters.serviceType} onValueChange={(value) => handleFilterChange("serviceType", value)}>
             <SelectTrigger className="border-2 data-[placeholder]:text-[#98A0B4] border-[#D0D5DD] rounded-full text-[12px]">
@@ -107,14 +143,73 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
               ))}
             </SelectContent>
           </Select>
-        </div>
+        </div> */}
+
+        <div className="w-full min-w-0">
+           <Label className="text-[14px] mb-0 text-[#98A0B4] font-semibold">Service Type</Label>
+                  <Select
+                    open={open}
+                    onOpenChange={setOpen}
+                    value={filters.serviceType}
+                  >
+                    <SelectTrigger
+                      className="border-2 data-[placeholder]:text-[#98A0B4] border-[#D0D5DD] rounded-full text-[12px]"
+                    >
+                      <span className="text-sm md:text-base">
+                        {filters.serviceType || "Select Service"}
+                      </span>
+                    </SelectTrigger>
+
+                    <SelectContent
+                      side="bottom"
+                      align="start"
+                      sideOffset={8}
+                      className="p-0 rounded-2xl"
+                    >
+                      <div className="flex">
+                        {/* LEFT: Subcategories */}
+                        <div className="min-w-[220px] border-r">
+                          {subCategories.map((sub) => (
+                            <div
+                              key={sub.slug}
+                              onMouseEnter={() => setActiveSubCategory(sub)}
+                              className="px-4 py-2 cursor-pointer  text-sm hover:bg-gray-100"
+                            >
+                              {sub.title}
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* RIGHT: Items */}
+                        {activeSubCategory && (
+                          <div className="min-w-[240px]">
+                            {activeSubCategory.items.map((item) => (
+                              <div
+                                key={item.slug}
+                                onClick={() => {
+                                  setSelectedService(item.title); // ✅ SHOW IN FIELD
+                                  // setServiceFilter(item.title); // your filter logic
+                                  handleFilterChange("serviceType", item.title)
+                                  setOpen(false); // ✅ close dropdown
+                                }}
+                                className="px-4 py-2 cursor-pointer text-sm hover:bg-gray-100"
+                              >
+                                {item.title}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </SelectContent>
+                  </Select>
+                </div>
 
         {/* Location */}
         <div className="space-y-2">
           <Label className="text-[14px] mb-0 text-[#98A0B4] font-semibold">Status</Label>
           <Select value={filters.status} onValueChange={(value) => handleFilterChange("status", value)}>
             <SelectTrigger className="border-2 data-[placeholder]:text-[#98A0B4] border-[#D0D5DD] rounded-full text-[12px]">
-              <SelectValue placeholder="Select location" />
+              <SelectValue placeholder="Select Status" />
             </SelectTrigger>
             <SelectContent>
               {statues.map((location) => (

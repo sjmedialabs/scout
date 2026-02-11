@@ -109,6 +109,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { authFetch } from "@/lib/auth-fetch";
+import ServiceDropdown from "@/components/select-category-filter";
 
 const ProjectsPage = () => {
   const { user, loading } = useAuth();
@@ -185,6 +186,10 @@ const ProjectsPage = () => {
   const [failed, setFailed] = useState(false);
   //for sending the form staus
   const [sending, setSending] = useState(false);
+
+
+  
+
   const loadData = async (userId: string) => {
     setResponseLoading(true);
     try {
@@ -192,6 +197,8 @@ const ProjectsPage = () => {
       const data = await response.json();
       setRequirements(data.requirements);
       setFilteredRequirements(data.requirements);
+
+       
 
       setFailed(false);
     } catch (error) {
@@ -728,7 +735,9 @@ const ProjectsPage = () => {
                 />
               </div>
 
-              <div className="space-y-2">
+              {/* Select Category */}
+
+              {/* <div className="space-y-2">
                 <Label
                   htmlFor="category"
                   className="text-[#000]  text-[14px] font-bold"
@@ -742,11 +751,7 @@ const ProjectsPage = () => {
                   }
                 >
                   <SelectTrigger
-                    className="
-                              border-2 border-[#D0D5DD] rounded-[8px]
-                              data-[placeholder]:text-[#98A0B4]
-                              
-                              text-[#000]
+                    className=" border-2 border-[#D0D5DD] rounded-[8px] data-[placeholder]:text-[#98A0B4] text-[#000]
                             "
                   >
                     <SelectValue
@@ -763,7 +768,22 @@ const ProjectsPage = () => {
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
+              </div> */}
+
+               <div className="space-y-2">
+                    <Label
+                      htmlFor="category"
+                      className="text-[#000]  text-[14px] font-bold"
+                    ></Label>
+
+                    <ServiceDropdown
+                    value={formData.category}
+                      onChange={(value)=> setFormData((prev) => ({ ...prev, category: value }))}
+                      triggerClassName="border-2 border-[#D0D5DD] rounded-[8px] data-[placeholder]:text-[#98A0B4] text-[#000] p-4"
+                    />
+               </div>
+
+              
 
               <div className="space-y-2">
                 <Label

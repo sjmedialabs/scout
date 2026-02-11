@@ -14,6 +14,7 @@ import { categories } from "@/lib/mock-data"
 import FileUpload from "../file-upload"
 import PdfUpload from "../pdfUpload"
 import { toast } from "@/lib/toast"
+import ServiceDropdown from "../select-category-filter"
 
 interface PostRequirementFormProps {
   onSubmit: (requirement: any) => void
@@ -110,7 +111,7 @@ export function PostRequirementForm({ onSubmit,sendingStatus}: PostRequirementFo
             />
           </div>
           {/*categories */}
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <Label htmlFor="category" className="text-[#98A0B4] text-[14px] font-normal">Category</Label>
            <Select
             value={formData.category}
@@ -138,7 +139,21 @@ export function PostRequirementForm({ onSubmit,sendingStatus}: PostRequirementFo
             </SelectContent>
           </Select>
 
+          </div> */}
+
+           <div className="space-y-2">
+                <Label
+                  htmlFor="category"
+                  className="text-[#000]  text-[14px] font-bold"
+                ></Label>
+
+                <ServiceDropdown
+                value={formData.category}
+                  onChange={(value)=> setFormData((prev) => ({ ...prev, category: value }))}
+                  triggerClassName="border-2 border-[#D0D5DD] rounded-[8px] data-[placeholder]:text-[#98A0B4] text-[#000] p-4"
+                />
           </div>
+          
 
           <div className="space-y-2">
             <Label htmlFor="description" className="text-[#98A0B4] text-[14px] font-normal">Project Description</Label>

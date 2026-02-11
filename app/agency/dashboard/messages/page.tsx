@@ -31,7 +31,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import clsx from "clsx";
-import { useRouter } from "next/navigation";
+import { useRouter,useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { authFetch } from "@/lib/auth-fetch";
 import { io } from "socket.io-client"
@@ -138,6 +138,11 @@ const initialMessages: Message[] = [
 export default function MessagesPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const searchParams=useSearchParams();
+  const clientId=searchParams.get("clientId");
+  const agencyId=searchParams.get("agencyId")
+  console.log("Client Id recived through the URL::::",clientId)
+  console.log("Agency Id through the Url is:::",agencyId)
   const [messageInput, setMessageInput] = useState("");
   const [typing, setTyping] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -208,11 +213,25 @@ useEffect(() => {
 
       // FIX: Pass the specific ID and the data directly
       if (allConversations.length > 0) {
-        const firstConv = allConversations[0];
+        if(clientId && agencyId){
+          console.log("Entered To If condition in the----")
+          const filteredConv = allConversations.find((eachItem) =>
+            eachItem.participantsAre.includes(clientId) &&
+            eachItem.participantsAre.includes(agencyId)
+          );
+           console.log("If condition Filtered Conv is:::",filteredConv)
+          setDynamicActiveConversation(filteredConv)
+         
+          await fetchMessages(filteredConv.conversationId)
+
+        }else{
+          console.log("Else Block Entered")
+          const firstConv = allConversations[0];
         // Set the active state immediately with the object we already have
         setDynamicActiveConversation(firstConv);
         // Fetch messages for this specific ID
         await fetchMessages(firstConv.conversationId);
+        }
       }
     } catch (err) {
       console.log(err);
@@ -586,7 +605,7 @@ useEffect(() => {
                   <div className="relative">
                     <img
                       src={
-                        c.participant.image ||
+                        c.participant?.image ||
                         "https://i.pravatar.cc/100?img=12"
                       }
                       className="h-10 w-10 rounded-full"

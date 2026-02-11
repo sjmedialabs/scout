@@ -1,19 +1,98 @@
 "use client";
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Bell } from "lucide-react";
+import { authFetch } from "@/lib/auth-fetch";
+import { useRouter } from "next/navigation";
 
 const ClientNotificationsPage = () => {
   
-  const [resLoading] = useState(false);
-  const [failed] = useState(false);
-  const [dynamicNotifications] = useState<any[]>([]);
+  const router=useRouter();
+ const [resLoading, setResLoading] = useState(false);
+const [failed, setFailed] = useState(false);
+const [dynamicNotifications, setDynamicNotifications] = useState<any[]>([]);
 
-  const handleMarkNotificationAsRead = (id: string, linkUrl?: string) => {
-    console.log("Notification clicked:", id, linkUrl);
+ const fetchNotifications = async () => {
+    try {
+      setResLoading(true);
+      setFailed(false);
+
+      const res = await authFetch("/api/notifications");
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch notifications");
+      }
+
+      const data = await res.json();
+
+      // assuming API response shape: { data: [...] }
+      setDynamicNotifications((data?.data || []).filter((eachItem)=>!eachItem.isRead));
+    } catch (error) {
+      console.error("Notification fetch error:", error);
+      setFailed(true);
+    } finally {
+      setResLoading(false);
+    }
   };
+
+useEffect(() => {
+ 
+
+  fetchNotifications();
+}, []);
+
+
+  const handleMarkNotificationAsRead = async (
+  id: string,
+  linkUrl?: string
+) => {
+  try {
+    // optimistic UI update (instant feedback)
+    setDynamicNotifications((prev) =>
+      prev.map((n) =>
+        n._id === id ? { ...n, isRead: true } : n
+      )
+    );
+
+    const res = await authFetch(`/api/notifications/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ isRead: true }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to mark notification as read");
+    }
+
+    // optional redirect
+    if (linkUrl) {
+      // window.location.href = linkUrl;
+      router.push(linkUrl)
+    }
+  } catch (error) {
+    console.error("Mark as read failed:", error);
+
+    // rollback if API fails
+    setDynamicNotifications((prev) =>
+      prev.map((n) =>
+        n._id === id ? { ...n, isRead: false } : n
+      )
+    );
+  }
+};
+
+
+   if (resLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
