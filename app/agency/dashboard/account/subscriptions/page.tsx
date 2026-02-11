@@ -39,9 +39,13 @@ export default function PricingPage() {
         const res = await fetch("/api/subscription")
 
         if(res.ok){
-           const data: CmsPlan[] = await res.json()
-        console.log("Fetched CMS subscription plans:", data);
-        setSubscriptions(data)
+           const data: CmsPlan[] = await res.json();
+            console.log("Fetched CMS subscription plans:", data);
+
+            // show only active plans
+            const activePlans = data.filter((plan) => plan.isActive);
+
+setSubscriptions(activePlans);
 
         const featureMap: Record<string, string[]> = {}
 
@@ -225,7 +229,7 @@ export default function PricingPage() {
 
                   <div className="px-6 pb-6 mt-auto">
                     <Button
-                      onClick={() => setSelectedId(plan.id)}
+                      onClick={() => setSelectedId(plan._id)}
                       className={[
                       "w-full h-12 text-base font-medium transition-colors duration-300 ease-out",
                       "border border-orange-200 text-orange-600 bg-[#feefe8]",

@@ -2,16 +2,45 @@ import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import Subscription from "@/models/Subscription";
 
-export async function GET() {
+// export async function GET() {
+//   try {
+//     await connectToDatabase();
+//     const plans = await Subscription.find().sort({ pricePerMonth: 1 });
+//     return NextResponse.json(plans);
+//   } catch (error) {
+//     console.error("Error fetching plans:", error);
+//     return NextResponse.json({ error: "Failed to fetch plans" }, { status: 500 });
+//   }
+// }
+
+export async function GET(req: Request) {
   try {
     await connectToDatabase();
-    const plans = await Subscription.find().sort({ pricePerMonth: 1 });
+
+    const { searchParams } = new URL(req.url);
+    const isAdmin = searchParams.get("admin") === "true";
+
+    let plans;
+
+    if (isAdmin) {
+      // Admin dashboard → show all plans
+      plans = await Subscription.find().sort({ pricePerMonth: 1 });
+    } else {
+      // Public pages → show only enabled plans
+      plans = await Subscription.find({ isDisabled: { $ne: true } })
+        .sort({ pricePerMonth: 1 });
+    }
+
     return NextResponse.json(plans);
   } catch (error) {
     console.error("Error fetching plans:", error);
-    return NextResponse.json({ error: "Failed to fetch plans" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch plans" },
+      { status: 500 }
+    );
   }
 }
+
 
 export async function POST(req: Request) {
   try {
