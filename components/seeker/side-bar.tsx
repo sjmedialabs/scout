@@ -1,9 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { LogOut} from "lucide-react"
+import { LogOut, PanelLeft } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
-
 import { useRouter, usePathname } from "next/navigation"
 import {
   ChevronDown,
@@ -14,7 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "../ui/button"
 import { cn } from "@/lib/utils"
-import { RiVerifiedBadgeFill } from "react-icons/ri";
+import { RiVerifiedBadgeFill } from "react-icons/ri"
 
 interface MenuItem {
   id: string
@@ -34,7 +33,6 @@ import {
   TrendingUp,
   Eye,
   GitCompare,
-  CreditCard,
   Bell,
   Settings,
   BarChart3,
@@ -89,8 +87,10 @@ export default function ClientSidebar({
 }) {
   const router = useRouter()
   const pathname = usePathname()
+  const { logout } = useAuth()
 
   const [expandedSections, setExpandedSections] = useState<string[]>([])
+  const [collapsed, setCollapsed] = useState(false) // ✅ NEW
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections((prev) =>
@@ -102,16 +102,13 @@ export default function ClientSidebar({
 
   const handleMenuClick = (item: MenuItem) => {
     router.push(item.path!)
-    onClose() // close sidebar on mobile
+    onClose()
   }
 
-  const { logout } = useAuth()
-
-const handleLogout = async () => {
-  await logout()
-  router.replace("/login")
-}
-
+  const handleLogout = async () => {
+    await logout()
+    router.replace("/login")
+  }
 
   return (
     <>
@@ -125,69 +122,102 @@ const handleLogout = async () => {
 
       <aside
         className={cn(
-          "fixed z-50 inset-y-0 left-0 w-80 bg-card border-r border-border flex flex-col transform transition-transform duration-300",
+          "fixed z-50 inset-y-0 left-0 bg-card border-r border-border flex flex-col transform transition-all duration-300",
           isOpen ? "translate-x-0" : "-translate-x-full",
-          "lg:translate-x-0 lg:static lg:z-auto"
+          "lg:translate-x-0 lg:static lg:z-auto",
+          collapsed ? "lg:w-20" : "lg:w-80",
+          "w-80"
         )}
       >
         {/* Header */}
         <div className="p-6 border-b border-border bg-[#3C3A3E] flex justify-between items-start">
-          <div>
-            <h2 className="text-xl font-bold text-[#fff]">Client Dashboard</h2>
-            <p className="text-sm text-[#8B8585]">
-              Welcome back, {user.name}
-            </p>
-            <div className="flex items-center gap-2 mt-3">
-              <Badge className={`${user.isActive?"bg-[#39A935]":"bg-red-500"} min-w-[80px] text-[#fff] rounded-full min-h-[30px]`}>{`${user.isActive?"Active":"Inactive"}`}</Badge>
-              {
-                (user.isVerified) && (
-                   <Badge variant="secondary" className="bg-[#fff] min-h-[30px] rounded-full text-[#2C34A1]"><RiVerifiedBadgeFill className="h-8 w-8" color={"#2C34A1"}/>Verified</Badge>
-                )
-              }
-            </div>
-          </div>
+          {!collapsed && (
+            <div>
+              <h2 className="text-xl font-bold text-[#fff]">
+                Client Dashboard
+              </h2>
+              <p className="text-sm text-[#8B8585]">
+                Welcome back, {user.name}
+              </p>
 
-          {/* Close button (mobile) */}
-          <button onClick={onClose} className="lg:hidden">
-            <X className="h-5 w-5" />
-          </button>
+              <div className="flex items-center gap-2 mt-3">
+                <Badge
+                  className={`${user.isActive ? "bg-[#39A935]" : "bg-red-500"} min-w-[80px] text-[#fff] rounded-full min-h-[30px]`}
+                >
+                  {user.isActive ? "Active" : "Inactive"}
+                </Badge>
+
+                {user.isVerified && (
+                  <Badge
+                    variant="secondary"
+                    className="bg-[#fff] min-h-[30px] rounded-full text-[#2C34A1]"
+                  >
+                    <RiVerifiedBadgeFill
+                      className="h-5 w-5"
+                      color={"#2C34A1"}
+                    />
+                  </Badge>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="flex gap-2">
+            {/* Desktop collapse toggle */}
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              className="hidden lg:block cursor-pointer"
+            >
+              <PanelLeft className="h-5 w-5 text-white" />
+            </button>
+
+            {/* Mobile close */}
+            <button onClick={onClose} className="lg:hidden">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
         {/* Menu */}
-        <div className="flex-1 overflow-y-auto p-4 bg-[#3C3A3E] [&_[aria-label='Close']]:hidden [&::-webkit-scrollbar]:hidden">
-          <nav className="space-y-2 ">
+        <div className="flex-1 overflow-y-auto p-4 bg-[#3C3A3E]   [scrollbar-width:none] 
+                    [-ms-overflow-style:none]        
+                    [&::-webkit-scrollbar]:hidden">
+          <nav className="space-y-2">
             {menuItems.map((section) => (
               <div key={section.id}>
                 <button
-                  onClick={() => toggleSection(section.id)}
-                  className="w-full flex  items-center justify-between p-3 text-sm font-medium text-muted-foreground  rounded-lg"
+                  onClick={() =>{ toggleSection(section.id); setCollapsed(!collapsed)}}
+                  className="w-full cursor-pointer flex items-center justify-between p-3 text-sm font-medium rounded-lg"
                 >
-                  <div className="flex items-center gap-3 text-[#fff]">
+                  <div className="flex items-center gap-3 text-white">
                     <section.icon className="h-4 w-4" />
-                    {section.label}
+                    {!collapsed && section.label}
                   </div>
-                  {expandedSections.includes(section.id) ? (
-                    <ChevronDown className="h-4 w-4 text-[#fff]" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4 text-[#fff]" />
-                  )}
+
+                  {!collapsed &&
+                    (expandedSections.includes(section.id) ? (
+                      <ChevronDown className="h-4 w-4 text-white" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4 text-white" />
+                    ))}
                 </button>
 
                 {section.children &&
-                  expandedSections.includes(section.id) && (
+                  expandedSections.includes(section.id) &&
+                  !collapsed && (
                     <div className="ml-4 mt-2 space-y-1">
                       {section.children.map((item) => (
                         <button
                           key={item.id}
                           onClick={() => handleMenuClick(item)}
                           className={cn(
-                            "w-full flex items-center gap-3 p-2 text-sm rounded-lg text-[#fff]",
+                            "w-full cursor-pointer flex items-center gap-3 p-2 text-sm rounded-lg text-white",
                             pathname === item.path
-                              ? "text-[#F54A0C] "
-                              : " "
+                              ? "text-[#F54A0C]"
+                              : ""
                           )}
                         >
-                          <item.icon className="h-4 w-4 text-[#fff]" />
+                          <item.icon className="h-4 w-4" />
                           {item.label}
                         </button>
                       ))}
@@ -199,47 +229,41 @@ const handleLogout = async () => {
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-none bg-[#3C3A3E] flex gap-2">
-          <Button
-          size="sm"
-          className="
-            flex-1 rounded-2xl
-            bg-[#2C34A1] text-white
-            border-none
-            hover:bg-[#232a85]
-            focus-visible:ring-0
-            focus-visible:ring-offset-0"
+       {/* Footer */}
+            <div className="p-4 bg-[#3C3A3E] flex flex-col gap-2">
+              {/* Post Requirement */}
+              <Button
+                size="sm"
+                className={cn(
+                  "rounded-2xl bg-[#2C34A1] text-white border-none hover:bg-[#232a85] flex items-center justify-center",
+                  collapsed ? "w-12 h-12 p-0" : "w-full"
+                )}
+                onClick={() => {
+                  if (collapsed) {
+                    setCollapsed(false)
+                  }
+                  router.push("/client/dashboard/post-requirement")
+                  onClose()
+                }}
+              >
+                <Plus className="h-4 w-4" />
+                {!collapsed && <span className="ml-2">Post Requirement</span>}
+              </Button>
 
-            onClick={() => {
-              router.push("/client/dashboard/post-requirement")
-              onClose()
-            }}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Post New Requirement
-          </Button>
+              {/* Logout */}
+              <Button
+                size="sm"
+                onClick={handleLogout}
+                className={cn(
+                  "rounded-2xl bg-orangeButton text-white border-none flex items-center justify-center",
+                  collapsed ? "w-12 h-12 p-0" : "w-full"
+                )}
+              >
+                <LogOut className="h-4 w-4" />
+                {!collapsed && <span className="ml-2">Logout</span>}
+              </Button>
+            </div>
 
-          {/* Logout */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleLogout}
-            className="
-              flex-1
-              text-white
-               rounded-2xl
-               bg-orangeButton border-none
-              hover:bg-red-500/10
-              active:bg-red-500
-               active:text-white
-              focus-visible:ring-0
-              focus-visible:ring-offset-0
-            "
-          >
-            <LogOut className="h-4 w-4 mr-2" />
-            Logout
-          </Button>
-        </div>
       </aside>
     </>
   )
