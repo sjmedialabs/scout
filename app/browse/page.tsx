@@ -17,6 +17,7 @@ import { ProposalCard } from "@/components/requirements/ProposalCard";
 import { useEffect, useState } from "react";
 import { Requirement } from "@/lib/types";
 import { useRouter } from "next/navigation";
+import ServiceDropdown from "@/components/select-category-filter";
 
 import {
   Dialog,
@@ -190,7 +191,7 @@ export default function BrowsePage() {
                 </div>
 
                 {/* Category */}
-                <Select
+                {/* <Select
                   onValueChange={(value) => setServiceType(value)}
                   value={serviceType}
                 >
@@ -215,7 +216,22 @@ export default function BrowsePage() {
                     <SelectItem value="marketing">Marketing</SelectItem>
                     <SelectItem value="consulting">Consulting</SelectItem>
                   </SelectContent>
-                </Select>
+                </Select> */}
+
+                <ServiceDropdown
+                 value={serviceType}
+                    onChange={(value) => setServiceType(value)}
+                    triggerClassName="
+                border-0 border-b border-[#dcdcdc] rounded-none px-0 pb-2
+                text-[15px] font-normal
+                focus-visible:ring-0 focus-visible:ring-offset-0
+                cursor-pointer
+
+                [&_span]:text-[#9b9b9b]
+                [&_span]:text-[15px]
+                [&_span]:font-normal
+            "
+                  />
 
                 {/* Budget */}
                 <Select

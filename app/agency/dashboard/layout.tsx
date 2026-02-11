@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/auth-context"
 import { useRouter, usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { authFetch } from "@/lib/auth-fetch"
+import { Menu } from "lucide-react";
 import {
   Home,
   User,
@@ -62,7 +63,7 @@ const menuItems: MenuItem[] = [
     icon: BarChart3,
     children: [
       { id: "performance-analytics", label: "Performance Analytics", icon: TrendingUp, path: "/agency/dashboard/performance/analytics" },
-      { id: "audience-insights", label: "Audience Insights", icon: Eye, path: "/agency/dashboard/performance/audience-insights" },
+      // { id: "audience-insights", label: "Audience Insights", icon: Eye, path: "/agency/dashboard/performance/audience-insights" },
       { id: "competitor-comparison", label: "Competitor Comparison", icon: GitCompare, path: "/agency/dashboard/performance/competitor-comparison" },
     ],
   },
@@ -88,10 +89,14 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-export default function AgencyDashboardLayout({ children }) {
+export default function AgencyDashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
+
+   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
 
   const [expired, setExpired] = useState<boolean | null>(null)
   const [filteredMenuItems, setFilteredMenuItems] = useState<MenuItem[]>([])
@@ -150,10 +155,42 @@ export default function AgencyDashboardLayout({ children }) {
   if (loading || expired === null) return null
   if (expired && !isSubscriptionPage) return null
 
-  return (
-    <div className="min-h-screen flex">
-      <Sidebar user={user} menuItems={filteredMenuItems} />
-      <div className="flex-1 ml-80 p-6">{children}</div>
+ return (
+    <div className="min-h-screen flex flex-col lg:flex-row bg-background">
+      {/* MOBILE TOP BAR – always visible on mobile */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-card border-b z-40 flex items-center px-4 gap-3">
+        <button
+          onClick={() => setIsMobileOpen(true)}
+          className="p-2 -ml-2 rounded-lg hover:bg-accent"
+          aria-label="Open menu"
+        >
+          <Menu className="h-6 w-6" />
+        </button>
+        <h1 className="text-lg font-semibold">Agency Dashboard</h1>
+      </header>
+
+      {/* SIDEBAR – controlled by isMobileOpen on mobile */}
+      <Sidebar
+        user={user}
+        menuItems={filteredMenuItems}
+        isCollapsed={isCollapsed}
+        setIsCollapsed={setIsCollapsed}
+        isMobileOpen={isMobileOpen}
+        setIsMobileOpen={setIsMobileOpen}
+      />
+
+      {/* MAIN CONTENT */}
+      <main
+        className={`
+          flex-1 transition-all duration-300
+          pt-14 lg:pt-0
+          ${isCollapsed ? "lg:ml-20" : "lg:ml-80"}
+        `}
+      >
+        <div className="p-5 md:p-6 lg:p-8">
+          {children}
+        </div>
+      </main>
     </div>
-  )
+  );
 }

@@ -1,309 +1,272 @@
 "use client";
 
-import React, { useState,useEffect } from "react";
-import { LogOut } from "lucide-react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth-context";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
-  Home,
-  User,
-  Building2,
-  Briefcase,
-  Users,
-  MessageCircle,
-  Award,
-  Star,
-  MessageSquare,
-  FileSearch,
-  FileText,
-  BarChart3,
-  TrendingUp,
-  Eye,
-  GitCompare,
-  Megaphone,
-  Download,
-  Settings,
-  CreditCard,
-  Bell,
+  LogOut,
   ChevronDown,
   ChevronRight,
+  Settings,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { authFetch } from "@/lib/auth-fetch";
 
 interface MenuItem {
   id: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
-  path?: string;        // <== ADDED
+  path?: string;
   children?: MenuItem[];
 }
 
-// const menuItems: MenuItem[] = [
-//   {
-//     id: "overview",
-//     label: "OVERVIEW",
-//     icon: Home,
-//     children: [
-//       { id: "dashboard", label: "Dashboard", icon: Home, path: "/agency/dashboard" },
-
-//       {id:"editprofile",label:"EditProfile",icon: Briefcase, path: "/agency/dashboard/editprofile"},
-
-//       { id: "portfolio", label: "Portfolio", icon: Briefcase, path: "/agency/dashboard/portfolio" },
-//       { id: "reviews", label: "Reviews", icon: Star, path: "/agency/dashboard/reviews" },
-//       { id: "messages", label: "Messages", icon: MessageSquare, path: "/agency/dashboard/messages" },
-//       { id: "project-inquiries", label: "Project Inquiries", icon: FileSearch, path: "/agency/dashboard/project-inquiries" },
-//       { id: "proposals", label: "Proposals", icon: FileText, path: "/agency/dashboard/proposals" },
-//       { id: "projects", label: "Projects", icon: Briefcase, path: "/agency/dashboard/projects" },
-//     ],
-//   },
-
-//   {
-//     id: "performance",
-//     label: "PERFORMANCE",
-//     icon: BarChart3,
-//     children: [
-//       { id: "performance-analytics", label: "Performance Analytics", icon: TrendingUp, path: "/agency/dashboard/performance/analytics" },
-//       { id: "audience-insights", label: "Audience Insights", icon: Eye, path: "/agency/dashboard/performance/audience-insights" },
-//       { id: "competitor-comparison", label: "Competitor Comparison", icon: GitCompare, path: "/agency/dashboard/performance/competitor-comparison" },
-//     ],
-//   },
-
-//   // {
-//   //   id: "marketing",
-//   //   label: "MARKETING",
-//   //   icon: Megaphone,
-//   //   children: [
-//   //     { id: "lead-generation", label: "Lead Management", icon: Download, path: "/agency/dashboard/marketing/lead-generation" },
-//   //   ],
-//   // },
-
-//   {
-//     id: "account-settings",
-//     label: "ACCOUNT & SETTINGS",
-//     icon: Settings,
-//     children: [
-//       { id: "billing-subscription", label: "Billing & Subscription", icon: CreditCard, path: "/agency/dashboard/account/billing" },
-//       { id: "subscription", label: "Subscription", icon:Briefcase, path: "/agency/dashboard/account/subscriptions" },
-//       { id: "notifications", label: "Notifications", icon: Bell, path: "/agency/dashboard/account/notifications" },
-//     ],
-//   },
-// ];
-
 interface SidebarProps {
   user: any;
-  menuItems: any;
+  menuItems: MenuItem[];
+  isCollapsed: boolean;
+  isMobileOpen: boolean;
+  setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function Sidebar({ user, menuItems }: SidebarProps) {
+export default function Sidebar({
+  user,
+  menuItems,
+  isCollapsed,
+  isMobileOpen,
+  setIsCollapsed,
+  setIsMobileOpen,
+}: SidebarProps) {
   const router = useRouter();
-
-  const { logout } = useAuth()
-
-const handleLogout = async () => {
-  await logout();
-  router.replace("/login");
-};
-
+  const pathname = usePathname();
+  const { logout } = useAuth();
 
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
-  const [activeSection, setActiveSection] = useState<string | null>(null);
-  const [activeSubSection, setActiveSubSection] = useState<string | null>(null);
-  const[userDetails,setUserDetails]=useState({});
-  const[expired,setExpired]=useState(false);
-  const[filteredMenuItem,setFilteredMenuItems]=useState<MenuItem[]>([])
-  
-    // const loadData=async()=>{
-  
-    //   try{
-    //    const res=await authFetch(`/api/users/${user.id}`);
-    //    const data=await res.json();
-    //    if(!res.ok) throw new Error();
 
-    //    if(data.user?.subscriptionStartDate){
-    //     const today = new Date();
-    //       const endDate = new Date(data.user?.subscriptionEndDate);
-
-    //       setExpired(endDate < today);
-    //    }else{
-    //       setExpired((data.user?.proposalCount || 0)>1)
-    //    }
-
-    //    console.log("the fetched user details from the side bar is :::::",data)
-    //   }catch(error){
-    //        console.log("Failed to get the user details::::::",error);
-    //   }
-  
-    // }
-  
-    // useEffect(()=>{
-    //   loadData()
-    // },[])
-
-    // useEffect(()=>{
-    //   if(expired){
-    //     setFilteredMenuItems([menuItems[menuItems.length-1]])
-        
-    //   }else{
-    //     setFilteredMenuItems([...menuItems])
-    //   }
-    // },[expired])
+  const handleLogout = async () => {
+    await logout();
+    router.replace("/login");
+  };
 
   const toggleSection = (id: string) => {
+    if (isCollapsed && !isMobileOpen) {
+      setIsCollapsed(false);
+      return;
+    }
+
     setExpandedSections((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   };
 
-  const handleMenuClick = (item: MenuItem, parentId?: string) => {
-    setActiveSection(item.id);
-    setActiveSubSection(parentId || item.id);
+  const handleMenuClick = (item: MenuItem) => {
+    if (isCollapsed || isMobileOpen) {
+      setIsCollapsed(false);
+    }
 
     if (item.path) {
-      router.push(item.path);   // <===== REDIRECT HERE
+      router.push(item.path);
+      setIsMobileOpen(false);
     }
   };
-  console.log("Filterded menu items are :::",filteredMenuItem)
+
+  /* ✅ Auto expand correct section based on pathname */
+  useEffect(() => {
+    if (!pathname) return;
+
+    menuItems.forEach((section) => {
+      if (section.children) {
+        const isActiveChild = section.children.some(
+          (child) =>
+            child.path &&
+            (pathname === child.path ||
+              pathname.startsWith(child.path))
+        );
+
+        if (isActiveChild) {
+          setExpandedSections((prev) =>
+            prev.includes(section.id) ? prev : [...prev, section.id]
+          );
+        }
+      }
+    });
+  }, [pathname, menuItems]);
 
   return (
-    <div className="fixed left-0 top-0 h-full w-80 bg-card border-r border-border flex flex-col z-10">
-      
-      {/* Header */}
-      <div className="p-6 border-b border-border">
-        <h2 className="text-xl font-bold">Agency Dashboard</h2>
-        <p className="text-sm text-muted-foreground">Welcome back, {user?.name}</p>
+    <>
+      {/* MOBILE OVERLAY */}
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden"
+          onClick={() => setIsMobileOpen(false)}
+          aria-hidden="true"
+        />
+      )}
 
-        <div className="flex items-center gap-2 mt-3">
-          {/* <Badge
-            className={
-              provider.subscriptionTier === "basic"
-                ? "bg-gray-100 text-gray-800"
-                : provider.subscriptionTier === "standard"
-                  ? "bg-blue-100 text-blue-800"
-                  : "bg-purple-100 text-purple-800"
-            }
-          >
-            {provider.subscriptionTier === "basic"
-              ? "Basic"
-              : provider.subscriptionTier === "standard"
-                ? "Standard"
-                : "Premium"}
-            &nbsp;Plan
-          </Badge> */}
+      {/* SIDEBAR */}
+      <aside
+        className={`
+          fixed inset-y-0 left-0 z-40 bg-[#3C3A3E] text-[#FFFFFF] border-r border-border 
+          flex flex-col transition-transform duration-300 ease-in-out
+          lg:transition-all lg:duration-300
+          ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
+          lg:translate-x-0
+          ${isCollapsed ? "lg:w-20" : "lg:w-80"}
+          w-80
+        `}
+      >
+        {/* HEADER */}
+        <div
+          className={`p-5 border-b border-border flex items-center justify-between ${
+            isCollapsed ? "hidden" : "block"
+          }`}
+        >
+          <div className={isCollapsed ? "hidden lg:block" : ""}>
+            <h2 className="text-xl font-bold tracking-tight">
+              Agency Dashboard
+            </h2>
+            <p className="text-sm text-[#8B8585] mt-0.5">
+              Welcome back, {user?.name || "User"}
+            </p>
 
-          {user?.isVerified && <Badge variant="secondary" className="bg-red-500">Verified</Badge>}
-          {user?.isActive && <Badge className="bg-green-500">Active</Badge>}
-        </div>
-      </div>
-
-      {/* Navigation Menu */}
-      <div className="flex-1 overflow-y-auto p-4">
-        <nav className="space-y-2">
-          {menuItems.map((section) => (
-            <div key={section.id}>
-              
-              {/* Section Button */}
-              <button
-                onClick={() => toggleSection(section.id)}
-                className="w-full flex items-center justify-between p-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <section.icon className="h-4 w-4" />
-                  {section.label}
-                </div>
-
-                {section.children &&
-                  (expandedSections.includes(section.id) ? (
-                    <ChevronDown className="h-4 w-4" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4" />
-                  ))}
-              </button>
-
-              {/* Section Children */}
-              {section.children && expandedSections.includes(section.id) && (
-                <div className="ml-4 mt-2 space-y-1">
-                  {section.children.map((item) => (
-                    <div key={item.id}>
-                      
-                      <button
-                        onClick={() => handleMenuClick(item, section.id)}
-                        className={`w-full flex items-center justify-between p-2 text-sm rounded-lg transition-colors ${
-                          activeSection === item.id
-                            ? "bg-primary text-primary-foreground"
-                            : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <item.icon className="h-4 w-4" />
-                          {item.label}
-                        </div>
-
-                        {item.children &&
-                          (expandedSections.includes(item.id) ? (
-                            <ChevronDown className="h-4 w-4" />
-                          ) : (
-                            <ChevronRight className="h-4 w-4" />
-                          ))}
-                      </button>
-
-                      {/* Sub Items */}
-                      {item.children && expandedSections.includes(item.id) && (
-                        <div className="ml-6 mt-1 space-y-1">
-                          {item.children.map((subItem) => (
-                            <button
-                              key={subItem.id}
-                              onClick={() => handleMenuClick(subItem, item.id)}
-                              className={`w-full flex items-center gap-3 p-2 text-sm rounded-lg transition-colors ${
-                                activeSubSection === subItem.id
-                                  ? "bg-primary text-primary-foreground"
-                                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                              }`}
-                            >
-                              <subItem.icon className="h-4 w-4" />
-                              {subItem.label}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+            <div className="flex gap-2 mt-3">
+              {user?.isVerified && (
+                <Badge variant="default">Verified</Badge>
+              )}
+              {user?.isActive && (
+                <Badge className="bg-[#39A935] rounded-full w-[60px] h-[30px]">
+                  Active
+                </Badge>
               )}
             </div>
-          ))}
-        </nav>
-      </div>
+          </div>
 
-      {/* Footer Button */}
-      <div className="p-4 border-border flex gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.push("/agency/dashboard/account/subscriptions")}
-          className="flex-1 bg-blueButton text-white flex gap-0 rounded-2xl justify-start"
-        >
-          <Settings className="h-4 w-4 mr-2" />
-          Upgrade Plan
-        </Button>
+          {/* Desktop Collapse */}
+          <button
+            onClick={() => setIsCollapsed((prev) => !prev)}
+            className="p-2 rounded-lg hover:bg-accent lg:flex hidden"
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            <ChevronRight
+              className={`h-5 w-5 transition-transform ${
+                isCollapsed ? "rotate-180" : ""
+              }`}
+            />
+          </button>
 
-         <Button
-          variant="outline"
-          size="sm"
-          onClick={handleLogout}
-          className="flex-1 flex gap-2 justify-start
-           text-white bg-orange-600
-            hover:bg-orange-600 hover:text-white 
-            rounded-2xl border-none active:bg-orange-500
-            active:text-white
-          "
+          {/* Mobile Close */}
+          <button
+            onClick={() => setIsMobileOpen(false)}
+            className="p-2 rounded-lg hover:bg-accent lg:hidden"
+            aria-label="Close menu"
+          >
+            <ChevronRight className="h-6 w-6 rotate-180" />
+          </button>
+        </div>
+
+        {/* NAVIGATION */}
+        <div
+          className="flex-1 overflow-y-auto px-3 py-4  
+          [scrollbar-width:none]          
+          [-ms-overflow-style:none]       
+          [&::-webkit-scrollbar]:hidden"
         >
-          <LogOut className="h-4 w-4 mr-2" />
-          Logout
-        </Button>
-      </div>
-    </div>
+          <nav className="space-y-1.5">
+            {menuItems.map((section) => (
+              <div key={section.id}>
+                <button
+                  onClick={() => toggleSection(section.id)}
+                  className="text-[#fff] w-full flex items-center justify-between 
+                  px-3 py-2.5 text-sm font-medium rounded-lg cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <section.icon className="h-4 w-4 shrink-0" />
+                    {!(isCollapsed && !isMobileOpen) && section.label}
+                  </div>
+
+                  {section.children &&
+                    !(isCollapsed && !isMobileOpen) &&
+                    (expandedSections.includes(section.id) ? (
+                      <ChevronDown className="h-4 w-4" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4" />
+                    ))}
+                </button>
+
+                {section.children &&
+                  expandedSections.includes(section.id) &&
+                  !(isCollapsed && !isMobileOpen) && (
+                    <div className="ml-7 mt-1 space-y-1">
+                      {section.children.map((item) => {
+                        const isActive =
+  item.path &&
+  (
+    pathname === item.path 
+  );
+
+
+                        return (
+                          <button
+                            key={item.id}
+                            onClick={() => handleMenuClick(item)}
+                            className={`
+                              w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg
+                              transition-colors cursor-pointer
+                              ${
+                                isActive
+                                  ? "text-[#F54A0C] font-medium"
+                                  : "text-[#fff]"
+                              }
+                            `}
+                          >
+                            <item.icon className="h-4 w-4 shrink-0" />
+                            {!(isCollapsed && !isMobileOpen) &&
+                              item.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+              </div>
+            ))}
+          </nav>
+        </div>
+
+        {/* FOOTER */}
+        <div className="p-4 border-t border-border">
+          <div
+            className={`grid gap-2 ${
+              isCollapsed && !isMobileOpen
+                ? "grid-cols-1 place-items-center"
+                : "grid-cols-2"
+            }`}
+          >
+            <Button
+              size="sm"
+              onClick={() =>
+                router.push(
+                  "/agency/dashboard/account/subscriptions"
+                )
+              }
+              className="justify-start bg-[#2C34A1] text-[#fff] hover:bg-[#2C34A1] rounded-full"
+            >
+              <Settings className="h-4 w-4 mr-2" />
+              {!(isCollapsed && !isMobileOpen) && "Upgrade Plan"}
+            </Button>
+
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={handleLogout}
+              className="justify-start rounded-full bg-[#F54A0C]"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              {!(isCollapsed && !isMobileOpen) && "Logout"}
+            </Button>
+          </div>
+        </div>
+      </aside>
+    </>
   );
 }

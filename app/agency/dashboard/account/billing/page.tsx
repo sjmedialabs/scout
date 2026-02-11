@@ -160,7 +160,7 @@ export default function BillingPage() {
       }
 
       try {
-        const response = await fetch(`/api/users/${user?.id}`, {
+        const response = await authFetch(`/api/users/${user?.id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",

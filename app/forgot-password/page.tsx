@@ -17,7 +17,7 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      const res = await authFetch("/api/auth/forgot-password", {
+      const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -36,6 +36,7 @@ export default function ForgotPasswordPage() {
       setSuccess(true);
     } catch (err) {
       setError("Unable to send reset link. Try again.");
+      console.log(err)
     } finally {
       setLoading(false);
     }

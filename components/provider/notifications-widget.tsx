@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Bell, Check, X } from "lucide-react"
 import type { Notification } from "@/lib/types"
+import { useRouter } from "next/navigation"
 
 interface NotificationsWidgetProps {
   notifications: Notification[]
@@ -14,6 +15,7 @@ interface NotificationsWidgetProps {
 }
 
 export function NotificationsWidget({ notifications, onMarkAsRead, onDismiss }: NotificationsWidgetProps) {
+  const router=useRouter();
   const [showAll, setShowAll] = useState(false)
 
   const unreadNotifications = notifications.filter((n) => !n.read)
@@ -50,7 +52,7 @@ export function NotificationsWidget({ notifications, onMarkAsRead, onDismiss }: 
             )}
           </div>
           {notifications.length > 5 && (
-            <Button variant="ghost" size="sm" onClick={() => setShowAll(!showAll)}>
+            <Button variant="ghost" size="sm" className="cursor-pointer hover:bg-gray-200 hover:text-black hover:rounded-full " onClick={() => router.push("/agency/dashboard/account/notifications")}>
               {showAll ? "Show Less" : "Show All"}
             </Button>
           )}
