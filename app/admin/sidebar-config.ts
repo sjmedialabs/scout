@@ -34,7 +34,7 @@ export const adminMenu = [
     children: [
       { id: "subscribers", label: "Subscribers Management", icon: Users },
       { id: "subscription-plans", label: "Subscription Plans", icon: CreditCard },
-      { id: "billing", label: "Billing & Invoices", icon: FileText },
+      // { id: "billing", label: "Billing & Invoices", icon: FileText },
       // { id: "payment-methods", label: "Payment Methods", icon: DollarSign },
     ],
   },
