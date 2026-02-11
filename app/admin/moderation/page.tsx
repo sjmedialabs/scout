@@ -87,7 +87,9 @@ export default function ModerationPage() {
   const [reports] = useState<ReportItem[]>(mockReportedContent);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All types");
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [acceptingId, setAcceptingId] = useState<string | null>(null);
+
 
   const[resLoading,setResLoading]=useState(false);
   const[reqquirements,setRequirements]=useState<Requirement[]>([])
@@ -104,11 +106,11 @@ export default function ModerationPage() {
   );
 
   const clearFilters = () => {
-    setSearch("");
-    setTypeFilter("All types");
-    setStatusFilter("All");
-    setFilteredRequirements(reqquirements)
-  };
+  setSearch("");
+  setTypeFilter("All types");
+  setStatusFilter("all");
+};
+
 
   const loadData=async ()=>{
      setResLoading(true);
@@ -132,21 +134,30 @@ export default function ModerationPage() {
     loadData()
   },[])
 
-  const acceptHandel=async(recivedId:String)=>{
-    try{
-      const res=await authFetch(`/api/requirements/${recivedId}`,{
-        method:"PUT",
-        body:JSON.stringify({status:"Open"})
-      })
-      if(!res.ok)  throw new Error();
-      toast.success("Successfully approved the posted requirement")
-      setRequirements((prev)=>prev.filter((eachItem)=>eachItem._id!==recivedId))
+  const acceptHandel = async (recivedId: string) => {
+  setAcceptingId(recivedId);
 
-    }catch(error){
-        console.log("Failed to accept the requirement:::",error);
-        toast.error("Failed to accept the requirement")
-    }
+  try {
+    const res = await authFetch(`/api/requirements/${recivedId}`, {
+      method: "PUT",
+      body: JSON.stringify({ status: "Open" }),
+    });
+
+    if (!res.ok) throw new Error();
+
+    toast.success("Successfully approved the posted requirement");
+
+    setRequirements((prev) =>
+      prev.filter((eachItem) => eachItem._id !== recivedId)
+    );
+  } catch (error) {
+    console.log("Failed to accept the requirement:::", error);
+    toast.error("Failed to accept the requirement");
+  } finally {
+    setAcceptingId(null);
   }
+};
+
 
   const handleReject=async()=>{
     setSending(true)
@@ -168,16 +179,24 @@ export default function ModerationPage() {
     }
   }
 
-  useEffect(()=>{
-    let tempFiltered=[...reqquirements]
-    if(search.trim()){
-      tempFiltered=tempFiltered.filter((eachItem)=>eachItem.title.toLowerCase().includes(search.toLowerCase()))
-    }
-    if(statusFilter!=="all"){
-      tempFiltered=tempFiltered.filter((eachItem)=>eachItem.status===statusFilter);
-    }
-    setFilteredRequirements(tempFiltered)
-  },[search,statusFilter])
+  useEffect(() => {
+  let tempFiltered = [...reqquirements];
+
+  if (search.trim()) {
+    tempFiltered = tempFiltered.filter((eachItem) =>
+      eachItem.title.toLowerCase().includes(search.toLowerCase())
+    );
+  }
+
+  if (statusFilter !== "all") {
+    tempFiltered = tempFiltered.filter(
+      (eachItem) => eachItem.status === statusFilter
+    );
+  }
+
+  setFilteredRequirements(tempFiltered);
+}, [search, statusFilter, reqquirements]);
+
 
 if (resLoading) {
     return (
@@ -306,20 +325,24 @@ if (resLoading) {
                 <div className="flex-col-2 mt-3  w-full">
             <Button
               className="lg:ml-auto bg-orangeButton text-white rounded-full px-6 mr-3"
-              onClick={()=>acceptHandel(eachItem._id)}
+              onClick={() => acceptHandel(eachItem._id)}
+              disabled={acceptingId === eachItem._id}
             >
-              Accept
+              {acceptingId === eachItem._id ? "Accepting..." : "Accept"}
             </Button>
+
 
             <Button
               className="lg:ml-auto bg-black text-white rounded-full px-6"
-              onClick={()=>{
-                setRejectId(eachItem._id)
-                setShowModel(true)
+              onClick={() => {
+                setRejectId(eachItem._id);
+                setShowModel(true);
               }}
+              disabled={sending}
             >
-              Reject
+              {sending ? "Rejecting..." : "Reject"}
             </Button>
+
             </div>
             )
           }

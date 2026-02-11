@@ -38,9 +38,11 @@ export default function SubscriptionPlansPage() {
     try {
       const res = await authFetch("/api/subscription");
       const freeTrailRes=await authFetch("/api/free-trail-config")
+      
       if (res.ok && freeTrailRes.ok) {
         const data = await res.json();
         const freeTrailData=await freeTrailRes.json();
+
         console.log("Free Trail Plans Data::::",freeTrailData);
         setPlans(data);
         setFreeTrailProposalCount(freeTrailData.proposalLimit);

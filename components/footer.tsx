@@ -45,7 +45,7 @@ export function Footer() {
         setEmail("");
         alert("Successfully subscribed to newsletter!");
       } else {
-        alert("Failed to subscribe. Please try again.");
+        alert("Email Already Existed");
       }
     } catch (error) {
       console.error("Newsletter subscription error:", error);
