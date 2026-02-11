@@ -109,8 +109,10 @@ export function AnalyticsDashboard({ stats, subscriptionStats, topProviders }: A
         <CardContent>
           <div className="space-y-1">
             {topProviders.map((provider, index) => (
-              <div key={provider.id} className="flex items-center justify-between p-4 border rounded-2xl shadow-md">
-                <div className="flex items-center gap-4">
+              <div 
+              key={provider.id} 
+              className="grid grid-cols-[1.5fr_1fr_1fr] items-center justify-between p-4 border rounded-2xl shadow-md">
+                <div className="flex items-center gap-4 w-50">
                   <div className="w-6 h-6 text-xs bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold">
                     {index + 1}
                   </div>
@@ -119,7 +121,7 @@ export function AnalyticsDashboard({ stats, subscriptionStats, topProviders }: A
                     <div className="text-sm text-gray-500">{provider.location}</div>
                   </div>
                 </div>
-                                  <div className="text-right">
+                  <div >
                     <div className="flex items-center gap-1">
                       {[...Array(5)].map((_, i) => (
                         <Star
@@ -141,8 +143,8 @@ export function AnalyticsDashboard({ stats, subscriptionStats, topProviders }: A
                       {provider.services.length} services
                     </div>
                   </div>
-                <div className="flex items-center gap-4">
-                  <div className="flex gap-2">
+                <div className="flex">
+                  <div className="flex gap-2 items-start">
                     {provider.isVerified && <Badge className="rounded-lg bg-[#1C96F4]">Verified</Badge>}
                     {provider.isFeatured && <Badge className="bg-[#39A935] rounded-lg">Featured</Badge>}
                     {provider?.subscriptionPlanId?<Badge className="bg-[#EA7E1F] rounded-lg">{getSubscriptionName(provider?.subscriptionPlanId)}</Badge>:<Badge className="bg-[#EA7E1F] rounded-lg">Free Trail</Badge>}
