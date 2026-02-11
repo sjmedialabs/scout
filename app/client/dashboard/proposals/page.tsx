@@ -303,7 +303,7 @@ const ProposalPage = () => {
       msg:""
     })
 
-  const LoadData = async (userId: string) => {
+  const LoadData = async () => {
     setResponseLoading(true);
     setFailed(false);
 
@@ -345,23 +345,27 @@ const ProposalPage = () => {
   }, [user, loading, router]);
 
   const handleShortlist = async (proposalId: string) => {
-    setProposals((prev) =>
-      prev.map((p) =>
-        p.id === proposalId ? { ...p, status: "shortlisted" as const } : p,
-      ),
-    );
-    console.log("recievd id::::", proposalId);
+    console.log("Recived Id for the proposal shortlist::::",proposalId)
+    // setProposals((prev) =>
+    //   prev.map((p) =>
+    //     p.id === proposalId ? { ...p, status: "shortlisted" as const } : p,
+    //   ),
+    // );
+    // console.log("recievd id::::", proposalId);
     try {
       const response = await authFetch(`/api/proposals/${proposalId}`, {
         method: "PUT",
         body: JSON.stringify({ status: "shortlisted" }),
         credentials: "include" 
       });
-      console.log(
-        "Shortlist action response::::",
-        await response.json,
-        proposalId,
-      );
+      if(response.ok){
+        await LoadData();
+      }
+      // console.log(
+      //   "Shortlist action response::::",
+      //   await response.json,
+      //   proposalId,
+      // );
     } catch (error) {
       console.log("failed to update the  status", error);
       alert("Staus failed to shortlist the proposal");
@@ -376,11 +380,11 @@ const ProposalPage = () => {
         body: JSON.stringify({ status: "accepted" }),
         credentials: "include" 
       });
-      console.log(
-        "Shortlist action response::::",
-        await response.json,
-        proposalId,
-      );
+      // console.log(
+      //   "Shortlist action response::::",
+      //   await response.json,
+      //   proposalId,
+      // );
       if(!response.ok) throw new Error()
       
       //create a conversation between the agency and client and send the message
@@ -411,11 +415,12 @@ const ProposalPage = () => {
 
               })})
 
-      setProposals((prev) =>
-        prev.map((p) =>
-          p.id === proposalId ? { ...p, status: "accepted" as const } : p,
-        ),
-      );
+      // setProposals((prev) =>
+      //   prev.map((p) =>
+      //     p.id === proposalId ? { ...p, status: "accepted" as const } : p,
+      //   ),
+      // );
+      await LoadData();
     } catch (error) {
       console.log("failed to update the  status", error);
       alert("Staus failed to shortlist the proposal");
@@ -429,16 +434,17 @@ const ProposalPage = () => {
         body: JSON.stringify({ status: "rejected" }),
         credentials: "include" 
       });
-      console.log(
-        "Shortlist action response::::",
-        await response.json,
-        proposalId,
-      );
-      setProposals((prev) =>
-        prev.map((p) =>
-          p.id === proposalId ? { ...p, status: "rejected" as const } : p,
-        ),
-      );
+      // console.log(
+      //   "Shortlist action response::::",
+      //   await response.json,
+      //   proposalId,
+      // );
+      // setProposals((prev) =>
+      //   prev.map((p) =>
+      //     p.id === proposalId ? { ...p, status: "rejected" as const } : p,
+      //   ),
+      // );
+      await LoadData()
     } catch (error) {
       console.log("failed to update the  status", error);
       alert("Staus failed to shortlist the proposal");
@@ -546,6 +552,7 @@ const ProposalPage = () => {
         if(messRes.ok){
           setNegotationMessage("");
           setShowNegotationModal(false);
+          await LoadData();
 
         }
       }catch(error){
@@ -663,9 +670,9 @@ const ProposalPage = () => {
                           <div className="max-h-[300px] max-w-full  lg:max-h-[100%] lg:max-w-[300px] rounded-[18px] overflow-hidden shrink-0">
                             <img
                               src={
-                                proposal.agency.coverImage || "/proposal.jpg"
+                                proposal?.agency?.coverImage || "/proposal.jpg"
                               }
-                              alt={proposal.agency.name}
+                              alt={proposal.agency?.name}
                               className="h-full w-full object-cover"
                             />
                           </div>
@@ -688,19 +695,19 @@ const ProposalPage = () => {
                                     handleViewProfile(proposal.providerId)
                                   }
                                 >
-                                  {proposal.agency.name}
+                                  {proposal.agency?.name}
                                 </h3>
                                 <p className="text-sm ml-1 -mt-1 text-[#939191] font-normal">
-                                  {proposal.agency.name}
+                                  {proposal.agency?.name}
                                 </p>
                                 {/* Rating */}
                                 <div className="flex items-center mt-0 gap-1 text-sm font-medium">
                                   <RatingStars
-                                    rating={proposal.agency.rating}
-                                    reviews={proposal.agency.reviewCount}
+                                    rating={proposal.agency?.rating}
+                                    reviews={proposal.agency?.reviewCount}
                                   />
                                   <span className="text-sm font-bold text-[#000] mt-1">
-                                    {`${proposal.agency.rating || 0} (${proposal.agency.reviewCount || 0})`}{" "}
+                                    {`${proposal.agency?.rating || 0} (${proposal.agency?.reviewCount || 0})`}{" "}
                                   </span>
                                 </div>
                               </div>

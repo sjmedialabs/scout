@@ -578,7 +578,7 @@ useEffect(() => {
                   <div className="relative">
                     <img
                       src={
-                        c.participant.image ||
+                        c.participant?.image ||
                         "https://i.pravatar.cc/100?img=12"
                       }
                       className="h-10 w-10 rounded-full"
@@ -592,7 +592,7 @@ useEffect(() => {
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center">
                       <p className="text-sm font-semibold truncate">
-                        {c.participant.name}
+                        {c.participant?.name}
                       </p>
                       {c?.lastMessageAt && (
                         <span className="text-xs text-gray-400">

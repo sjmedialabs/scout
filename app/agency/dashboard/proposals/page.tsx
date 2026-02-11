@@ -55,6 +55,7 @@ const ProposalsPage = () => {
   const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(
     null,
   );
+  console.log("prioposals::::::::::::",proposals)
   const [errors, setErrors] = useState<{
     cost: boolean;
     timeline: boolean;

@@ -61,7 +61,7 @@ const menuItems: MenuItem[] = [
     icon: BarChart3,
     children: [
       { id: "analytics", label: "Project Analytics", icon: TrendingUp, path: "/client/dashboard/analytics" },
-      { id: "spending", label: "Spending Insights", icon: Eye, path: "/client/dashboard/spending" },
+      // { id: "spending", label: "Spending Insights", icon: Eye, path: "/client/dashboard/spending" },
       { id: "provider-comparison", label: "Provider Comparison", icon: GitCompare, path: "/client/dashboard/provider-comparison" },
       { id: "wishlist", label: "Wish List", icon: Eye, path: "/client/dashboard/wishlist" },
     ],
@@ -71,9 +71,9 @@ const menuItems: MenuItem[] = [
     label: "ACCOUNT & SETTINGS",
     icon: Settings,
     children: [
-      { id: "billing", label: "Billing & Payments", icon: CreditCard, path: "/client/dashboard/billing" },
+      // { id: "billing", label: "Billing & Payments", icon: CreditCard, path: "/client/dashboard/billing" },
       { id: "notifications", label: "Notifications", icon: Bell, path: "/client/dashboard/notifications" },
-      { id: "account-settings", label: "Account Settings", icon: Settings, path: "/client/dashboard/account-settings" },
+      // { id: "account-settings", label: "Account Settings", icon: Settings, path: "/client/dashboard/account-settings" },
     ],
   },
 ]

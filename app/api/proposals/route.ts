@@ -108,6 +108,10 @@ export async function GET(request: NextRequest) {
       status: p.status,
       createdAt: p.createdAt,
       updatedAt: p.updatedAt,
+      clientViewed:p.clientViewed,
+      clientResponded:p.clientResponded,
+      clientId:p.clientId,
+      agencyId:p.agencyId
     }));
 
     return NextResponse.json({
@@ -226,6 +230,7 @@ export async function POST(request: NextRequest) {
       type: "proposal_submitted",
       userRole: "client",
       sourceId: proposal._id,
+      linkUr:"/client/dashboard/proposals"
     });
 
     return NextResponse.json({ success: true, proposal });
