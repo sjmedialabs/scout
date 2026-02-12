@@ -431,11 +431,23 @@ const ProjectsPage = () => {
                             checked={m.completed}
                             onCheckedChange={(checked) => {
                               const updated = [...milestonesDraft];
+
+                              // If user is trying to CHECK the milestone
+                              if (checked) {
+                                // If not first milestone
+                                if (index > 0 && !updated[index - 1].completed) {
+                                  alert("Please complete the previous milestone first.");
+                                  return; // ❌ Prevent checking
+                                }
+                              }
+
+                              // Allow unchecking anytime (optional behavior)
                               updated[index].completed = Boolean(checked);
                               setMilestonesDraft(updated);
                             }}
-                            className="border-1 border-[#000]"
+                            className="border-1 border-[#000] cursor-pointer"
                           />
+
                           <span
                             className={`text-sm  ${
                               m.completed ? "line-through text-gray-400" : ""
@@ -566,7 +578,7 @@ const ProjectsPage = () => {
 
                     {/* ACTIONS */}
                     <div className="flex flex-wrap gap-3">
-                      <Button className="rounded-full bg-[#2C34A1]">
+                      <Button className="rounded-full bg-[#2C34A1]" onClick={()=>handleMessageClient(project)}>
                         <MessageSquare className="h-4 w-4 mr-2" />
                         Message Client
                       </Button>

@@ -467,14 +467,18 @@ const textareaClass =
                                 </div>
 
                                 <div className="space-y-2">
-                                  <div>
+                                  {
+                                    proposal?.coverLetter &&(
+                                      <div>
                                     <h4 className="font-bold text-xl text-[#616161] mb-0">
                                       Cover Letter
                                     </h4>
                                     <p className="text-[#939191] font-normal text-sm">
-                                      {proposal.coverLetter}
+                                      {proposal?.coverLetter}
                                     </p>
                                   </div>
+                                    )
+                                  }
 
                                   <div className="mb-4">
                                     <h4 className="font-bold text-xl text-[#616161] mb-0">
@@ -674,14 +678,18 @@ const textareaClass =
                               </div>
 
                               {/* COVER LETTER */}
-                              <div className="space-y-3">
+                             {
+                              acceptedProposal?.coverLetter &&(
+                                 <div className="space-y-3">
                                 <label className="text-[14px] font-bold text-[#98A0B4]">
                                   Cover Letter
                                 </label>
                                 <div className={`${textareaClass} min-h-[140px]`}>
-                                  {acceptedProposal.coverLetter}
+                                  {acceptedProposal?.coverLetter}
                                 </div>
                               </div>
+                              )
+                             }
 
                               {/* MILESTONES */}
                               <div className="space-y-4">

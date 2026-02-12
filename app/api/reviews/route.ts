@@ -161,13 +161,12 @@ export async function POST(request: NextRequest) {
       scheduleRating,
       costRating,
       willingToReferRating,
-      title,
       content,
       pros,
       cons,
     } = body;
 
-    if (!providerId || !projectId || !rating || !title || !content) {
+    if (!providerId || !projectId || !rating  || !content) {
       return NextResponse.json(
         {
           error:
@@ -220,7 +219,6 @@ export async function POST(request: NextRequest) {
       scheduleRating: scheduleRating || rating,
       costRating: costRating || rating,
       willingToReferRating: willingToReferRating || rating,
-      title,
       content,
       pros: pros || [],
       cons: cons || [],

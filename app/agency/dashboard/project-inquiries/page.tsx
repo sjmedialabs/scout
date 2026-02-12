@@ -63,22 +63,29 @@ import type {
 } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { BrowseRequirements } from "@/components/provider/browse-requirements";
-
+import { useAuth } from "@/contexts/auth-context"
+import { useRouter, usePathname } from "next/navigation"
 const ProjectInquiriesPage = () => {
+   const { user, loading } = useAuth()
+  const router = useRouter()
   const [selectedRequirement, setSelectedRequirement] =
     useState<Requirement | null>(null);
   const [requirements, setRequirements] = useState<Requirement[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [resLoading, setResLoading] = useState(false);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     loadData();
   }, []);
   const loadData = async () => {
-    setLoading(true);
+    setResLoading(true);
     setFailed(false);
     try {
       const res = await authFetch("/api/requirements");
+      const UserRes = await authFetch(`/api/users/${user.id}`)
+      const freeTrailRes=await authFetch("/api/free-trail-config")
+      const userData=await UserRes.json();
+      const freeTrailData=await freeTrailRes.json();
       if (res.ok) {
         const data = await res.json();
 
@@ -89,11 +96,19 @@ const ProjectInquiriesPage = () => {
         );
         setFailed(false);
       }
+        const isExpired = userData.user?.subscriptionStartDate
+          ? new Date(userData.user.subscriptionEndDate) < new Date()
+          : (userData.user?.proposalCount || 0) >= freeTrailData.proposalLimit
+
+        if(isExpired){
+          window.location.href = "/agency/dashboard/project-inquiries"
+
+        }
     } catch (error) {
       console.log("Failed to fetch the data:::", error);
       setFailed(true);
     } finally {
-      setLoading(false);
+      setResLoading(false);
     }
   };
 
@@ -132,7 +147,7 @@ const ProjectInquiriesPage = () => {
     setSelectedRequirement(null);
   };
   console.log("Fetched Requirements::::", requirements);
-  if (loading) {
+  if (resLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -151,7 +166,7 @@ const ProjectInquiriesPage = () => {
       </div>
       {/* REMOVED SubscriptionGate */}
 
-      {!loading && !failed && requirements.length !== 0 && (
+      {!resLoading && !failed && requirements.length !== 0 && (
         <BrowseRequirements
           requirements={requirements}
           subscriptionTier={provider.subscriptionTier}
@@ -159,10 +174,11 @@ const ProjectInquiriesPage = () => {
           onSubmitProposal={handleProposalSubmit}
         />
       )}
-      {!loading && !failed && requirements.length === 0 && (
+      {!resLoading && !failed && requirements.length === 0 && (
         <p className="text-center mt-5 text-2xl">No Requirements yet</p>
       )}
     </div>
   );
 };
 export default ProjectInquiriesPage;
+ 

@@ -164,16 +164,17 @@ const ProjectsPage = () => {
 
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewForm, setReviewForm] = useState({
-    title: "",
-    content: "",
-    rating: 0,
-    qualityRating: 0,
-    costRating: 0,
-    scheduleRating: 0,
-    willingToReferRating: 0,
-    projectStartDate: "",
-    projectEndDate: "",
-  });
+  title: "",
+  content: "",
+  rating: "",
+  qualityRating: "",
+  costRating: "",
+  scheduleRating: "",
+  willingToReferRating: "",
+  projectStartDate: "",
+  projectEndDate: "",
+});
+
   const [reviewSubmissionProjectId, setReviewSubmissionProjectId] = useState<
     string | null
   >(null);
@@ -346,21 +347,21 @@ const ProjectsPage = () => {
       toast.error("Invalid Project for review submission");
     }
     if (
-      !reviewForm.title.trim() ||
-      !reviewForm.content.trim() ||
-      reviewForm.rating <= 0 ||
-      reviewForm.costRating <= 0 ||
-      reviewForm.qualityRating <= 0 ||
-      reviewForm.scheduleRating <= 0 ||
-      reviewForm.willingToReferRating <= 0 ||
-      !reviewForm.projectStartDate ||
-      !reviewForm.projectEndDate
-    ) {
-      toast.error("All Fields are required for review submission");
-    }
+  !reviewForm.content.trim() ||
+  Number(reviewForm.rating) <= 0 ||
+  Number(reviewForm.costRating) <= 0 ||
+  Number(reviewForm.qualityRating) <= 0 ||
+  Number(reviewForm.scheduleRating) <= 0 ||
+  Number(reviewForm.willingToReferRating) <= 0 ||
+  !reviewForm.projectStartDate ||
+  !reviewForm.projectEndDate
+) {
+  toast.error("All fields are required for review submission");
+  return;
+}
+
     //Build correct payload for API
     const payload = {
-      title: reviewForm.title.trim(),
       content: reviewForm.content.trim(),
       rating: reviewForm.rating,
       costRating: reviewForm.costRating,
@@ -387,14 +388,15 @@ const ProjectsPage = () => {
         setReviewForm({
           title: "",
           content: "",
-          rating: 0,
-          qualityRating: 0,
-          costRating: 0,
-          scheduleRating: 0,
-          willingToReferRating: 0,
+          rating: "",
+          qualityRating: "",
+          costRating: "",
+          scheduleRating: "",
+          willingToReferRating: "",
           projectStartDate: "",
           projectEndDate: "",
         });
+
         window.location.reload();
       } else {
         toast.error("Failed to submit the review");
@@ -779,7 +781,8 @@ const ProjectsPage = () => {
                     <ServiceDropdown
                     value={formData.category}
                       onChange={(value)=> setFormData((prev) => ({ ...prev, category: value }))}
-                      triggerClassName="border-2 border-[#D0D5DD] rounded-[8px] data-[placeholder]:text-[#98A0B4] text-[#000] p-4"
+                      triggerClassName="border-2 border-[#D0D5DD] rounded-[8px] data-[placeholder]:text-[#98A0B4] text-[#000]"
+                       triggerSpanClassName = "p-5"
                     />
                </div>
 
@@ -926,7 +929,7 @@ const ProjectsPage = () => {
               className="flex-1 overflow-y-auto px-6 py-4 space-y-6"
             >
               {/* Title */}
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label className="text-[#000] text-[14px] font-bold">
                   Title
                 </Label>
@@ -942,7 +945,7 @@ const ProjectsPage = () => {
                   placeholder="e.g., E-commerce Website Development"
                   required
                 />
-              </div>
+              </div> */}
 
               {/* Summary */}
               <div className="space-y-2">
@@ -983,20 +986,33 @@ const ProjectsPage = () => {
                     min={0.1}
                     max={5}
                     step={0.1}
-                    value={reviewForm[item.key]}
-                    className="border-2 border-[#D0D5DD] rounded-[8px]"
-                    onChange={(e) => {
-                    let value = parseFloat(e.target.value)
+                    value={reviewForm[item.key] ?? ""}
+                    className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-gray-400"
+                     onChange={(e) => {
+                          const value = e.target.value;
 
-                    if (isNaN(value)) value = 0
-                    if (value > 5) value = 5
-                    if (value < 0.1) value = 0.1
+                          // Allow empty input
+                          if (value === "") {
+                            setReviewForm((prev) => ({
+                              ...prev,
+                              [item.key]: "",
+                            }));
+                            return;
+                          }
 
-                    setReviewForm((prev) => ({
-                      ...prev,
-                      [item.key]: value,
-                    }))
-                  }}
+                          let numberValue = parseFloat(value);
+
+                          if (isNaN(numberValue)) return;
+                          if (numberValue > 5) numberValue = 5;
+                          if (numberValue < 0.1) numberValue = 0.1;
+
+                          setReviewForm((prev) => ({
+                            ...prev,
+                            [item.key]: numberValue,
+                          }));
+                        }}
+                      placeholder="Enter your rating"
+
                     required
                   />
                 </div>

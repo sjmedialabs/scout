@@ -78,6 +78,7 @@ export function PostRequirementForm({ onSubmit,sendingStatus}: PostRequirementFo
     // console.log("Requirement submitted:", formData)
   }
 
+  console.log("Form Data :::::;",formData)
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {

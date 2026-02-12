@@ -25,6 +25,7 @@ import type { Provider, PortfolioItem, TestimonialItem } from "@/lib/types";
 import { categories } from "@/lib/mock-data";
 import { ImageUpload } from "../ui/image-upload";
 import { authFetch } from "@/lib/auth-fetch";
+import ServiceDropdown from "../select-category-filter";
 
 interface CompanyProfileEditorProps {
   provider: Provider;
@@ -662,7 +663,7 @@ export function CompanyProfileEditor({
               id="schedulingLink"
               value={formData.schedulingLink}
               onChange={(e) => {
-                setFormData((prev) => ({
+                setFormData((prev) => ({ 
                   ...prev,
                   schedulingLink: e.target.value,
                 }));
@@ -1479,7 +1480,7 @@ export function CompanyProfileEditor({
                   <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
                     Category
                   </Label>
-                  <Select
+                  {/* <Select
                     value={portfolioForm.category ?? undefined}
                     onValueChange={(value) =>
                       setPortfolioForm((prev) => ({ ...prev, category: value }))
@@ -1498,7 +1499,14 @@ export function CompanyProfileEditor({
                         </SelectItem>
                       ))}
                     </SelectContent>
-                  </Select>
+                  </Select> */}
+                  <ServiceDropdown
+                        value={portfolioForm.category ?? undefined}
+                          onChange={(value) =>
+                      setPortfolioForm((prev) => ({ ...prev, category: value }))
+                    }
+                          triggerClassName="border-[#D0D5DD] rounded-[6px] font-inter"
+                        />
                 </div>
               </div>
 

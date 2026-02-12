@@ -44,7 +44,7 @@ export default function ServiceDropdown({
           className={`
             mt-1 border-0 border-b-2 border-b-[#b2b2b2]
             rounded-none shadow-none focus:outline-none cursor-pointer
-            px-0 w-full text-sm md:text-base h-12
+             w-full text-sm md:text-base h-12  px-3
             ${triggerClassName}
           `}
         >

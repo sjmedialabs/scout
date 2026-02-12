@@ -47,7 +47,7 @@ const ProposalSchema = new Schema<IProposal>(
     agencyId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     requirementId: { type: Schema.Types.ObjectId, ref: "Requirement", required: true },
    
-    coverLetter: { type: String, required: true },
+    coverLetter: { type: String, },
     proposedBudget: { type: Number, required: true },
     proposedTimeline: { type: String, required: true },
     milestones: [MilestoneSchema],

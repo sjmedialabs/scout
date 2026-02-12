@@ -41,6 +41,8 @@ export function Navigation() {
 
   const [serviceCategories, setServiceCategories] = useState<any[]>([]);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [mobileOpenMenu, setMobileOpenMenu] = useState<string | null>(null);
+
 
   const isActive = (slug: string) => {
     return (
@@ -338,14 +340,14 @@ const overflowCategories = mainCategories.slice(4);
               <div className="hidden lg:flex gap-4 lg:gap-16 xl:gap-16 2xl:gap-16">
   <Link
     href="/pricing"
-    className="text-md text-gray-500 hover:text-slate-900"
+    className="text-md text-gray-500 hover:text-slate-900 mt-1"
   >
     Pricing & Packages
   </Link>
 
   <Link
     href="/about"
-    className="text-md text-gray-500 hover:text-slate-900"
+    className="text-md text-gray-500 hover:text-slate-900 mt-1"
   >
     About us
   </Link>
@@ -466,78 +468,97 @@ const overflowCategories = mainCategories.slice(4);
             </div>
           </div>
 
-          {mobileMenuOpen && (
-            <div className="lg:hidden border-t border-border py-4">
-              <div className="flex flex-col space-y-4">
-                <Link
-                  href="/services/development"
-                  className="text-slate-600 hover:text-slate-900 text-sm"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Development
-                </Link>
-                <Link
-                  href="/services/it"
-                  className="text-slate-600 hover:text-slate-900 text-sm"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  IT Services
-                </Link>
-                <Link
-                  href="/services/marketing"
-                  className="text-slate-600 hover:text-slate-900 text-sm"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Marketing
-                </Link>
-                <Link
-                  href="/services/design"
-                  className="text-slate-600 hover:text-slate-900 text-sm"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Design
-                </Link>
-                <Link
-                  href="/services/business"
-                  className="text-slate-600 hover:text-slate-900 text-sm"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Business Services
-                </Link>
-                <Link
-                  href="/pricing"
-                  className="text-slate-600 hover:text-slate-900 text-sm"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Pricing & Packages
-                </Link>
-                <Link
-                  href="/about"
-                  className="text-slate-600 hover:text-slate-900 text-sm"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Resources
-                </Link>
-                <div className="pt-4 border-t border-border">
-                  <Button
-                    className="w-full bg-orangeButton hover:bg-[#f54607] rounded-full text-white"
-                    asChild
-                  >
-                    <Link
-                      href={
-                        user
-                          ? "/client/dashboard?section=projects"
-                          : "/register"
-                      }
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Post a Project
-                    </Link>
-                  </Button>
-                </div>
+      {mobileMenuOpen && (
+  <div className="lg:hidden border-t border-border py-4">
+    <div className="flex flex-col space-y-3">
+
+      {/* Dynamic Service Categories */}
+      {mainCategories.map((category) => (
+        <div key={category.slug} className="flex flex-col">
+          <button
+            className="text-left text-slate-600 hover:text-slate-900 text-sm font-medium"
+            onClick={() =>
+              setMobileOpenMenu(
+                mobileOpenMenu === category.slug ? null : category.slug
+              )
+            }
+          >
+            {category.title}
+          </button>
+
+          {/* Mobile Dropdown Content */}
+          {mobileOpenMenu === category.slug &&
+            category.children?.length > 0 && (
+              <div className="pl-4 mt-2 space-y-3 grid grid-cols-2 overflow-y-auto max-h-[200px]">
+                {category.children.map((parent: any) => (
+                  <div key={parent.title}>
+                    <p className="text-xs font-semibold text-slate-900 mb-1">
+                      {parent.title}
+                    </p>
+
+                    <ul className="space-y-1">
+                      {parent.items?.map((child: any) => (
+                        <li key={child.slug}>
+                          <Link
+                            href={`/services/${child.slug}`}
+                            className="text-xs text-gray-500 hover:text-slate-900"
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              setMobileOpenMenu(null);
+                            }}
+                          >
+                            {child.title}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
               </div>
-            </div>
-          )}
+            )}
+        </div>
+      ))}
+
+      {/* Static Links */}
+      <Link
+        href="/pricing"
+        className="text-slate-600 hover:text-slate-900 text-sm"
+        onClick={() => setMobileMenuOpen(false)}
+      >
+        Pricing & Packages
+      </Link>
+
+      <Link
+        href="/about"
+        className="text-slate-600 hover:text-slate-900 text-sm"
+        onClick={() => setMobileMenuOpen(false)}
+      >
+        About us
+      </Link>
+
+      {/* Post a Project Button */}
+      <div className="pt-4 border-t border-border">
+        <Button
+          className="w-full bg-orangeButton hover:bg-[#f54607] rounded-full text-white"
+          asChild
+        >
+          <Link
+            href={
+              user
+                ? "/client/dashboard?section=projects"
+                : "/register"
+            }
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Post a Project
+          </Link>
+        </Button>
+      </div>
+    </div>
+  </div>
+)}
+
+
         </div>
       </nav>
     </div>

@@ -659,47 +659,53 @@ const ProposalPage = () => {
                     </div>
                   </div>
 
-                  {proposals.map((proposal) => (
+                 {proposals.map((proposal) => (
                     <Card
                       key={proposal.id}
                       className="py-0 px-0 rounded-[22px] mb-3"
                     >
                       <CardContent className="px-5 py-6">
-                        <div className="flex flex-col lg:flex-row lg:justify-start gap-4">
+                        <div className="flex flex-col lg:flex-row gap-4">
+                          
                           {/* Left Image */}
-                          <div className="max-h-[300px] max-w-full  lg:max-h-[100%] lg:max-w-[300px] rounded-[18px] overflow-hidden shrink-0">
+                          <div className="max-h-[300px] max-w-full lg:max-w-[300px] rounded-[18px] overflow-hidden shrink-0">
                             <img
-                              src={
-                                proposal?.agency?.coverImage || "/proposal.jpg"
-                              }
+                              src={proposal?.agency?.coverImage || "/proposal.jpg"}
                               alt={proposal.agency?.name}
                               className="h-full w-full object-cover"
                             />
                           </div>
-                          {/*Right side content */}
-                          <div>
-                            <div className="flex  justify-between items-center mb-2">
-                              <div>
+
+                          {/* Right Side Content */}
+                          <div className="flex-1">
+
+                            {/* Top Section (Title + Cost) */}
+                            <div className="flex justify-between items-start mb-2 w-full">
+                              
+                              {/* LEFT CONTENT */}
+                              <div className="flex-1 pr-6">
                                 <div className="flex items-center gap-2 mb-2">
                                   <Badge
                                     variant="outline"
                                     className="text-xs border-[#DEDEDE] bg-[#EDEDED] rounded-full h-[30px] px-3"
                                   >
-                                    {proposal?.requirement?.title ||
-                                      "Unknown Project"}
+                                    {proposal?.requirement?.title || "Unknown Project"}
                                   </Badge>
                                 </div>
+
                                 <h3
-                                  className="text-2xl font-bold text-[#000] mb-0"
+                                  className="text-2xl font-bold text-[#000] mb-0 cursor-pointer"
                                   onClick={() =>
                                     handleViewProfile(proposal.providerId)
                                   }
                                 >
                                   {proposal.agency?.name}
                                 </h3>
+
                                 <p className="text-sm ml-1 -mt-1 text-[#939191] font-normal">
                                   {proposal.agency?.name}
                                 </p>
+
                                 {/* Rating */}
                                 <div className="flex items-center mt-0 gap-1 text-sm font-medium">
                                   <RatingStars
@@ -707,29 +713,36 @@ const ProposalPage = () => {
                                     reviews={proposal.agency?.reviewCount}
                                   />
                                   <span className="text-sm font-bold text-[#000] mt-1">
-                                    {`${proposal.agency?.rating || 0} (${proposal.agency?.reviewCount || 0})`}{" "}
+                                    {`${proposal.agency?.rating || 0} (${proposal.agency?.reviewCount || 0})`}
                                   </span>
                                 </div>
                               </div>
-                              <div className="text-right mb-0">
-                                <div className="text-2xl font-bold text-[#39A935] items-end">
+
+                              {/* RIGHT COST SECTION */}
+                              <div className="text-right shrink-0">
+                                <div className="text-2xl font-bold text-[#39A935]">
                                   ${proposal.proposedBudget.toLocaleString()}
                                 </div>
                                 <div className="text-sm text-[#A0A0A0] -mt-1">
                                   {proposal.proposedTimeline}
                                 </div>
                               </div>
+
                             </div>
 
+                            {/* Description Section */}
                             <div className="space-y-2">
-                              <div>
-                                <h4 className="font-bold text-xl text-[#616161] mb-0">
-                                  Cover Letter
-                                </h4>
-                                <p className="text-[#939191] font-normal text-sm">
-                                  {proposal.coverLetter}
-                                </p>
-                              </div>
+
+                              {proposal?.coverLetter && (
+                                <div>
+                                  <h4 className="font-bold text-xl text-[#616161] mb-0">
+                                    Cover Letter
+                                  </h4>
+                                  <p className="text-[#939191] font-normal text-sm">
+                                    {proposal?.coverLetter}
+                                  </p>
+                                </div>
+                              )}
 
                               <div>
                                 <h4 className="font-bold text-xl text-[#616161] mb-0">
@@ -739,22 +752,25 @@ const ProposalPage = () => {
                                   {proposal.proposalDescription}
                                 </p>
                               </div>
-                              <div className="flex  items-center mt-2 mb-3 gap-2">
+
+                              {/* Status Section */}
+                              <div className="flex items-center mt-2 mb-3 gap-2">
                                 <span className="text-sm text-[#000000] font-noormal">
                                   Submitted on :{" "}
                                   {new Date(
-                                    proposal.updatedAt,
+                                    proposal.updatedAt
                                   ).toLocaleDateString()}
                                 </span>
+
                                 <Badge
                                   variant={
                                     proposal.status === "accepted"
                                       ? "default"
                                       : proposal.status === "shortlisted"
-                                        ? "secondary"
-                                        : proposal.status === "rejected"
-                                          ? "destructive"
-                                          : "outline"
+                                      ? "secondary"
+                                      : proposal.status === "rejected"
+                                      ? "destructive"
+                                      : "outline"
                                   }
                                   className="border-[#DEDEDE] bg-[#EDEDED] rounded-full text-xs text-[#000]"
                                 >
@@ -763,8 +779,10 @@ const ProposalPage = () => {
                                 </Badge>
                               </div>
 
-                              <div className="flex items-center  justify-between pt-4  border-[#DDDDDD] border-t-2">
+                              {/* Buttons */}
+                              <div className="flex items-center justify-between pt-4 border-[#DDDDDD] border-t-2">
                                 <div className="flex flex-wrap gap-2">
+
                                   <Button
                                     variant="outline"
                                     size="sm"
@@ -780,19 +798,19 @@ const ProposalPage = () => {
                                     variant="outline"
                                     size="sm"
                                     onClick={() =>
-                                      router.push(
-                                        `proposals/${proposal.id}`,
-                                      )
+                                      router.push(`proposals/${proposal.id}`)
                                     }
                                     className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
                                   >
                                     View Proposal Details
                                   </Button>
-                                  
-                                    {/*Shprtlist */}
-                                      {
-                                        (proposal.status!=="shortlisted"  && proposal.status!=="accepted" && proposal.status!=="rejected" && proposal.status!=="completed") && (
-                                          <Button
+
+                                  {/* Shortlist */}
+                                  {proposal.status !== "shortlisted" &&
+                                    proposal.status !== "accepted" &&
+                                    proposal.status !== "rejected" &&
+                                    proposal.status !== "completed" && (
+                                      <Button
                                         variant="outline"
                                         size="sm"
                                         onClick={() =>
@@ -802,70 +820,67 @@ const ProposalPage = () => {
                                       >
                                         Shortlist
                                       </Button>
-                                        )
-                                      }
-                                      {/*negotation */}
-                                        {proposal.status !== "accepted" &&
-                                        proposal.status !== "rejected" && 
-                                        proposal.status!=="shortlisted" &&
-                                        proposal.status!=="negotation" &&
-                                        proposal.status !== "completed" &&(
-                                          <Button
-                                            variant="default"
-                                            size="sm"
-                                            onClick={() => handlNegotation(proposal.id)}
-                                            className="bg-[#F5A30C] rounded-full text-xs font-bold hover:bg-[#F5A30C] active:bg-[#F5A30C]"
-                                          >
-                                            Negotation
-                                          </Button>
-                                        )}
-                                      {/*Accept */}
-                                      {
-                                        (proposal.status!=="accepted" && proposal.status!=="rejected" && proposal.status!=="completed") &&(
-                                                <Button
+                                    )}
+
+                                  {/* Negotiation */}
+                                  {proposal.status !== "accepted" &&
+                                    proposal.status !== "rejected" &&
+                                    proposal.status !== "shortlisted" &&
+                                    proposal.status !== "negotation" &&
+                                    proposal.status !== "completed" && (
+                                      <Button
                                         variant="default"
                                         size="sm"
                                         onClick={() =>
-                                          handleAccept(
-                                            proposal.id
-                                            
-                                          )
+                                          handlNegotation(proposal.id)
+                                        }
+                                        className="bg-[#F5A30C] rounded-full text-xs font-bold hover:bg-[#F5A30C] active:bg-[#F5A30C]"
+                                      >
+                                        Negotation
+                                      </Button>
+                                    )}
+
+                                  {/* Accept */}
+                                  {proposal.status !== "accepted" &&
+                                    proposal.status !== "rejected" &&
+                                    proposal.status !== "completed" && (
+                                      <Button
+                                        variant="default"
+                                        size="sm"
+                                        onClick={() =>
+                                          handleAccept(proposal.id)
                                         }
                                         className="bg-[#39A935] rounded-full text-xs font-bold hover:bg-[#39A935] active:bg-[#39A935]"
                                       >
                                         Accept
                                       </Button>
-                                        )
-                                      }
+                                    )}
 
-                                      {/*Reject */}
-                                      {
-                                        (proposal.status!=="rejected" &&  proposal.status!=="accepted" && proposal.status!=="completed") && (
-                                          <Button
+                                  {/* Reject */}
+                                  {proposal.status !== "rejected" &&
+                                    proposal.status !== "accepted" &&
+                                    proposal.status !== "completed" && (
+                                      <Button
                                         variant="destructive"
                                         size="sm"
                                         onClick={() =>
-                                          handleReject(
-                                            proposal.id
-                                            
-                                          )
+                                          handleReject(proposal.id)
                                         }
                                         className="bg-[#FF0000] rounded-full text-xs font-bold hover:bg-[#FF0000] active:bg-[#FF0000]"
                                       >
                                         Reject
                                       </Button>
-                                        )
-                                      }
-                                
-                                  
+                                    )}
                                 </div>
                               </div>
+
                             </div>
                           </div>
                         </div>
                       </CardContent>
                     </Card>
                   ))}
+
                 </div>
               ) : (
                 <div className="text-center py-8">

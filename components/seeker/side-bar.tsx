@@ -50,7 +50,7 @@ const menuItems: MenuItem[] = [
       { id: "proposals", label: "Proposals", icon: MessageSquare, path: "/client/dashboard/proposals" },
       { id: "projects", label: "Projects", icon: Briefcase, path: "/client/dashboard/projects" },
       { id: "providers", label: "Find Agencies", icon: Users, path: "/client/dashboard/providers" },
-      { id: "messages", label: "Messages", icon:  MessageSquare, path: "/client/dashboard/message" },
+      { id: "messages", label: "Messages", icon: MessageSquare, path: "/client/dashboard/message" },
     ],
   },
   {
@@ -59,7 +59,6 @@ const menuItems: MenuItem[] = [
     icon: BarChart3,
     children: [
       { id: "analytics", label: "Project Analytics", icon: TrendingUp, path: "/client/dashboard/analytics" },
-      // { id: "spending", label: "Spending Insights", icon: Eye, path: "/client/dashboard/spending" },
       { id: "provider-comparison", label: "Provider Comparison", icon: GitCompare, path: "/client/dashboard/provider-comparison" },
       { id: "wishlist", label: "Wish List", icon: Eye, path: "/client/dashboard/wishlist" },
     ],
@@ -69,9 +68,7 @@ const menuItems: MenuItem[] = [
     label: "ACCOUNT & SETTINGS",
     icon: Settings,
     children: [
-      // { id: "billing", label: "Billing & Payments", icon: CreditCard, path: "/client/dashboard/billing" },
       { id: "notifications", label: "Notifications", icon: Bell, path: "/client/dashboard/notifications" },
-      // { id: "account-settings", label: "Account Settings", icon: Settings, path: "/client/dashboard/account-settings" },
     ],
   },
 ]
@@ -90,7 +87,7 @@ export default function ClientSidebar({
   const { logout } = useAuth()
 
   const [expandedSections, setExpandedSections] = useState<string[]>([])
-  const [collapsed, setCollapsed] = useState(false) // ✅ NEW
+  const [collapsed, setCollapsed] = useState(false)
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections((prev) =>
@@ -133,7 +130,7 @@ export default function ClientSidebar({
         <div className="p-6 border-b border-border bg-[#3C3A3E] flex justify-between items-start">
           {!collapsed && (
             <div>
-              <h2 className="text-xl font-bold text-[#fff]">
+              <h2 className="text-xl font-bold text-white">
                 Client Dashboard
               </h2>
               <p className="text-sm text-[#8B8585]">
@@ -142,7 +139,7 @@ export default function ClientSidebar({
 
               <div className="flex items-center gap-2 mt-3">
                 <Badge
-                  className={`${user.isActive ? "bg-[#39A935]" : "bg-red-500"} min-w-[80px] text-[#fff] rounded-full min-h-[30px]`}
+                  className={`${user.isActive ? "bg-[#39A935]" : "bg-red-500"} min-w-[80px] text-white rounded-full min-h-[30px]`}
                 >
                   {user.isActive ? "Active" : "Inactive"}
                 </Badge>
@@ -150,11 +147,11 @@ export default function ClientSidebar({
                 {user.isVerified && (
                   <Badge
                     variant="secondary"
-                    className="bg-[#fff] min-h-[30px] rounded-full text-[#2C34A1]"
+                    className="bg-white min-h-[30px] rounded-full text-[#2C34A1]"
                   >
                     <RiVerifiedBadgeFill
                       className="h-5 w-5"
-                      color={"#2C34A1"}
+                      color="#2C34A1"
                     />
                   </Badge>
                 )}
@@ -163,7 +160,6 @@ export default function ClientSidebar({
           )}
 
           <div className="flex gap-2">
-            {/* Desktop collapse toggle */}
             <button
               onClick={() => setCollapsed(!collapsed)}
               className="hidden lg:block cursor-pointer"
@@ -171,7 +167,6 @@ export default function ClientSidebar({
               <PanelLeft className="h-5 w-5 text-white" />
             </button>
 
-            {/* Mobile close */}
             <button onClick={onClose} className="lg:hidden">
               <X className="h-5 w-5" />
             </button>
@@ -179,17 +174,23 @@ export default function ClientSidebar({
         </div>
 
         {/* Menu */}
-        <div className="flex-1 overflow-y-auto p-4 bg-[#3C3A3E]   [scrollbar-width:none] 
-                    [-ms-overflow-style:none]        
-                    [&::-webkit-scrollbar]:hidden">
+        <div className="flex-1 overflow-y-auto p-4 bg-[#3C3A3E] 
+          [scrollbar-width:none] 
+          [-ms-overflow-style:none]        
+          [&::-webkit-scrollbar]:hidden"
+        >
           <nav className="space-y-2">
             {menuItems.map((section) => (
               <div key={section.id}>
+                {/* Parent */}
                 <button
-                  onClick={() =>{ toggleSection(section.id); setCollapsed(!collapsed)}}
+                  onClick={() => toggleSection(section.id)}
                   className="w-full cursor-pointer flex items-center justify-between p-3 text-sm font-medium rounded-lg"
                 >
-                  <div className="flex items-center gap-3 text-white">
+                  <div className={cn(
+                    "flex items-center gap-3 text-white",
+                    collapsed && "justify-center w-full"
+                  )}>
                     <section.icon className="h-4 w-4" />
                     {!collapsed && section.label}
                   </div>
@@ -202,23 +203,31 @@ export default function ClientSidebar({
                     ))}
                 </button>
 
+                {/* Children */}
                 {section.children &&
-                  expandedSections.includes(section.id) &&
-                  !collapsed && (
-                    <div className="ml-4 mt-2 space-y-1">
+                  expandedSections.includes(section.id) && (
+                    <div
+                      className={cn(
+                        "mt-2 space-y-1",
+                        collapsed ? "flex flex-col items-center ml-5" : "ml-4"
+                      )}
+                    >
                       {section.children.map((item) => (
                         <button
                           key={item.id}
                           onClick={() => handleMenuClick(item)}
                           className={cn(
-                            "w-full cursor-pointer flex items-center gap-3 p-2 text-sm rounded-lg text-white",
+                            "cursor-pointer flex items-center gap-3 p-2 text-sm rounded-lg text-white",
                             pathname === item.path
                               ? "text-[#F54A0C]"
-                              : ""
+                              : "",
+                            collapsed
+                              ? "justify-center w-full"
+                              : "w-full"
                           )}
                         >
                           <item.icon className="h-4 w-4" />
-                          {item.label}
+                          {!collapsed && item.label}
                         </button>
                       ))}
                     </div>
@@ -229,41 +238,35 @@ export default function ClientSidebar({
         </div>
 
         {/* Footer */}
-       {/* Footer */}
-            <div className="p-4 bg-[#3C3A3E] flex flex-col gap-2">
-              {/* Post Requirement */}
-              <Button
-                size="sm"
-                className={cn(
-                  "rounded-2xl bg-[#2C34A1] text-white border-none hover:bg-[#232a85] flex items-center justify-center",
-                  collapsed ? "w-12 h-12 p-0" : "w-full"
-                )}
-                onClick={() => {
-                  if (collapsed) {
-                    setCollapsed(false)
-                  }
-                  router.push("/client/dashboard/post-requirement")
-                  onClose()
-                }}
-              >
-                <Plus className="h-4 w-4" />
-                {!collapsed && <span className="ml-2">Post Requirement</span>}
-              </Button>
+        <div className="p-4 bg-[#3C3A3E] flex flex-col gap-2">
+          <Button
+            size="sm"
+            className={cn(
+              "rounded-2xl bg-[#2C34A1] text-white border-none hover:bg-[#232a85] flex items-center justify-center",
+              collapsed ? "w-12 h-12 p-0" : "w-full"
+            )}
+            onClick={() => {
+              if (collapsed) setCollapsed(false)
+              router.push("/client/dashboard/post-requirement")
+              onClose()
+            }}
+          >
+            <Plus className="h-4 w-4" />
+            {!collapsed && <span className="ml-2">Post Requirement</span>}
+          </Button>
 
-              {/* Logout */}
-              <Button
-                size="sm"
-                onClick={handleLogout}
-                className={cn(
-                  "rounded-2xl bg-orangeButton text-white border-none flex items-center justify-center",
-                  collapsed ? "w-12 h-12 p-0" : "w-full"
-                )}
-              >
-                <LogOut className="h-4 w-4" />
-                {!collapsed && <span className="ml-2">Logout</span>}
-              </Button>
-            </div>
-
+          <Button
+            size="sm"
+            onClick={handleLogout}
+            className={cn(
+              "rounded-2xl bg-orangeButton text-white border-none flex items-center justify-center",
+              collapsed ? "w-12 h-12 p-0" : "w-full"
+            )}
+          >
+            <LogOut className="h-4 w-4" />
+            {!collapsed && <span className="ml-2">Logout</span>}
+          </Button>
+        </div>
       </aside>
     </>
   )

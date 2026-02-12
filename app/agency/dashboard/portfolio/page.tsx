@@ -50,6 +50,7 @@ export default function ProviderPortfolioPage() {
       </div>
     );
   }
+  console.log("Fetched Provider data::",provider)
 
   /* Error */
   if (failed) {

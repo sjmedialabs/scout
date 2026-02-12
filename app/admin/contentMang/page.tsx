@@ -211,14 +211,14 @@ const isValidPhone = (phone) => {
               onChange={(e) => updateField("homeBannerTitle", e.target.value)}
             />
 
-            <Input
+            {/* <Input
               placeholder="Home Banner Subtitle"
               className="border-gray-200 rounded-xl placeholder:text-gray-300"
               value={cms.homeBannerSubtitle}
               onChange={(e) =>
                 updateField("homeBannerSubtitle", e.target.value)
               }
-            />
+            /> */}
           </section>
 
           {/* HOME WORK SECTION */}
