@@ -1414,12 +1414,12 @@ const getARPU = (payments) => {
                 value={serviceTabTopCardStats.totalServices.toString()}
                 subtitle="Across all categories"
               />
-              <KpiCard
+              {/* <KpiCard
                 title="Completion Rate"
                 value={`${serviceTabTopCardStats.projectCompletionPercentage}%`}
                 subtitle={`${serviceTabTopCardStats.incPercentageCompletionProjects}% last month`}
                 positive
-              />
+              /> */}
               <KpiCard
                 title="Avg Rating"
                 value={`${serviceTabTopCardStats.avgRating} / 5.0`}

@@ -34,7 +34,7 @@ export const adminMenu = [
     children: [
       { id: "subscribers", label: "Subscribers Management", icon: Users },
       { id: "subscription-plans", label: "Subscription Plans", icon: CreditCard },
-      { id: "billing", label: "Billing & Invoices", icon: FileText },
+      // { id: "billing", label: "Billing & Invoices", icon: FileText },
       // { id: "payment-methods", label: "Payment Methods", icon: DollarSign },
     ],
   },
@@ -66,9 +66,9 @@ export const adminMenu = [
     label: "PLATFORM",
     icon: Globe,
     children: [
-      { id: "settings", label: "Platform Settings", icon: Settings },
+      // { id: "settings", label: "Platform Settings", icon: Settings },
       { id: "categories", label: "Category Management", icon: Building2 },
-      { id: "notifications", label: "System Notifications", icon: Bell },
+      // { id: "notifications", label: "System Notifications", icon: Bell },
        { id: "careers", label: "Careers", icon: Shield },
     ],
   },

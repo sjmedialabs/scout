@@ -230,9 +230,9 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
-                        <Button variant="ghost" size="sm" onClick={() => setSelectedUser(user)}>
+                        {/* <Button variant="ghost" size="sm" onClick={() => setSelectedUser(user)}>
                           <Eye className="h-4 w-4" />
-                        </Button>
+                        </Button> */}
                         <Button
                           variant="ghost"
                           size="sm"
