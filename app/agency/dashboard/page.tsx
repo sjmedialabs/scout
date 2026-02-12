@@ -728,24 +728,24 @@ export default function AgencyDashboard() {
                     footer: `+${dynamicStats.profileViewsPercentage}% this month`,
                     icon: PiUsersThreeLight,
                   },
-                  {
-                    label: "Impressions",
-                    value: analyticsData.impressions,
-                    footer: `+${analyticsData.impressionsChange}% this month`,
-                    icon: TrendingUp,
-                  },
+                  // {
+                  //   label: "Impressions",
+                  //   value: analyticsData.impressions,
+                  //   footer: `+${analyticsData.impressionsChange}% this month`,
+                  //   icon: TrendingUp,
+                  // },
                   {
                     label: "Website Clicks",
                     value: dynamicStats.websiteClicks,
                     footer: `+${dynamicStats.websiteClicksPercentage}% this month`,
                     icon: RiMessage2Line,
                   },
-                  {
-                    label: "Invitations",
-                    value: analyticsData.projectInvitations,
-                    footer: `+${analyticsData.invitationsChange} this month`,
-                    icon: UserPlus,
-                  },
+                  // {
+                  //   label: "Invitations",
+                  //   value: analyticsData.projectInvitations,
+                  //   footer: `+${analyticsData.invitationsChange} this month`,
+                  //   icon: UserPlus,
+                  // },
                 ].map((item, i) => {
                   const Icon = item.icon;
                   return (
@@ -799,12 +799,12 @@ export default function AgencyDashboard() {
                     footer: "Proposal to project",
                     icon: TrendingUp,
                   },
-                  {
-                    label: "Leads",
-                    value: dynamicStats.leads,
-                    footer: `+${analyticsData.leadsChange}% this month`,
-                    icon: PiUsersThreeLight,
-                  },
+                  // {
+                  //   label: "Leads",
+                  //   value: dynamicStats.leads,
+                  //   footer: `+${analyticsData.leadsChange}% this month`,
+                  //   icon: PiUsersThreeLight,
+                  // },
                   {
                     label: "Client Rate",
                     value: `${analyticsData.leadToClientRate}%`,

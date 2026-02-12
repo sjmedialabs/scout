@@ -230,7 +230,7 @@ export async function POST(request: NextRequest) {
       type: "proposal_submitted",
       userRole: "client",
       sourceId: proposal._id,
-      linkUr:"/client/dashboard/proposals"
+      linkUrl:"/client/dashboard/proposals"
     });
 
     return NextResponse.json({ success: true, proposal });
