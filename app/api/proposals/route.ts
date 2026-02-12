@@ -111,7 +111,8 @@ export async function GET(request: NextRequest) {
       clientViewed:p.clientViewed,
       clientResponded:p.clientResponded,
       clientId:p.clientId,
-      agencyId:p.agencyId
+      agencyId:p.agencyId,
+      proposalDescription:p.proposalDescription
     }));
 
     return NextResponse.json({

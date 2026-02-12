@@ -322,7 +322,7 @@ const getARPU = (payments) => {
 
   return uniqueUsers.size === 0
     ? 0
-    : totalRevenue / uniqueUsers.size
+    : Math.round( totalRevenue / uniqueUsers.size)
 }
 
 

@@ -24,7 +24,7 @@ type Subscriber = {
   email: string;
   role: "client" | "agency";
   plan: string;
-  status: "Active" | "Inactive" | "Suspended";
+  status: "Active" | "Inactive";
   users: number;
   revenue: number;
   joined: string;
@@ -195,7 +195,7 @@ export default function AllSubscribersPage() {
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="active">Active</SelectItem>
               <SelectItem value="inactive">Inactive</SelectItem>
-              <SelectItem value="suspended">Suspended</SelectItem>
+              {/* <SelectItem value="suspended">Suspended</SelectItem> */}
             </SelectContent>
           </Select>
         </div>

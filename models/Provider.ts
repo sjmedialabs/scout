@@ -141,7 +141,7 @@ const ProviderSchema = new Schema<IProvider>(
     currentMonthWebsiteClicks: { type: Number, default: 0 },
     currentMonthKey: { type: String }, // "2026-01"
 
-    isFeatured: { type: Boolean, default: false }, 
+    isFeatured: { type: Boolean, default: true }, 
     isVerified: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
     profileViews: { type: Number, default: 0 },

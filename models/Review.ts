@@ -39,7 +39,7 @@ const ReviewSchema = new Schema<IReview>(
     willingToReferRating: { type: Number, required: true, min: 1, max: 5 },
     projectStartDate: { type: Date },
     projectEndDate: { type: Date },
-    title: { type: String, required: true },
+    title: { type: String},
     content: { type: String, required: true },
     pros: [{ type: String }],
     cons: [{ type: String }],

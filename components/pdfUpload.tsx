@@ -36,10 +36,7 @@ export default function PdfUpload({
         throw new Error(data.error || "Upload failed");
       }
 
-      console.log("data of the file upload", data);
-
       setFileUrl(data.url);
-      console.log("Pdf Upload Url is:::", data.url);
 
       // ✅ send URL to parent
       onUploadSuccess(data.url);
@@ -74,6 +71,16 @@ export default function PdfUpload({
     uploadFile(selectedFile);
   };
 
+  // ✅ NEW REMOVE FUNCTION
+  const handleRemove = () => {
+    setFileName(null);
+    setFileUrl(null);
+    setError(null);
+
+    // inform parent that file is removed
+    onUploadSuccess("");
+  };
+
   return (
     <div className="border border-[#D0D5DD] rounded-lg p-6 text-center space-y-4">
       <p className="text-sm text-gray-500">
@@ -95,7 +102,20 @@ export default function PdfUpload({
         Choose File
       </label>
 
-      {fileName && <p className="text-sm text-gray-700">{fileName}</p>}
+      {fileName && (
+        <div className="space-y-2">
+          <p className="text-sm text-gray-700">{fileName}</p>
+
+          {/* ✅ Remove Button */}
+          <button
+            type="button"
+            onClick={handleRemove}
+            className="text-sm text-red-600 underline cursor-pointer"
+          >
+            Remove File
+          </button>
+        </div>
+      )}
 
       {loading && (
         <p className="text-sm text-blue-600 animate-pulse">Uploading...</p>

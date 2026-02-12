@@ -15,6 +15,8 @@ import { Badge } from "@/components/ui/badge"
 import { DollarSign, Calendar, Eye, Lock } from "lucide-react"
 import type { Requirement } from "@/lib/types"
 import { categories } from "@/lib/mock-data"
+import ServiceDropdown from "../select-category-filter"
+import { Unbounded } from "next/font/google"
 
 interface BrowseRequirementsProps {
   requirements: Requirement[]
@@ -30,9 +32,9 @@ export function BrowseRequirements({
   onSubmitProposal,
 }: BrowseRequirementsProps) {
   const router = useRouter()
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState<Number>()
   const [locationOpen, setLocationOpen] = useState(false)
-  const [categoryFilter, setCategoryFilter] = useState("all")
+  const [categoryFilter, setCategoryFilter] = useState()
   // const [ratingFilter, setRatingFilter] = useState("any")
   const [budgetFilter, setBudgetFilter] = useState("all")
 
@@ -49,7 +51,7 @@ export function BrowseRequirements({
   })
   let tempFilteredRequirements=[...requirements];
   if(searchTerm){
-    tempFilteredRequirements=tempFilteredRequirements.filter((eachItem)=>eachItem?.client?.location?.trim().toLowerCase().includes(searchTerm.toLowerCase()));
+    tempFilteredRequirements=tempFilteredRequirements.filter((eachItem)=>eachItem?.budgetMin>searchTerm);
   }
   if(serviceFilter && serviceFilter.toLowerCase()!=="all"){
     tempFilteredRequirements=tempFilteredRequirements.filter((eachItem)=>eachItem.category.toLowerCase()===serviceFilter.toLowerCase())
@@ -86,15 +88,15 @@ export function BrowseRequirements({
 
       {/* FILTER BAR */}
       <div className="border border-gray-200 rounded-4xl px-6 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-[1.3fr_1.5fr_1.2fr_auto] gap-6 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
 
           {/* Location */}
-          <div className="flex flex-col gap-2 mt-0 leading-none">
+          <div className="flex flex-col gap-0 mt-0 leading-none">
             <span className="text-sm font-bold text-[#98A0B4]">
-              Location
+              Minimum Amount
             </span>
 
-            <Select
+            {/* <Select
               value={searchTerm}
               onValueChange={(value) => setSearchTerm(value)}
             >
@@ -112,7 +114,9 @@ export function BrowseRequirements({
               </SelectTrigger>
 
               <SelectContent>
-                {/* Search inside dropdown */}
+              
+                
+               
                 <div className="p-2">
                   <Input
                     placeholder="Enter City/ State"
@@ -142,16 +146,27 @@ export function BrowseRequirements({
                     </SelectItem>
                   ))}
               </SelectContent>
-            </Select>
+            </Select>  */}
+
+            <Input type="number" 
+                value={searchTerm} 
+                min={1}
+                className="
+                    h-12 rounded-xl border border-gray-300
+                    focus:border-orange-500 focus:ring-0 flex items-center placeholder:text-gray-400
+                  "
+                  onChange={(e)=>(setSearchTerm(parseInt(e.target.value)))}
+                  placeholder="Enter Your Project Minimum Amount"
+                  />
           </div>
 
           {/* Technologies / Services */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-0">
             <span className="text-sm font-bold text-[#98A0B4]">
               Technologies/Services
             </span>
 
-            <Select value={serviceFilter} onValueChange={setServiceFilter}>
+            {/* <Select value={serviceFilter} onValueChange={setServiceFilter}>
               <SelectTrigger
                 className="
                   h-12 rounded-xl border border-gray-300
@@ -173,7 +188,18 @@ export function BrowseRequirements({
                   </SelectItem>
                 ))}
               </SelectContent>
-            </Select>
+            </Select> */}
+
+            <ServiceDropdown
+              value={serviceFilter}
+              onChange={(value)=> setServiceFilter(value)}
+              triggerClassName="
+          h-12 rounded-xl border border-gray-300
+          focus:border-orange-500 focus:ring-0
+          flex items-center
+          
+        "
+              />
           </div>
 
           {/* Minimum Rating */}
@@ -210,13 +236,22 @@ export function BrowseRequirements({
           </div> */}
 
           {/* Search Button */}
-          <div className="flex items-end pt-6">
+          <div className="flex items-end pt-6 gap-3">
             <Button className="px-8 py-4 rounded-full bg-orange-600 hover:bg-orange-500 text-white flex gap-2"
             onClick={handleSearch}>
               <CiFilter 
               className="h-4 w-4"
               />
               Search
+            </Button>
+            <Button className="px-8 py-4 rounded-full bg-[#2C34A1] hover:bg-[#2C34A1] text-white flex gap-2"
+            onClick={()=>{
+              setServiceFilter("all");
+              setSearchTerm(undefined)
+              setFilteredRequirements(requirements);  // 🔥 THIS IS IMPORTANT
+            }}>
+              
+              Clear
             </Button>
           </div>
 

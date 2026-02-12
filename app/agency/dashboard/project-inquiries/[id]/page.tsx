@@ -82,6 +82,11 @@ export default function SubmitProposalPage() {
   const handleSubmitProposal = async () => {
     if (!validateForm()) return;
 
+    if(!((milestones ||  []).length>=2)){
+      alert("Atleast two milestones will required for the proposal")
+      return
+    }
+
     setIsSubmitting(true);
     setSuccess(false);
 
@@ -113,15 +118,18 @@ export default function SubmitProposalPage() {
           approach: false,
           form: false,
         });
+         // window.location.reload()
+      setTimeout(() => {
+        router.push("/agency/dashboard/project-inquiries");
+        // router.refresh()
+      }, 2000);
       } else if (res.status === 409) {
         setFormResponse("You already submitted the proposal for this project");
       } else {
         setFormResponse("failed to submit the proposal please try again");
       }
 
-      setTimeout(() => {
-        router.push("/agency/dashboard/project-inquiries");
-      }, 4500);
+     
     } catch {
       setErrors({
         cost: false,

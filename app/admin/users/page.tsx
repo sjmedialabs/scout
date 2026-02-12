@@ -57,7 +57,7 @@ export default function Page() {
 
   return (
     <UserManagement
-      users={users}
+      users={(users || []).filter((item)=>item.role!=="admin")}
       onUpdateUserStatus={handleUpdateUserStatus}
       onSendMessage={handleSendMessage}
     />
