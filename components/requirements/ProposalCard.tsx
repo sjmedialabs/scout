@@ -34,41 +34,36 @@ export function ProposalCard({
   onSubmit,
 }: ProposalCardProps) {
   return (
-    <div className="rounded-[26px] border border-[#e6e6e6] bg-[#f4fbff] overflow-hidden">
-      
+    <div className="rounded-[26px] border border-[#e6e6e6] bg-[#f4fbff] overflow-hidden h-full flex flex-col">
       {/* Top */}
-      <div className="relative p-6 flex gap-4">
-        <div>
-          <div className="mb-4 w-full items-start flex justify-between">
-          <Badge
-            variant="outline"
-            className="rounded-full px-4 py-1 font-bold text-xs bg-white"
-          >
-            {category}
-          </Badge>
+<div className="relative p-6 pt-4 pb-1">
+  
+  {/* Title + Posted On */}
+  <div className="flex items-start justify-between">
+    <h3 className="text-[20px] sm:text-[22px] font-semibold text-[#2c34a1]">
+      {title}
+    </h3>
 
-          <div className="absolute top-6 right-6 flex items-center gap-1 text-xs font-medium text-[#ff4d00] whitespace-nowrap">
-             
-             <CalendarDays className="h-4 w-4 text-[#ff4d00]" />
-              {new Date(postedAgo).toLocaleDateString()}
-          </div>
-          </div>
+    <div className="flex items-center gap-1 text-sm font-medium text-black whitespace-nowrap">
+      <CalendarDays className="h-4 w-4" />
+      Posted On :
+      <span className="text-[#ff4d00]">
+        {new Date(postedAgo).toLocaleDateString()}
+      </span>
+    </div>
+  </div>
 
-          <h3 className="text-[20px] sm:text-[22px] font-semibold text-[#2c34a1]">
-            {title}
-          </h3>
+  {/* Description */}
+  <div className="mt-1">
+    <p className="text-[14px] text-[#8b8b8b] leading-relaxed line-clamp-1">
+      {description}
+    </p>
+  </div>
 
-          <p className="mt-2 max-w-5xl text-[14px] text-[#8b8b8b] leading-relaxed">
-            {description}
-          </p>
-        </div>
-      </div>
-
-      {/* Divider */}
-      <div className="h-px bg-[#e6e6e6]" />
+</div>
 
       {/* Bottom */}
-      <div className="p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+      <div className="p-6 pt-0 mt-auto flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         {/* Meta */}
         <div className="flex flex-wrap gap-6 text-sm">
           <div className="flex items-center gap-2">
@@ -91,7 +86,7 @@ export function ProposalCard({
         </div>
         </div>
         {/* Actions */}
-        <div className="flex flex-col gap-3 m-4 sm:flex-row sm:gap-2">
+        <div className="flex flex-col gap-3 m-4 mt-0 sm:flex-row sm:gap-2">
           {/* <Button
             onClick={onView}
             className="rounded-full bg-[#2c34a1] hover:bg-[#2c34a1] px-6"
