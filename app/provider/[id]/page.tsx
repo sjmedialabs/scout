@@ -248,13 +248,13 @@ export default function ProviderProfilePage({
     <div className="min-h-screen mt-0 bg-[#fff]">
       {/* Hero Section */}
       <div
-        className="text-white py-16"
+        className="text-white py-10 pb-10"
         style={{
           backgroundImage: `url(/ProviderDetailBanner.jpg)`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          height: "400px",
+          height: "350px",
         }}
       >
         <div className="max-w-7xl mx-auto px-8 py-12 lg:px-30">
@@ -273,20 +273,20 @@ export default function ProviderProfilePage({
                     Verified
                   </Badge>
                 )}
-                {providerDetails.isFeatured && (
+                {/* {providerDetails.isFeatured && (
                   <Badge className="bg-[#e84816]  backdrop-blur-sm rounded-2xl">
                     <Star className="h-3 w-3 mr-1 fill-white" />
                     Featured
                   </Badge>
-                )}
+                )} */}
                 <h1 className="text-4xl font-extrabold mt-1 tracking-widest">
                   {providerDetails.name.toUpperCase()}
                 </h1>
               </div>
-              <p className="text-lg text-white/90 mb-4">
+              <p className="text-lg text-white/90 mb-2">
                 {providerDetails.tagline || "Professional service provider"}
               </p>
-              <div className="grid grid-cols-3 gap-4 mb-4 text-sm">
+              <div className="grid grid-cols-3 gap-1 mb-3 text-sm">
                 <div className="flex items-center gap-2">
                   <img
                     src="/ProviderDetailPageBannerIconLoactionFilled.png"
@@ -350,7 +350,7 @@ export default function ProviderProfilePage({
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-white rounded-3xl mt-2 font-semibold text-white hover:bg-white/10 bg-transparent  active:bg-transparent"
+                    className="border-white rounded-3xl w-48 mt-2 font-semibold text-white hover:bg-white/10 bg-transparent  active:bg-transparent"
                     onClick={(e) => webisteClickHandle(e, id)}
                   >
                     <ExternalLink className="mr-0.5" height={16} width={16} />
@@ -364,24 +364,24 @@ export default function ProviderProfilePage({
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-8 lg:px-30 py-12">
+      <div className="max-w-7xl mx-auto px-8 lg:px-30 py-6">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Left Column - Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6">
             {/* About Section */}
-            <div>
-              <h1 className="text-xl font-bold">Over View</h1>
+            <div className="pt-0">
+              <h1 className="text-2xl font-bold">Over View</h1>
               <p className="text-sm text-[#b2b2b2] mt-0.5">
                 {providerDetails.description}
               </p>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-2">
                 {stats.map((item, index) => (
                   <div
                     key={index}
                     className="
                       border border-gray-300 
                       rounded-2xl 
-                      px-6 py-4 
+                      px-6 py-1 
                       flex flex-col 
                       text-center
                       justify-center 
@@ -391,7 +391,7 @@ export default function ProviderProfilePage({
                     <span className="text-md text-[#000] font-medium">
                       {item.label}
                     </span>
-                    <span className="text-sm text-[#b2b2b2] font-normal mt-1">
+                    <span className="text-sm text-[#b2b2b2] font-normal mt-0">
                       {item.value}
                     </span>
                   </div>
@@ -401,7 +401,7 @@ export default function ProviderProfilePage({
 
             {/* Services Section */}
 
-            <h1 className="text-2xl font-bold mb-1">Services Offered</h1>
+            <h1 className="text-2xl font-bold mb-1 pt-0">Services Offered</h1>
 
             <div>
               {providerDetails.services.length != 0 ? (
