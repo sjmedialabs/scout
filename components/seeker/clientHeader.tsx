@@ -89,7 +89,7 @@ export default function ClientHeader({ user, onMenuClick }: Props) {
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   return (
-    <header className="flex items-center justify-between p-2 border-b border-border bg-white ">
+    <header className="flex items-center justify-between p-2 mb-0 border-b border-border bg-white ">
       
       {/* 🔹 Left Section */}
       <div className="flex items-center gap-3">

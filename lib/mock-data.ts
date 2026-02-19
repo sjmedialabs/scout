@@ -125,7 +125,7 @@ export const categories = [
   "Graphic Design",
   "Video Production",
   "Consulting",
-  "Data Analysis",
+ 
 ]
 
 export const mockProvider: Provider = {

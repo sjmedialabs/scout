@@ -617,7 +617,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
     );
   }
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 -mt-2">
       <div>
         <h1 className="text-2xl font-bold my-custom-class text-[#F4561C]">
           Proposals
@@ -658,7 +658,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
       </div>
 
       <Card className="bg-[#fff] py-0 rounded-[22px]">
-        <CardContent className="max-h-[600px] overflow-y-auto p-4">
+        <CardContent className="p-4">
           {selectedRequirement ? (
             <ProposalList
               // proposals={getProposalsForRequirement(selectedRequirement)}
@@ -673,7 +673,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
               {/*Filterss block */}
               {
                 (projectTitles.length>=1) && (
-                  <div className="flex flex-row justify-between mx-3 mb-0 flex-wrap">
+                  <div className="flex flex-row pb-2  justify-between mx-3 mb-0 flex-wrap">
                     <div className="mb-2 md:mb-0">
                       <p className="text-md text-gray-500 ml-2">Proposal Status</p>
                       <Select
@@ -758,7 +758,8 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                   </div>
                 )
               }
-              {filteredProposals.length > 0 ? (
+              <div className="max-h-[600px] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden pr-2">
+                {filteredProposals.length > 0 ? (
                 <div>
                   <div className="space-y-4 mb-4">
                     {/* <div className="flex justify-between items-center mt-0">
@@ -861,13 +862,14 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                               )}
 
                               <div>
-                                <h4 className="font-bold text-xl text-[#616161] mb-0">
-                                  Proposal Description
-                                </h4>
-                                <p className="text-[#939191] font-normal text-sm">
-                                  {proposal.proposalDescription}
-                                </p>
-                              </div>
+                              <h4 className="font-bold text-xl text-[#616161] mb-0">
+                                Proposal Description
+                              </h4>
+                              <p className="text-[#939191] font-normal text-sm line-clamp-2">
+                                {proposal.proposalDescription}
+                              </p>
+                            </div>
+
 
                               {/* Status Section */}
                               <div className="flex items-center mt-2 mb-3 gap-2">
@@ -1007,6 +1009,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                   </p>
                 </div>
               )}
+              </div>
             </div>
           )}
         </CardContent>

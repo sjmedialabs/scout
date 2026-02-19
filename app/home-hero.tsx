@@ -67,13 +67,17 @@ export function HomeHero({ cms }: HomeHeroProps) {
   const handleSearch = () => {
   if (!searchQuery.trim()) return;
 
-  if (activeButton === "match") {
-    router.push(
+  router.push(
       `/search?q=${encodeURIComponent(searchQuery.trim())}&type=providers`
     );
-  } else {
-    router.push(`/browse?q=${encodeURIComponent(searchQuery.trim())}`);
-  }
+
+  // if (activeButton === "match") {
+  //   router.push(
+  //     `/search?q=${encodeURIComponent(searchQuery.trim())}&type=providers`
+  //   );
+  // } else {
+  //   router.push(`/browse?q=${encodeURIComponent(searchQuery.trim())}`);
+  // }
 };
 
   return (
@@ -86,10 +90,11 @@ export function HomeHero({ cms }: HomeHeroProps) {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <div className="w-full max-w-7xl mx-auto">
-        <div className="w-full max-w-5xl mx-auto text-center px-2 sm:px-4 md:px-8">
-          <h1
-            className="text-3xl sm:text-4xl font-normal md:text-5xl text-white mb-4 leading-tight"
+      <div className="w-full  ">
+        <div className="w-full  flex flex-col items-center justify-center px-2 sm:px-4 md:px-8">
+         <div className="text-center">
+           <h1
+            className="text-3xl font-normal  text-white mb-4 max-w-[600px]  text-center  leading-tight"
             style={{
               fontFamily: "'Cinzel', serif",
             }}
@@ -98,53 +103,16 @@ export function HomeHero({ cms }: HomeHeroProps) {
               "Connect with trusted companies for your next project."}
           </h1>
 
+         </div>
           {/* Action Buttons */}
-          <div className="flex flex-col mb-2 sm:flex-row gap-2 sm:gap-4 md:gap-6 justify-center items-center w-full">
-            <div className="relative flex flex-col items-center">
-              <Button
-                size="lg"
-                className={`flex items-center justify-center gap-2 rounded-full text-sm sm:text-base px-6 sm:px-8 md:px-10 py-3 ${
-                activeButton === "match"
-                  ? "bg-[#F54A0C] text-white shadow-lg"
-                  : "bg-white text-[#F54A0C]"
-              }`}
-                onClick={() => setActiveButton("match")}
-              >
-                Find Agencies
-              </Button>
-              {activeButton === "match" && (
-                <div className="absolute -bottom-2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-[#F54A0C]" />
-              )}
-            </div>
-            <div className="relative flex flex-col items-center">
-              <Button
-                size="lg"
-                
-                className={`flex items-center justify-center gap-2 rounded-full text-sm sm:text-base px-6 sm:px-8 md:px-10 py-3 ${
-                activeButton === "browse"
-                  ? "bg-[#F54A0C] text-white shadow-lg"
-                  : "bg-white text-[#F54A0C]"
-              }`}
-                onClick={() => setActiveButton("browse")}
-              >
-                Browse Opportunities
-              </Button>
-              {activeButton === "browse" && (
-                <div className="absolute -bottom-2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-[#F54A0C]" />
-              )}
-            </div>
-          </div>
+          
 
           {/* Search Section */}
           <div className="space-y-2 w-full max-w-md sm:max-w-xl md:max-w-2xl mb-2 mx-auto bg-white-50">
             <div className="relative flex items-center w-full gap-2">
               <Input
-                placeholder={
-                activeButton === "match"
-                  ? "Search Agencies / Services"
-                  : "Search Requirements"
-              }
-                className="flex-1 h-12 sm:h-14 text-white placeholder:text-white place border-slate-300 bg-white/20 backdrop-blur-md shadow-inner rounded-full px-4 sm:px-6 text-sm sm:text-base"
+                placeholder="Discover Agencies by Service"
+                className="flex-1 h-[50px]   text-white placeholder:text-gray-400 place border-slate-300 bg-white/20 backdrop-blur-md shadow-inner rounded-full px-4 sm:px-6 text-sm sm:text-base"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => {
@@ -155,10 +123,11 @@ export function HomeHero({ cms }: HomeHeroProps) {
               />
               <Button
                 onClick={handleSearch}
-                className="absolute top-1/2 right-2 -translate-y-1/2 flex items-center justify-center h-10 sm:h-12 w-10 sm:w-12 rounded-full bg-[#F54A0C] hover:bg-[#d93f0b] shadow-md transition-all rotate-90"
+                className="absolute top-1/2 right-2 -translate-y-1/2 flex items-center justify-center h-10  w-10 rounded-full bg-[#F54A0C] hover:bg-[#d93f0b] shadow-md transition-all rotate-90"
               >
                 <Search className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </Button>
+              
             </div>
 
             {/* Popular Searches */}

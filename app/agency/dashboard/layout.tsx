@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { authFetch } from "@/lib/auth-fetch"
 import { Menu } from "lucide-react";
+import AgencyHeader from "@/components/provider/agency-header"
 import {
   Home,
   User,
@@ -157,19 +158,27 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
 
  return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-background">
-      {/* MOBILE TOP BAR – always visible on mobile */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-card border-b z-40 flex items-center px-4 gap-3">
-        <button
-          onClick={() => setIsMobileOpen(true)}
-          className="p-2 -ml-2 rounded-lg hover:bg-accent"
-          aria-label="Open menu"
-        >
-          <Menu className="h-6 w-6" />
-        </button>
-        <h1 className="text-lg font-semibold">Agency Dashboard</h1>
+
+      {/* MOBILE TOP BAR */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-card border-b z-40 flex items-center justify-between px-4">
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsMobileOpen(true)}
+            className="p-2 -ml-2 rounded-lg hover:bg-accent"
+          >
+            <Menu className="h-6 w-6" />
+          </button>
+          <h1 className="text-lg font-semibold">
+            Agency Dashboard
+          </h1>
+        </div>
+
+        {/* ✅ Mobile Notification Bell */}
+        <AgencyHeader user={user} />
       </header>
 
-      {/* SIDEBAR – controlled by isMobileOpen on mobile */}
+      {/* SIDEBAR */}
       <Sidebar
         user={user}
         menuItems={filteredMenuItems}
@@ -187,10 +196,18 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
           ${isCollapsed ? "lg:ml-20" : "lg:ml-80"}
         `}
       >
+
+        {/* ✅ Desktop Header */}
+        <div className="hidden lg:block">
+          <AgencyHeader user={user} />
+        </div>
+
         <div className="p-5 md:p-6 lg:p-8">
           {children}
         </div>
+
       </main>
-    </div>
+</div>
+
   );
 }

@@ -280,7 +280,8 @@ const ClientAnalyticsPage = () => {
         range: `$ ${sortedBudgets[0] || 0} - $ ${sortedBudgets[sortedBudgets.length - 1] || 0}`,
       });
 
-      let topVendors = vendorsData.providers.filter((item) => item.rating >= 3);
+      let topVendors =  [...vendorsData.providers]   // clone to avoid mutating original array
+          .sort((a, b) => b.rating - a.rating)
       let topVendorsUniqueLocations = new Set(
         (topVendors || []).map((item: any) => item.location),
       );
@@ -397,7 +398,7 @@ const ClientAnalyticsPage = () => {
   }
 
   return (
-    <div className="space-y-6 p-3 md:p-6">
+    <div className="space-y-3">
       <div>
         <h1 className="text-2xl font-bold my-custom-class leading-6 text-[#F4561C]">
           Project Analytics
@@ -409,19 +410,19 @@ const ClientAnalyticsPage = () => {
 
       {/* Top Locations Analytics */}
       <Card className="border-1 border-[#CFCACA] rounded-3xl px-2 md:px-8 bg-[#fff]">
-        <CardHeader>
+        <CardHeader  className="px-0 lg:px-6">
           <CardTitle className="flex items-center gap-0">
             <MdLocationOn className="h-6 w-9" color="#F54A0C" />
-            <span className="text-2xl font-bold my-custom-class text-[#F54A0C]">
+            <span className="text-md lg:text-2xl font-bold my-custom-class text-[#F54A0C]">
               {" "}
               Top Vendor Locations
             </span>
           </CardTitle>
-          <p className="text-[#656565] my-custom-class ml-3 -mt-2">
+          <p className="text-sm lg:text-lg text-[#656565] my-custom-class ml-2 lg:ml-3 -mt-2">
             Geographic distribution of vendors responding to your projects
           </p>
         </CardHeader>
-        <CardContent className="md:px-8">
+        <CardContent className="px-2 lg:px-8 max-h-[300px] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none]  [&::-webkit-scrollbar]:hidden ">
           <div className="space-y-4">
             {(() => {
               const totalVendorsCount = (topVendorsLocations || []).reduce(
@@ -470,18 +471,18 @@ const ClientAnalyticsPage = () => {
 
       {/* Top Specialties Analytics */}
       <Card className="border-1 border-[#CFCACA] rounded-3xl bg-[#fff] px-2 md:px-8">
-        <CardHeader>
+        <CardHeader className="px-0 lg:px-6">
           <CardTitle className="flex items-center gap-2">
             <Target className="h-8 w-8" color="#F54A0C" />
-            <span className="text-2xl font-bold my-custom-class text-[#F54A0C]">
+            <span className="text-md lg:text-2xl font-bold my-custom-class text-[#F54A0C]">
               Top Vendor Specialties
             </span>
           </CardTitle>
-          <p className="text-[#656565] my-custom-class ml-2 -mt-2">
+          <p className=" text-sm lg:text-lg text-[#656565] my-custom-class ml-2 -mt-2">
             Expertise areas of vendors responding to your projects
           </p>
         </CardHeader>
-        <div className="space-y-4 md:px-8">
+        <div className="space-y-4 md:px-8 max-h-[300px] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none]  [&::-webkit-scrollbar]:hidden ">
           {topVendorsServices.map((specialty, index) => (
             <div key={index} className="space-y-1">
               <div className="flex items-center justify-between">
@@ -511,13 +512,13 @@ const ClientAnalyticsPage = () => {
       </Card>
 
       {/* Cost Distribution */}
-      <Card className="border-1 border-[#CFCACA] rounded-3xl bg-[#fff] px-0">
-        <CardHeader className="px-8">
+      <Card className="border-1 border-[#CFCACA] rounded-3xl bg-[#fff] px-2 md:px-8">
+        <CardHeader className="px-0 lg:px-6">
           <CardTitle className="flex items-center gap-2">
             <div className="h-8 w-8 flex items-center justify-center border-2 border-[#F4561C]  rounded-md">
               <DollarSign className="h-5 w-5" color="#F4561C" />
             </div>
-            <span className="text-2xl font-bold my-custom-class text-[#F54A0C]">
+            <span className="text-md lg:text-2xl font-bold my-custom-class text-[#F54A0C]">
               Cost Distribution Analysis
             </span>
           </CardTitle>
@@ -525,8 +526,8 @@ const ClientAnalyticsPage = () => {
             Budget ranges of proposals received vs. your stated budget
           </p>
         </CardHeader>
-        <CardContent className="px-0">
-          <div className="space-y-6  px-0 ">
+        <CardContent className="px-2 lg:px-8">
+          <div className="space-y-4  px-0 ">
             {/* <div className="py-4  rounded-lg px-8">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-lg text-[#000] font-bold my-custom-class">
@@ -538,7 +539,7 @@ const ClientAnalyticsPage = () => {
               </div>
             </div> */}
             <hr className="border-[1px] border-[#E4E4E4] w-full" />
-            <div className="space-y-4 px-8">
+            <div className="space-y-4 px-0">
               <h4 className="text-xl font-bold text-[#000] my-custom-class">
                 Proposal Budget Ranges
               </h4>

@@ -5,11 +5,13 @@ import { useState } from "react";
 interface PdfUploadProps {
   maxSizeMB?: number;
   onUploadSuccess: (fileUrl: string) => void;
+  placeholderText?: string;
 }
 
 export default function PdfUpload({
   maxSizeMB = 5,
   onUploadSuccess,
+  placeholderText = "Upload Project Brief, wireframes, or reference materials (PDF)",
 }: PdfUploadProps) {
   const [fileName, setFileName] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -84,7 +86,7 @@ export default function PdfUpload({
   return (
     <div className="border border-[#D0D5DD] rounded-lg p-6 text-center space-y-4">
       <p className="text-sm text-gray-500">
-        Upload Project Brief, wireframes, or reference materials (PDF)
+        {placeholderText}
       </p>
 
       <input

@@ -828,10 +828,10 @@ export default function ClientDashboard() {
       {/* Left Sidebar */}
 
       {/* Main Content */}
-      <div className="flex-1 p-6 overflow-y-auto">
-        <div className="space-y-6">
-          <div className="border-b boreder-[1px] border-[#707070] pb-8">
-            <h1 className="text-3xl font-bold text-[#F4561C] my-custom-class leading-5">
+      <div className="flex-1 -mt-3 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none]  [&::-webkit-scrollbar]:hidden">
+        <div className="space-y-3">
+          <div className="border-b boreder-[1px] border-[#707070] pb-4">
+            <h1 className="text-3xl font-bold text-[#F4561C] my-custom-class">
               Dashboard Overview
             </h1>
             <p className="text-lg text-[#656565] font-xl">

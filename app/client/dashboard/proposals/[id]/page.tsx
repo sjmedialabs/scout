@@ -11,6 +11,7 @@ import type { Proposal } from "@/lib/types"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { BsArrowLeft } from "react-icons/bs";
+import { File } from "lucide-react"
 
 
 export default function ProposalViewDetailsPage() {
@@ -40,6 +41,7 @@ export default function ProposalViewDetailsPage() {
         if (!res.ok) throw new Error("Failed")
 
         const data = await res.json()
+        console.log("Fetched proposal data:", data)
         setProposal(data.proposals[0])
       } catch (err) {
         setFailed(true)
@@ -70,7 +72,7 @@ const textareaClass =
 
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
 
       {/* HEADER */}
       {/* <Card className="rounded-[36px] border border-gray-300 bg-white">
@@ -92,7 +94,7 @@ const textareaClass =
         <CardContent className="px-12 py-0 space-y-6">
 
           {/* Heading */}
-          <div className="space-y-3 flex justify-between">
+          <div className="space-y-3 flex justify-between flex-wrap">
             {/* <p className="text-[20px] font-extrabold text-black h-2">
               Submitting Proposal For
             </p> */}
@@ -107,7 +109,7 @@ const textareaClass =
           </div>
 
           {/* Meta row */}
-          <div className="flex flex-wrap items-center  h-3 gap-8 text-[16px]">
+          <div className="flex flex-wrap items-center  gap-6 text-[16px]">
             {/* Category */}
             <span className="rounded-md leading-none bg-gray-100 px-3 py-1 text-[14px] font-medium text-gray-500">
               {proposal.requirement.category}
@@ -133,12 +135,13 @@ const textareaClass =
             {proposal.requirement.description}
           </p>
 
+         
         </CardContent>
       </Card>
 
       {/* PROPOSAL DETAILS */}
       <Card className="rounded-[36px] border border-gray-300 bg-white">
-  <CardContent className="px-12 py-10 space-y-10">
+  <CardContent className="px-12 py-4 space-y-4">
 
     <div className="flex justify-end">
       <Badge className="rounded-full bg-green-500 text-sm h-[30px]">{proposal.status}</Badge>
@@ -170,20 +173,27 @@ const textareaClass =
       <label className="text-[14px] font-bold text-[#98A0B4]">
         Work Approach
       </label>
-      <div className={`${textareaClass} min-h-[140px]`}>
+      <div className={`${textareaClass} `}>
         {proposal.proposalDescription}
       </div>
     </div>
 
     {/* COVER LETTER */}
-    <div className="space-y-3">
+    {
+      proposal.coverLetter && (
+        <div className="space-y-3">
       <label className="text-[14px] font-bold text-[#98A0B4]">
         Cover Letter
       </label>
-      <div className={`${textareaClass} min-h-[140px]`}>
+      <div className={`${textareaClass}`}>
         {proposal.coverLetter}
       </div>
     </div>
+      )
+    }
+
+     
+
 
     {/* MILESTONES */}
     <div className="space-y-4">
@@ -197,6 +207,21 @@ const textareaClass =
         </div>
       ))}
     </div>
+
+    {
+          proposal.documentUrl && (
+            <a
+              href={proposal.documentUrl}
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center cursor-pointer gap-0 -mt-1 text-gray-500"
+            >
+              <File height={20} width={20} />
+              <span className="ml-2 text-md underline">Download Attached Document</span>
+            </a>
+          )
+        }
 
   </CardContent>
 </Card>

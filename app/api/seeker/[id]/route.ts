@@ -94,6 +94,37 @@ export async function PUT(
       );
     }
 
+    // Check duplicate email
+if (updates.email) {
+  const existingEmail = await Seeker.findOne({
+    email: updates.email,
+    userId: { $ne: id }, // exclude current user
+  });
+
+  if (existingEmail) {
+    return NextResponse.json(
+      { success: false, message: "Email already exists" },
+      { status: 400 }
+    );
+  }
+}
+
+// Check duplicate phone number
+if (updates.phoneNumber) {
+  const existingPhone = await Seeker.findOne({
+    phoneNumber: updates.phoneNumber,
+    userId: { $ne: id },
+  });
+
+  if (existingPhone) {
+    return NextResponse.json(
+      { success: false, message: "Phone number already exists" },
+      { status: 400 }
+    );
+  }
+}
+
+
     // Find and update based on userId
     const updatedSeeker = await Seeker.findOneAndUpdate(
       { userId: id }, // filter

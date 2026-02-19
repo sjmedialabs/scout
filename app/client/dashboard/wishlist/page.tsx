@@ -169,7 +169,7 @@ const WishListPage = () => {
 
   console.log("Fetched Wish list data is:::", wishListData);
   return (
-    <div className="space-y-6 p-3 md:p-6">
+    <div className="space-y-3">
       <div>
         <h1 className="text-3xl text-[#F4561C] my-custom-class leading-6">
           Wish List
@@ -231,11 +231,11 @@ const WishListPage = () => {
                         Verified
                       </Badge>
                     )}
-                    {provider.agency.isFeatured && (
+                    {/* {provider.agency.isFeatured && (
                       <Badge className="bg-[#F54A0C] text-white h-7 px-3 rounded-2xl">
                         Featured
                       </Badge>
-                    )}
+                    )} */}
                   </div>
 
                   <div className="flex items-center gap-1 text-sm">
@@ -243,9 +243,9 @@ const WishListPage = () => {
                     <span className="font-semibold">
                       {provider.agency.rating}
                     </span>
-                    <span className="text-muted-foreground">
+                    {/* <span className="text-muted-foreground">
                       ({provider.agency.reviewCount})
-                    </span>
+                    </span> */}
                   </div>
                 </div>
 
@@ -259,7 +259,7 @@ const WishListPage = () => {
 
                 {/* Tags – tighter gap to description */}
                 <div className="flex flex-wrap gap-2 mt-3 sm:mt-3 mb-4">
-                  {provider.agency.services.map((service) => (
+                  {provider.agency.services.slice(0,3).map((service) => (
                     <Badge
                       key={service}
                       variant="outline"
@@ -297,17 +297,19 @@ const WishListPage = () => {
 
                 {/* Price + buttons */}
                 <p className="text-[#808080] text-sm sm:text-base font-semibold">
-                  From: {provider.agency.hourlyRate}/hour
+                  Starting Price: {provider?.agency?.hourlyRate || 0}$/hour
                 </p>
 
                 <div className="mt-3 flex flex-col sm:flex-row gap-2">
+                 <a href={`/provider/${provider._id}`} target="_blank" rel="noopener noreferrer">
                   <Button
                     className="w-full sm:w-30 bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white"
-                    onClick={() => handleViewProfile(provider.agency._id)}
+                    // onClick={() => handleViewProfile(provider.agency._id)}
                   >
                     View Profile
                   </Button>
 
+                 </a>
                   <Button
                     className="w-full sm:w-30 bg-[#4d4d4d] rounded-3xl text-white"
                     onClick={() => {

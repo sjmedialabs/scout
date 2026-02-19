@@ -16,6 +16,8 @@ import { Proposal, Requirement } from "@/lib/types";
 import { useAuth } from "@/contexts/auth-context";
 import { authFetch } from "@/lib/auth-fetch";
 import { BsArrowLeft } from "react-icons/bs";
+import { File } from "lucide-react";
+import PdfUpload from "@/components/pdfUpload";
 
 
 export default function SubmitProposalPage() {
@@ -101,6 +103,7 @@ export default function SubmitProposalPage() {
         proposalDescription: approach,
         coverLetter: coverLetter,
         milestones: milestones.map((eachItem) => ({ title: eachItem })),
+        documentUrl: documentUrl
       };
 
       console.log("Payload to send:::::::", payload);
@@ -178,6 +181,7 @@ export default function SubmitProposalPage() {
   const [approach, setApproach] = useState("");
   const [milestones, setMilestones] = useState([""]);
   const [coverLetter, setCoverLetter] = useState("");
+  const[documentUrl,setDocumentUrl] = useState("");
 
   useEffect(() => {
     if (loading) return; // ⛔ wait until auth finishes
@@ -213,15 +217,15 @@ export default function SubmitProposalPage() {
     <div className="space-y-8">
       {/* PROJECT SUMMARY */}
       <Card className="rounded-[36px] border border-gray-300 bg-white">
-        <CardContent className="px-12 py-0 space-y-6">
+        <CardContent className="px-12 py-0 space-y-3">
           {/* Heading */}
-          <div className="space-y-3 flex justify-between">
+          <div className="space-y-0 flex flex-wrap justify-between">
             <div>
               <p className="text-[20px] font-extrabold text-black ">
                  Submitting Proposal For
               </p>
 
-                <h1 className="text-[28px] font-extrabold text-orange-600 ">
+                <h1 className="text-[28px] mb-0 font-extrabold text-orange-600 ">
                   {requirement.title}
                 </h1>
             </div>
@@ -234,7 +238,7 @@ export default function SubmitProposalPage() {
           </div>
 
           {/* Meta row */}
-          <div className="flex flex-wrap items-center  h-3 gap-8 text-[16px]">
+          <div className="flex flex-wrap items-center mt-0   gap-8 text-[16px]">
             {/* Category */}
             <span className="rounded-md leading-none bg-gray-100 px-3 py-1 text-[14px] font-medium text-gray-500">
               {requirement.category}
@@ -256,16 +260,34 @@ export default function SubmitProposalPage() {
           </div>
 
           {/* Description */}
-          <p className="max-w-full text-[14px] leading-5 text-gray-500">
+          <div className="flex flex-row gap-0 ">
+            <p className="max-w-full text-[14px] leading-5 text-gray-500">
             {requirement.description}
           </p>
+          
+          </div>
+         {
+          requirement.documentUrl && (
+            <a
+              href={requirement.documentUrl}
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center cursor-pointer gap-0 -mt-1 text-gray-500"
+            >
+              <File height={20} width={20} />
+              Attachments
+            </a>
+          )
+        }
+
         </CardContent>
       </Card>
 
       {/* PROPOSAL FORM */}
       {showForm ? (
         <Card className="rounded-[36px] border border-gray-300 bg-white">
-          <CardContent className="px-12 py-10 space-y-10">
+          <CardContent className="px-12 py-4 space-y-4">
             {/* COST + TIMELINE */}
             <div className="grid grid-cols-1 h-18 md:grid-cols-2 gap-10">
               {/* Proposed Cost */}
@@ -324,7 +346,7 @@ export default function SubmitProposalPage() {
             </div>
 
             {/* WORK APPROACH */}
-            <div className="space-y-3 h-20">
+            <div className="space-y-3 ">
               <label className="text-[14px] font-bold text-[#98A0B4]">
                 Work Approach
               </label>
@@ -339,13 +361,13 @@ export default function SubmitProposalPage() {
                 }}
                 rows={6}
                 placeholder="Describe your methodology, Technologies you will use, and how you will approach this project...."
-                className={`rounded-xl text-[16px] leading-[1.6] placeholder:text-[12px] placeholder:text-[#98A0B4]
+                className={`rounded-xl text-[16px] leading-[1.6] placeholder:text-[12px]  placeholder:text-[#98A0B4]
                   ${errors.approach ? "border-red-500" : "border-gray-200"}
               `}
               />
             </div>
 
-            <div className="space-y-3 h-22">
+            <div className="space-y-3">
               <label className="text-[14px] font-bold text-[#98A0B4]">
                 Cover Letter
               </label>
@@ -406,6 +428,21 @@ export default function SubmitProposalPage() {
                   )}
                 </div>
               ))}
+
+
+            </div>
+
+            {/* File Upload */}
+            <div>
+
+            <div className="space-y-2">
+              <label className="text-[#98A0B4] text-[14px] font-normal">Proposal Attachment (optional)</label>
+              <PdfUpload
+                maxSizeMB={10}
+                onUploadSuccess={(url) => setDocumentUrl(url)}
+                placeholderText="Upload additional documents to support your proposal (PDF)"
+              />
+              </div>
             </div>
 
             {/* PROPOSAL TIPS */}
