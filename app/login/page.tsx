@@ -22,18 +22,37 @@ export default function LoginPage() {
   const router = useRouter();
 
   const handleSubmit = async () => {
-    if(loading) return
+  if (loading) return;
+
   setError("");
   setLoading(true);
 
   try {
     const user = await login(email, password);
 
+    // 🔒 Restrict login when coming from requirement "View Details"
+    if (redirectTo === "requirement-details" && user.role !== "agency") {
+  setError("Only service providers (agencies) can view requirement details.");
+  setLoading(false);
+  return;
+}
+
     if (user.role === "client") {
       router.push("/client/dashboard");
-    } else if (user.role === "agency") {
-       redirectTo ==="project-enquiries"?router.push("/agency/dashboard/project-inquiries"):router.push("/agency/dashboard");
-    } else if (user.role === "admin") {
+    } 
+
+    else if (user.role === "agency") {
+  const id = searchParams.get("id");
+
+  if (redirectTo === "requirement-details" && id) {
+    router.push(`/agency/dashboard/project-inquiries/${id}`);
+  } else {
+    router.push("/agency/dashboard");
+  }
+}
+
+    
+    else if (user.role === "admin") {
       router.push("/admin/dashboard");
     } else {
       throw new Error("Invalid user role");
@@ -44,6 +63,7 @@ export default function LoginPage() {
     setLoading(false);
   }
 };
+
 
 //  try {[]
 //       // 🔑 Backend decides the role
@@ -80,11 +100,11 @@ export default function LoginPage() {
             }}
           >
             <div className="relative z-10 max-w-sm">
-              <h2 className="text-2xl font-extrabold leading-tight">
+              <h2 className="text-3xl font-extrabold leading-tight">
                 Built to Accelerate <br /> Business Success
               </h2>
 
-              <ul className="mt-2 space-y-2 text-[10px] text-white">
+              <ul className="mt-2 space-y-2 text-[12px] text-white">
                 <li>owering Smarter Business Connections</li>
                 <li>700+ Categories. One Trusted Platform.</li>
                 <li>Quality Work. Accelerated Results.</li>
@@ -94,9 +114,17 @@ export default function LoginPage() {
           </div>
 
           {/* RIGHT SECTION */}
-          <div className="lg:col-span-6 h-full overflow-y-auto p-8 sm:p-10">
-            <h3 className="text-lg font-semibold text-center">Sign in</h3>
-            <p className="mt-0.1 text-[10px] text-gray-400 text-center">
+          <div className="lg:col-span-6 h-full overflow-y-auto p-8 sm:p-4">
+            <div className="flex items-center mb-2 justify-end">
+              <button
+                  onClick={() => router.push("/")}
+                className="text-xs w-15 h-6 cursor-pointer text-white bg-black rounded-full hover:text-white hover:bg-gray-900"
+              >
+                ← Back
+              </button>
+            </div>
+            <h3 className="text-xl font-semibold text-center">Sign in</h3>
+            <p className="mt-0.1 text-[12px] text-gray-400 text-center">
               Enter your credentials to access your account
             </p>
 
@@ -138,40 +166,40 @@ export default function LoginPage() {
             {/* Inputs */}
             <div className="mt-1 space-y-4">
               <div>
-                <label className="text-xs font-bold text-gray-600">E-mail</label>
+                <label className="text-sm font-bold text-gray-600">E-mail</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter E-Mail"
-                  className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[10px]"
+                  className="mt-1 w-full rounded-xl placeholder:text-xs border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[12px]"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-gray-600">Password</label>
-               <div className="relative">
-  <input
-    type={showPassword ? "text" : "password"}
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-    placeholder="Enter Password"
-    className="mt-1 w-full rounded-xl border border-gray-200 bg-[#f6f9fe] px-4 py-2 pr-10 text-[10px]"
-  />
+                <label className="text-sm font-bold text-gray-600">Password</label>
+                            <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter Password"
+                  className="mt-1 w-full rounded-xl border placeholder:text-xs border-gray-200 bg-[#f6f9fe] px-4 py-2 pr-10 text-[12px]"
+                />
 
-  <button
-    type="button"
-    onClick={() => setShowPassword(!showPassword)}
-    className="absolute right-3 cursor-pointer top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-  >
-    {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
-  </button>
-</div>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 cursor-pointer top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
+              </div>
 
               </div>
               <p
                 onClick={() => router.push("/forgot-password")}
-                className="mt-2 text-center text-xs  hover:text-blue-400 underline cursor-pointer"
+                className="mt-2 text-center text-sm  hover:text-blue-400 underline cursor-pointer"
               >
                 Forgot password?
               </p>
@@ -187,13 +215,13 @@ export default function LoginPage() {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="mt-4 w-full cursor-pointer rounded-xl bg-black py-2 text-xs font-medium text-white hover:bg-gray-900 transition"
+              className="mt-4 w-full cursor-pointer rounded-xl bg-black py-2 text-sm font-medium text-white hover:bg-gray-900 transition"
             >
               {loading ? "Signing In..." : "Sign in"}
             </button>
 
             {/* Footer */}
-            <p className="mt-1 text-center text-xs text-black">
+            <p className="mt-1 text-center text-sm text-black">
               Don't have an account?
               <span
                 onClick={() => router.push("/register")}

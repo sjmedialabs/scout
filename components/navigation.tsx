@@ -150,8 +150,8 @@ export function Navigation() {
   (c) => c.isMainCategory
 );
 
-const visibleCategories = mainCategories.slice(0, 4);
-const overflowCategories = mainCategories.slice(4);
+const visibleCategories = mainCategories.slice(0, 5);
+const overflowCategories = mainCategories.slice(5);
 
 
 
@@ -162,7 +162,7 @@ const overflowCategories = mainCategories.slice(4);
         <div
           className={`max-w-7xl mx-auto px-4 py-2 sm:px-6 lg:px-8 ${isAgencyDashboard ? "ml-80" : ""}`}
         >
-          <div className="flex justify-between items-center h-12">
+          <div className="flex justify-between items-center h-8">
             <div>
               <Link href="/" className="flex items-center space-x-2">
                 <img src="/images/spark-nav-logo.png" alt="" className="h-12" />
@@ -201,7 +201,7 @@ const overflowCategories = mainCategories.slice(4);
                   asChild
                 >
                   <Link href="/login" className="text-sm">
-                    Signin
+                    Sign in
                   </Link>
                 </Button>
               </div>
@@ -218,7 +218,7 @@ const overflowCategories = mainCategories.slice(4);
         <div
           className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${isAgencyDashboard ? "ml-80" : ""}`}
         >
-          <div className="flex justify-between items-center h-14 gap-4">
+          <div className="flex justify-between items-center h-12 gap-4">
             {isSticky && (
               <div className="shrink-0">
                 <Link href="/" className="hidden lg:flex items-center">
@@ -285,7 +285,7 @@ const overflowCategories = mainCategories.slice(4);
               className={`hidden flex-1 min-w-0 lg:flex items-center
                 gap-4
                 ${isSticky ? "lg:gap-12" : "lg:gap-16"}
-                lg:gap-20 2xl:gap-24
+                lg:gap-18 2xl:gap-24
                 transition-all duration-300`}
                           >
               {visibleCategories.map((category) => (
@@ -342,14 +342,14 @@ const overflowCategories = mainCategories.slice(4);
     href="/pricing"
     className="text-md text-gray-500 hover:text-slate-900 mt-1"
   >
-    Pricing & Packages
+    Pricing
   </Link>
 
   <Link
     href="/about"
     className="text-md text-gray-500 hover:text-slate-900 mt-1"
   >
-    About us
+    About
   </Link>
 
   {/* MORE DROPDOWN */}
@@ -525,7 +525,7 @@ const overflowCategories = mainCategories.slice(4);
         className="text-slate-600 hover:text-slate-900 text-sm"
         onClick={() => setMobileMenuOpen(false)}
       >
-        Pricing & Packages
+        Pricing
       </Link>
 
       <Link
@@ -533,7 +533,7 @@ const overflowCategories = mainCategories.slice(4);
         className="text-slate-600 hover:text-slate-900 text-sm"
         onClick={() => setMobileMenuOpen(false)}
       >
-        About us
+        About
       </Link>
 
       {/* Post a Project Button */}

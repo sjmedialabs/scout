@@ -2,6 +2,7 @@
 
 import { Search } from "lucide-react";
 import { Filter } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -42,6 +43,8 @@ const bannerData = {
 };
 
 export default function BrowsePage() {
+  const [visibleCount, setVisibleCount] = useState(8);
+  const searchParams = useSearchParams();
   const [requriments, setRequriments] = useState<Requirement[]>([]);
   const [filteredRequirements, setFilteredRequirements] = useState<
     Requirement[]
@@ -56,6 +59,18 @@ export default function BrowsePage() {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedRequirement, setSelectedRequirement] =
     useState<Requirement | null>(null);
+    const handleClearFilters = () => {
+  setSearchFilter("");
+  setServiceType("");
+  setBudgetRange("");
+  setFilteredRequirements(requriments);
+};
+
+
+
+    useEffect(() => {
+  setVisibleCount(8);
+}, [filteredRequirements]);
 
   useEffect(() => {
     const fetchRequirements = async () => {
@@ -75,7 +90,20 @@ export default function BrowsePage() {
               eachItem.status.toLowerCase() !="notapproved"
           );
           setRequriments(mapped);
-          setFilteredRequirements(mapped);
+
+            const queryFromUrl = searchParams.get("q");
+
+            if (queryFromUrl) {
+              setSearchFilter(queryFromUrl);
+
+              const autoFiltered = mapped.filter((item) =>
+              item.category?.toLowerCase().includes(queryFromUrl.toLowerCase())
+            );
+              setFilteredRequirements(autoFiltered);
+            } else {
+              setFilteredRequirements(mapped);
+            }
+
           setFailed(false);
           setResLoading(false);
         }
@@ -93,12 +121,13 @@ export default function BrowsePage() {
   const handleApllyFilter = () => {
     let filteredRequirementsTemp = [...requriments];
     if (searchFilter.trim()) {
-      filteredRequirementsTemp = filteredRequirementsTemp.filter((eachItem) =>
-        eachItem.title
-          .toLowerCase()
-          .includes(searchFilter.trim().toLowerCase()),
-      );
-    }
+  const query = searchFilter.trim().toLowerCase();
+
+  filteredRequirementsTemp = filteredRequirementsTemp.filter((eachItem) =>
+    eachItem.category?.toLowerCase().includes(query)
+  );
+}
+
     if (serviceType && serviceType !== "all") {
       filteredRequirementsTemp = filteredRequirementsTemp.filter((eachItem) =>
         eachItem.category.toLowerCase().includes(serviceType.toLowerCase()),
@@ -141,7 +170,7 @@ export default function BrowsePage() {
   const handleViewDetails = (recievedId) => {
     // setSelectedRequirementId(recievedId);
     // setShowDetailsModal(true);
-    const requirement = requriments.find((r) => r.id === recievedId);
+    const requirement = requriments.find((r) => r._id === recievedId);
     setSelectedRequirement(requirement || null);
     setShowDetailsModal(true);
   };
@@ -185,6 +214,11 @@ export default function BrowsePage() {
                     placeholder="Search Requirement"
                     value={searchFilter}
                     onChange={(e) => setSearchFilter(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleApllyFilter();
+                      }
+                    }}
                     className="border-0 p-0 h-auto text-[15px] placeholder:text-[#9b9b9b]
                 focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
@@ -253,22 +287,40 @@ export default function BrowsePage() {
                     <SelectValue placeholder="Budget Range" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="0k-5k">Under $5k</SelectItem>
-                    <SelectItem value="5k-10k">$5k – $10k</SelectItem>
-                    <SelectItem value="10k-20k">$10k – $20k</SelectItem>
-                    <SelectItem value="20k+">More than $20k</SelectItem>
+                    <SelectItem 
+                    className="cursor-pointer data-[highlighted]:bg-[#F54A0C] data-[highlighted]:text-white"
+                    value="0k-5k">Under $5k</SelectItem>
+                    <SelectItem 
+                    className="cursor-pointer data-[highlighted]:bg-[#F54A0C] data-[highlighted]:text-white"
+                    value="5k-10k">$5k – $10k</SelectItem>
+                    <SelectItem 
+                    className="cursor-pointer data-[highlighted]:bg-[#F54A0C] data-[highlighted]:text-white"
+                    value="10k-20k">$10k – $20k</SelectItem>
+                    <SelectItem 
+                    className="cursor-pointer data-[highlighted]:bg-[#F54A0C] data-[highlighted]:text-white"
+                    value="20k+">More than $20k</SelectItem>
                   </SelectContent>
                 </Select>
 
-                {/* APPLY FILTER */}
+                <div className="flex gap-2">
                 <Button
                   className="h-10 px-6 rounded-full bg-[#F54A0C] hover:bg-[#d93f0b]
-                       text-white text-[14px] font-medium whitespace-nowrap"
+                  text-white text-[14px] font-medium whitespace-nowrap"
                   onClick={handleApllyFilter}
                 >
                   <Filter className="h-4 w-4" />
-                  Apply Filter
+                  Apply
                 </Button>
+
+                <Button
+                  variant="outline"
+                  className="h-10 px-6 rounded-full text-[14px] hover:bg-black bg-gray-800 text-white whitespace-nowrap"
+                  onClick={handleClearFilters}
+                >
+                  Clear
+                </Button>
+              </div>
+
               </div>
             </div>
           </div>
@@ -278,30 +330,37 @@ export default function BrowsePage() {
       {!resLoading && !failed && (
         <div className="px-4 py-10">
           <div className="max-w-6xl mx-auto">
-            {/* Header */}
             <ProposalsHeader
+              title={`Requirements Found: ${filteredRequirements.length}`}
               onSortChange={(value) => handlePriceSorting(value)}
             />
-
             {/* Cards */}
-            <div className="space-y-8">
+            <div
+                className={`grid gap-6 items-stretch ${
+                  filteredRequirements.length === 1
+                    ? "grid-cols-1"
+                    : "grid-cols-1 md:grid-cols-2"
+                }`}
+              >
               {(filteredRequirements || []).length === 0 ? (
                 <div className="text-center py-10 text-gray-500">
                   No requirements found.
                 </div>
               ) : (
-                filteredRequirements?.map((item) => (
+                filteredRequirements?.slice(0, visibleCount).map((item) => (
                   <ProposalCard
                     key={item.id}
                     category={item.category}
-                    title={item.title}
+                    title={item.category}
                     description={item.description}
                     budget={`${item.budgetMin} - ${item.budgetMax}`}
                     timeline={item.timeline}
                     location={item.client?.location || "Remote"}
                     postedAgo={item.createdAt}
-                    onView={() => handleViewDetails(item.id)}
-                    onSubmit={() => router.push("/login?to=project-enquiries")}
+                    onView={() => handleViewDetails(item._id)}
+                    onSubmit={() =>
+                      router.push(`/login?to=requirement-details&id=${item._id}`)
+                    }
                   />
                 ))
               )}
@@ -309,6 +368,18 @@ export default function BrowsePage() {
           </div>
         </div>
       )}
+
+      {visibleCount < filteredRequirements.length && (
+        <div className="flex justify-center mt-2 mb-2">
+          <Button
+            onClick={() => setVisibleCount((prev) => prev + 8)}
+            className="rounded-full px-6 bg-[#F54A0C] hover:bg-[#d93f0b] text-white"
+          >
+            Load More
+          </Button>
+        </div>
+      )}
+
 
       {resLoading && (
         <div className=" mt-20 flex items-center justify-center">
