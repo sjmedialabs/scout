@@ -46,7 +46,7 @@ const menuItems: MenuItem[] = [
     children: [
       { id: "dashboard", label: "Dashboard", icon: Home, path: "/client/dashboard" },
       { id: "profile", label: "Profile", icon: User, path: "/client/dashboard/profile" },
-      { id: "requirements", label: "My Requirements", icon: FileText, path: "/client/dashboard/requirements" },
+      // { id: "requirements", label: "My Requirements", icon: FileText, path: "/client/dashboard/requirements" },
       { id: "proposals", label: "Proposals", icon: MessageSquare, path: "/client/dashboard/proposals" },
       { id: "projects", label: "Projects", icon: Briefcase, path: "/client/dashboard/projects" },
       { id: "providers", label: "Find Agencies", icon: Users, path: "/client/dashboard/providers" },
@@ -65,7 +65,7 @@ const menuItems: MenuItem[] = [
   },
   {
     id: "account-settings",
-    label: "ACCOUNT & SETTINGS",
+    label: "SETTINGS",
     icon: Settings,
     children: [
       { id: "notifications", label: "Notifications", icon: Bell, path: "/client/dashboard/notifications" },
@@ -122,7 +122,7 @@ export default function ClientSidebar({
           "fixed z-50 inset-y-0 left-0 bg-card border-r border-border flex flex-col transform transition-all duration-300",
           isOpen ? "translate-x-0" : "-translate-x-full",
           "lg:translate-x-0 lg:static lg:z-auto",
-          collapsed ? "lg:w-20" : "lg:w-80",
+          collapsed ? "lg:w-20" : "lg:w-60",
           "w-80"
         )}
       >
@@ -137,7 +137,7 @@ export default function ClientSidebar({
                 Welcome back, {user.name}
               </p>
 
-              <div className="flex items-center gap-2 mt-3">
+              {/* <div className="flex items-center gap-2 mt-3">
                 <Badge
                   className={`${user.isActive ? "bg-[#39A935]" : "bg-red-500"} min-w-[80px] text-white rounded-full min-h-[30px]`}
                 >
@@ -155,7 +155,7 @@ export default function ClientSidebar({
                     />
                   </Badge>
                 )}
-              </div>
+              </div> */}
             </div>
           )}
 

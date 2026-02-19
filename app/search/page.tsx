@@ -69,6 +69,14 @@ export default function SearchPage() {
 
       if (searchTerm.trim()) {
         console.log("Entered to if");
+        const serachRes=await fetch("/api/search/track",{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify({keyword:searchTerm})
+        })
+        // console.log("Search Keyword Response:::::::",await serachRes.json())
         const filtered = data.providers.filter(
           (eachItem: Provider) =>
             eachItem.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

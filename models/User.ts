@@ -20,6 +20,12 @@ export interface IUser extends Document {
 
   proposalCount:Number
 
+  otp?: {
+    code: string
+    expiresAt: Date
+  }
+  isEmailVerified?:boolean
+
   
   createdAt: Date
   updatedAt: Date
@@ -46,6 +52,11 @@ const UserSchema = new Schema<IUser>(
     lastLogin: { type: Date },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
+    otp: {
+      code: String,
+      expiresAt: Date,
+    },
+    isEmailVerified:{type:Boolean,default:false}
   },
   { timestamps: true },
 )

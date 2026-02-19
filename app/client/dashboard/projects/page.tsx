@@ -669,9 +669,9 @@ const ProjectsPage = () => {
                   </Button>
                     )
                   }
-                  {project.status.toLowerCase() !== "allocated" &&
-                    project.status.toLowerCase() !== "closed" &&
-                    project.status.toLowerCase() !== "completed" && (
+                  {(project.status.toLowerCase() === "underreview" ||
+                    project.status.toLowerCase() === "notapproved") &&
+                    (
                       <Button
                         variant="outline"
                         size="sm"

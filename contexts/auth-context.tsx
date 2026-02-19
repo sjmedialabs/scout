@@ -85,17 +85,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     const data = await res.json();
-
+ 
     if (!res.ok) {
       throw new Error(data.error || "Registration failed");
     }
 
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
+    // localStorage.setItem("token", data.token);
+    // localStorage.setItem("user", JSON.stringify(data.user));
 
-    setToken(data.token);
-    setUser(data.user);
-    return data.user
+    // setToken(data.token);
+    // setUser(data.user);
+    return data
   };
 
   // ✅ LOGOUT
