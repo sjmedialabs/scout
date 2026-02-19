@@ -5,8 +5,8 @@ const SeekerSchema = new Schema(
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     
     name: { type: String },
-    email: { type: String},
-    phoneNumber: { type: String},
+   email: { type: String, unique: true, sparse: true },
+phoneNumber: { type: String, unique: true, sparse: true },
     companyName: { type: String },
     position: { type: String },
     industry: { type: String },
@@ -17,7 +17,7 @@ const SeekerSchema = new Schema(
     preferredCommunication: { type: String }, // FIXED TYPO
     typicalProjectBudget: { type: String }, // FIXED TYPO
     companySize: { type: String },
-    isActive: { type: Boolean, default: true },
+    isActive: { type: Boolean, default: true }, 
     isVerified: { type: Boolean, default: false },
     image: { type: String },
   },

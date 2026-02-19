@@ -25,9 +25,12 @@ import {
   Search,
   Bookmark,
   MessageSquare,
+  SearchIcon,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { CircleUserIcon } from "lucide-react";
+import { CircleUserRound } from "lucide-react";
 
 export function Navigation() {
   const { user, logout } = useAuth();
@@ -158,7 +161,7 @@ const overflowCategories = mainCategories.slice(5);
 
   return (
     <div className="bg-background">
-      <div className="bg-[#eff3f7] text-gray-500">
+      {/* <div className="bg-[#eff3f7] text-gray-500">
         <div
           className={`max-w-7xl mx-auto px-4 py-2 sm:px-6 lg:px-8 ${isAgencyDashboard ? "ml-80" : ""}`}
         >
@@ -168,7 +171,7 @@ const overflowCategories = mainCategories.slice(5);
                 <img src="/images/spark-nav-logo.png" alt="" className="h-12" />
               </Link>
             </div>
-            {/* Search Bar */}
+            
             <div className="lg:flex items-center rounded-full flex-1 max-w-[350px] xl:max-w-md border-[#c8d9ec] hidden">
               <form onSubmit={handleSearch} className="relative w-full">
                 <div className="absolute right-4 top-[30%] flex items-center justify-center pr-2 gap-1">
@@ -186,7 +189,7 @@ const overflowCategories = mainCategories.slice(5);
               </form>
             </div>
 
-            {/* Right Side Links */}
+            
             <div className="flex items-center space-x-6 py-4">
               <Link
                 href="/providers"
@@ -208,18 +211,28 @@ const overflowCategories = mainCategories.slice(5);
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
-      {isSticky && <div className="h-14" />}
+      {/* {isSticky && <div className="h-14" />} */}
       <nav
         className={`border-b border-border bg-white transition-all duration-300
         ${isSticky ? "fixed top-0 left-0 right-0 z-50 shadow-md" : "relative"}`}
       >
+       
         <div
           className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${isAgencyDashboard ? "ml-80" : ""}`}
         >
-          <div className="flex justify-between items-center h-12 gap-4">
-            {isSticky && (
+          <div className="flex justify-between items-center h-16 gap-4">
+
+             <div className="flex justify-between items-center h-8 xl:mr-30 lg:mr-1">
+            <div>
+              <Link href="/" className="flex items-center space-x-2">
+                <img src="/scoutlogo.jpeg" alt="" className="h-16" />
+              </Link>
+            </div>
+         </div>
+            
+            {/* {isSticky && (
               <div className="shrink-0">
                 <Link href="/" className="hidden lg:flex items-center">
                   <img
@@ -229,7 +242,7 @@ const overflowCategories = mainCategories.slice(5);
                   />
                 </Link>
               </div>
-            )}
+            )} */}
             <div className="flex items-center rounded-full flex-1 max-w-md lg:hidden">
               <form onSubmit={handleSearch} className="relative w-full">
                 <div className="absolute right-4 top-[25%] flex items-center justify-center pr-3 gap-2">
@@ -282,10 +295,10 @@ const overflowCategories = mainCategories.slice(5);
   gap-4 lg:gap-16 2xl:gap-16`}
 > */}
             <div
-              className={`hidden flex-1 min-w-0 lg:flex items-center
-                gap-4
-                ${isSticky ? "lg:gap-12" : "lg:gap-16"}
-                lg:gap-18 2xl:gap-24
+              className={`hidden flex-1 min-w-0 lg:flex  items-center
+                gap-2
+                
+                lg:gap-3 xl:gap-6 2xl:gap-6
                 transition-all duration-300`}
                           >
               {visibleCategories.map((category) => (
@@ -298,7 +311,7 @@ const overflowCategories = mainCategories.slice(5);
                 >
                   <DropdownMenuTrigger asChild>
                     <button
-                      className={`relative pb-4 mt-4 cursor-pointer transition whitespace-nowrap ${
+                      className={`relative pb-4 mt-4 text-[14px] font-bold cursor-pointer transition whitespace-nowrap ${
                         openMenu === category.slug
                           ? "text-[#F4561C] after:absolute after:left-0 after:-bottom-2 after:h-[2px] after:w-full after:bg-[#F4561C]"
                           : "text-gray-500 hover:text-slate-900"
@@ -337,20 +350,20 @@ const overflowCategories = mainCategories.slice(5);
               ))}
 
 
-              <div className="hidden lg:flex gap-4 lg:gap-16 xl:gap-16 2xl:gap-16">
+              <div className="hidden lg:flex gap-4 lg:gap-6 xl:gap-6 2xl:gap-6">
   <Link
     href="/pricing"
-    className="text-md text-gray-500 hover:text-slate-900 mt-1"
+    className="text-[14px] font-bold text-gray-500  hover:text-slate-900 mt-1"
   >
     Pricing
   </Link>
 
-  <Link
+  {/* <Link
     href="/about"
     className="text-md text-gray-500 hover:text-slate-900 mt-1"
   >
     About
-  </Link>
+  </Link> */}
 
   {/* MORE DROPDOWN */}
   {overflowCategories.length > 0 && (
@@ -363,8 +376,9 @@ const overflowCategories = mainCategories.slice(5);
 
     >
       <DropdownMenuTrigger asChild>
-         <button className="p-1">
-            <FaBars className="text-gray-500 cursor-pointer hover:text-slate-900 h-6 w-6" />
+         <button className="p-1 text-[14px] font-bold text-gray-500">
+            {/* <FaBars className="text-red cursor-pointer hover:text-slate-900 h-6 w-6" /> */}
+            More
           </button> 
         </DropdownMenuTrigger>
 
@@ -441,9 +455,9 @@ const overflowCategories = mainCategories.slice(5);
             </div>
 
             {/* Post a Project Button */}
-            <div className="hidden lg:block rounded-full ml-4 shrink-0">
+            <div className="flex flex-row gap-2">
               <Button
-                className="bg-orangeButton hover:bg-[#f54607] text-white h-8 rounded-full"
+                className="bg-orangeButton  hover:bg-[#f54607] text-white h-8 rounded-full"
                 asChild
               >
                 <Link
@@ -451,9 +465,21 @@ const overflowCategories = mainCategories.slice(5);
                     user ? "/client/dashboard?section=projects" : "/register"
                   }
                 >
-                  Post A Project
+                  List Project
                 </Link>
               </Button>
+
+               <Button className="bg-orangeButton mr-3 hover:bg-[#f54607] text-white h-8 rounded-full"  onClick={()=>router.push("/browse")}>
+                <SearchIcon/> Projects
+              </Button>
+             
+               
+                <CircleUserRound className="h-6 w-6 mt-1" color="#f54607"/>
+                
+              
+
+             
+              
             </div>
 
             {/* Mobile Menu Button */}
@@ -528,13 +554,13 @@ const overflowCategories = mainCategories.slice(5);
         Pricing
       </Link>
 
-      <Link
+      {/* <Link
         href="/about"
         className="text-slate-600 hover:text-slate-900 text-sm"
         onClick={() => setMobileMenuOpen(false)}
       >
         About
-      </Link>
+      </Link> */}
 
       {/* Post a Project Button */}
       <div className="pt-4 border-t border-border">

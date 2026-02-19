@@ -95,7 +95,7 @@ useEffect(() => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4 -mt-2">
       {/* HEADER */}
       <div>
         <h1 className="text-3xl font-bold text-orangeButton my-custom-class">

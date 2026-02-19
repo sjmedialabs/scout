@@ -29,6 +29,7 @@ export interface IProposal extends Document {
     cost: number
     willingToRefer: number
   }
+  documentUrl?: string,
   createdAt: Date
   updatedAt: Date
 }
@@ -69,7 +70,9 @@ const ProposalSchema = new Schema<IProposal>(
       cost: { type: Number, min: 1, max: 5 },
       willingToRefer: { type: Number, min: 1, max: 5 },
     },
+    documentUrl: { type: String },
   },
+
   { timestamps: true },
 )
 

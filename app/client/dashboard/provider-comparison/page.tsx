@@ -483,12 +483,12 @@ const ProviderComparisonPage = () => {
   }
 
   return (
-    <div className="space-y-6 p-3 md:p-6">
+    <div className="space-y-3">
       <div>
-        <h1 className="text-3xl text-[#F4561C] my-custom-class leading-6">
+        <h1 className="text-md lg:text-3xl text-[#F4561C] my-custom-class leading-6">
           Provider Comparison
         </h1>
-        <p className="text-lg text-[#656565] my-custom-class mt-0">
+        <p className="text-sm lg:text-lg text-[#656565] my-custom-class mt-0">
           Compare vendors side-by-side to make informed decisions
         </p>
       </div>
@@ -496,12 +496,12 @@ const ProviderComparisonPage = () => {
       {/* Vendor Selection */}
       <Card className="border-[1px] border-[#D1CBCB] rounded-3xl bg-[#fff] shadow-none w-auto">
         <CardHeader>
-          <div className="flex flex-row justify-between items-center">
+          <div className="flex flex-row flex-wrap justify-between items-center">
             <div>
-              <CardTitle className="text-[#333333] text-2xl font-bold my-custom-class leading-6">
+              <CardTitle className="text-[#333333] text-md lg:text-2xl font-bold my-custom-class leading-6">
                 Select Vendors to Compare
               </CardTitle>
-              <CardDescription className="text-md text-[#333333] font-normal my-custom-class">
+              <CardDescription className="text-sm lg:text-md text-[#333333] font-normal my-custom-class">
                 Choose up to 4 vendors to compare their ratings and proposals
               </CardDescription>
             </div>
@@ -510,7 +510,7 @@ const ProviderComparisonPage = () => {
                 variant="outline"
                 onClick={() => setShowVendorModal(true)}
                 size="sm"
-                className="border-[1px] border-[#DEDEDE] rounded-full bg-[#EDEDED] text-[#000] hover:text-[#000] active:bg-[#EDEDED] hover:bg-[#EDEDED]"
+                className="border-[1px] border-[#DEDEDE] rounded-full bg-[#2C34A1] text-[#fff] hover:text-[#000] active:bg-[#2C34A1] hover:bg-[#2C34A1]"
               >
                 Add Vendor
               </Button>
@@ -817,9 +817,9 @@ const ProviderComparisonPage = () => {
             </div>
 
             {/* 🔹 FILTER + CONTENT (Scrollable) */}
-            <div className="flex-1 overflow-y-auto px-6 py-4">
+            <div className="flex-1  overflow-y-auto px-6 py-4">
               {/* Filter */}
-              <div className="grid grid-cols-2 gap-5 w-full">
+              <div className=" lg:grid lg:grid-cols-2 gap-5 w-full">
                 <div className="relative w-full min-w-0">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -843,7 +843,8 @@ const ProviderComparisonPage = () => {
                 <Select onValueChange={handleFilterChange} value={filterStatus}>
                   <SelectTrigger
                     className="
-                  mt-1
+                  mt-3
+                  lg:mt-1
                   border-0
                   border-2
                   border-[#b2b2b2]
@@ -900,11 +901,11 @@ const ProviderComparisonPage = () => {
                                     Verified
                                   </Badge>
                                 )}
-                                {provider.isFeatured && (
+                                {/* {provider.isFeatured && (
                                   <Badge className="bg-[#F54A0C] text-white h-7 px-3 rounded-2xl">
                                     Featured
                                   </Badge>
-                                )}
+                                )} */}
                               </div>
       
                               <div className="flex items-center gap-1 text-sm">
@@ -930,7 +931,7 @@ const ProviderComparisonPage = () => {
                             <div className="mt-3 mb-4">
                               {provider.services.length !== 0 ? (
                                 <div className="flex flex-wrap gap-2">
-                                  {provider.services.map((service) => (
+                                  {provider.services.slice(0,3).map((service) => (
                                     <Badge
                                       key={service}
                                       variant="outline"
@@ -953,7 +954,7 @@ const ProviderComparisonPage = () => {
                           {/* 🔽 BOTTOM CONTENT (sticks to bottom) */}
                           <div className="mt-auto">
                             {/* Info row */}
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-xs sm:text-sm">
+                            {/* <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-xs sm:text-sm">
                               <div className="flex items-center gap-2">
                                 <img src="/location-filled.jpg" className="h-4 w-4" />
                                 <span className="text-[#808080] font-semibold break-words">
@@ -977,9 +978,9 @@ const ProviderComparisonPage = () => {
                                   Response: {provider?.responseTime || "2 hrs"}
                                 </span>
                               </div>
-                            </div>
+                            </div> */}
                             <p className="text-[#808080] text-sm sm:text-base font-semibold mb-3">
-                              From: {provider?.hourlyRate || 0}/hour
+                              Starting Price : {provider?.hourlyRate || 0} $/hour
                             </p>
       
                             <div className="mt-3 flex flex-col sm:flex-row gap-2">

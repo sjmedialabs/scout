@@ -514,7 +514,7 @@ useEffect(() => {
   console.log("Filtered Conversatoions are::::::", filteredDynamicConversation);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 -mt-2">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-orangeButton my-custum-class">
@@ -660,7 +660,7 @@ useEffect(() => {
               </div>
             </div>
 
-            <div className="flex-1 px-6 py-4 space-y-5 overflow-y-auto">
+            <div className="flex-1 px-6 py-4 space-y-5 overflow-y-auto max-h-[60vh] [scrollbar-width:none] [-ms-overflow-style:none]  [&::-webkit-scrollbar]:hidden">
               {!chatLaoding && (dynamicMessages || []).length != 0 ? (
                 <div>
                   {dynamicMessages.map((msg: Message) => (

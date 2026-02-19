@@ -183,12 +183,12 @@ const { cms, providers, projects, categories } = data;
       >
         <div className="max-w-6xl mx-auto flex justify-center flex-col">
           <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-1 rounded-full border border-orangeButton mb-2">
-              <span className="text-xs font-medium text-slate-600 capitalize">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] font-extrabold px-4 py-1 rounded-full mb-2">
+              <span className="text-xs font-medium text-[#fff] capitalize">
                 Service Categories
               </span>
             </div>
-            <h2 className="stext-mediun uppercase my-custom-class font-bold text-black ">
+            <h2 className="stext-mediun uppercase font-bold text-black ">
              {cms?.homeServiceTitle}
               {/* <span className="text-blueButton font-bold my-custom-class">
                 any project

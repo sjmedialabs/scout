@@ -711,14 +711,14 @@ export default function AgencyDashboard() {
           <div className="mt-4 h-px bg-border" />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8">
+        <div className="">
           {/* LEFT */}
           <div className="space-y-3">
             {/* Visibility */}
             <div>
-              <h3 className="text-lg font-semibold text-orangeButton my-custom-class mb-2">
+              {/* <h3 className="text-lg font-semibold text-orangeButton my-custom-class mb-2">
                 Visibility & Engagement
-              </h3>
+              </h3> */}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1">
                 {[
@@ -740,6 +740,18 @@ export default function AgencyDashboard() {
                     footer: `+${dynamicStats.websiteClicksPercentage}% this month`,
                     icon: RiMessage2Line,
                   },
+                  {
+                    label: "Proposals",
+                    value: dynamicStats.proposals,
+                    footer: `${dynamicStats.proposalResponses} responses`,
+                    icon: FileText,
+                  },
+                  {
+                    label: "Conversion Rate",
+                    value: `${dynamicStats.conversionPercentage}%`,
+                    footer: "Proposal to project",
+                    icon: TrendingUp,
+                  },
                   // {
                   //   label: "Invitations",
                   //   value: analyticsData.projectInvitations,
@@ -749,38 +761,56 @@ export default function AgencyDashboard() {
                 ].map((item, i) => {
                   const Icon = item.icon;
                   return (
-                    <div
-                      key={i}
-                      className="
-                        rounded-xl bg-white relative
-                        px-2 py-3
-                        shadow-[0_6px_22px_rgba(0,0,0,0.08)]
-                        flex flex-col gap-1.5
-                        max-w-[190px]
-                      "
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="text-xs font-medium my-custom-class leading-sung">
-                          {item.label}
-                        </span>
-                        <div className=" absolute top-2 right-1 h-5 w-5 rounded-full bg-[#eef7fe] flex items-center justify-center">
-                          <Icon className="h-3 w-3 text-orangeButton" />
-                        </div>
-                      </div>
-                      <div className="text-[16px] font-semibold leading-tight">
-                        {item.value}
-                      </div>
-                      <p className="text-[10px] text-green-500 mt-auto">
-                        {item.footer}
-                      </p>
-                    </div>
+                    // <div
+                    //   key={i}
+                    //   className="
+                    //     rounded-xl bg-white relative
+                    //     px-2 py-3
+                    //     shadow-[0_6px_22px_rgba(0,0,0,0.08)]
+                    //     flex flex-col gap-1.5
+                    //     max-w-[190px]
+                    //   "
+                    // >
+                    //   <div className="flex items-center justify-between gap-3">
+                    //     <span className="text-xs font-medium my-custom-class leading-sung">
+                    //       {item.label}
+                    //     </span>
+                    //     <div className=" absolute top-2 right-1 h-5 w-5 rounded-full bg-[#eef7fe] flex items-center justify-center">
+                    //       <Icon className="h-3 w-3 text-orangeButton" />
+                    //     </div>
+                    //   </div>
+                    //   <div className="text-[16px] font-semibold leading-tight">
+                    //     {item.value}
+                    //   </div>
+                    //   <p className="text-[10px] text-green-500 mt-auto">
+                    //     {item.footer}
+                    //   </p>
+                    // </div>
+                    <Card className="bg-[#fff] rounded-2xl">
+                                  <CardHeader className="flex flex-row items-center justify-between space-y-0 ">
+                                    <CardTitle className="text-sm font-medium my-custom-class text-[#000]">
+                                      {item.label}
+                                    </CardTitle>
+                                    <div className=" h-8 w-8 flex items-center justify-center rounded-full bg-[#EEF7FE]">
+                                       <Icon className="h-3 w-3 text-orangeButton" />
+                                    </div>
+                                  </CardHeader>
+                                  <CardContent className="space-y-0 py-0 -mt-3">
+                                    <div className="text-2xl font-bold text-[#000]">
+                                      {item.value}
+                                    </div>
+                                    <p className="text-sm text-green-500 font-normal">
+                                     {item.footer}
+                                    </p>
+                                  </CardContent>
+                                </Card>
                   );
                 })}
               </div>
             </div>
 
             {/* Performance */}
-            <div>
+            {/* <div>
               <h3 className="text-lg font-semibold text-orangeButton my-custom-class mb-4">
                 Performance Metrics
               </h3>
@@ -799,12 +829,12 @@ export default function AgencyDashboard() {
                     footer: "Proposal to project",
                     icon: TrendingUp,
                   },
-                  // {
-                  //   label: "Leads",
-                  //   value: dynamicStats.leads,
-                  //   footer: `+${analyticsData.leadsChange}% this month`,
-                  //   icon: PiUsersThreeLight,
-                  // },
+                  {
+                    label: "Leads",
+                    value: dynamicStats.leads,
+                    footer: `+${analyticsData.leadsChange}% this month`,
+                    icon: PiUsersThreeLight,
+                  },
                   {
                     label: "Client Rate",
                     value: `${analyticsData.leadToClientRate}%`,
@@ -845,7 +875,7 @@ export default function AgencyDashboard() {
                   );
                 })}
               </div>
-            </div>
+            </div> */}
 
             {/* Active Projects */}
             <Card className="rounded-2xl shadow-lg bg-white p-3 pl-0">
@@ -924,13 +954,13 @@ export default function AgencyDashboard() {
           </div>
 
           {/* RIGHT – Notifications */}
-          <div className="lg:sticky lg:top-6 self-start">
+          {/* <div className="lg:sticky lg:top-6 self-start">
             <NotificationsWidget
               notifications={dynamicNotifications}
               onMarkAsRead={handleMarkNotificationAsRead}
               onDismiss={() => {}}
             />
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

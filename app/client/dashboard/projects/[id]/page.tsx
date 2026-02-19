@@ -32,6 +32,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import  { File } from "lucide-react";
 const ProjectDetailPage = () => {
   const [projectDetails, setProjectDetails] = useState();
   const [filterStatus, setFilterStatus] = useState("all");
@@ -315,7 +316,7 @@ const textareaClass =
 
 
   return (
-    <div className="space-6 p-5">
+    <div className="space-6 ">
       
       {loading && (
         <div className="min-h-screen flex items-center justify-center">
@@ -585,14 +586,14 @@ const textareaClass =
       }
       {
           (projectDetails || {}).status === "Allocated" && (
-            <div className="space-y-8">
+            <div className="space-y-4">
 
                           {/* HEADER */}
                           <Card className="rounded-[36px] border border-gray-300 bg-white">
                             <CardContent className="px-12 py-0 space-y-6">
 
                               {/* Heading */}
-                              <div className="space-y-3 flex justify-between">
+                              <div className="space-y-3 flex flex-wrap justify-between">
                                 <h1 className="text-[28px] font-extrabold text-orange-600 h-8">
                                   {acceptedProposal.requirement.title}
                                 </h1>
@@ -607,7 +608,7 @@ const textareaClass =
                               </div>
 
                               {/* Meta row */}
-                              <div className="flex flex-wrap items-center h-3 gap-8 text-[16px]">
+                              <div className="flex flex-wrap items-center   gap-4 text-[16px]">
                                 <span className="rounded-md leading-none bg-gray-100 px-3 py-1 text-[14px] font-medium text-gray-500">
                                   {acceptedProposal.requirement.category}
                                 </span>
@@ -638,7 +639,7 @@ const textareaClass =
 
                           {/* PROPOSAL DETAILS */}
                           <Card className="rounded-[36px] border border-gray-300 bg-white">
-                            <CardContent className="px-12 py-10 space-y-10">
+                            <CardContent className="px-6 py-6 space-y-4">
 
                               <div className="flex justify-end">
                                 <Badge className="rounded-full bg-green-500 text-sm h-[30px]">
@@ -672,7 +673,7 @@ const textareaClass =
                                 <label className="text-[14px] font-bold text-[#98A0B4]">
                                   Work Approach
                                 </label>
-                                <div className={`${textareaClass} min-h-[140px]`}>
+                                <div className={`${textareaClass}`}>
                                   {acceptedProposal.proposalDescription}
                                 </div>
                               </div>
@@ -684,7 +685,7 @@ const textareaClass =
                                 <label className="text-[14px] font-bold text-[#98A0B4]">
                                   Cover Letter
                                 </label>
-                                <div className={`${textareaClass} min-h-[140px]`}>
+                                <div className={`${textareaClass}`}>
                                   {acceptedProposal?.coverLetter}
                                 </div>
                               </div>
@@ -708,6 +709,23 @@ const textareaClass =
                                   </div>
                                 ))}
                               </div>
+
+                              {/*Attachment Document */}
+                              
+                              {
+                                    acceptedProposal.documentUrl && (
+                                      <a
+                                        href={acceptedProposal.documentUrl}
+                                        download
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center cursor-pointer gap-0 -mt-1 text-gray-500"
+                                      >
+                                        <File height={20} width={20} />
+                                        <span className="ml-2 text-md underline">Download Attached Document</span>
+                                      </a>
+                                    )
+                                  }
 
                             </CardContent>
                           </Card>

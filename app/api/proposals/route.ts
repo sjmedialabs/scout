@@ -112,7 +112,8 @@ export async function GET(request: NextRequest) {
       clientResponded:p.clientResponded,
       clientId:p.clientId,
       agencyId:p.agencyId,
-      proposalDescription:p.proposalDescription
+      proposalDescription:p.proposalDescription,
+      documentUrl:p.documentUrl
     }));
 
     return NextResponse.json({
@@ -168,6 +169,7 @@ export async function POST(request: NextRequest) {
       proposedTimeline,
       coverLetter,
       milestones,
+      documentUrl
     } = body;
 
     if (!mongoose.Types.ObjectId.isValid(requirementId)) {
@@ -215,6 +217,7 @@ export async function POST(request: NextRequest) {
       proposedTimeline: proposedTimeline || "As discussed",
       milestones: milestones || [],
       status: "pending",
+      documentUrl: documentUrl || "",
     });
 
      // Update project proposal count

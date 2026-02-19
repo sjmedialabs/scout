@@ -292,6 +292,12 @@ const ProposalPage = () => {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
     null,
   );
+  
+   const [filterStatus, setFilterStatus] = useState<string>("all");
+   const[projectTitles,setProjectTitles]=useState([]);
+   const[projectFilter,setProjectFilter]=useState<string>("All");
+   const[filteredProposals,setFilteredProposals]=useState<Proposal[]>([]);
+
   // negotation modal and message
     const[showNegotationModal,setShowNegotationModal]=useState(false);
     const[negotationMessage,setNegotationMessage]=useState("");
@@ -303,7 +309,7 @@ const ProposalPage = () => {
       msg:""
     })
 
-  const LoadData = async () => {
+  const LoadData = async (userId: string) => {
     setResponseLoading(true);
     setFailed(false);
 
@@ -311,7 +317,10 @@ const ProposalPage = () => {
       const response = await authFetch(`/api/proposals`, {credentials: "include" });
       const data = await response.json();
 
-      console.log("Fetched Proposal for your posted Requirements:::", data);
+      const reqRes=await authFetch(`/api/requirements/${userId}`, {credentials: "include" });
+      const reqData=await reqRes.json();
+
+      console.log("Fetched Proposals:::", data);
 
       const filteredProposals = data.proposals.filter((p: any) => {
         const id =
@@ -321,10 +330,15 @@ const ProposalPage = () => {
 
         console.log("Comparing:", id?.toString(), requirementId);
 
+        let tempTitles=["All"];
+        (reqData.requirements || []).map((eachItem)=>tempTitles.push(eachItem.title))
+        setProjectTitles(tempTitles)
+
         return id?.toString() === requirementId;
       });
 
       setProposals(data.proposals);
+      setFilteredProposals(data.proposals)
       setSelectedRequirementProposals(filteredProposals);
       setFailed(false);
     } catch (error) {
@@ -461,6 +475,7 @@ const ProposalPage = () => {
     // In real app, this would send the revision request to the provider
   };
 
+  console.log("Project titles are :::::",projectTitles)
   const getProposalsForRequirement = (requirementId: string) => {
     return proposals.filter((p) => p.requirementId === requirementId);
   };
@@ -565,8 +580,20 @@ const ProposalPage = () => {
         setSending(false)
       }
   }
-    
 
+  //filters 
+  useEffect(()=>{
+    let tempFiltered=[...(proposals || [])]
+    if(filterStatus!="all"){
+      tempFiltered=tempFiltered.filter((eachItem)=>eachItem.status.toLowerCase()===filterStatus.toLowerCase())
+    }
+    if(projectFilter!="All"){
+      tempFiltered=tempFiltered.filter((eachItem)=>eachItem?.requirement?.title.toLowerCase()===projectFilter.toLowerCase())
+    }
+    setFilteredProposals(tempFiltered);
+  },[filterStatus,projectFilter])
+    
+console.log("Filtered Proposals:::::::",filteredProposals)
   if (loading || responseLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -590,7 +617,7 @@ const ProposalPage = () => {
     );
   }
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 -mt-2">
       <div>
         <h1 className="text-2xl font-bold my-custom-class text-[#F4561C]">
           Proposals
@@ -603,7 +630,7 @@ const ProposalPage = () => {
         <p className="text-[#656565] text-xl font-medium my-custom-class">
           {selectedRequirement
             ? "Review and manage proposals for the selected requirement"
-            : "All proposals received for your projects and requirements"}
+            : "All proposals received for your projects"}
         </p>
       </div>
 
@@ -618,7 +645,7 @@ const ProposalPage = () => {
         >
           Project Proposals ({proposals.length})
         </button>
-        <button
+        {/* <button
           className={`h-[100%] ${
             selectedRequirement
               ? "bg-[#F54A0C] rounded-full text-[#fff] px-5"
@@ -627,11 +654,11 @@ const ProposalPage = () => {
           onClick={() => setSelectedRequirement("req" || null)}
         >
           Requirement Proposals
-        </button>
+        </button>  */}
       </div>
 
       <Card className="bg-[#fff] py-0 rounded-[22px]">
-        <CardContent className="max-h-[600px] overflow-y-auto p-4">
+        <CardContent className="p-4">
           {selectedRequirement ? (
             <ProposalList
               // proposals={getProposalsForRequirement(selectedRequirement)}
@@ -643,10 +670,99 @@ const ProposalPage = () => {
             />
           ) : (
             <div className="space-y-6">
-              {proposals.length > 0 ? (
+              {/*Filterss block */}
+              {
+                (projectTitles.length>=1) && (
+                  <div className="flex flex-row pb-2  justify-between mx-3 mb-0 flex-wrap">
+                    <div className="mb-2 md:mb-0">
+                      <p className="text-md text-gray-500 ml-2">Proposal Status</p>
+                      <Select
+                        onValueChange={(value) => setFilterStatus(value)}
+                        value={filterStatus}
+                      >
+                        <SelectTrigger
+                          className="
+                          
+                          border-0
+                          border-2
+                          border-[#b2b2b2]
+                          cursor-pointer
+                          rounded-full
+              
+                          shadow-none
+                          focus:outline-none focus:ring-0 focus:ring-offset-0
+                          focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
+                          focus:border-[#b2b2b2]
+                          placeholder:text-[#b2b2b2]
+                          px-6
+                          w-[160px]
+                          h-12
+                          text-sm
+                          md:text-base
+                        "
+                        >
+                          <SelectValue placeholder="Rating" />
+                        </SelectTrigger>
+              
+                        <SelectContent>
+                          <SelectItem value="all">All</SelectItem>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="shortlisted">Shortlisted</SelectItem>
+                          <SelectItem value="negotation">Negotiation</SelectItem>
+                          <SelectItem value="accepted">Accepted</SelectItem>
+                          <SelectItem value="rejected">Rejected</SelectItem>
+                          <SelectItem value="completed">Completed</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="mb-2 md:mb-0">
+                       <p className="text-md text-gray-500 ml-2">Select Project</p>
+                      <Select
+                        onValueChange={(value) => setProjectFilter(value)}
+                        value={projectFilter}
+                      >
+                        <SelectTrigger
+                          className="
+                          
+                          border-0
+                          border-2
+                          border-[#b2b2b2]
+                          
+                          rounded-full
+              
+                          shadow-none
+                          focus:outline-none focus:ring-0 focus:ring-offset-0
+                          focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
+                          focus:border-[#b2b2b2]
+                          placeholder:text-[#b2b2b2]
+                          px-6
+                          cursor-pointer
+                          mb-0
+                          text-sm
+                          md:text-base
+                          min-w-[160px]
+                          max-w-[250px]
+                          
+                        "
+                        >
+                          <SelectValue placeholder="Rating" />
+                        </SelectTrigger>
+              
+                        <SelectContent className=" mr-[40px] max-h-[300px]">
+                          {
+                            (projectTitles || []).map((eachItem,index)=>(<SelectItem value={eachItem} key={index}>{eachItem}</SelectItem>))
+                          }
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                )
+              }
+              <div className="max-h-[600px] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden pr-2">
+                {filteredProposals.length > 0 ? (
                 <div>
                   <div className="space-y-4 mb-4">
-                    <div className="flex justify-between items-center mt-0">
+                    {/* <div className="flex justify-between items-center mt-0">
                       <h3 className="text-lg font-semibold my-custom-class tracking-tight">
                         Proposals Received
                       </h3>
@@ -656,10 +772,11 @@ const ProposalPage = () => {
                         {proposals.rejectedCount > 0 &&
                           ` (${proposals.rejectedCount} rejected)`}
                       </div>
-                    </div>
+                    </div> */}
+
                   </div>
 
-                 {proposals.map((proposal) => (
+                 {filteredProposals.map((proposal) => (
                     <Card
                       key={proposal.id}
                       className="py-0 px-0 rounded-[22px] mb-3"
@@ -745,13 +862,14 @@ const ProposalPage = () => {
                               )}
 
                               <div>
-                                <h4 className="font-bold text-xl text-[#616161] mb-0">
-                                  Proposal Description
-                                </h4>
-                                <p className="text-[#939191] font-normal text-sm">
-                                  {proposal.proposalDescription}
-                                </p>
-                              </div>
+                              <h4 className="font-bold text-xl text-[#616161] mb-0">
+                                Proposal Description
+                              </h4>
+                              <p className="text-[#939191] font-normal text-sm line-clamp-2">
+                                {proposal.proposalDescription}
+                              </p>
+                            </div>
+
 
                               {/* Status Section */}
                               <div className="flex items-center mt-2 mb-3 gap-2">
@@ -891,6 +1009,7 @@ const ProposalPage = () => {
                   </p>
                 </div>
               )}
+              </div>
             </div>
           )}
         </CardContent>

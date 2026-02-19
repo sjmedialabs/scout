@@ -102,6 +102,7 @@ export async function GET(
         proposedTimeline: p.proposedTimeline,
         milestones: p.milestones,
         status: p.status,
+        documentUrl:p.documentUrl,
 
         createdAt: p.createdAt,
         updatedAt: p.updatedAt,

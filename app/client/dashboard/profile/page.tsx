@@ -147,13 +147,19 @@ const ClientProfilePage = () => {
         credentials: "include",
       });
 
+      const data=await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to update profile");
+      }
+
       if (response.ok) {
         toast.success("User details updated successfully");
         setIsEditingProfile(false);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log("failed to save::", error);
-      toast.error("failed to update try again");
+      toast.error(error.message || "Failed to update profile");
     }
     // Show success message or toast
   };
@@ -180,8 +186,8 @@ const ClientProfilePage = () => {
   // }
 
   return (
-    <div className="space-y-8 mt-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-[#707070] pb-[30px] gap-4">
+    <div className="space-y-3 -mt-2">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-[#707070] pb-4 gap-4 ">
         {/* Left section */}
         <div className="w-full">
           <h1 className="text-3xl font-bold my-custom-class text-[#F54A0C] tracking-tight">

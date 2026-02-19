@@ -343,7 +343,7 @@ const ClientProvidersPage = () => {
     }
   };
   return (
-    <div className="space-y-6 p-2 md:p-6">
+    <div className="space-y-3">
       <div>
         <h1 className="text-4xl font-bold text-[#F4561C] my-custom-class tracking-tight">
           Find Agencies
@@ -455,7 +455,7 @@ const ClientProvidersPage = () => {
                 </Select>
               </div>
 
-              <div className="w-full min-w-0 flex flex-row gap-3">
+              <div className="w-full min-w-0 flex flex-wrap flex-row gap-3">
                 <Button
                   className="w-full sm:w-[150px] lg:w-[120px] h-10 mt-2 lg:mt-1
                         rounded-3xl bg-[#F54A0C] text-white
@@ -904,9 +904,9 @@ const ClientProvidersPage = () => {
                           <span className="font-semibold">
                             {provider.rating}
                           </span>
-                          <span className="text-muted-foreground">
+                          {/* <span className="text-muted-foreground">
                             ({provider.reviewCount})
-                          </span>
+                          </span> */}
                         </div>
                       </div>
 
@@ -922,7 +922,7 @@ const ClientProvidersPage = () => {
                       <div className="mt-3 mb-4">
                         {provider.services.length !== 0 ? (
                           <div className="flex flex-wrap gap-2">
-                            {provider.services.map((service) => (
+                            {provider.services.slice(0,3).map((service) => (
                               <Badge
                                 key={service}
                                 variant="outline"
@@ -961,32 +961,42 @@ const ClientProvidersPage = () => {
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <img
+                          {/* <img
                             src="/chat-operational.jpg"
                             className="h-4 w-4"
-                          />
+                          /> */}
+                          <Users color="#F54A0C" height={20} width={20}/>
                           <span className="text-[#808080] font-semibold">
-                            Response: {provider?.responseTime || "2 hrs"}
+                            Team: {provider?.teamSize || "10"}
                           </span>
                         </div>
                       </div>
                       <p className="text-[#808080] text-sm sm:text-base font-semibold mb-3">
-                        From: {provider?.hourlyRate || 0}/hour
+                        Starting Price :  {provider?.hourlyRate || 0} $/hour
                       </p>
 
                       <div className="mt-3 flex flex-col sm:flex-row gap-2">
+                          <a href={`/provider/${provider.id}`} target="_blank" rel="noopener noreferrer">
                           <Button
                             className="w-full sm:w-[140px] bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white"
-                            onClick={() => handleViewProvider(provider.id)}
+                            // onClick={() => handleViewProvider(provider.id)}
                           >
                             View Profile
                           </Button>
-                          <Button
-                            className="w-full sm:w-[160px] bg-[#4d4d4d] rounded-3xl text-white"
-                            onClick={() => handleContactProvider(provider.id)}
-                          >
-                            Contact Provider
-                          </Button>
+                          </a>
+                         {
+                          provider.email && (
+                            <Button
+                          className="w-full sm:w-[160px] bg-[#4d4d4d] rounded-3xl text-white"
+                          onClick={() => {
+                            window.location.href = `mailto:${provider.email}`;
+                          }}
+                        >
+                          Contact Provider
+                        </Button>
+                          )
+                         }
+
                        </div>
                     </div>
                   </div>

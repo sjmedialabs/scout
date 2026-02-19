@@ -509,7 +509,7 @@ const ProjectsPage = () => {
     );
   }
   return (
-    <div className="space-y-6 p-3 md:p-6">
+    <div className="space-y-3 ">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center ">
         <div>
           <h1 className="text-3xl font-bold text-[#F4561C] my-custom-class leading-6">
@@ -597,7 +597,7 @@ const ProjectsPage = () => {
                     <h3 className="text-2xl font-bold mb-2 text-[#2C34A1]">
                       {project.title}
                     </h3>
-                    <p className="text-md text-[#898383] font-normal mb-3">
+                    <p className="text-md text-[#898383] font-normal mb-3 line-clamp-2">
                       {project.description}
                     </p>
                     <div className="flex items-center gap-4 text-sm flex-wrap text-muted-foreground">
@@ -669,9 +669,9 @@ const ProjectsPage = () => {
                   </Button>
                     )
                   }
-                  {project.status.toLowerCase() !== "allocated" &&
-                    project.status.toLowerCase() !== "closed" &&
-                    project.status.toLowerCase() !== "completed" && (
+                  {(project.status.toLowerCase() === "underreview" ||
+                    project.status.toLowerCase() === "notapproved") &&
+                    (
                       <Button
                         variant="outline"
                         size="sm"
