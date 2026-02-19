@@ -152,7 +152,7 @@ const { cms, providers, projects, categories } = data;
       <HomeHero cms={cms} />
 
       {/* Features */}
-      <section className="py-8 px-4">
+      <section className="py-6 px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-4xl font-bold text-center mb-4">
             How Spark Works
@@ -176,13 +176,13 @@ const { cms, providers, projects, categories } = data;
 
       {/* Service Categories - CMS Driven */}
       <section
-        className="py-20 px-4"
+        className="py-4 px-4"
         style={{
           backgroundImage: "url('/images/category-background.png')",
         }}
       >
         <div className="max-w-6xl mx-auto flex justify-center flex-col">
-          <div className="text-center mb-16">
+          <div className="text-center mb-6">
             <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-1 rounded-full border border-orangeButton mb-2">
               <span className="text-xs font-medium text-slate-600 capitalize">
                 Service Categories
@@ -199,7 +199,7 @@ const { cms, providers, projects, categories } = data;
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
             {(categories && categories.length > 0 ? categories : []).map(
               (category: any) => {
                 const colors = colorMap[category.color] || colorMap.blue;
@@ -261,9 +261,9 @@ const { cms, providers, projects, categories } = data;
 
       {/* Public Requirements - From API */}
       {projects.length > 0 && (
-        <section className="py-16 px-4">
+        <section className="py-6 px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-6">
               <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-1 rounded-full border border-orangeButton mb-2">
                 <span className="text-xs font-medium text-slate-600 capitalize">
                   Newly added
@@ -325,23 +325,22 @@ const { cms, providers, projects, categories } = data;
                     >
                       {project.category}
                     </Badge>
-
-                    <span className="text-sm font-semibold text-red-500">
-                      {project.timeline}
+                    <span className="text-sm font-semibold text-black">
+                      Timeline - <span className="text-red-500">{project.timeline}</span>
                     </span>
                   </div>
 
                   {/* Title */}
-                  <h3 className="px-6 mt-3 text-lg font-semibold capitalize">
+                  <h3 className="px-6 mt-1 text-lg font-semibold capitalize">
                     {project.title}
                   </h3>
 
                   {/* Description */}
-                  <div className="px-6 mt-2">
+                  {/* <div className="px-6 mt-1">
                     <p className="text-sm text-gray-500 line-clamp-2">
                       {project.description}
                     </p>
-                  </div>
+                  </div> */}
 
                   {/* Budget */}
                   <div className="mt-auto">
@@ -354,16 +353,16 @@ const { cms, providers, projects, categories } = data;
 
                     {/* Button */}
                     <div className="px-6 pb-6 mt-1">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        asChild
-                        className="bg-black text-white rounded-full text-xs px-5 py-2 hover:bg-black"
-                      >
-                        <Link href="/login?to=project-enquiries">
+                      <Link href={`/login?to=requirement-details&id=${project._id}`}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="bg-black text-white rounded-full text-xs px-5 py-2 hover:bg-black"
+                        >
                           View Details →
-                        </Link>
-                      </Button>
+                        </Button>
+                      </Link>
+
                     </div>
                   </div>
                 </div>
@@ -386,15 +385,15 @@ const { cms, providers, projects, categories } = data;
 
       {/* Top Providers - From API */}
       {providers.length > 0 && (
-        <section className="py-16 px-4 bg-blueBackground">
+        <section className="py-6 px-4 bg-blueBackground">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-8">
+            <div className="text-center mb-6">
               <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-1 rounded-full border border-orangeButton mb-2">
                 <span className="text-xs font-medium text-slate-600 capitalize">
-                  Top Agency
+                  Top Agencies
                 </span>
               </div>
-              <h2 className="stext-mediun uppercase font-extrabold text-black ">
+              <h2 className="text-mediun uppercase font-extrabold text-black ">
                 {cms?.topProvidersTitle || "Top Providers"}
               </h2>
               <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
@@ -402,14 +401,16 @@ const { cms, providers, projects, categories } = data;
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
-              {providers.map((provider: any) => (
+              {[...providers]
+                .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+                .map((provider: any) => (
                 <div
                   key={provider._id}
                   className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300 bg-white
                  flex flex-col h-full"
                 >
                   <div className="">
-                    <div className="text-lg w-full h-[200px] overflow-hidden rounded-t-3xl">
+                    <div className="text-lg w-full h-[200px] overflow-hidden rounded-t-3xl ">
                       <img
                         src={provider.coverImage || "/requirements.jpg"}
                         alt=""
@@ -427,11 +428,11 @@ const { cms, providers, projects, categories } = data;
                             Verified
                           </Badge>
                         )}
-                        {provider.isFeatured && (
+                        {/* {provider.isFeatured && (
                           <Badge className="bg-orangeButton text-white rounded-full px-3 py-0.5 text-[10px] font-semibold">
                             Featured
                           </Badge>
-                        )}
+                        )} */}
                       </div>
 
                       {/* ⭐ RATING STARS */}
@@ -463,16 +464,16 @@ const { cms, providers, projects, categories } = data;
                       {provider.name}
                     </h3>
                   </div>
-                  <div className="pb-10 px-8 flex flex-col flex-1">
-                    <p className="text-sm text-gray-500 mb-4 line-clamp-2">
-                      {provider.description.slice(0,30)}
-                    </p>
+                  <div className="pb-4 px-8 flex flex-col flex-1">
+                    <p className="text-sm text-gray-500 mb-0 line-clamp-1">
+                        {provider.description}
+                      </p>
                     <div className="flex flex-col h-full gap-4">
                       {/* SERVICES BADGES */}
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex gap-2 pt-2 overflow-hidden whitespace-nowrap">
                         {provider.services?.length > 0 ? (
                           provider.services
-                            .slice(0, 4)
+                            .slice(0, 2)
                             .map((service: string, idx: number) => (
                               <span
                                 key={idx}
@@ -508,14 +509,14 @@ const { cms, providers, projects, categories } = data;
                 </div>
               ))}
             </div>
-            <div className="text-center mt-8">
+            <div className="text-center mt-0">
               <Button
                 variant="outline"
-                className="rounded-full py-2 mt-8 text-lg font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] text-white"
+                className="rounded-full py-2 mt-6 text-lg font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] text-white"
                 size={"lg"}
                 asChild
               >
-                <Link href="/providers">View All Providers</Link>
+                <Link href="/providers">View All Providers →</Link>
               </Button>
             </div>
           </div>
@@ -523,7 +524,7 @@ const { cms, providers, projects, categories } = data;
       )}
 
       {/* CTA Section */}
-      <section className="py-20 px-4">
+      <section className="py-4 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h3 className="text-2xl md:text-4xl font-extralight">
             {cms?.getStartedTitle || "Ready to Get Started?"}
@@ -531,7 +532,7 @@ const { cms, providers, projects, categories } = data;
           <p className="text-base max-w-sm mx-auto text-slate-500">
             {cms?.getStartedSubtitle || "Join thousands of businesses finding the right service providers on Spark."}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-2">
             <Button
               size="lg"
               className="bg-orangeButton font-semibold text-sm text-white rounded-full hover:bg-gray-100"

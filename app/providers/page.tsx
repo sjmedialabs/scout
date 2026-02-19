@@ -198,7 +198,7 @@ export default function ProvidersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }; 
 
   const searchHandle = () => {
     console.log("Search Filter:::", searchFilter);
