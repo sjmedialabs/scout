@@ -49,19 +49,19 @@ export function RequirementList({ requirements, onViewProposals, onViewDetails }
         <Card key={requirement._id} className="hover:shadow-md transition-shadow bg-[#EFF7FA] rounded-[16px] px-0">
           <CardHeader className="px-0">
             <div className="flex justify-between items-start  px-0">
-              <div className="flex-1 px-6">
-                <CardTitle className="text-base text-[#2C34A1] font-bold">{requirement.title}</CardTitle>
+              <div className="flex-1 px-3 md:px-6">
+                <CardTitle className="text-sm md:text-base text-[#2C34A1] font-bold">{requirement.title}</CardTitle>
               </div>
-              <div className="px-6">
+              <div className="px-3 md:px-6">
                 <Badge className={getStatusColor(requirement.status)}>
                 {requirement.status.charAt(0).toUpperCase() + requirement.status.slice(1)}
               </Badge>
               </div>
             </div>
-             <CardDescription className="mt-1 text-sm px-6 text-[#898383] font-normal border-b-2 border-[#CECECE] pb-[15px]">{requirement.description}</CardDescription>
+             <CardDescription className="mt-1 text-xs md:text-sm px-3 md:px-6 text-[#898383] font-normal border-b-2 border-[#CECECE] pb-[15px] line-clamp-2">{requirement.description}</CardDescription>
             
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-3 md:px-6">
             <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                <HiCurrencyDollar color="#F54A0C" className="h-6 w-6"/>

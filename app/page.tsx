@@ -14,6 +14,7 @@ import {
   Shield,
 } from "lucide-react";
 import { authFetch } from "@/lib/auth-fetch";
+import { useRouter } from "next/navigation";
 
 interface ServiceChild {
   _id: string;
@@ -78,6 +79,7 @@ const colorMap: Record<string, { bg: string; hover: string; text: string }> = {
 
 
 export default async function HomePage() {
+  const router=useRouter();
 const [data, setData] = useState({
   cms: null,
   providers: [],
@@ -118,6 +120,8 @@ async function getData() {
     const categories = categoriesRes.ok
       ? (await categoriesRes.json()).data
       : [];
+    
+    console.log("Fetchjed Categories from api::::::", categories)
 
     return { cms, providers, projects, categories };
   } catch (error) {
@@ -199,7 +203,7 @@ const { cms, providers, projects, categories } = data;
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
             {(categories && categories.length > 0 ? categories : []).map(
               (category: any) => {
                 const colors = colorMap[category.color] || colorMap.blue;
@@ -208,42 +212,53 @@ const { cms, providers, projects, categories } = data;
                 return (
                   <div
                     key={category._id}
-                    className={`group bg-white/70 backdrop-blur-sm rounded-4xl px-6 py-6 border pl-12 ${colors.hover} hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
+                    onClick={() =>
+                      router.push(`/services?category=${category._id}`)
+                    }
+                    className={`group bg-white/70 cursor-pointer backdrop-blur-sm rounded-4xl px-6 py-6 border lg:pl-8 ${colors.hover} hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col`}
                   >
-                    <div className="flex items-center gap-2 mb-4">
-                      <img
-                        src={category?.icon || "/images/icon-1.png"}
-                        alt=""
-                        className="h-10"
-                      />
-                      <h3
-                        className={`text-2xl font-bold text-blueButton group-hover:${colors.text} transition-colors`}
-                      >
-                        {category.title}
-                      </h3>
+                    {/* Top Content */}
+                    <div>
+                      <div className="flex items-center gap-2 mb-4">
+                        <img
+                          src={category?.icon || "/images/icon-1.png"}
+                          alt=""
+                          className="h-10"
+                        />
+                        <h3
+                          className={`text-xl font-bold text-blueButton group-hover:${colors.text} transition-colors`}
+                        >
+                          {category.title}
+                        </h3>
+                      </div>
+
+                      {/* Subcategories */}
+                      <div className="space-y-3">
+                        {(category.children.slice(0, 6) || []).map(
+                          (sub: any, index: number) => (
+                            <p
+                              key={index}
+                              className={`block text-slate-500 text-sm hover:${colors.text} hover:translate-x-2 transition-all duration-200 font-medium`}
+                            >
+                              → {sub.title}
+                            </p>
+                          )
+                        )}
+                      </div>
                     </div>
 
-                    {/* Subcategories */}
-                    <div className="space-y-3">
-                      {(category.children.slice(0, 6) || []).map(
-                        (sub: any, index: number) => (
-                          <p
-                            key={index}
-                            className={`block text-slate-500 text-sm hover:${colors.text} hover:translate-x-2 transition-all duration-200 font-medium`}
-                          >
-                            {/* <Link
-      key={index}
-      href={`/services/${category.slug}/${sub.slug}`}  // or your serviceLink
-    > */}
-                            → {sub.title}
-                            {/* </Link> */}
-                          </p>
-                        ),
-                      )}
+                    {/* Button pushed to bottom */}
+                    <div className="mt-auto pt-6">
+                      <Button
+                        size="sm"
+                        className=" bg-[#2C34A1]  text-white rounded-full hover:bg-[#2C34A1]/90"
+                      >
+                        {`Explore  →`}
+                      </Button>
                     </div>
                   </div>
                 );
-              },
+              }
             )}
           </div>
           <div className="flex justify-center items-center">

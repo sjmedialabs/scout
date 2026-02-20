@@ -830,11 +830,11 @@ export default function ClientDashboard() {
       {/* Main Content */}
       <div className="flex-1 -mt-3 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none]  [&::-webkit-scrollbar]:hidden">
         <div className="space-y-3">
-          <div className="border-b boreder-[1px] border-[#707070] pb-4">
-            <h1 className="text-3xl font-bold text-[#F4561C] my-custom-class">
+          <div className="border-b boreder-[1px] border-[#c4c3c3] pb-4">
+            <h1 className="text-xl md:text-3xl font-bold text-[#F4561C] my-custom-class">
               Dashboard Overview
             </h1>
-            <p className="text-lg text-[#656565] font-xl">
+            <p className="text-sm md:text-lg text-[#656565] font-xl">
               Welcome to your client dashboard
             </p>
           </div>
@@ -919,17 +919,17 @@ export default function ClientDashboard() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="bg-[#fff] rounded-2xl">
-              <CardHeader>
-                <CardTitle className="font-bold text-[#F4561C] text-xl leading-4 my-custom-class">
+              <CardHeader className="px-3 md:px-6">
+                <CardTitle className="font-bold text-[#F4561C] text-lg md:text-xl leading-4 my-custom-class">
                   Vendor Comparison
                 </CardTitle>
-                <CardDescription className="text-md my-custom-class text-[#656565] font-normal">
+                <CardDescription className="text-smmd:text-md my-custom-class text-[#656565] font-normal">
                   Compare vendors side-by-side with rating breakdown
                 </CardDescription>
               </CardHeader>
               <CardContent className="px-0">
                 <div className="space-y-4">
-                  <div className="grid grid-cols-4 gap-2 text-xs font-medium text-muted-foreground pb-2 px-6">
+                  <div className="grid grid-cols-4 gap-2 text-xs font-medium text-muted-foreground pb-2 px-3 md:px-6">
                     <div className="font-bold text-sm text-[#6B6B6B] my-custom-class">
                       Vendor
                     </div>
@@ -950,9 +950,9 @@ export default function ClientDashboard() {
                   {topVendors.slice(0,3).map((vendor) => (
                     <div
                       key={vendor.id}
-                      className="grid  border-t-[1px] px-6 pt-4 border-[#E3E3E3] grid-cols-4 gap-2 items-center text-sm"
+                      className="grid  border-t-[1px] px-3 md:px-6 pt-4 border-[#E3E3E3] grid-cols-4 gap-2 items-center text-sm"
                     >
-                      <div className="font-medium teext-sm text-[#6B6B6B] my-custom-class">
+                      <div className="font-medium text-xs md:text-sm text-[#6B6B6B] my-custom-class">
                         {vendor.name}
                       </div>
                       <div className="text-center">
@@ -994,17 +994,17 @@ export default function ClientDashboard() {
             </Card>
 
             <Card className="bg-[#fff] rounded-2xl">
-              <CardHeader>
-                <CardTitle className="font-bold text-[#F4561C] text-xl leading-4 my-custom-class">
+              <CardHeader className="px-3 md:px-6">
+                <CardTitle className="font-bold text-[#F4561C] text-lg md:text-xl leading-4 my-custom-class">
                   Cost Distribution
                 </CardTitle>
-                <CardDescription className="text-md my-custom-class text-[#656565] font-normal">
+                <CardDescription className="text-sm md:text-md my-custom-class text-[#656565] font-normal">
                   Proposal budget ranges vs your stated budget
                 </CardDescription>
               </CardHeader>
               <CardContent className="px-0 py-0 mb-0">
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between text-sm px-6">
+                  <div className="flex items-center justify-between text-sm px-3 md:px-6">
                     <span className="text-[#6B6B6B] font-bold text-sm">
                       Budget Range
                     </span>
@@ -1013,7 +1013,7 @@ export default function ClientDashboard() {
                     </span>
                   </div>
                   {costDistributionStats.map((range, index) => (
-                    <div key={index} className="space-y-1 px-6">
+                    <div key={index} className="space-y-1 px-3 md:px-6">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-[#6B6B6B] font-bold text-sm">
                           {range.range}
@@ -1056,16 +1056,16 @@ export default function ClientDashboard() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="bg-[#fff] rounded-2xl">
-              <CardHeader>
-                <CardTitle className="font-bold text-[#F4561C] text-xl leading-4 my-custom-class">
+              <CardHeader className="px-3 md:px-6">
+                <CardTitle className="font-bold text-[#F4561C] text-lg md:text-xl leading-4 my-custom-class">
                   Top Vendor Locations
                 </CardTitle>
-                <CardDescription className="text-md my-custom-class text-[#656565] font-normal">
+                <CardDescription className="text-sm md:text-md my-custom-class text-[#656565] font-normal">
                   Geographic distribution of responding vendors
                 </CardDescription>
               </CardHeader>
 
-              <CardContent>
+              <CardContent className="px-3 md:px-6">
                 <div className="space-y-4 max-h-[200px] overflow-y-auto  [scrollbar-width:none] 
           [-ms-overflow-style:none]        
           [&::-webkit-scrollbar]:hidden">
@@ -1118,15 +1118,15 @@ export default function ClientDashboard() {
             </Card>
 
             <Card className="bg-[#fff] rounded-2xl">
-              <CardHeader>
-                <CardTitle className="font-bold text-[#F4561C] text-xl leading-4 my-custom-class">
+              <CardHeader className="px-3 md:px-6">
+                <CardTitle className="font-bold text-[#F4561C] text-lg md:text-xl leading-4 my-custom-class">
                   Top Vendor Specialties
                 </CardTitle>
-                <CardDescription className="text-md my-custom-class text-[#656565] font-normal">
+                <CardDescription className="text-sm md:text-md my-custom-class text-[#656565] font-normal">
                   Expertise areas of responding vendors
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-3 md:px-6">
                 <div className="space-y-4 max-h-[200px] overflow-y-auto  [scrollbar-width:none] 
           [-ms-overflow-style:none]        
           [&::-webkit-scrollbar]:hidden">
@@ -1165,7 +1165,7 @@ export default function ClientDashboard() {
           <div >
             <div >
               <Card className="bg-[#fff] rounded-2xl">
-                <CardContent>
+                <CardContent className="px-3 sm:px-6">
                   {(requirements || []).length !== 0 ? (
                     <RequirementList
                       requirements={requirements.slice(0, 3)}

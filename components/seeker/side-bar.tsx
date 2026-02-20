@@ -164,7 +164,7 @@ export default function ClientSidebar({
               onClick={() => setCollapsed(!collapsed)}
               className="hidden lg:block cursor-pointer"
             >
-              <PanelLeft className="h-5 w-5 text-white" />
+              <PanelLeft className="h-5 w-5 mt-[6px] text-white" />
             </button>
 
             <button onClick={onClose} className="lg:hidden">
