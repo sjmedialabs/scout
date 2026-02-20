@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import ServiceDropdown from "@/components/select-category-filter";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Star, MapPin, Briefcase } from "lucide-react";
+import { Users, Search, Star, MapPin, Briefcase } from "lucide-react";
 import Link from "next/link";
 import RatingStars from "@/components/rating-star";
 import { FaLocationDot } from "react-icons/fa6";
@@ -125,29 +126,34 @@ export default function ProvidersPage() {
   };
   const [searchFilter, setSearchFilter] = useState("");
   const [serviceFilter, setServiceFilter] = useState("");
-  const [locationFilter, setLocationFilter] = useState("");
-  const [ratingFilter, setRatingFilter] = useState("");
+  const [locationFilter, setLocationFilter] = useState("all");
   const [filteredData, setFilteredData] = useState([]);
   const [providersData, setProvidersData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [Failed, setFailed] = useState(false);
   const router = useRouter();
   const [uniqueLocations, setUniqueLocations] = useState([]);
-
-  //dropdown search for the services offered
-  const [serviceCategories, setServiceCategories] = useState([]);
-  const [activeSubCategory, setActiveSubCategory] = useState(null);
-  const [selectedService, setSelectedService] = useState("");
-
-  const [open, setOpen] = useState(false);
-  const ITEMS_PER_LOAD = 4;
+  const ITEMS_PER_LOAD = 8;
+  const [sortValue, setSortValue] = useState("rating");
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_LOAD);
 
-  const [selectedSubCategory, setSelectedSubCategory] = useState(null);
-  const [items, setItems] = useState([]);
-  const subCategories = (serviceCategories || []).flatMap(
-    (category) => category?.children,
-  );
+  const clearFilters = () => {
+  setSearchFilter("");
+  setServiceFilter("");
+  setLocationFilter("all");
+  setSortValue("rating");
+
+  // Reset data immediately
+  const resetData = [...providersData];
+
+  // Apply default sorting
+  resetData.sort((a, b) => b.rating - a.rating);
+
+  setFilteredData(resetData);
+  setVisibleCount(ITEMS_PER_LOAD);
+};
+
+
 
   const handleViewProfile = async (recivedId) => {
     try {
@@ -164,9 +170,46 @@ export default function ProvidersPage() {
   };
 
   useEffect(() => {
+  setVisibleCount(ITEMS_PER_LOAD);
+}, [filteredData]);
+
+  useEffect(() => {
     loadData();
   }, []);
   console.log("Providers Datat::::::::::", providersData);
+
+  useEffect(() => {
+  if (!providersData.length) return;
+
+  let sorted = [...providersData];
+
+  switch (sortValue) {
+    case "rating":
+      sorted.sort((a, b) => b.rating - a.rating);
+      break;
+
+    case "reviews":
+      sorted.sort((a, b) => b.reviews - a.reviews);
+      break;
+
+    case "price-low":
+      sorted.sort(
+        (a, b) => Number(a?.hourlyRate || 0) - Number(b?.hourlyRate || 0)
+      );
+      break;
+
+    case "price-high":
+      sorted.sort(
+        (a, b) => Number(b?.hourlyRate || 0) - Number(a?.hourlyRate || 0)
+      );
+      break;
+  }
+
+  setFilteredData(sorted);
+}, [providersData, sortValue]);
+
+
+
   const loadData = async () => {
     setLoading(true);
     setFailed(false);
@@ -175,19 +218,30 @@ export default function ProvidersPage() {
       const data = await response.json();
       console.log("Fetched  Data:::", data);
       setProvidersData(data.providers);
+
+      // Apply default sorting (rating) immediately
+      const sortedByRating = [...data.providers].sort(
+        (a, b) => b.rating - a.rating
+      );
+
+
+      
       const uniqueLocations = [
         ...new Set(
           data.providers
-            .map((p) => p.location)
-            .filter((loc) => loc && !/not\s*specified/i.test(loc)),
+            .map((p) => p.location?.trim())
+            .filter(
+              (loc) =>
+                loc &&
+                !/not\s*specified/i.test(loc) &&
+                loc.toLowerCase() !== "all" &&
+                loc.toLowerCase() !== "all locations"
+            ),
         ),
-        "All",
       ];
-      setUniqueLocations(uniqueLocations);
-      const res = await fetch("/api/service-categories");
-      const servicData = await res.json();
-      setServiceCategories(servicData.data || []);
 
+
+      setUniqueLocations(uniqueLocations);
       console.log("Unique locations are::::", uniqueLocations);
 
       setFilteredData(data.providers);
@@ -212,52 +266,25 @@ export default function ProvidersPage() {
           item.tagline?.toLowerCase().includes(searchFilter.toLowerCase()),
       );
     }
-    if (serviceFilter.toLowerCase() !== "all") {
-      tempFilteredData = tempFilteredData.filter((eachItem) =>
-        eachItem.services.some((service) =>
-          service.toLowerCase().includes(serviceFilter.toLowerCase()),
-        ),
-      );
-    }
-    if (locationFilter.toLowerCase() != "all") {
-      tempFilteredData = tempFilteredData.filter((eachItem) =>
-        eachItem.location
-          .toLocaleLowerCase()
-          .includes(locationFilter.toLocaleLowerCase()),
-      );
-    }
+    if (serviceFilter && serviceFilter.toLowerCase() !== "all") {
+        tempFilteredData = tempFilteredData.filter((eachItem) =>
+          eachItem.services?.some((service) =>
+            service.toLowerCase().includes(serviceFilter.toLowerCase())
+          )
+        );
+      }
+          if (locationFilter !== "all") {
+        tempFilteredData = tempFilteredData.filter((eachItem) =>
+          eachItem.location
+            ?.toLowerCase()
+            .includes(locationFilter.toLowerCase())
+        );
+          }
     setFilteredData(tempFilteredData);
+     setVisibleCount(ITEMS_PER_LOAD);
+
   };
-  const handleHighestRating = (value: any) => {
-    let sortedData = [...filteredData]; // avoid mutating original array
-
-    switch (value) {
-      case "rating":
-        sortedData.sort((a, b) => b.rating - a.rating);
-        break;
-
-      case "reviews":
-        sortedData.sort((a, b) => b.reviews - a.reviews);
-        break;
-
-      case "price-low":
-        sortedData.sort(
-          (a, b) => parseInt(a?.hourlyRate || 0) - parseInt(b?.hourlyRate || 0),
-        );
-        break;
-
-      case "price-high":
-        sortedData.sort(
-          (a, b) => parseInt(b?.hourlyRate || 0) - parseInt(a?.hourlyRate || 0),
-        );
-        break;
-
-      default:
-        return filteredData; // no sorting applied
-    }
-
-    setFilteredData(sortedData);
-  };
+  
 
   return (
     <div className="bg-background">
@@ -290,77 +317,46 @@ export default function ProvidersPage() {
             <CardContent className="pt-6 pb-6 px-4 sm:px-6 md:px-9">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
                 {/* Search Input */}
-                <div className="relative w-fullmin-w-0">
+                <div className="relative w-full min-w-0">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
                   <Input
                     placeholder="Search providers..."
+                    value={searchFilter}
                     className="pl-10 w-full placeholder:text-gray-500 text:sm md:text-base border-0 border-b-2 border-b-[#b2b2b2] 
-                        bg-transparent rounded-none shadow-none focus:outline-none focus:ring-0 focus:border-[#F54A0C]"
+                    bg-transparent rounded-none shadow-none focus:outline-none focus:ring-0 focus:border-[#F54A0C]"
                     onChange={(e) => setSearchFilter(e.target.value)}
-                  />
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") searchHandle();
+                    }}
+                />
+
                 </div>
                 <div className="w-full min-w-0">
-                  <Select
-                    open={open}
-                    onOpenChange={setOpen}
-                    value={serviceFilter}
-                  >
-                    <SelectTrigger
-                      className="
-                          mt-1 border-0 border-b-2 border-b-[#b2b2b2]
-                          rounded-none shadow-none focus:outline-none cursor-pointer
-                          px-0 w-full text-sm md:text-base h-12
-                        "
-                    >
-                      <span className="text-sm md:text-base text-gray-500">
-                        {serviceFilter || "Select Service"}
-                      </span>
-                    </SelectTrigger>
-
-                    <SelectContent
-                      side="bottom"
-                      align="start"
-                      sideOffset={8}
-                      className="p-0 rounded-2xl"
-                    >
-                      <div className="flex">
-                        {/* LEFT: Subcategories */}
-                        <div className="min-w-[220px] border-r">
-                          {subCategories.map((sub) => (
-                            <div
-                              key={sub.slug}
-                              onMouseEnter={() => setActiveSubCategory(sub)}
-                              className="px-4 py-2 cursor-pointer  text-sm hover:bg-gray-100"
-                            >
-                              {sub.title}
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* RIGHT: Items */}
-                        {activeSubCategory && (
-                          <div className="min-w-[240px]">
-                            {activeSubCategory.items.map((item) => (
-                              <div
-                                key={item.slug}
-                                onClick={() => {
-                                  setSelectedService(item.title); // ✅ SHOW IN FIELD
-                                  setServiceFilter(item.title); // your filter logic
-                                  setOpen(false); // ✅ close dropdown
-                                }}
-                                className="px-4 py-2 cursor-pointer text-sm hover:bg-gray-100"
-                              >
-                                {item.title}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </SelectContent>
-                  </Select>
+                  <ServiceDropdown
+                  value={serviceFilter}
+                  onChange={(value) => setServiceFilter(value)}
+                  triggerClassName="
+                    mt-1
+                    border-0
+                    border-b-2
+                    border-b-[#b2b2b2]
+                    rounded-none
+                    shadow-none
+                    focus:outline-none
+                    focus:ring-0
+                    cursor-pointer
+                    px-0
+                    w-full
+                    text-sm md:text-base
+                    h-12
+                    [&_span]:text-gray-500
+                  "
+                />
                 </div>
                 <div className="w-full min-w-0">
-                  <Select onValueChange={(value) => setLocationFilter(value)}>
+                  <Select 
+                    value={locationFilter}
+                  onValueChange={(value) => setLocationFilter(value)}>
                     <SelectTrigger
                       className="
                               mt-1
@@ -380,8 +376,15 @@ export default function ProvidersPage() {
                       <SelectValue placeholder="Location" />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl">
+                      <SelectItem 
+                      className="cursor-pointer data-[highlighted]:bg-[#F54A0C] data-[highlighted]:text-white"
+                      value="all">All Locations</SelectItem>
                       {(uniqueLocations || []).map((eachItem, index) => (
-                        <SelectItem value={eachItem} key={index}>
+                        <SelectItem 
+                        value={eachItem} 
+                        key={index}
+                        className="cursor-pointer data-[highlighted]:bg-[#F54A0C] data-[highlighted]:text-white"
+                        >
                           {eachItem}
                         </SelectItem>
                       ))}
@@ -389,14 +392,22 @@ export default function ProvidersPage() {
                   </Select>
                 </div>
 
-                <div className="flex justify-center lg:justify-end">
+                <div className="flex justify-center lg:justify-end gap-2">
                   <Button
                     className="w-full sm:w-[150px] lg:w-[120px] h-10 mt-2 lg:mt-1
-                     rounded-3xl bg-[#F54A0C] text-white
-                     hover:bg-[#d93f0b] transition-all duration-300"
+                    rounded-3xl bg-[#F54A0C] text-white
+                    hover:bg-[#d93f0b]"
                     onClick={searchHandle}
                   >
                     Search Now
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="h-10 mt-2 lg:mt-1 bg-black text-white rounded-3xl"
+                    onClick={clearFilters}
+                  >
+                    Clear
                   </Button>
                 </div>
               </div>
@@ -405,11 +416,23 @@ export default function ProvidersPage() {
         </div>
       </div>
 
-      <div className="py-8 px-4 lg:px-30">
+      <div className="py-2 px-4 lg:px-30">
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between my-8">
-            <h1 className="text-3xl text-[#b2b2b2]">List of best agencies</h1>
-            <Select onValueChange={handleHighestRating}>
+          <div className="flex justify-between items-center my-4">
+              <div className="text-lg text-gray-600">
+                Agencies Found:
+                <span className="font-semibold text-gray-700 ml-2">
+                  {filteredData.length}
+                </span>
+              </div>
+
+            <Select
+                value={sortValue}
+                onValueChange={(value) => {
+                  setSortValue(value);
+                
+                }}
+              >
               <SelectTrigger
                 className="
                 bg-[#f5f5f5]
@@ -431,10 +454,21 @@ export default function ProvidersPage() {
               </SelectTrigger>
 
               <SelectContent>
-                <SelectItem value="rating">Highest Rating</SelectItem>
-                <SelectItem value="reviews">Most Reviews</SelectItem>
-                <SelectItem value="price-low">Price: Low to High</SelectItem>
-                <SelectItem value="price-high">Price: High to Low</SelectItem>
+                <SelectItem className="cursor-pointer data-[highlighted]:bg-[#F54A0C] data-[highlighted]:text-white" value="rating">
+                  Highest Rating
+                </SelectItem>
+
+                <SelectItem className="cursor-pointer data-[highlighted]:bg-[#F54A0C] data-[highlighted]:text-white" value="reviews">
+                  Most Reviews
+                </SelectItem>
+
+                <SelectItem className="cursor-pointer data-[highlighted]:bg-[#F54A0C] data-[highlighted]:text-white" value="price-low">
+                  Price: Low to High
+                </SelectItem>
+
+                <SelectItem className="cursor-pointer data-[highlighted]:bg-[#F54A0C] data-[highlighted]:text-white" value="price-high">
+                  Price: High to Low
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -463,7 +497,7 @@ export default function ProvidersPage() {
               // (filteredData.map((provider) => (
               filteredData.slice(0, visibleCount).map((provider) => (
                 <Card
-                  key={provider.id}
+                  key={provider._id}
                   className="rounded-2xl py-0 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col"
                 >
                   {/* Image */}
@@ -479,7 +513,7 @@ export default function ProvidersPage() {
                   </div>
 
                   {/* CONTENT */}
-                  <div className="p-4 sm:p-6 flex flex-col flex-1">
+                  <div className="p-4 sm:p-6 flex flex-col flex-1 sm:pt-0">
                     {/* 🔝 TOP CONTENT (normal flow) */}
                     <div>
                       {/* Badges + rating */}
@@ -490,11 +524,11 @@ export default function ProvidersPage() {
                               Verified
                             </Badge>
                           )}
-                          {provider.isFeatured && (
+                          {/* {provider.isFeatured && (
                             <Badge className="bg-[#F54A0C] text-white h-7 px-3 rounded-2xl">
                               Featured
                             </Badge>
-                          )}
+                          )} */}
                         </div>
 
                         <div className="flex items-center gap-1 text-sm">
@@ -502,25 +536,29 @@ export default function ProvidersPage() {
                           <span className="font-semibold">
                             {provider.rating}
                           </span>
-                          <span className="text-muted-foreground">
-                            ({provider.reviewCount})
-                          </span>
+                          
                         </div>
                       </div>
 
                       {/* Title + description */}
+                      <div className="flex flex-wrap items-start justify-between gap-3">
                       <h3 className="mt-2 text-xl sm:text-2xl font-semibold text-left">
                         {provider.name}
                       </h3>
-                      <p className="mt-1 text-sm text-[#b2b2b2] text-left">
+
+                      <span className="text-muted-foreground">
+                            Reviews: ({provider.reviewCount})
+                          </span>
+                          </div>
+                      <p className="line-clamp-1 text-sm text-[#b2b2b2] text-left">
                         {provider.tagline}
                       </p>
 
                       {/* Tags */}
-                      <div className="mt-3 mb-4">
-                        {provider.services.length !== 0 ? (
+                      <div className="mt-2 mb-2">
+                        {provider.services?.length > 0 ? (
                           <div className="flex flex-wrap gap-2">
-                            {provider.services.map((service) => (
+                            {provider.services.slice(0, 2).map((service) => (
                               <Badge
                                 key={service}
                                 variant="outline"
@@ -529,10 +567,19 @@ export default function ProvidersPage() {
                                 {service}
                               </Badge>
                             ))}
+
+                            {provider.services.length > 2 && (
+                              <Badge
+                                variant="outline"
+                                className="h-7 px-3 rounded-2xl bg-[#eaeaea] text-[#555] text-xs sm:text-sm"
+                              >
+                                +{provider.services.length - 2} more
+                              </Badge>
+                            )}
                           </div>
                         ) : (
                           <div className="text-center mx-auto">
-                            <p className="text-xl my-6 text-gray-400">
+                            <p className="text-xl my-1 text-gray-400">
                               No Services
                             </p>
                           </div>
@@ -543,7 +590,7 @@ export default function ProvidersPage() {
                     {/* 🔽 BOTTOM CONTENT (sticks to bottom) */}
                     <div className="mt-auto">
                       {/* Info row */}
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-xs sm:text-sm">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2 text-xs sm:text-sm">
                         <div className="flex items-center gap-2">
                           <img src="/location-filled.jpg" className="h-4 w-4" />
                           <span className="text-[#808080] font-semibold break-words">
@@ -559,17 +606,14 @@ export default function ProvidersPage() {
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <img
-                            src="/chat-operational.jpg"
-                            className="h-4 w-4"
-                          />
-                          <span className="text-[#808080] font-semibold">
-                            Response: {provider?.responseTime || "2 hrs"}
+                         <span className="inline-flex items-center font-bold text-[#808080] gap-2">
+                        <Users className="h-5 w-5 font-bold sm:h-5 sm:w-5 text-orangeButton" />
+                        Team: {provider?.teamSize || "Not specified"}
                           </span>
                         </div>
                       </div>
                       <p className="text-[#808080] text-sm sm:text-base font-semibold mb-3">
-                        From: {provider?.hourlyRate || 0}/hour
+                        Starting From: {provider?.hourlyRate || 0}$/hour
                       </p>
 
                       <div className="flex flex-col sm:flex-row gap-2">
@@ -603,7 +647,7 @@ export default function ProvidersPage() {
           {/* Load More */}
 
           {visibleCount < filteredData.length && (
-            <div className="flex justify-center mt-10">
+            <div className="flex justify-center mt-4">
               <Button
                 className="
                       rounded-full
@@ -611,8 +655,8 @@ export default function ProvidersPage() {
                       py-3
                       text-base
                       font-semibold
-                      bg-[#f7f5f5]
-                      text-black
+                      bg-orangeButton
+                      text-white
                       hover:bg-gray-200
                       transition-all
                     "
