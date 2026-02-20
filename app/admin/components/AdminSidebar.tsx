@@ -39,24 +39,40 @@ export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
   };
 
   return (
+<>
+    {!collapsed && (
+  <div
+    className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+    onClick={onToggle}
+  />
+)}
     <aside
-      className={`
-        fixed left-0 top-0 h-full z-20
-        transition-all duration-300
-        ${collapsed ? "w-20 items-center" : "w-64"}
-        bg-sidebarMain text-white border-r
-        flex flex-col justify-between overflow-hidden
-      `}
-    >
+  className={`
+    fixed top-0 left-0 h-full z-50
+    bg-sidebarMain text-white border-r
+    flex flex-col justify-between
+    transition-all duration-300
+
+    ${collapsed ? "w-20" : "w-64"}
+
+    /* Desktop always visible */
+    lg:translate-x-0
+
+    /* Mobile & Tablet Drawer Behavior */
+    ${collapsed ? "-translate-x-full lg:translate-x-0" : "translate-x-0"}
+  `}
+>
+  
+  
       {/* HEADER (CLICK TO TOGGLE) */}
       <div className="w-full flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <button
           onClick={onToggle}
-          className="w-full p-5 border-b flex items-center justify-between hover:bg-white/10"
+          className="w-full p-2 pt-2.5 border-b flex justify-items-start"
         >
           {!collapsed && (
             <div>
-              <h2 className="text-lg font-extrabold">Super Admin Dashboard</h2>
+              <h2 className="text-md font-extrabold">Super Admin Dashboard</h2>
               <p className="text-sm text-white/70">Welcome back</p>
             </div>
           )}
@@ -111,17 +127,17 @@ export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
       </div>
 
       {/* FOOTER */}
-      <div className="w-10 pl-1 flex gap-1 mb-3">
+      {/* <div className="w-auto items-center pl-1 mb-3 justify-center"> */}
         {/* System Settings */}
-        <Button className="bg-blueButton text-white flex-1 flex gap-0 rounded-2xl justify-start">
+        {/* <Button className="bg-blueButton text-white flex-1 flex gap-0 rounded-2xl justify-start">
           <Settings className="w-4 h-4" />
           {!collapsed && "System Settings"}
-        </Button>
+        </Button> */}
 
         {/* Logout */}
-        <Button
+        {/* <Button
           variant="outline"
-          className="flex-1 flex gap-2 justify-start
+          className="flex-1 flex gap-2 justify-between
            text-white bg-orange-600
             hover:bg-orange-600 hover:text-white 
             rounded-2xl border-none active:bg-orange-500
@@ -131,8 +147,31 @@ export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
         >
           <LogOut className="w-4 h-4" />
           {!collapsed && "Logout"}
-        </Button>
-      </div>
+        </Button> */}
+
+        {/* FOOTER */}
+<div className="w-full p-2 flex justify-center items-center py-4 -mb-3">
+  <Button
+    variant="outline"
+    className={`
+      flex items-center justify-center gap-2
+      px-5 py-2.5
+      w-full
+      text-white bg-orange-600
+      hover:bg-orange-600 hover:text-white
+      rounded-full border-none
+      active:bg-orange-500
+    `}
+    onClick={handleLogout}
+  >
+    <LogOut className="w-4 h-4" />
+    {!collapsed && (
+      <span className="text-sm font-medium">Logout</span>
+    )}
+  </Button>
+</div>
+      {/* </div> */}
     </aside>
+    </>
   );
 }

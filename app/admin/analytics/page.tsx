@@ -329,16 +329,18 @@ const getARPU = (payments) => {
 
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-4xl font-bold text-orangeButton">
+    <div className="space-y-6 -mt-5">
+      <div className="border-b pb-2">
+      <h1 className="text-2xl font-bold -mb-1 text-orangeButton">
         Analytics Overview
       </h1>
-      <p className="text-gray-500 text-xl">
+      <p className="text-gray-500 text-md">
         Key platform insights and performance metrics
       </p>
+      </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Users */}
         <DashboardCard
           title="Total Users"
@@ -386,7 +388,7 @@ const getARPU = (payments) => {
         topProviders={topPerformingAgencies}
       />
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Total Users */}
         <DashboardCard
           title="Average Revenue Per User"
@@ -423,23 +425,23 @@ const getARPU = (payments) => {
 function DashboardCard({ title, value, icon, helper, gradient }: any) {
   return (
     <div
-      className="group bg-white rounded-2xl p-6  shadow-lg
+      className="group bg-white rounded-2xl p-6 pb-3 -mt-3 shadow-md
                  hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
     >
-      <div className="flex items-center justify-between pb-8">
+      <div className="flex items-center justify-between pb-0 -mt-4">
         <div>
           <h3 className="text-sm font-semibold">{title}</h3>
         </div>
         <div
-          className={`p-2 rounded-full flex items-center justify-center shadow-md
+          className={`p-2 rounded-full flex items-center justify-center
           bg-[#EEF7FE] group-hover:scale-110 transition-transform`}
         >
           {icon}
         </div>
       </div>
 
-      <div className="text-2xl font-extrabold text-slate-800">{value}</div>
-      <p className="text-xs text-orangeButton font-extralight mt-1">{helper}</p>
+      <div className="text-2xl font-bold text-slate-800">{value}</div>
+      <p className="text-xs text-green-500 font-extralight mt-1">{helper}</p>
     </div>
   );
 }

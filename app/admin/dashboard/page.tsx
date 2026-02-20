@@ -165,14 +165,14 @@ if(isLoading){
 
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6 -mt-6">
       {/* Page Heading */}
-      <div className="py-4 border-b border-slate-300 mb-6 flex items-center justify-between">
+      <div className="py-2 border-b border-slate-300 mb-4 flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-orangeButton">
-            Admin Dashboard
+          <h1 className="text-2xl font-bold text-orangeButton">
+            Dashboard Overview
           </h1>
-          <p className="text-gray-500 text-xl">
+          <p className="text-gray-500 text-md -mt-1">
             Platform management and insights
           </p>
         </div>
@@ -245,23 +245,23 @@ if(isLoading){
 function DashboardCard({ title, value, icon, helper, gradient }: any) {
   return (
     <div
-      className="group bg-white rounded-2xl p-6  shadow-lg
+      className="group bg-white rounded-2xl p-6 pt-5 pb-3  shadow-md
                  hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
     >
-      <div className="flex items-center justify-between pb-8">
+      <div className="flex items-center justify-between pb-1 -mt-4">
         <div>
           <h3 className="text-sm font-semibold">{title}</h3>
         </div>
         <div
-          className={`p-2 rounded-full flex items-center justify-center shadow-md
+          className={`p-2 rounded-full flex items-center justify-center
           bg-[#EEF7FE] group-hover:scale-110 transition-transform`}
         >
           {icon}
         </div>
       </div>
 
-      <div className="text-2xl font-extrabold text-slate-800">{value}</div>
-      <p className="text-xs text-orangeButton font-extralight mt-1">{helper}</p>
+      <div className="text-2xl font-bold text-slate-800">{value}</div>
+      <p className="text-xs text-green-500 font-extralight mt-1">{helper}</p>
     </div>
   );
 }
@@ -269,10 +269,10 @@ function DashboardCard({ title, value, icon, helper, gradient }: any) {
 function RecentUserActivityCard({recentUsers}) {
   return (
     <div className="w-full h-full">
-      <div className="bg-white rounded-2xl shadow-md p-6">
+      <div className="bg-white rounded-2xl shadow-md p-6 pt-2 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
         {/* Header */}
-        <div className="mb-4">
-          <h3 className="text-lg font-extrabold text-orangeButton">
+        <div className="mb-2">
+          <h3 className="text-lg font-bold text-orangeButton">
             Recent User Activity
           </h3>
           <p className="text-sm text-gray-500">
@@ -287,7 +287,7 @@ function RecentUserActivityCard({recentUsers}) {
             (recentUsers || []).length!==0?
            <div>
             {
-              recentUsers.slice(0,4).map((eachItem)=>(
+              recentUsers.slice(0,3).map((eachItem)=>(
                  <div className="flex items-center justify-between border mb-3 rounded-xl px-4 py-3">
                   <div>
                     <p className="font-semibold text-orangeButton">{eachItem.name}</p>
@@ -327,14 +327,14 @@ function ContentReportsCard({reportContent}) {
     <div className="w-full h-full">
       <div
         className="
-          bg-white rounded-2xl p-6
+          bg-white rounded-2xl p-6 pt-2
           shadow-md hover:shadow-xl
           transition-all duration-300 ease-in-out
           hover:-translate-y-1
         "
       >
         {/* Header */}
-        <div className="mb-5">
+        <div className="mb-2">
           <h3 className="text-lg font-bold text-orangeButton">
             Content Reports
           </h3>
@@ -350,7 +350,7 @@ function ContentReportsCard({reportContent}) {
             (reportContent || []).length!==0?
              <div>
               {
-                reportContent.slice(0,4).map((item)=>(
+                reportContent.slice(0,3).map((item)=>(
                   <div className="flex items-center justify-between border  mb-3 rounded-xl px-4 py-3">
                     <div>
                       <p className="font-semibold text-orangeButton">
