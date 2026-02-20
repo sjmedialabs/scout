@@ -658,7 +658,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
       </div>
 
       <Card className="bg-[#fff] py-0 rounded-[22px]">
-        <CardContent className="p-4">
+        <CardContent className="p-4 px-2 sm:px-6">
           {selectedRequirement ? (
             <ProposalList
               // proposals={getProposalsForRequirement(selectedRequirement)}
@@ -758,7 +758,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                   </div>
                 )
               }
-              <div className="max-h-[600px] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden pr-2">
+              <div className="max-h-[600px] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden sm:pr-2">
                 {filteredProposals.length > 0 ? (
                 <div>
                   <div className="space-y-4 mb-4">
@@ -781,11 +781,11 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                       key={proposal.id}
                       className="py-0 px-0 rounded-[22px] mb-3"
                     >
-                      <CardContent className="px-5 py-6">
+                      <CardContent className="px-2 sm:px-5 py-6">
                         <div className="flex flex-col lg:flex-row gap-4">
                           
                           {/* Left Image */}
-                          <div className="max-h-[300px] max-w-full lg:max-w-[300px] rounded-[18px] overflow-hidden shrink-0">
+                          <div className="max-h-[300px] max-w-full lg:max-w-[300px] rounded-[18px] overflow-hidden sm:shrink-0">
                             <img
                               src={proposal?.agency?.coverImage || "/proposal.jpg"}
                               alt={proposal.agency?.name}
@@ -1034,7 +1034,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                   <textarea
                   value={negotationMessage}
                   onChange={(e)=>setNegotationMessage(e.target.value)}
-                  className="border-1 border-gray-500 p-3 w-100 rounded-md"
+                  className="border-1 border-gray-500 p-3 w-full rounded-md"
                   rows={6}
                   cols={30}
                   placeholder="Enter Your Message"
