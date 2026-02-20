@@ -673,7 +673,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
               {/*Filterss block */}
               {
                 (projectTitles.length>=1) && (
-                  <div className="flex flex-row pb-2  justify-between mx-3 mb-0 flex-wrap">
+                  <div className="flex flex-col sm:flex-row pb-2  justify-between mx-3 mb-0 flex-wrap">
                     <div className="mb-2 md:mb-0">
                       <p className="text-md text-gray-500 ml-2">Proposal Status</p>
                       <Select

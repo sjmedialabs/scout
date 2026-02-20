@@ -31,27 +31,44 @@ export function Footer() {
   console.log("Footer cms",cms)
 
   const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) return;
+  e.preventDefault();
 
-    try {
-      const response = await fetch("/api/newsletter/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+  const trimmedEmail = email.trim();
 
-      if (response.ok) {
-        setEmail("");
-        alert("Successfully subscribed to newsletter!");
-      } else {
-        alert("Email Already Existed");
-      }
-    } catch (error) {
-      console.error("Newsletter subscription error:", error);
-      alert("Failed to subscribe. Please try again.");
+  if (!trimmedEmail) {
+    alert("Please enter your email address.");
+    return;
+  }
+
+  // Email validation regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!emailRegex.test(trimmedEmail)) {
+    alert("Please enter a valid email address.");
+    return; // Stop API call if invalid
+  }
+
+  try {
+    const response = await fetch("/api/newsletter/subscribe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: trimmedEmail }),
+    });
+
+    const data=await response.json();
+
+    if (response.ok) {
+      setEmail("");
+      alert("Successfully subscribed to newsletter!");
     }
-  };
+    if(!response.ok){
+      alert(data.error || "Failed to subscribe. Please try again.");
+    }
+  } catch (error) {
+    console.error("Newsletter subscription error:", error);
+    alert(error instanceof Error ? error.message : "An unexpected error occurred. Please try again.");
+  }
+};
 
   return (
     <footer className="bg-[url('/images/background-footer.jpg')] bg-cover bg-no-repeat bg-center] dark">
@@ -95,7 +112,7 @@ export function Footer() {
             </div>
           </div>
         </div> */}
-        <div className="grid md:grid-cols-4 gap-12 md:justify-center pt-4 md:pt-4">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3 xl:gap-12 md:justify-center pt-4 md:pt-4">
           {/* Creative Design Sudio */}
           <div className="">
             <Link href={"/"}>
@@ -221,31 +238,34 @@ export function Footer() {
             {/* <h4 className="font-semibold mb-4 text-orangeButton text-xl">
               Contact
             </h4> */}
-            <div className="basis-2/3">
-              <form
-                onSubmit={handleSubscribe}
-                className="flex gap-2 relative rounded-full items-center px-1 w-full h-full"
+          <div className="w-full">
+            <form
+              onSubmit={handleSubscribe}
+              className="relative w-full"
+            >
+              <Input
+                placeholder="Enter email address"
+                className="w-full text-sm rounded-full h-12 pl-4 xl:w-[280px]"
+                style={{ backgroundColor: "white" }}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+
+              <Button
+                size="sm"
+                type="submit"
+                className="absolute right-1 xl:-right-8 top-1/2 -translate-y-1/2 rounded-full bg-orangeButton text-white h-10 px-5"
               >
-                <Input
-                  placeholder="Enter email address"
-                  className="text-sm rounded-full h-13 min-w-72 px-4 py-0"
-                  style={{ backgroundColor: "white" }}
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <Button
-                  size="sm"
-                  type="submit"
-                  className="absolute -right-11 rounded-full bg-orangeButton text-white h-auto py-3.5"
-                >
-                  Subscribe Now
-                </Button>
-              </form>
-            </div>
+                Subscribe
+              </Button>
+            </form>
+          </div>
+
+
             <div className="flex flex-col mt-5 gap-1 justify-between items-center text-lg text-white font-medium">
-          <div className="flex flex-wrap gap-6 mt-4 md:mt-0">
+          <div className="flex flex-wrap gap-6 mt-0 md:mt-0">
             <Link
               href={`${cms?.contact?.facebookUrl || "https://facebook.com/sparkplatform"}`}
               className="hover:text-foreground"

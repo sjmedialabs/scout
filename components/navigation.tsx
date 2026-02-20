@@ -87,7 +87,7 @@ export function Navigation() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsSticky(window.scrollY > 80);
+      setIsSticky(window.scrollY > 0);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -220,7 +220,7 @@ const overflowCategories = mainCategories.slice(5);
       >
        
         <div
-          className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${isAgencyDashboard ? "ml-80" : ""}`}
+          className={`lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${isAgencyDashboard ? "ml-80" : ""}`}
         >
           <div className="flex justify-between items-center h-16 gap-4">
 
@@ -243,7 +243,7 @@ const overflowCategories = mainCategories.slice(5);
                 </Link>
               </div>
             )} */}
-            <div className="flex items-center rounded-full flex-1 max-w-md lg:hidden">
+            {/* <div className="flex items-center rounded-full flex-1 max-w-md lg:hidden">
               <form onSubmit={handleSearch} className="relative w-full">
                 <div className="absolute right-4 top-[25%] flex items-center justify-center pr-3 gap-2">
                   <Search className=" rotate-90 h-5 w-5 text-gray-400" />
@@ -258,7 +258,7 @@ const overflowCategories = mainCategories.slice(5);
                   className="pl-10 bg-transparent border-slate-300 rounded-full placeholder:text-gray-200 py-0 placeholder:text-xs focus:bg-slate-500"
                 />
               </form>
-            </div>
+            </div> */}
             {/* Service Categories Navigation */}
             {/* <div className="hidden lg:flex justify-between items-center space-x-8 text-gray-500 hover:text-slate-900 text-xs xl:text-sm font-medium">
               <Link href="/services/development" className="">
@@ -351,12 +351,12 @@ const overflowCategories = mainCategories.slice(5);
 
 
               <div className="hidden lg:flex gap-4 lg:gap-6 xl:gap-6 2xl:gap-6">
-  <Link
-    href="/pricing"
-    className="text-[14px] font-bold text-gray-500  hover:text-slate-900 mt-1"
-  >
-    Pricing
-  </Link>
+              <Link
+                href="/pricing"
+                className="text-[14px] font-bold text-gray-500  hover:text-slate-900 mt-1"
+              >
+                Pricing
+              </Link>
 
   {/* <Link
     href="/about"
@@ -365,22 +365,22 @@ const overflowCategories = mainCategories.slice(5);
     About
   </Link> */}
 
-  {/* MORE DROPDOWN */}
-  {overflowCategories.length > 0 && (
-    <DropdownMenu
-      open={openMenu === "more"}
-      onOpenChange={(open) => {
-  setOpenMenu(open ? "more" : null);
-  if (!open) setSelectedOverflowCategory(null);
-}}
+                  {/* MORE DROPDOWN */}
+                  {overflowCategories.length > 0 && (
+                    <DropdownMenu
+                      open={openMenu === "more"}
+                      onOpenChange={(open) => {
+                  setOpenMenu(open ? "more" : null);
+                  if (!open) setSelectedOverflowCategory(null);
+                }}
 
-    >
-      <DropdownMenuTrigger asChild>
-         <button className="p-1 text-[14px] font-bold text-gray-500">
-            {/* <FaBars className="text-red cursor-pointer hover:text-slate-900 h-6 w-6" /> */}
-            More
-          </button> 
-        </DropdownMenuTrigger>
+                    >
+              <DropdownMenuTrigger asChild>
+                <button className="p-1 text-[14px] font-bold text-gray-500 cursor-pointer">
+                    {/* <FaBars className="text-red cursor-pointer hover:text-slate-900 h-6 w-6" /> */}
+                    More
+                  </button> 
+                </DropdownMenuTrigger>
 
 
       <DropdownMenuContent className="w-93 p-2 rounded-xl">
@@ -455,7 +455,7 @@ const overflowCategories = mainCategories.slice(5);
             </div>
 
             {/* Post a Project Button */}
-            <div className="flex flex-row gap-2">
+            <div className="hidden lg:flex flex-row gap-2">
               <Button
                 className="bg-orangeButton  hover:bg-[#f54607] text-white h-8 rounded-full"
                 asChild
@@ -473,8 +473,10 @@ const overflowCategories = mainCategories.slice(5);
                 <SearchIcon/> Projects
               </Button>
              
+               <div  onClick={()=>router.push("/login")} className="cursor-pointer">
+                   <CircleUserRound className="h-6 w-6 mt-1" color="#f54607" />
+               </div>
                
-                <CircleUserRound className="h-6 w-6 mt-1" color="#f54607"/>
                 
               
 
@@ -483,24 +485,27 @@ const overflowCategories = mainCategories.slice(5);
             </div>
 
             {/* Mobile Menu Button */}
-            <div className="lg:hidden">
+            <div className="flex flex-row gap-2 lg:hidden">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
-                <Menu className="h-4 w-4" />
+                <Menu size={40} />
               </Button>
+              <div  onClick={()=>router.push("/login")} className="cursor-pointer">
+                   <CircleUserRound className="h-6 w-6 mt-1" color="#f54607" />
+               </div>
             </div>
           </div>
 
-      {mobileMenuOpen && (
-  <div className="lg:hidden border-t border-border py-4">
-    <div className="flex flex-col space-y-3">
+          {mobileMenuOpen && (
+          <div className="lg:hidden border-t border-border  py-4">
+          <div className="flex flex-col space-y-3">
 
-      {/* Dynamic Service Categories */}
-      {mainCategories.map((category) => (
-        <div key={category.slug} className="flex flex-col">
+          {/* Dynamic Service Categories */}
+          {mainCategories.map((category) => (
+          <div key={category.slug} className="flex flex-col">
           <button
             className="text-left text-slate-600 hover:text-slate-900 text-sm font-medium"
             onClick={() =>
@@ -542,32 +547,32 @@ const overflowCategories = mainCategories.slice(5);
                 ))}
               </div>
             )}
-        </div>
-      ))}
+          </div>
+          ))}
 
-      {/* Static Links */}
-      <Link
-        href="/pricing"
-        className="text-slate-600 hover:text-slate-900 text-sm"
-        onClick={() => setMobileMenuOpen(false)}
-      >
-        Pricing
-      </Link>
+          {/* Static Links */}
+          <Link
+          href="/pricing"
+          className="text-slate-600 hover:text-slate-900 text-sm"
+          onClick={() => setMobileMenuOpen(false)}
+          >
+          Pricing
+          </Link>
 
-      {/* <Link
-        href="/about"
-        className="text-slate-600 hover:text-slate-900 text-sm"
-        onClick={() => setMobileMenuOpen(false)}
-      >
-        About
-      </Link> */}
+          {/* <Link
+          href="/about"
+          className="text-slate-600 hover:text-slate-900 text-sm"
+          onClick={() => setMobileMenuOpen(false)}
+          >
+          About
+          </Link> */}
 
-      {/* Post a Project Button */}
-      <div className="pt-4 border-t border-border">
-        <Button
+          {/* Post a Project Button */}
+          {/* <div className="pt-4 border-t border-border">
+          <Button
           className="w-full bg-orangeButton hover:bg-[#f54607] rounded-full text-white"
           asChild
-        >
+          >
           <Link
             href={
               user
@@ -578,11 +583,29 @@ const overflowCategories = mainCategories.slice(5);
           >
             Post a Project
           </Link>
-        </Button>
-      </div>
-    </div>
-  </div>
-)}
+          </Button>
+          </div> */}
+          <div className="flex flex-row gap-2">
+              <Button
+                className="bg-orangeButton  hover:bg-[#f54607] text-white h-8 rounded-full"
+                asChild
+              >
+                <Link
+                  href={
+                    user ? "/client/dashboard?section=projects" : "/register"
+                  }
+                >
+                  List Project
+                </Link>
+              </Button>
+
+               <Button className="bg-orangeButton mr-3 hover:bg-[#f54607] text-white h-8 rounded-full"  onClick={()=>router.push("/browse")}>
+                <SearchIcon/> Projects
+              </Button>  
+            </div>
+          </div>
+          </div>
+          )}
 
 
         </div>

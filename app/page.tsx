@@ -264,8 +264,8 @@ const { cms, providers, projects, categories } = data;
         <section className="py-6 px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-1 rounded-full border border-orangeButton mb-2">
-                <span className="text-xs font-medium text-slate-600 capitalize">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] font-extrabold px-4 py-1 rounded-full  mb-2">
+                <span className="text-xs font-medium text-white capitalize">
                   Newly added
                 </span>
               </div>
@@ -388,8 +388,8 @@ const { cms, providers, projects, categories } = data;
         <section className="py-6 px-4 bg-blueBackground">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-1 rounded-full border border-orangeButton mb-2">
-                <span className="text-xs font-medium text-slate-600 capitalize">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] font-extrabold px-4 py-1 rounded-full  mb-2">
+                <span className="text-xs font-medium text-white capitalize">
                   Top Agencies
                 </span>
               </div>
