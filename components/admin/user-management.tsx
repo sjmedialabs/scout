@@ -111,12 +111,12 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
           <p className="text-gray-500 text-xl">Manage platform users and their access</p>
           </div>
                   <div className="flex flex-row justify-center items-center gap-4">
-          <Button className="bg-orangeButton rounded-full text-white mt-4 hover:bg-orange-600 flex items-center gap-2">
+          {/* <Button className="bg-orangeButton rounded-full text-white mt-4 hover:bg-orange-600 flex items-center gap-2">
            <TriangleAlert className="h-4 w-4" /> Reports 
           </Button>
           <Button className="bg-[#278DEC] rounded-full text-white mt-4 hover:bg-blue-800 flex items-center gap-2">
             <Users className="h-4 w-4" /> Pending
-          </Button>
+          </Button> */}
         </div>
         </div>
         <div>
