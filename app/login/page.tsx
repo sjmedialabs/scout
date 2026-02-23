@@ -143,13 +143,13 @@ else {
           </div>
 
           {/* RIGHT SECTION */}
-          <div className="lg:col-span-6 min-h-screen flex flex-col overflow-y-auto p-8 ml-5 sm:p-4">
-            <div className="flex items-center mb-2 justify-end">
+          <div className="lg:col-span-6 min-h-screen flex flex-col overflow-y-auto p-8 sm:p-4">
+            <div className="flex items-center mb-2">
               <button
                   onClick={() => router.push("/")}
-                className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition cursor-pointer"
+                className="flex text-sm items-center justify-center rounded-full hover:text-orange-600 transition cursor-pointer"
 >
-                <X size={18} className="text-gray-700" />
+                ← Back to website
               </button>
             </div>
             <h3 className="text-xl mt-20 font-semibold text-center">Sign in</h3>
@@ -193,8 +193,8 @@ else {
             </div> */}
 
             {/* Inputs */}
-            <div className="mt-1 space-y-4 flex flex-col">
-              <div className="w-full max-w-full">
+            <div className="mt-1 space-y-4 flex flex-col items-center">
+              <div className="w-[420px] max-w-full">
                 <label className="text-sm font-bold text-gray-600">E-mail</label>
                  <div>
                 <input
@@ -207,7 +207,7 @@ else {
                 </div>
               </div>
 
-              <div className="w-full max-w-full">
+              <div className="w-[420px] max-w-full">
                 <label className="text-sm font-bold text-gray-600">Password</label>
                 <div className="relative">
                 <input
@@ -230,35 +230,35 @@ else {
               </div>
               <p
                 onClick={() => router.push("/forgot-password")}
-                className="mt-2 text-sm  hover:text-blue-400 underline cursor-pointer"
+                className="mt-2 text-center text-sm  hover:text-orange-600 cursor-pointer"
               >
                 Forgot password?
               </p>
             </div>
 
             {error && (
-              <p className="mt-2 text-[10px] text-red-500">
+              <p className="mt-2 text-center text-[10px] text-red-500">
                 {error}
               </p>
             )}
 
             {/* Button */}
-            <div>
+            <div className="flex justify-center mb-2">
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="mt-4 justify-center cursor-pointer rounded-xl bg-black px-6 py-2 text-sm font-medium text-white hover:bg-gray-900 transition"
+              className="mt-4 justify-center cursor-pointer rounded-xl bg-black px-6 py-2 text-sm font-medium text-white hover:bg-orange-600 transition"
             >
               {loading ? "Signing In..." : "Sign in"}
             </button>
            </div> 
 
             {/* Footer */}
-            <p className="mt-1 text-sm text-black">
+            <p className="mt-1 text-center text-sm text-black">
               Don't have an account?
               <span
                 onClick={() => router.push("/register")}
-                className="ml-1 cursor-pointer underline hover:text-blue-400 font-medium text-black"
+                className="ml-1 cursor-pointer underline hover:text-orange-600 font-medium text-black"
               >
                 Register here
               </span>
