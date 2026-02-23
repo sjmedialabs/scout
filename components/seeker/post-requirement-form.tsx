@@ -91,76 +91,59 @@ export function PostRequirementForm({ onSubmit,sendingStatus}: PostRequirementFo
   }
 
   return (
-    <div className="my-custom-class">
-      <div className="max-w-2xl bg-[#fff]">
+    <div className="my-custom-class max-w-7xl mx-auto ">
+      <div className=" bg-[#fff]">
       
-        <h1 className="text-3xl text-[#F54A0C] font-bold tracking-tight">Post New Requirement</h1>
-        <p className="text-xl text-[#656565] font-light mb-8">Describe your project needs to receive proposals from qualified providers</p>
+        <h1 className="text-xl md:text-3xl text-[#F54A0C] font-bold tracking-tight">Post New Requirement</h1>
+        <p className="text-md md:text-xl text-[#656565] font-light mb-8">Describe your project needs to receive proposals from qualified providers</p>
       
-      <div>
+      <div className="">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="title" className="text-[#98A0B4] text-[14px] font-normal">Project Title</Label>
-            <Input
-              id="title" 
-              value={formData.title}
-              className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
-            
-              onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
-              placeholder="e.g., E-commerce Website Development"
-              required
-            />
-          </div>
-          {/*categories */}
-          {/* <div className="space-y-2">
-            <Label htmlFor="category" className="text-[#98A0B4] text-[14px] font-normal">Category</Label>
-           <Select
-            value={formData.category}
-            onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, category: value }))
-            }
-          >
-            <SelectTrigger
-              className="
-                border-2 border-[#D0D5DD] rounded-[8px]
-                data-[placeholder]:text-[#98A0B4]
-                
-                text-[#000]
-              "
-            >
-              <SelectValue placeholder="Select a category" style={{color:"#98A0B4"}} />
-            </SelectTrigger>
 
-            <SelectContent>
-              {categories.map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+         {/*Title and categories */}
+          <div className="grid sm:grid-cols-2 gap-4">
 
-          </div> */}
+            {/*title */}
+             <div className="w-full">
+              <Label htmlFor="title" className="text-[#98A0B4] text-[14px] font-normal">Project Title</Label>
+              <Input
+                id="title" 
+                value={formData.title}
+                className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-gray-300 placeholder:text-xs"
+              
+                onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
+                placeholder="e.g., E-commerce Website Development"
+                required
+              />
+            </div>
 
-           <div className="space-y-2">
+            {/* categoroies*/}
+            <div className="mt-0.5">
                 <Label
                   htmlFor="category"
-                  className="text-[#000]  text-[14px] font-bold"
-                ></Label>
+                  className="text-[#98A0B4] text-[14px] font-normal"
+                >Category</Label>
 
                 <ServiceDropdown
                 value={formData.category}
                   onChange={(value)=> setFormData((prev) => ({ ...prev, category: value }))}
-                  triggerClassName="border-2 border-[#D0D5DD] rounded-[8px] data-[placeholder]:text-[#98A0B4] text-[#000] p-4"
+                  triggerClassName="border-2 border-[#D0D5DD]  rounded-[8px] data-[placeholder]:text-[#98A0B4] text-[#000] p-4"
+                  triggerSpanClassName="text-gray-300 text-xs"
                 />
+           </div>
+
+
           </div>
+         
+         
+           
           
 
           <div className="space-y-2">
             <Label htmlFor="description" className="text-[#98A0B4] text-[14px] font-normal">Project Description</Label>
             <Textarea
               id="description"
-              className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
+              className="border-2  border-[#D0D5DD] rounded-[8px] placeholder:text-gray-300 placeholder:text-xs"
               value={formData.description}
               onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
               placeholder="Provide detailed information about your project requirements, goals, and expectations..."
@@ -169,14 +152,14 @@ export function PostRequirementForm({ onSubmit,sendingStatus}: PostRequirementFo
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="budgetMin" className="text-[#98A0B4] text-[14px] font-normal">Budget Range (Min)</Label>
               <Input
                 id="budgetMin"
                 type="number"
                 value={formData.budgetMin}
-                className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
+                className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-gray-300 placeholder:text-xs"
                 onChange={(e) => setFormData((prev) => ({ ...prev, budgetMin: e.target.value }))}
                 placeholder="1000"
                 required
@@ -188,15 +171,14 @@ export function PostRequirementForm({ onSubmit,sendingStatus}: PostRequirementFo
                 id="budgetMax"
                 type="number"
                 value={formData.budgetMax}
-                className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
+                className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-gray-300 placeholder:text-xs"
                 onChange={(e) => setFormData((prev) => ({ ...prev, budgetMax: e.target.value }))}
                 placeholder="5000"
                 required
               />
             </div>
-          </div>
 
-          <div className="space-y-2">
+              <div className="space-y-2">
             <Label htmlFor="timeline" className="text-[#98A0B4] text-[14px] font-normal">Expected Timeline</Label>
             <Input
               id="timeline"
@@ -207,6 +189,9 @@ export function PostRequirementForm({ onSubmit,sendingStatus}: PostRequirementFo
               required
             />
           </div>
+          </div>
+
+        
           <div className="space-y-2">
            <Label className="text-[#98A0B4] text-[14px] font-normal">Project Attachment (optional)</Label>
            <PdfUpload
