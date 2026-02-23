@@ -37,8 +37,20 @@ export default function ServicesPage() {
 
   const[activeServiceId,setActiveServiceId]=useState<string | null>(null);
 
-  const[ratingFilter,setRatingFilter]=useState<string>("high-to-low");
-  // const[priceFilter,setPriceFilter]=useState<string>("low-to-high");
+  const[ratingFilter,setRatingFilter]=useState<string>("");
+  const[priceFilter,setPriceFilter]=useState<string>("");
+  const [projectFilter, setProjectFilter] = useState<string>("");
+  const[teamSizeFilter,setTeamSizeFilter]=useState<string>("");
+
+  const employeeSizes = [
+  "1-9",
+  "10-49",
+  "50-99",
+  "100-249",
+  "250-499",
+  "500-999",
+  "1000+",
+];
 
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
@@ -83,31 +95,74 @@ export default function ServicesPage() {
  
 
   /* ---------------- FILTER PROVIDERS based on the selected service ---------------- */
-  useEffect(() => {
-    console.log("Active Service:", activeService);
-    if (!activeService) return;
+  // useEffect(() => {
+  //   console.log("Active Service:", activeService);
+  //   if (!activeService) return;
     
 
-    const filtered = providers.filter((provider: any) =>
+  //   const filtered = providers.filter((provider: any) =>
+  //     provider.services?.includes(activeService.title)
+  //   );
+
+  //   setFilteredProviders(filtered);
+  // }, [activeService, providers]);
+
+
+  /* ---------------- FILTER + SORT PROVIDERS ---------------- */
+   useEffect(() => {
+  let updatedProviders = [...providers];
+
+  /* 1️⃣ Filter by Active Service */
+  if (activeService) {
+    updatedProviders = updatedProviders.filter((provider: any) =>
       provider.services?.includes(activeService.title)
     );
+  }
 
-    setFilteredProviders(filtered);
-  }, [activeService, providers]);
+  /* 2️⃣ Filter by Team Size (NEW LOGIC) */
+  if (teamSizeFilter) {
+    updatedProviders = updatedProviders.filter(
+      (provider: any) => provider.teamSize === teamSizeFilter
+    );
+  }
 
+  /* 3️⃣ Apply Sorting */
+  updatedProviders.sort((a, b) => {
 
-  /* ---------------- SORT PROVIDERS based on rating and price filters ---------------- */
-  useEffect(() => {
-    let sortedProviders = [...filteredProviders];
-    if (ratingFilter === "high-to-low") {
-      sortedProviders.sort((a, b) => b.rating - a.rating);
+    if (ratingFilter === "high-to-low" && b.rating !== a.rating) {
+      return b.rating - a.rating;
     }
-    else if (ratingFilter === "low-to-high") {
-      sortedProviders.sort((a, b) => a.rating - b.rating);
+    if (ratingFilter === "low-to-high" && a.rating !== b.rating) {
+      return a.rating - b.rating;
     }
-    setFilteredProviders(sortedProviders);
-  }, [ratingFilter])
 
+    if (priceFilter === "high-to-low" && b.hourlyRate !== a.hourlyRate) {
+      return b.hourlyRate - a.hourlyRate;
+    }
+    if (priceFilter === "low-to-high" && a.hourlyRate !== b.hourlyRate) {
+      return a.hourlyRate - b.hourlyRate;
+    }
+
+    if (projectFilter === "high-to-low" && b.projectsCompleted !== a.projectsCompleted) {
+      return b.projectsCompleted - a.projectsCompleted;
+    }
+    if (projectFilter === "low-to-high" && a.projectsCompleted !== b.projectsCompleted) {
+      return a.projectsCompleted - b.projectsCompleted;
+    }
+
+    return 0;
+  });
+
+  setFilteredProviders(updatedProviders);
+
+}, [
+  providers,
+  activeService,
+  ratingFilter,
+  priceFilter,
+  projectFilter,
+  teamSizeFilter
+]);
   console.log("Filtered Proividers:", filteredProviders)
 
   const handleContact = (provider: any) => {
@@ -136,9 +191,9 @@ export default function ServicesPage() {
         <Menu size={25} color="gray"/>
       </button>
 
-      <h2 className="text-sm font-semibold text-gray-700">
+      {/* <h2 className="text-sm font-semibold text-gray-700">
         Categories
-      </h2>
+      </h2> */}
 
       <div /> {/* Spacer */}
     </div>
@@ -193,7 +248,7 @@ export default function ServicesPage() {
                               : "hover:bg-gray-100"
                           }`}
                         >
-                          <span className="text-[#490909] font-bold">{child.title}</span>
+                          <span>{child.title}</span>
                           {isChildOpen ? <ChevronDown /> : <ChevronRight />}
                         </div>
 
@@ -298,44 +353,164 @@ export default function ServicesPage() {
 
 
     {/* ---------------- RIGHT SIDE (PROVIDERS) ---------------- */}
-    <div className="w-full lg:w-[80%] p-4 lg:p-6">
+    <div className="w-full lg:w-[80%] p-4 lg:p-6 ">
        {/* Filters Section */}
-      <div className="flex flex-col sm:flex-row pb-2 justify-between mx-1 lg:mx-3 flex-wrap">
-        <div className="mb-3 sm:mb-0">
-          <p className="text-sm text-gray-500 ml-1">Rating</p>
-          <Select
-            onValueChange={(value) => setRatingFilter(value)}
-            value={ratingFilter}
-          >
-            <SelectTrigger
-              className="
+      <div className="flex flex-row  mb-3   pb-2  gap-4 overflow-x-auto mx-1 lg:mx-3 ">
+        {/*Ratings filter */}
+        <div className="mb-3 sm:mb-0 ">
+          {/* <p className="text-sm text-gray-500 ml-1">Rating</p> */}
+              <Select
+          onValueChange={(value) => setRatingFilter(value)}
+          value={ratingFilter}
+        >
+          <SelectTrigger
+            className={`
               border-2
               border-[#b2b2b2]
               cursor-pointer
-              rounded-full
+              rounded-[8px]
               shadow-none
               focus:ring-0
-              px-6
-              w-[150px]
+              
+              px-3
               h-11
               text-sm
-            "
-            >
-              <SelectValue placeholder="Rating" />
-            </SelectTrigger>
+              data-[placeholder]:text-[#98A0B4]
+            `}
+          >
+            <SelectValue placeholder="Filter by Rating" />
+          </SelectTrigger>
 
-            <SelectContent>
-              <SelectItem value="high-to-low">High to Low</SelectItem>
-              <SelectItem value="low-to-high">Low to High</SelectItem>
-            </SelectContent>
-          </Select>
+          <SelectContent>
+            <SelectItem value="high-to-low">High to Low</SelectItem>
+            <SelectItem value="low-to-high">Low to High</SelectItem>
+          </SelectContent>
+        </Select>
         </div>
+
+        {/* Price filter*/}
+         <div className="mb-3 sm:mb-0">
+          {/* <p className="text-sm text-gray-500 ml-1">Rating</p> */}
+              <Select
+                onValueChange={(value) => setPriceFilter(value)}
+                value={priceFilter}
+              >
+                <SelectTrigger
+                  className={`
+                    border-2
+                    border-[#b2b2b2]
+                    cursor-pointer
+                    rounded-[8px]
+                    shadow-none
+                    focus:ring-0
+                    px-3
+                    h-11
+                    text-sm
+                    data-[placeholder]:text-[#98A0B4]
+                  `}
+                >
+                  <SelectValue placeholder="Filter by  Price" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  <SelectItem value="high-to-low">High to Low</SelectItem>
+                  <SelectItem value="low-to-high">Low to High</SelectItem>
+                </SelectContent>
+              </Select>
+        </div>
+
+        {/* Projects filter */}
+        <div className="mb-3 sm:mb-0">
+          {/* <p className="text-sm text-gray-500 ml-1">Rating</p> */}
+              <Select
+                onValueChange={(value) => setProjectFilter(value)}
+                value={projectFilter}
+              >
+                <SelectTrigger
+                  className={`
+                    border-2
+                    border-[#b2b2b2]
+                    cursor-pointer
+                    rounded-[8px]
+                    shadow-none
+                    focus:ring-0
+                    px-3
+                    h-11
+                    text-sm
+                    data-[placeholder]:text-[#98A0B4]
+                  `}
+                >
+                  <SelectValue placeholder="Filter by Projects" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  <SelectItem value="high-to-low">High to Low</SelectItem>
+                  <SelectItem value="low-to-high">Low to High</SelectItem>
+                </SelectContent>
+              </Select>
+        </div>
+
+        {/* Team Size filter */}
+        <div className="mb-3 sm:mb-0">
+          {/* <p className="text-sm text-gray-500 ml-1">Rating</p> */}
+              <Select
+                onValueChange={(value) => setTeamSizeFilter(value)}
+                value={teamSizeFilter}
+              >
+                <SelectTrigger
+                  className={`
+                    border-2
+                    border-[#b2b2b2]
+                    cursor-pointer
+                    rounded-[8px]
+                    shadow-none
+                    focus:ring-0
+                    px-3
+                    h-11
+                    text-sm
+                    data-[placeholder]:text-[#98A0B4]
+                  `}
+                >
+                  <SelectValue placeholder="Filter by Team" />
+                </SelectTrigger>
+
+                <SelectContent>
+                 {
+                    employeeSizes.map((size) => (
+                      <SelectItem key={size} value={size}>
+                        {size}
+                      </SelectItem>
+                    ))
+                    
+                 }
+                </SelectContent>
+              </Select>
+        </div>
+
+        {/* Reset Filters Button */}
+        <div className="mb-3 sm:mb-0 mt-0.5">
+          <Button
+            onClick={() => {
+              setRatingFilter("");
+              setPriceFilter("");
+              setProjectFilter("");
+              setTeamSizeFilter("");
+            }}
+            className="text-sm h-[30px] font-extralight rounded-xl  bg-orangeButton text-[#fff]"
+          >
+            Clear
+          </Button>
+        </div>
+
+
       </div>
 
       {/* Providers Grid */}
       <div>
         {filteredProviders.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 max-h-[100vh] overflow-y-auto [scrollbar-width:none] 
+          [-ms-overflow-style:none]        
+          [&::-webkit-scrollbar]:hidden">
             {filteredProviders.map((p: any) => (
             <div className="overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:shadow-md flex flex-col h-full">
 

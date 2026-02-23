@@ -212,10 +212,8 @@ const { cms, providers, projects, categories } = data;
                 return (
                   <div
                     key={category._id}
-                    onClick={() =>
-                      router.push(`/services?category=${category._id}`)
-                    }
-                    className={`group bg-white/70 cursor-pointer backdrop-blur-sm rounded-4xl px-6 py-6 border lg:pl-8 ${colors.hover} hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col`}
+                    
+                    className={`group bg-white/70  backdrop-blur-sm rounded-4xl px-6 py-6 border lg:pl-8 ${colors.hover} hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col`}
                   >
                     {/* Top Content */}
                     <div>
@@ -251,7 +249,10 @@ const { cms, providers, projects, categories } = data;
                     <div className="mt-auto pt-6">
                       <Button
                         size="sm"
-                        className=" bg-[#2C34A1]  text-white rounded-full hover:bg-[#2C34A1]/90"
+                        className=" bg-[#2C34A1] cursor-pointer  text-white rounded-full hover:bg-[#2C34A1]/90"
+                        onClick={() =>
+                      router.push(`/services?category=${category._id}`)
+                    }
                       >
                         {`Explore  →`}
                       </Button>
