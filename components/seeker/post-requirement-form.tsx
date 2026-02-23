@@ -91,14 +91,14 @@ export function PostRequirementForm({ onSubmit,sendingStatus}: PostRequirementFo
   }
 
   return (
-    <div className="my-custom-class max-w-7xl mx-auto ">
+    <div className="my-custom-class max-w-7xl mx-auto -mt-8 py-0 ">
       <div className=" bg-[#fff]">
       
-        <h1 className="text-xl md:text-3xl text-[#F54A0C] font-bold tracking-tight">Post New Requirement</h1>
-        <p className="text-md md:text-xl text-[#656565] font-light mb-8">Describe your project needs to receive proposals from qualified providers</p>
+        <h1 className="text-xl text-[#F54A0C] font-bold ">Post New Requirement</h1>
+        <p className="text-md  text-[#656565] font-light mb-3">Describe your project needs to receive proposals from qualified providers</p>
       
       <div className="">
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-3">
 
          {/*Title and categories */}
           <div className="grid sm:grid-cols-2 gap-4">
@@ -161,7 +161,7 @@ export function PostRequirementForm({ onSubmit,sendingStatus}: PostRequirementFo
                 value={formData.budgetMin}
                 className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-gray-300 placeholder:text-xs"
                 onChange={(e) => setFormData((prev) => ({ ...prev, budgetMin: e.target.value }))}
-                placeholder="1000"
+                placeholder="Enter your minimum budget"
                 required
               />
             </div>
@@ -173,7 +173,7 @@ export function PostRequirementForm({ onSubmit,sendingStatus}: PostRequirementFo
                 value={formData.budgetMax}
                 className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-gray-300 placeholder:text-xs"
                 onChange={(e) => setFormData((prev) => ({ ...prev, budgetMax: e.target.value }))}
-                placeholder="5000"
+                placeholder="Enter your maximum budget"
                 required
               />
             </div>
@@ -208,7 +208,7 @@ export function PostRequirementForm({ onSubmit,sendingStatus}: PostRequirementFo
 
 
           <div className="flex gap-4 pt-4">
-            <Button type="submit" className="flex-1">
+            <Button type="submit" className="bg-[#000] text-white rounded-full max-w-[150px]" disabled={sendingStatus}>
               Post Requirement
             </Button>
             

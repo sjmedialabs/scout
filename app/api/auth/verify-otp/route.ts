@@ -75,14 +75,14 @@ export async function POST(request: NextRequest) {
     phoneNumber: undefined,
     companyName: user?.company || "",
     position: "",
-    industry: "Technology",
+    industry: "",
     location: "",
     website: "",
     bio: "",
-    timeZone:"Asia/Kolkata",
-    preferredCommunication: "email", // FIXED TYPO
-    typicalProjectBudget: "$1,000 - $5,000", // FIXED TYPO
-    companySize: "1-10",
+    timeZone:"",
+    preferredCommunication: "", // FIXED TYPO
+    typicalProjectBudget: "", // FIXED TYPO
+    companySize: "",
     
     image: "",
       })

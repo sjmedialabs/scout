@@ -1066,9 +1066,7 @@ export default function ClientDashboard() {
               </CardHeader>
 
               <CardContent className="px-3 md:px-6">
-                <div className="space-y-4 max-h-[200px] overflow-y-auto  [scrollbar-width:none] 
-          [-ms-overflow-style:none]        
-          [&::-webkit-scrollbar]:hidden">
+                <div className="space-y-4 max-h-[200px] overflow-y-auto  ">
                   {(() => {
                     const totalVendorsCount = (
                       topVendorsLocations || []
@@ -1127,9 +1125,8 @@ export default function ClientDashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="px-3 md:px-6">
-                <div className="space-y-4 max-h-[200px] overflow-y-auto  [scrollbar-width:none] 
-          [-ms-overflow-style:none]        
-          [&::-webkit-scrollbar]:hidden">
+                <div className="space-y-4 max-h-[200px] overflow-y-auto   
+         ">
                   {topVendorsServices.map((specialty, index) => (
                     <div key={index} className="space-y-1">
                       <div className="flex items-center justify-between">
