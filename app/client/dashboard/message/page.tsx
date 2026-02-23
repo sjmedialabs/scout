@@ -11,6 +11,7 @@ import {
   Check,
   CheckCheck,
   FileText,
+  MoveLeft,
 } from "lucide-react";
 import {
   LineChart,
@@ -155,6 +156,8 @@ export default function MessagesPage() {
   const [dynamicMessages, setDynamicMessages] = useState<Message[]>([]);
   const [messageRecieverId, setMessageRecieverId] = useState();
   const [totalUnreadMessagesCount, setTotalUnreadMessagesCount] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
 
   const [resLoading, setResLoading] = useState(false);
   const [chatLaoding, setChatLoading] = useState(false);
@@ -219,6 +222,17 @@ export default function MessagesPage() {
       setResLoading(false);
     }
   };
+
+  useEffect(() => {
+  const checkScreen = () => {
+    setIsMobile(window.innerWidth < 1024);
+  };
+
+  checkScreen();
+  window.addEventListener("resize", checkScreen);
+
+  return () => window.removeEventListener("resize", checkScreen);
+}, []);
 
   useEffect(() => {
     if (!loading && (!user || user.role !== "client")) {
@@ -425,6 +439,9 @@ useEffect(() => {
 
       await fetchMessages(recievdId);
     }
+    if (isMobile) {
+    setIsMobileChatOpen(true);
+  }
   };
 
   //----------------------------------attachements handle ----------------------
@@ -514,21 +531,22 @@ useEffect(() => {
   console.log("Filtered Conversatoions are::::::", filteredDynamicConversation);
 
   return (
-    <div className="space-y-3 -mt-2">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-orangeButton my-custum-class">
-          Messages
-        </h1>
-        <p className="text-gray-500 text-xl">
-          Manage your conversations and project inquiries
-        </p>
-      </div>
+  <div className="space-y-2 -mt-2">
+    {/* Header */}
+    <div>
+      <h1 className="text-xl lg:text-3xl font-bold text-orangeButton my-custum-class">
+        Messages
+      </h1>
+      <p className="text-gray-500 text-md lg:text-xl">
+        Manage your conversations and project inquiries
+      </p>
+    </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6 min-h-[100vh]">
-        {/* LEFT SIDEBAR */}
+    <div className="grid lg:grid-cols-[340px_1fr] gap-6 min-h-[100vh]">
 
-        <Card className="rounded-2xl p-4 bg-white">
+      {/* ================= LEFT SIDEBAR ================= */}
+      {(!isMobile || !isMobileChatOpen) && (
+        <Card className="rounded-2xl p-4  bg-white">
           <div className="h-4">
             <h3 className="font-semibold text-2xl mb-3">
               Messages{" "}
@@ -556,15 +574,11 @@ useEffect(() => {
             />
           </div>
 
-          {(filteredDynamicConversation || []).length != 0 ? (
+          {(filteredDynamicConversation || []).length !== 0 ? (
             <div className="space-y-2">
               {filteredDynamicConversation.map((c) => (
                 <div
                   key={c.conversationId}
-                  // onClick={() => {
-                  //   setActiveConversationId(c.id)
-                  //   c.unreadCount = 0
-                  // }}
                   onClick={() => handleClickedConversation(c.conversationId)}
                   className={clsx(
                     "flex items-center gap-3 p-3 rounded-xl cursor-pointer transition",
@@ -574,7 +588,6 @@ useEffect(() => {
                       : "hover:bg-gray-100",
                   )}
                 >
-                  {/* Avatar */}
                   <div className="relative">
                     <img
                       src={
@@ -588,7 +601,6 @@ useEffect(() => {
                     )}
                   </div>
 
-                  {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center">
                       <p className="text-sm font-semibold truncate">
@@ -628,206 +640,215 @@ useEffect(() => {
             </div>
           )}
         </Card>
+      )}
 
-        {/* CHAT PANEL */}
-        {!resLoading &&
-        !failed &&
-        (dynamicActiveConversation || []).length !== 0 ? (
-          <Card className="rounded-2xl flex flex-col bg-white border-0 shadow-none">
-            <div className="flex items-start justify-between bg-[#f9f9f9] px-6 py-4  border-b">
-              <div className="flex items-center gap-3">
-                <img
-                  src={
-                    dynamicActiveConversation.participant.image ||
-                    "https://i.pravatar.cc/100?img=32"
-                  }
-                  className="h-9 w-9 rounded-full"
-                />
-                <div>
-                  <p className="font-medium">
-                    {dynamicActiveConversation.participant.name}
-                  </p>
-                  {/* <p className="text-xs text-gray-500">@mary_johnson</p> */}
+      {/* ================= CHAT PANEL ================= */}
+      {(!isMobile || isMobileChatOpen) && (
+        <>
+          {!resLoading &&
+          !failed &&
+          dynamicActiveConversation ? (
+            <Card className="rounded-2xl px-1 flex flex-col bg-white border-0 shadow-none">
+
+              {/* Chat Header */}
+              <div className="flex items-start flex-wrap justify-between bg-[#f9f9f9] px-6 py-4 border-b">
+                <div className="flex items-center gap-3">
+
+                  {/* Mobile Back Button */}
+                  {isMobile && (
+                    <button
+                      onClick={() => setIsMobileChatOpen(false)}
+                      className="text-blue-600 text-lg mr-2"
+                    >
+                      
+                      <MoveLeft className="h-4 w-4 font-extrabold" strokeWidth={3}/>
+                    </button>
+                  )}
+
+                  <img
+                    src={
+                      dynamicActiveConversation.participant.image ||
+                      "https://i.pravatar.cc/100?img=32"
+                    }
+                    className="h-9 w-9 rounded-full"
+                  />
+                  <div>
+                    <p className="font-medium">
+                      {dynamicActiveConversation.participant.name}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-10 items-center">
+                  {/* <Phone className="h-5 w-5 text-blue-600" />
+                  <Video className="h-5 w-5 text-blue-600" /> */}
+                  <Button
+                    onClick={() => setOpen(true)}
+                    className="text-xs bg-red-500 text-white px-3 h-[25px] w-[70px] mt-1 rounded-full"
+                  >
+                    Report
+                  </Button>
                 </div>
               </div>
-              <div className="flex gap-10 items-center">
-                <Phone className="h-5 w-5 text-blue-600" />
-                <Video className="h-5 w-5 text-blue-600" />
-                {/* <span className="text-xs bg-green-500 text-white px-3 py-1 rounded-full">
-                  Active
-                </span> */}
-                <Button onClick={() => setOpen(true)} className="text-xs bg-red-500 text-white px-3 py-1 rounded-full">Report</Button>
-              </div>
-            </div>
 
-            <div className="flex-1 px-6 py-4 space-y-5 overflow-y-auto max-h-[60vh] [scrollbar-width:none] [-ms-overflow-style:none]  [&::-webkit-scrollbar]:hidden">
-              {!chatLaoding && (dynamicMessages || []).length != 0 ? (
-                <div>
-                  {dynamicMessages.map((msg: Message) => (
-                    <div
-                      key={msg.id}
-                      className={clsx(
-                        "flex",
-                        msg.senderId === user?.id
-                          ? "justify-end"
-                          : "justify-start",
-                      )}
-                    >
-                      <div className="max-w-[70%]">
-                        <div
-                          className={clsx(
-                            "rounded-2xl px-4 py-3 text-sm",
-                            msg.sender === "me" ? "bg-blue-100" : "bg-gray-100",
-                          )}
-                        >
-                          {msg.attachments?.length > 0 && (
-                            <div
-                              onClick={() => handleDownload(msg.attachments[0])}
-                            >
-                              {msg.messageType.toLowerCase() === "image" ? (
-                                <img
-                                  src={msg.attachments[0]}
-                                  className="rounded-lg max-h-40"
-                                />
-                              ) : (
-                                <div className="flex items-center gap-2 text-xs w-[40px] h-[40px] bg-white p-2 rounded-lg">
-                                  <FileText className="h-10 w-10" />
-                                  {/* {msg.attachments[0]} */}
-                                </div>
-                              )}
-                            </div>
-                          )}
-                          {msg.content}
-                        </div>
+              {/* Chat Messages */}
+              <div className="flex-1 px-6 py-4 space-y-5 overflow-y-auto max-h-[60vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                {!chatLaoding && (dynamicMessages || []).length !== 0 ? (
+                  <div>
+                    {dynamicMessages.map((msg: Message) => (
+                      <div
+                        key={msg.id}
+                        className={clsx(
+                          "flex",
+                          msg.senderId === user?.id
+                            ? "justify-end"
+                            : "justify-start",
+                        )}
+                      >
+                        <div className="max-w-[70%]">
+                          <div
+                            className={clsx(
+                              "rounded-2xl px-4 py-3 text-sm",
+                              msg.sender === "me"
+                                ? "bg-blue-100"
+                                : "bg-gray-100",
+                            )}
+                          >
+                            {msg.attachments?.length > 0 && (
+                              <div
+                                onClick={() =>
+                                  handleDownload(msg.attachments[0])
+                                }
+                              >
+                                {msg.messageType.toLowerCase() === "image" ? (
+                                  <img
+                                    src={msg.attachments[0]}
+                                    className="rounded-lg max-h-40"
+                                  />
+                                ) : (
+                                  <div className="flex items-center gap-2 text-xs w-[40px] h-[40px] bg-white p-2 rounded-lg">
+                                    <FileText className="h-10 w-10" />
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                            {msg.content}
+                          </div>
 
-                        <div className="flex items-center justify-end gap-1 text-[10px] text-gray-400 mt-1">
-                          {/* {msg.senderId === user?.id && (
-                              <StatusIcon status={false} />
-                            )} */}
-                          {/* {
-                              msg.isRead?<CheckCheck color="blue" size={16}/>:<Check size={16}/>
-                            } */}
-                          {msg.senderId === user?.id && (
-                            <div>
-                              {msg.isRead ? (
-                                <CheckCheck color="blue" size={16} />
-                              ) : (
-                                <Check size={16} />
-                              )}
-                            </div>
-                          )}
-                          {formatedTime(msg.createdAt)}
+                          <div className="flex items-center justify-end gap-1 text-[10px] text-gray-400 mt-1">
+                            {msg.senderId === user?.id && (
+                              <div>
+                                {msg.isRead ? (
+                                  <CheckCheck color="blue" size={16} />
+                                ) : (
+                                  <Check size={16} />
+                                )}
+                              </div>
+                            )}
+                            {formatedTime(msg.createdAt)}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center">
-                  {chatLaoding && (
-                    <p className="text-gray-500 my-10">Loading...</p>
-                  )}
-                  {/* {
-                    (!chatLaoding && dynamicMessages || []).length===0 &&(
-                      <p className="text-gray-500 my-10">No Messages At...</p>
-                    )
-                  } */}
-                </div>
-              )}
-              {!chatLaoding && (dynamicMessages || []).length === 0 && (
-                <div className="text-center">
-                  <p className="text-gray-500 my-10">No Messages Yet</p>
-                </div>
-              )}
-
-              {/* {typing && (
-              <p className="text-xs text-gray-400">Typing…</p>
-            )} */}
-            </div>
-
-            <div className="px-6 py-4 border-t">
-              <div className="mb-2">
-                {uploading && <span>Uploading...</span>}
-                {uplodedUrl.url && (
-                  <div>
-                    {uplodedUrl.url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-                      <img
-                        src={uplodedUrl.url}
-                        alt="preview"
-                        style={{
-                          width: "60px",
-                          height: "60px",
-                          objectFit: "cover",
-                        }}
-                      />
-                    ) : (
-                      <a href={uplodedUrl.url} target="_blank">
-                        View Uploaded File
-                      </a>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    {chatLaoding && (
+                      <p className="text-gray-500 my-10">Loading...</p>
                     )}
+                  </div>
+                )}
+
+                {!chatLaoding && (dynamicMessages || []).length === 0 && (
+                  <div className="text-center">
+                    <p className="text-gray-500 my-10">No Messages Yet</p>
                   </div>
                 )}
               </div>
 
-              <div className="flex items-center gap-3 bg-gray-50 rounded-full px-4 py-2">
-                <div>
+              {/* Message Input */}
+              <div className="px-6 py-4 border-t">
+                <div className="mb-2">
+                  {uploading && <span>Uploading...</span>}
+                  {uplodedUrl.url && (
+                    <div>
+                      {uplodedUrl.url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                        <img
+                          src={uplodedUrl.url}
+                          alt="preview"
+                          style={{
+                            width: "60px",
+                            height: "60px",
+                            objectFit: "cover",
+                          }}
+                        />
+                      ) : (
+                        <a href={uplodedUrl.url} target="_blank">
+                          View Uploaded File
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-3 bg-gray-50 rounded-full px-4 py-2">
                   <Paperclip
                     className="h-5 w-5 text-blue-600 cursor-pointer"
                     onClick={() => fileInputRef.current?.click()}
                   />
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    hidden
+                    accept="image/*,application/pdf"
+                    onChange={handleFileChange}
+                    disabled={uploading}
+                  />
+                  <Input
+                    value={messageInput}
+                    onChange={(e) => setMessageInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") sendMessage();
+                    }}
+                    placeholder="Message"
+                    className="border-0 bg-transparent shadow-none placeholder:text-gray-400 focus-visible:ring-0"
+                  />
+                  <Camera className="h-5 w-5 text-blue-600" />
+                  {sendMsgLoading && (
+                    <p className="text-gray-300 text-sm">sending...</p>
+                  )}
+                  <button
+                    onClick={sendMessage}
+                    disabled={sendMsgLoading}
+                  >
+                    <Send className="h-5 w-5 text-blue-600 cursor-pointer" />
+                  </button>
                 </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  hidden
-                  // onChange={(e) =>
-                  //   handleAttachment(e.target.files)
-                  // }
-                  accept="image/*,application/pdf"
-                  onChange={handleFileChange}
-                  disabled={uploading}
-                />
-                <Input
-                  value={messageInput}
-                  onChange={(e) => setMessageInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") sendMessage();
-                  }}
-                  onFocus={() => setTyping(true)}
-                  onBlur={() => setTyping(false)}
-                  placeholder="Message"
-                  className="border-0 bg-transparent focus-visible:ring-0"
-                />
-                <Camera className="h-5 w-5 text-blue-600" />
-                {sendMsgLoading && (
-                  <p className="text-gray-300 text-sm">sending...</p>
-                )}
-                <button onClick={sendMessage} disabled={sendMsgLoading}>
-                  <Send className="h-5 w-5 text-blue-600 cursor-pointer" />
-                </button>
               </div>
+            </Card>
+          ) : (
+            <div className="text-center">
+              <p className="text-gray-500 mt-10">
+                Click on any conversation
+              </p>
             </div>
-          </Card>
-        ) : (
-          <div className="text-center">
-            <p className="text-gray-500 mt-10">Click on any conversation</p>
-          </div>
-        )}
-      </div>
-
-      {/*Modal for the report */}
-      {
-        open &&(
-          <ReportContentModal
-          open={open}
-          onClose={() => setOpen(false)}
-          reportedTo={`${filteredDynamicConversation[0].participantsAre[0]===user.id?
-          filteredDynamicConversation[0].participantsAre[1]
-          :
-          filteredDynamicConversation[0].participantsAre[0]}`}
-        />
-        )
-      }
+          )}
+        </>
+      )}
     </div>
-  );
+
+    {/* Modal */}
+    {open && (
+      <ReportContentModal
+        open={open}
+        onClose={() => setOpen(false)}
+        reportedTo={`${
+          filteredDynamicConversation[0].participantsAre[0] === user.id
+            ? filteredDynamicConversation[0].participantsAre[1]
+            : filteredDynamicConversation[0].participantsAre[0]
+        }`}
+      />
+    )}
+  </div>
+);
 }

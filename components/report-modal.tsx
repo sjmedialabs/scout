@@ -82,7 +82,7 @@ export default function ReportContentModal({
         <div className="space-y-2">
           <label className="text-sm font-medium">Reason</label>
           <Select value={reason} onValueChange={setReason}>
-            <SelectTrigger className="border-[#D0D5DD] border-1">
+            <SelectTrigger className="border-[#D0D5DD] border-1 data-[placeholder]:text-gray-300">
               <SelectValue placeholder="Select a reason" />
             </SelectTrigger>
             <SelectContent>

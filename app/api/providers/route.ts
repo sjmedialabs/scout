@@ -228,7 +228,7 @@ export async function GET(request: NextRequest) {
       scheduleRating: p.scheduleRating,
       willingToReferRating: p.willingToReferRating,
       projectsCompleted: p.projectsCompleted,
-      hourlyRate: p.hourlyRate,
+      hourlyRate: p?.hourlyRate || 0,
       minProjectSize: p.minProjectSize,
       teamSize: p.teamSize,
       foundedYear: p.foundedYear,

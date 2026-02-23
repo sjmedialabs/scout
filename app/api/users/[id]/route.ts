@@ -3,6 +3,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
 import Provider from "@/models/Provider";
 import { getCurrentUser } from "@/lib/auth/jwt";
+import "@/models/Subscription";
 import mongoose from "mongoose";
 
 export async function GET(

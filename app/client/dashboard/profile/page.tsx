@@ -187,13 +187,13 @@ const ClientProfilePage = () => {
 
   return (
     <div className="space-y-3 -mt-2">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-[#707070] pb-4 gap-4 ">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-[#c4c3c3] pb-4 gap-4 ">
         {/* Left section */}
         <div className="w-full">
-          <h1 className="text-3xl font-bold my-custom-class text-[#F54A0C] tracking-tight">
+          <h1 className="text-xl md:text-3xl font-bold my-custom-class text-[#F54A0C] tracking-tight">
             Profile
           </h1>
-          <p className="text-[#656565] text-xl my-custom-class font-normal">
+          <p className="text-[#656565] text-sm md:text-lg my-custom-class font-normal">
             Manage your client profile information
           </p>
         </div>
@@ -564,9 +564,13 @@ const ClientProfilePage = () => {
                   placeholder="Tell us about yourself and your company..."
                 />
               ) : (
-                <p className="text-sm py-2 leading-relaxed text-[#656565] my-custom-class ml-2">
-                  {profileData.bio}
+
+                <div className="min-h-[40px] border-2 rounded-[8px] border-[#EEDCDC] bg-[#F1F1F1]">
+                  <p className="text-sm py-2 my-custom-class ml-[18px]">
+                  {profileData.bio} 
                 </p>
+                </div>
+                
               )}
             </div>
 

@@ -120,7 +120,7 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
     const loadData = async () => {
       try {
         const res = await authFetch(`/api/users/${user.id}`)
-        const freeTrailRes=await authFetch("/api/free-trail-config")
+        const freeTrailRes=await fetch("/api/free-trail-config")
         if (!res.ok || !freeTrailRes.ok) throw new Error()
         const data = await res.json()
         const freeTrailData=await freeTrailRes.json();
@@ -138,7 +138,8 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
         } else {
           setFilteredMenuItems(menuItems)
         }
-      } catch {
+      } catch (error) {
+        console.error("Error loading data:", error)
         setExpired(true)
         setFilteredMenuItems([menuItems[menuItems.length - 1]])
       }
