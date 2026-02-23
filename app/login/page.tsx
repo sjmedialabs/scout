@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter,useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, X } from "lucide-react";
 
 export default function LoginPage() {
   // const [role, setRole] = useState<"agency" | "client" | "admin">("client");
@@ -111,25 +111,30 @@ else {
 //   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-      <div className="relative w-full max-w-3xl h-[97vh] overflow-hidden rounded-3xl bg-white shadow-xl">
-        <div className="grid h-full grid-cols-1 lg:grid-cols-12">
+    // <div className="fixed inset-0 flex items-center justify-center px-4">
+      <div className="relative w-full max-w-7xl min-h-screen bg-white">
+        <div className="grid min-h-screen grid-cols-1 lg:grid-cols-12">
 
           {/* LEFT SECTION */}
           <div
-            className="relative hidden lg:flex lg:col-span-6 h-full flex-col justify-between p-10 text-white bg-cover"
+            className="
+                relative hidden lg:flex lg:col-span-6
+                min-h-screen
+                flex-col justify-between
+                p-10 text-white
+                bg-cover bg-bottom-left bg-no-repeat
+              "
             style={{
               backgroundImage: "url('/images/Login-Image.png')",
-              backgroundPosition: "left bottom"
             }}
           >
-            <div className="relative z-10 max-w-sm">
-              <h2 className="text-3xl font-extrabold leading-tight">
+            <div className="relative max-w-sm -ml-2">
+              <h2 className="text-2xl font-extrabold leading-tight pb-3">
                 Built to Accelerate <br /> Business Success
               </h2>
 
-              <ul className="mt-2 space-y-2 text-[12px] text-white">
-                <li>owering Smarter Business Connections</li>
+              <ul className="mt-2 space-y-2 text-[10px] text-white">
+                <li>Owering Smarter Business Connections</li>
                 <li>700+ Categories. One Trusted Platform.</li>
                 <li>Quality Work. Accelerated Results.</li>
                 <li>Your Gateway to Global Talent & Businesses</li>
@@ -138,16 +143,16 @@ else {
           </div>
 
           {/* RIGHT SECTION */}
-          <div className="lg:col-span-6 h-full overflow-y-auto p-8 sm:p-4">
+          <div className="lg:col-span-6 min-h-screen flex flex-col overflow-y-auto p-8 sm:p-4">
             <div className="flex items-center mb-2 justify-end">
               <button
                   onClick={() => router.push("/")}
-                className="text-xs w-15 h-6 cursor-pointer text-white bg-black rounded-full hover:text-white hover:bg-gray-900"
-              >
-                ← Back
+                className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition cursor-pointer"
+>
+                <X size={18} className="text-gray-700" />
               </button>
             </div>
-            <h3 className="text-xl font-semibold text-center">Sign in</h3>
+            <h3 className="text-xl mt-20 font-semibold text-center">Sign in</h3>
             <p className="mt-0.1 text-[12px] text-gray-400 text-center">
               Enter your credentials to access your account
             </p>
@@ -188,9 +193,10 @@ else {
             </div> */}
 
             {/* Inputs */}
-            <div className="mt-1 space-y-4">
-              <div>
+            <div className="mt-1 space-y-4 flex flex-col">
+              <div className="w-full max-w-full">
                 <label className="text-sm font-bold text-gray-600">E-mail</label>
+                 <div>
                 <input
                   type="email"
                   value={email}
@@ -198,11 +204,12 @@ else {
                   placeholder="Enter E-Mail"
                   className="mt-1 w-full rounded-xl placeholder:text-xs border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[12px]"
                 />
+                </div>
               </div>
 
-              <div>
+              <div className="w-full max-w-full">
                 <label className="text-sm font-bold text-gray-600">Password</label>
-                            <div className="relative">
+                <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
@@ -223,29 +230,31 @@ else {
               </div>
               <p
                 onClick={() => router.push("/forgot-password")}
-                className="mt-2 text-center text-sm  hover:text-blue-400 underline cursor-pointer"
+                className="mt-2 text-sm  hover:text-blue-400 underline cursor-pointer"
               >
                 Forgot password?
               </p>
             </div>
 
             {error && (
-              <p className="mt-2 text-center text-[10px] text-red-500">
+              <p className="mt-2 text-[10px] text-red-500">
                 {error}
               </p>
             )}
 
             {/* Button */}
+            <div>
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="mt-4 w-full cursor-pointer rounded-xl bg-black py-2 text-sm font-medium text-white hover:bg-gray-900 transition"
+              className="mt-4 justify-center cursor-pointer rounded-xl bg-black px-6 py-2 text-sm font-medium text-white hover:bg-gray-900 transition"
             >
               {loading ? "Signing In..." : "Sign in"}
             </button>
+           </div> 
 
             {/* Footer */}
-            <p className="mt-1 text-center text-sm text-black">
+            <p className="mt-1 text-sm text-black">
               Don't have an account?
               <span
                 onClick={() => router.push("/register")}
@@ -257,6 +266,6 @@ else {
           </div>
         </div>
       </div>
-    </div>
+    // </div>
   );
 }
