@@ -1269,12 +1269,12 @@ const getARPU = (payments) => {
     );
   }
   return (
-    <div className="space-y-8">
+    <div className="space-y-4 -mt-4">
       {/* ---------- Header ---------- */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center mb-2 justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Reports & Analytics</h1>
-          <p className="text-gray-500">
+          <h1 className="text-2xl -mb-1 text-orangeButton font-bold">Reports & Analytics</h1>
+          <p className="text-gray-500 text-md">
             Comprehensive insights into platform performance
           </p>
         </div>

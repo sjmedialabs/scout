@@ -37,24 +37,48 @@ export default function LoginPage() {
   return;
 }
 
+// 🔒 Submit Proposal access — ONLY agency allowed
+if (redirectTo === "submit-proposal") {
+  if (user.role !== "agency") {
+    setError("Only service providers (agencies) can submit proposals.");
+    setLoading(false);
+    return; // 🚫 STOP login flow completely
+  }
+}
+
     if (user.role === "client") {
       router.push("/client/dashboard");
     } 
 
-    else if (user.role === "agency") {
+//     else if (user.role === "agency") {
+//   const id = searchParams.get("id");
+
+//   if (redirectTo === "requirement-details" && id) {
+//     router.push(`/agency/dashboard/project-inquiries/${id}`);
+//   } else {
+//     router.push("/agency/dashboard");
+//   }
+// }
+
+else if (user.role === "agency") {
   const id = searchParams.get("id");
 
   if (redirectTo === "requirement-details" && id) {
     router.push(`/agency/dashboard/project-inquiries/${id}`);
-  } else {
+  } 
+  else if (redirectTo === "submit-proposal" && id) {
+    router.push(`/agency/dashboard/project-inquiries/${id}`);
+  }
+  else {
     router.push("/agency/dashboard");
   }
 }
 
-    
-    else if (user.role === "admin") {
+else if (user.role === "admin") {
       router.push("/admin/dashboard");
-    } else {
+    }
+
+else {
       throw new Error("Invalid user role");
     }
   } catch (err) {
