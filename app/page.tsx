@@ -269,7 +269,7 @@ const { cms, providers, projects, categories } = data;
                   Newly added
                 </span>
               </div>
-              <h2 className="stext-mediun uppercase font-extrabold text-black ">
+              <h2 className="stext-mediun uppercase font-bold text-black ">
                 {cms?.recentRequirementTitle || "Requirements"}
               </h2>
               <p className="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">
@@ -393,7 +393,7 @@ const { cms, providers, projects, categories } = data;
                   Top Agencies
                 </span>
               </div>
-              <h2 className="text-mediun uppercase font-extrabold text-black ">
+              <h2 className="text-mediun uppercase font-bold text-black ">
                 {cms?.topProvidersTitle || "Top Providers"}
               </h2>
               <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
@@ -538,7 +538,7 @@ const { cms, providers, projects, categories } = data;
               className="bg-orangeButton font-semibold text-sm text-white rounded-full hover:bg-gray-100"
               asChild
             >
-              <Link href="/register?type=seeker">Post a requirement</Link>
+              <Link href="/register?type=seeker">List Project</Link>
             </Button>
             <Button
               size="lg"
@@ -546,7 +546,7 @@ const { cms, providers, projects, categories } = data;
               className="bg-blueButton font-semibold text-sm text-white rounded-full hover:bg-gray-100"
               asChild
             >
-              <Link href="/register?type=provider">Become a provider</Link>
+              <Link href="/register?type=provider">Find Project</Link>
             </Button>
           </div>
         </div>
