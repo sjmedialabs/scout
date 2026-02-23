@@ -373,7 +373,7 @@ export default function ServicesPage() {
               focus:ring-0
               
               px-3
-              h-11
+              h-11 
               text-sm
               data-[placeholder]:text-[#98A0B4]
             `}

@@ -293,9 +293,9 @@ const ProposalPage = () => {
     null,
   );
   
-   const [filterStatus, setFilterStatus] = useState<string>("all");
+   const [filterStatus, setFilterStatus] = useState<string>("");
    const[projectTitles,setProjectTitles]=useState([]);
-   const[projectFilter,setProjectFilter]=useState<string>("All");
+   const[projectFilter,setProjectFilter]=useState<string>("");
    const[filteredProposals,setFilteredProposals]=useState<Proposal[]>([]);
 
   // negotation modal and message
@@ -582,16 +582,31 @@ const ProposalPage = () => {
   }
 
   //filters 
-  useEffect(()=>{
-    let tempFiltered=[...(proposals || [])]
-    if(filterStatus!="all"){
-      tempFiltered=tempFiltered.filter((eachItem)=>eachItem.status.toLowerCase()===filterStatus.toLowerCase())
-    }
-    if(projectFilter!="All"){
-      tempFiltered=tempFiltered.filter((eachItem)=>eachItem?.requirement?.title.toLowerCase()===projectFilter.toLowerCase())
-    }
-    setFilteredProposals(tempFiltered);
-  },[filterStatus,projectFilter])
+ useEffect(() => {
+  if (!proposals) return
+
+  let tempFiltered = [...proposals]
+
+  // STATUS FILTER
+  if (filterStatus && filterStatus.toLowerCase() !== "all") {
+    tempFiltered = tempFiltered.filter(
+      (item) =>
+        item?.status?.toLowerCase() === filterStatus.toLowerCase()
+    )
+  }
+
+  // PROJECT FILTER
+  if (projectFilter && projectFilter.toLowerCase() !== "all") {
+    tempFiltered = tempFiltered.filter(
+      (item) =>
+        item?.requirement?.title
+          ?.toLowerCase()
+          ?.trim() === projectFilter.toLowerCase().trim()
+    )
+  }
+
+  setFilteredProposals(tempFiltered)
+}, [filterStatus, projectFilter,proposals])
     
 console.log("Filtered Proposals:::::::",filteredProposals)
   if (loading || responseLoading) {
@@ -669,39 +684,33 @@ console.log("Filtered Proposals:::::::",filteredProposals)
               onRequestRevision={handleRequestRevision}
             />
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-0">
               {/*Filterss block */}
               {
                 (projectTitles.length>=1) && (
-                  <div className="flex flex-col sm:flex-row pb-2  justify-between mx-3 mb-0 flex-wrap">
+                  <div className="flex flex-row     gap-4 overflow-x-auto mx-1 lg:mx-3">
                     <div className="mb-2 md:mb-0">
-                      <p className="text-md text-gray-500 ml-2">Proposal Status</p>
+                      {/* <p className="text-md text-gray-500 ml-2">Proposal Status</p> */}
                       <Select
                         onValueChange={(value) => setFilterStatus(value)}
                         value={filterStatus}
                       >
                         <SelectTrigger
-                          className="
-                          
-                          border-0
-                          border-2
-                          border-[#b2b2b2]
-                          cursor-pointer
-                          rounded-full
-              
-                          shadow-none
-                          focus:outline-none focus:ring-0 focus:ring-offset-0
-                          focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
-                          focus:border-[#b2b2b2]
-                          placeholder:text-[#b2b2b2]
-                          px-6
-                          w-[160px]
-                          h-12
-                          text-sm
-                          md:text-base
-                        "
+                        className={`
+                      border-2
+                      border-[#b2b2b2]
+                      cursor-pointer
+                      rounded-[8px]
+                      shadow-none
+                      focus:ring-0
+                      
+                      px-3
+                      h-11 
+                      text-sm
+                      data-[placeholder]:text-[#98A0B4]
+                    `}
                         >
-                          <SelectValue placeholder="Rating" />
+                          <SelectValue placeholder="Filter by Status" />
                         </SelectTrigger>
               
                         <SelectContent>
@@ -716,36 +725,27 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                       </Select>
                     </div>
                     <div className="mb-2 md:mb-0">
-                       <p className="text-md text-gray-500 ml-2">Select Project</p>
+                       {/* <p className="text-md text-gray-500 ml-2">Select Project</p> */}
                       <Select
                         onValueChange={(value) => setProjectFilter(value)}
                         value={projectFilter}
                       >
                         <SelectTrigger
-                          className="
-                          
-                          border-0
-                          border-2
-                          border-[#b2b2b2]
-                          
-                          rounded-full
-              
-                          shadow-none
-                          focus:outline-none focus:ring-0 focus:ring-offset-0
-                          focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
-                          focus:border-[#b2b2b2]
-                          placeholder:text-[#b2b2b2]
-                          px-6
-                          cursor-pointer
-                          mb-0
-                          text-sm
-                          md:text-base
-                          min-w-[160px]
-                          max-w-[250px]
-                          
-                        "
+                          className={`
+                      border-2
+                      border-[#b2b2b2]
+                      cursor-pointer
+                      rounded-[8px]
+                      shadow-none
+                      focus:ring-0
+                      
+                      px-3
+                      h-11 
+                      text-sm
+                      data-[placeholder]:text-[#98A0B4]
+                    `}
                         >
-                          <SelectValue placeholder="Rating" />
+                          <SelectValue placeholder="Filter by Project" />
                         </SelectTrigger>
               
                         <SelectContent className=" mr-[40px] max-h-[300px]">

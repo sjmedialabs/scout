@@ -345,10 +345,10 @@ const ClientProvidersPage = () => {
   return (
     <div className="space-y-3">
       <div>
-        <h1 className="text-4xl font-bold text-[#F4561C] my-custom-class tracking-tight">
+        <h1 className="text-xl md:text-4xl font-bold text-[#F4561C] my-custom-class tracking-tight">
           Find Agencies
         </h1>
-        <p className="text-lg font-light text-[#656565] my-custom-class tracking-tight">
+        <p className="text-md md:text-lg font-light text-[#656565] my-custom-class tracking-tight">
           Browse and connect with verified agencies
         </p>
       </div>
@@ -362,21 +362,22 @@ const ClientProvidersPage = () => {
 
         {/* Filters */}
         <Card className="mb-8 text-center rounded-3xl shadow-md sm:shadow-lg">
-          <CardContent className="pt-6 pb-6 px-4 sm:px-6 md:px-9">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
+          <CardContent className="pt-2 py-0 md:pt-6 md:pb-6 px-4 sm:px-6 md:px-9">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
               {/* Search Input */}
               <div className="relative w-full min-w-0">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute  top-3 h-4 w-4 text-[#98A0B4]" />
                 <Input
                   placeholder="Search providers..."
-                  className="
-                            pl-10 w-full text-sm md:text-base
-                            border-0 border-b-2 border-b-[#b2b2b2]
-                            bg-transparent rounded-none shadow-none
-                            focus:outline-none focus:ring-0 focus:ring-offset-0
-                            focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
-                            focus:border-[#F54A0C]
-                          "
+                   className="
+                    pl-5 w-full text-sm md:text-base
+                    border-0 border-b-2 border-b-[#b2b2b2]
+                    bg-transparent rounded-none shadow-none
+                    placeholder:text-[#98A0B4]
+                    focus:outline-none focus:ring-0  focus:ring-offset-0
+                    focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
+                    focus:border-[#F54A0C]
+                  "
                   onChange={(e) => setSearchFilter(e.target.value)}
                 />
               </div>
@@ -411,9 +412,9 @@ const ClientProvidersPage = () => {
                   value={serviceFilter}
                   onChange={setServiceFilter}
                   triggerClassName="mt-1 border-0 border-b-2 border-b-[#b2b2b2] rounded-none shadow-none focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-[#b2b2b2]
-                              placeholder:text-[#000] px-0 w-full h-12 text-sm md:text-base 
+                              placeholder:text-[#98A0B4] px-0 w-full h-12 text-sm md:text-base 
                             "
-                  triggerSpanClassName="text-[#000]"
+                  triggerSpanClassName="text-[#98A0B4]"
                   />
               </div>
 
@@ -430,6 +431,7 @@ const ClientProvidersPage = () => {
                               border-b-[#b2b2b2]
                               rounded-none
                               shadow-none
+                              data-[placeholder]:text-[#98A0B4]
                               focus:outline-none focus:ring-0 focus:ring-offset-0
                               focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
                               focus:border-[#b2b2b2]
@@ -455,9 +457,9 @@ const ClientProvidersPage = () => {
                 </Select>
               </div>
 
-              <div className="w-full min-w-0 flex flex-wrap flex-row gap-3">
+              <div className="w-full min-w-0 flex flex-row gap-1 md:gap-3">
                 <Button
-                  className="w-full sm:w-[150px] lg:w-[120px] h-10 mt-2 lg:mt-1
+                  className=" sm:w-[150px] lg:w-[120px] h-10 mt-2 lg:mt-1
                         rounded-3xl bg-[#F54A0C] text-white
                         hover:bg-[#d93f0b] transition-all duration-300"
                   onClick={searchHandle}
@@ -465,7 +467,7 @@ const ClientProvidersPage = () => {
                   Search Now
                 </Button>
                  <Button
-                  className="w-full sm:w-[150px] lg:w-[80px] h-10 mt-2 lg:mt-1
+                  className=" sm:w-[150px] lg:w-[80px] h-10 mt-2 lg:mt-1
                         rounded-3xl  text-white
                         bg-blueButton transition-all duration-300"
                   onClick={clearFilters}

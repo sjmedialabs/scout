@@ -528,31 +528,26 @@ const ProjectsPage = () => {
         </Button>
       </div>
 
-      <div className="grid gap-6 border-1 px-8 py-7 bg-[#FAFAFA] border-[#E6E2E2] bg-[#fff] rounded-3xl">
+      <div className="grid gap-6 border-1 px-4 py-4 md:px-8 md:py-7 bg-[#FAFAFA] border-[#E6E2E2] bg-[#fff] rounded-3xl">
         <Select
           onValueChange={(value) => setFilterStatus(value)}
           value={filterStatus}
         >
           <SelectTrigger
-            className="
-            mt-1
-            border-0
-            border-2
-            border-[#b2b2b2]
-            
-            rounded-full
-
-            shadow-none
-            focus:outline-none focus:ring-0 focus:ring-offset-0
-            focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
-            focus:border-[#b2b2b2]
-            placeholder:text-[#b2b2b2]
-            px-6
-            w-[180px]
-            h-12
-            text-sm
-            md:text-base
-          "
+             className={`
+                      border-2
+                      border-[#b2b2b2]
+                      cursor-pointer
+                      rounded-[8px]
+                      shadow-none
+                      focus:ring-0
+                      max-w-[150px]
+                      
+                      px-3
+                      h-11 
+                      text-sm
+                      data-[placeholder]:text-[#98A0B4]
+                    `}
           >
             <SelectValue placeholder="Rating" />
           </SelectTrigger>

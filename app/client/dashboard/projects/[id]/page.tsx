@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import { FaArrowLeftShort } from "react-icons/fa6";
 import { useState, useEffect } from "react";
 import { Content } from "next/font/google";
 import { Card, CardContent } from "@/components/ui/card";
@@ -32,10 +33,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import  { File } from "lucide-react";
+import  { ArrowLeft, File, MoveLeft } from "lucide-react";
 const ProjectDetailPage = () => {
   const [projectDetails, setProjectDetails] = useState();
-  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("");
   const router = useRouter();
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [filteredProposals, setFilteredProposals] = useState<Proposal[]>([]);
@@ -298,7 +299,7 @@ const ProjectDetailPage = () => {
   useEffect(() => {
     if (filterStatus === "all") {
       setFilteredProposals(proposals);
-    } else {
+    } else if(filterStatus && filterStatus!=="all") {
       setFilteredProposals(
         proposals.filter(
           (req) => req.status.toLowerCase() === filterStatus.toLowerCase(),
@@ -340,61 +341,55 @@ const textareaClass =
         (projectDetails || {}).status!=="Allocated" &&(
           <div>
             {/*header */}
-              <div className="flex justify-between items-start">
+              <div className="flex flex-wrap justify-between items-start">
               <div>
-                <h1 className="text-3xl font-bold text-[#F4561C] my-custom-class">
+                <h1 className="text-xl lg:text-3xl font-bold text-[#F4561C] my-custom-class">
                   Project Details
                   {proposals.length > 0 && (
-                    <span className="text-[24px] font-normal text-[#656565]">
+                    <span className="text-sm lg:text-[24px] font-normal text-[#656565]">
                       {" "}
                       for {proposals[0].requirement.title}
                     </span>
                   )}
                 </h1>
-                <p className="text-lg font-normal text-[#656565] my-custom-class ">
+                <p className="text-sm lg:text-lg font-normal text-[#656565] my-custom-class ">
                   Review and manage proposals received for this project
                 </p>
               </div>
               <div>
                 <Button
-                  className="bg-[#000] rounded-full"
+                  className="bg-[#000] rounded-full h-[30px] w-[120px] text-xs lg:text-sm lg:h-[40px] lg:w-[160px]"
                   onClick={() => router.push("/client/dashboard/projects")}
                 >
-                  <FaArrowLeftLong className="h-4 w-4" color="#fff" /> Back to
+                  <MoveLeft className="h-4 w-4 " />Back to
                   Projects
                 </Button>
               </div>
               </div>
             {(proposals || []).length > 0 && (
-                <Card className="mt-6 p-3  bg-[#fff] py-5 rounded-[22px]">
-                  <CardContent>
+                <Card className="mt-3 md:mt-6 p-3  bg-[#fff] py-5 rounded-[22px]">
+                  <CardContent className="px-2" >
                     <Select
                       onValueChange={(value) => setFilterStatus(value)}
                       value={filterStatus}
                     >
                       <SelectTrigger
-                        className="
-                                        mt-1
-                                        border-0
-                                        border-2
-                                        border-[#b2b2b2]
-                                        mb-4
-                                        
-                                        rounded-full
-
-                                        shadow-none
-                                        focus:outline-none focus:ring-0 focus:ring-offset-0
-                                        focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0
-                                        focus:border-[#b2b2b2]
-                                        placeholder:text-[#b2b2b2]
-                                        px-6
-                                        w-[150px]
-                                        h-12
-                                        text-sm
-                                        md:text-base
-                                      "
+                       className={`
+                        border-2
+                        border-[#b2b2b2]
+                        cursor-pointer
+                        rounded-[8px]
+                        shadow-none
+                        focus:ring-0
+                        mb-3
+                        max-w-[160px]
+                        px-3
+                        h-11 
+                        text-sm
+                        data-[placeholder]:text-[#98A0B4]
+                      `}
                       >
-                        <SelectValue placeholder="Rating" />
+                        <SelectValue placeholder="Filter by Status" />
                       </SelectTrigger>
 
                       <SelectContent>
@@ -412,14 +407,14 @@ const textareaClass =
                           key={proposal.id}
                           className="py-0 px-0 rounded-[22px] mb-3"
                         >
-                          <CardContent className="px-5 py-6">
+                          <CardContent className=" px-5 py-6">
                             <div className="flex flex-col lg:flex-row lg:justify-start gap-4">
                               {/* Left Image */}
                               <div className="max-h-[300px] max-w-100 lg:max-h-[100%] lg:max-w-[300px] rounded-[18px] overflow-hidden shrink-0">
                                 <img
                                   src={proposal.agency.coverImage || "/proposal.jpg"}
                                   alt={proposal.agency.name}
-                                  className="h-full w-full"
+                                  className="h-full w-full object-cover"
                                 />
                               </div>
 
