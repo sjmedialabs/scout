@@ -1,25 +1,78 @@
 "use client";
 
-import { Search } from "lucide-react";
-import { Filter } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import type React from "react";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
-  SelectTrigger,
   SelectContent,
   SelectItem,
+  SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 
-import { ProposalsHeader } from "@/components/requirements/ProposalsHeader";
-import { ProposalCard } from "@/components/requirements/ProposalCard";
-import { useEffect, useState } from "react";
-import { Requirement } from "@/lib/types";
-import { useRouter } from "next/navigation";
-import ServiceDropdown from "@/components/select-category-filter";
-
+import {
+  Plus,
+  FileText,
+  MessageSquare,
+  Star,
+  TrendingUp,
+  Users,
+  Eye,
+  Home,
+  User,
+  Briefcase,
+  BarChart3,
+  Settings,
+  CreditCard,
+  Bell,
+  Shield,
+  GitCompare,
+  ChevronDown,
+  ChevronRight,
+  Edit,
+  Save,
+  X,
+  Building,
+  MapPin,
+  Phone,
+  Mail,
+  Globe,
+  Calendar,
+  MoreHorizontal,
+  Trash2,
+  DollarSign,
+  Target,
+  Heart,
+  SeparatorVertical as Separator,
+} from "lucide-react";
+import {
+  mockRequirements,
+  mockProposals,
+  mockProviders,
+} from "@/lib/mock-data";
+import type {
+  Requirement,
+  Proposal,
+  Provider,
+  Notification,
+} from "@/lib/types";
+import { FiltersPanel } from "@/components/filters-panel-public";
+import { RequirementList } from "@/components/requirement-list-public";
 import {
   Dialog,
   DialogClose,
@@ -35,358 +88,321 @@ import { PiCurrencyDollarBold } from "react-icons/pi";
 import { CiCalendar } from "react-icons/ci";
 import { CiLocationOn } from "react-icons/ci";
 import { FaRegFileLines } from "react-icons/fa6";
+interface ProjectProposal {
+  id: string;
+  projectId: string;
+  providerId: string;
+  providerName: string;
+  providerRating: number;
+  proposalAmount: number;
+  timeline: string;
+  description: string;
+  submittedAt: string;
+  status: "pending" | "shortlisted" | "accepted" | "rejected";
+  coverLetter: string;
+}
 
-const bannerData = {
-  title: "Service Providers",
-  description: "Find verified professionals for your next project",
-  backgroundImageUrl: "/serviceProviderBanner.jpg",
-};
+const mockProjectProposals: ProjectProposal[] = [
+  {
+    id: "pp1",
+    projectId: "proj1",
+    providerId: "prov1",
+    providerName: "TechSolutions Inc",
+    providerRating: 4.8,
+    proposalAmount: 15000,
+    timeline: "8 weeks",
+    description:
+      "We propose to develop a comprehensive e-commerce platform using React, Node.js, and MongoDB. Our team has extensive experience in building scalable web applications with modern technologies. We'll implement advanced features like real-time inventory management, secure payment processing, and analytics dashboard.",
+    submittedAt: "2024-01-15",
+    status: "pending",
+    coverLetter:
+      "We are excited to work on your e-commerce project and deliver a high-quality solution that meets your business needs. Our portfolio includes 20+ successful e-commerce projects.",
+  },
+  {
+    id: "pp2",
+    projectId: "proj1",
+    providerId: "prov2",
+    providerName: "WebCraft Studios",
+    providerRating: 4.6,
+    proposalAmount: 12000,
+    timeline: "10 weeks",
+    description:
+      "Our approach focuses on creating a user-friendly e-commerce platform with advanced features like real-time inventory management, payment gateway integration, and responsive design. We'll use Next.js for optimal performance and SEO.",
+    submittedAt: "2024-01-16",
+    status: "shortlisted",
+    coverLetter:
+      "With 5+ years of e-commerce development experience, we're confident in delivering exceptional results for your project. We guarantee 99.9% uptime and mobile-first design.",
+  },
+  {
+    id: "pp3",
+    projectId: "proj1",
+    providerId: "prov3",
+    providerName: "Digital Commerce Pro",
+    providerRating: 4.7,
+    proposalAmount: 18000,
+    timeline: "6 weeks",
+    description:
+      "Premium e-commerce solution with AI-powered recommendations, advanced analytics, multi-vendor support, and integrated CRM. We'll deliver a future-ready platform that scales with your business.",
+    submittedAt: "2024-01-18",
+    status: "pending",
+    coverLetter:
+      "We specialize in enterprise-level e-commerce solutions and have helped 100+ businesses increase their online revenue by 300% on average.",
+  },
+  {
+    id: "pp4",
+    projectId: "proj2",
+    providerId: "prov4",
+    providerName: "MobileFirst Dev",
+    providerRating: 4.9,
+    proposalAmount: 8000,
+    timeline: "6 weeks",
+    description:
+      "We specialize in React Native development and will create a cross-platform mobile app with native performance, push notifications, offline capabilities, and seamless user experience across iOS and Android.",
+    submittedAt: "2024-01-17",
+    status: "accepted",
+    coverLetter:
+      "Our team has developed 50+ mobile apps with excellent user ratings. We're excited to bring your vision to life with cutting-edge mobile technology.",
+  },
+  {
+    id: "pp5",
+    projectId: "proj2",
+    providerId: "prov5",
+    providerName: "AppCrafters",
+    providerRating: 4.5,
+    proposalAmount: 9500,
+    timeline: "8 weeks",
+    description:
+      "Native iOS and Android development with Flutter framework. We'll create a high-performance mobile app with custom animations, biometric authentication, and cloud synchronization.",
+    submittedAt: "2024-01-19",
+    status: "shortlisted",
+    coverLetter:
+      "We're a team of certified mobile developers with expertise in Flutter, React Native, and native development. Your app will be optimized for performance and user engagement.",
+  },
+  {
+    id: "pp6",
+    projectId: "proj3",
+    providerId: "prov6",
+    providerName: "BrandVision Agency",
+    providerRating: 4.8,
+    proposalAmount: 5000,
+    timeline: "4 weeks",
+    description:
+      "Complete brand identity package including logo design, color palette, typography, brand guidelines, business cards, letterheads, and social media templates. We'll create a memorable brand that resonates with your target audience.",
+    submittedAt: "2024-01-20",
+    status: "pending",
+    coverLetter:
+      "We've created successful brand identities for 200+ companies across various industries. Our designs are modern, timeless, and strategically crafted to drive business growth.",
+  },
+  {
+    id: "pp7",
+    projectId: "proj3",
+    providerId: "prov7",
+    providerName: "Creative Minds Studio",
+    providerRating: 4.6,
+    proposalAmount: 4500,
+    timeline: "3 weeks",
+    description:
+      "Professional brand identity design with focus on minimalist aesthetics and strong visual impact. Includes logo variations, brand style guide, and application mockups across different mediums.",
+    submittedAt: "2024-01-21",
+    status: "rejected",
+    coverLetter:
+      "Our award-winning design team specializes in creating distinctive brand identities that stand out in competitive markets. We guarantee unlimited revisions until you're 100% satisfied.",
+  },
+  {
+    id: "pp8",
+    projectId: "proj4",
+    providerId: "prov8",
+    providerName: "DataFlow Solutions",
+    providerRating: 4.9,
+    proposalAmount: 25000,
+    timeline: "12 weeks",
+    description:
+      "Enterprise CRM system with advanced analytics, automated workflows, customer segmentation, email marketing integration, and comprehensive reporting dashboard. Built with scalability and security in mind.",
+    submittedAt: "2024-01-22",
+    status: "shortlisted",
+    coverLetter:
+      "We're CRM specialists with 10+ years of experience building enterprise solutions for Fortune 500 companies. Our systems handle millions of customer records with 99.99% uptime.",
+  },
+  {
+    id: "pp9",
+    projectId: "proj4",
+    providerId: "prov9",
+    providerName: "Enterprise Tech Hub",
+    providerRating: 4.7,
+    proposalAmount: 22000,
+    timeline: "10 weeks",
+    description:
+      "Custom CRM solution with AI-powered lead scoring, automated sales pipeline management, integration with popular tools (Salesforce, HubSpot), and mobile app for field sales teams.",
+    submittedAt: "2024-01-23",
+    status: "pending",
+    coverLetter:
+      "We understand the complexity of enterprise CRM requirements and have successfully delivered 30+ CRM projects. Our solution will streamline your sales process and boost productivity by 40%.",
+  },
+  {
+    id: "pp10",
+    projectId: "proj5",
+    providerId: "prov10",
+    providerName: "EduTech Innovators",
+    providerRating: 4.8,
+    proposalAmount: 18000,
+    timeline: "10 weeks",
+    description:
+      "Comprehensive learning management system with video streaming, interactive quizzes, progress tracking, certificate generation, discussion forums, and mobile-responsive design for seamless learning experience.",
+    submittedAt: "2024-01-24",
+    status: "pending",
+    coverLetter:
+      "We specialize in educational technology and have built LMS platforms for universities and corporate training programs. Our solutions support 10,000+ concurrent users with excellent performance.",
+  },
+];
 
-export default function BrowsePage() {
-  const [visibleCount, setVisibleCount] = useState(8);
-  const searchParams = useSearchParams();
-  const [requriments, setRequriments] = useState<Requirement[]>([]);
-  const [filteredRequirements, setFilteredRequirements] = useState<
-    Requirement[]
-  >([]);
-  const [searchFilter, setSearchFilter] = useState("");
-  const [serviceType, setServiceType] = useState("");
-  const [budgetRange, setBudgetRange] = useState("");
-  const [resLoading, setResLoading] = useState(true);
-  const [failed, setFailed] = useState(false);
+const RequirementsPage = () => {
   const router = useRouter();
+  const [requirements, setRequirements] = useState<Requirement[]>([]);
 
+const [filteredRequirements, setFilteredRequirements] = useState<Requirement[]>([]);
+  const [selectedRequirementId, setSelectedRequirementId] = useState<
+    string | null
+  >(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedRequirement, setSelectedRequirement] =
     useState<Requirement | null>(null);
-    const handleClearFilters = () => {
-  setSearchFilter("");
-  setServiceType("");
-  setBudgetRange("");
-  setFilteredRequirements(requriments);
+  const [responseLoading, setResponseLoading] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+ const loadData = async () => {
+  setResponseLoading(true);
+  try {
+    const response = await fetch(`/api/requirements`);
+    const data = await response.json();
+
+    const reqs = data?.requirements ?? [];
+
+    // only OPEN requirements for public page
+    const openRequirements = reqs.filter(
+      (r) => r.status?.toLowerCase() === "open"
+    );
+
+    console.log("Open Requriments",openRequirements)
+
+setRequirements(openRequirements);
+setFilteredRequirements(openRequirements);
+    setFailed(false);
+  } catch (error) {
+    setFailed(true);
+    console.log("Failed to fetch data");
+  } finally {
+    setResponseLoading(false);
+  }
 };
 
-
-
-    useEffect(() => {
-  setVisibleCount(8);
-}, [filteredRequirements]);
-
   useEffect(() => {
-    const fetchRequirements = async () => {
-      setResLoading(true);
-      setFailed(false);
-      try {
-        const res = await fetch("/api/requirements");
-        console.log("Res from api", res);
-        const data = await res.json();
-        console.log("data from api", data.requirements);
-        if (res.ok) {
-          const mapped = data.requirements.filter(
-            (eachItem) =>
-              eachItem.status.toLowerCase() != "closed" &&
-              eachItem.status.toLowerCase() != "allocated" &&
-              eachItem.status.toLowerCase() != "underreview" &&
-              eachItem.status.toLowerCase() !="notapproved"
-          );
-          setRequriments(mapped);
+  loadData();
+}, []);
 
-            const queryFromUrl = searchParams.get("q");
+  console.log("Fetched Requirements::::", requirements);
 
-            if (queryFromUrl) {
-              setSearchFilter(queryFromUrl);
+  const normalize = (str: string) =>
+  str
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, ""); // removes space, -, _, etc.
 
-              const autoFiltered = mapped.filter((item) =>
-              item.category?.toLowerCase().includes(queryFromUrl.toLowerCase())
-            );
-              setFilteredRequirements(autoFiltered);
-            } else {
-              setFilteredRequirements(mapped);
-            }
+  const handleFiltersChange = (filters: any) => {
+    let filtered = [...requirements];
+    console.log("Applied filters:::::", filters);
 
-          setFailed(false);
-          setResLoading(false);
-        }
-      } catch (e) {
-        console.log("failed to fetch the data", e);
-        setFailed(true);
-      } finally {
-        setResLoading(false);
-      }
-    };
-    fetchRequirements();
-  }, []);
-  // const proposals = requriments || []
+    if (filters.serviceType) {
+      filtered = filtered.filter((r) => r.category === filters.serviceType);
+    }
 
-  const handleApllyFilter = () => {
-    let filteredRequirementsTemp = [...requriments];
-    if (searchFilter.trim()) {
-  const query = searchFilter.trim().toLowerCase();
+    if (filters.budgetRange) {
+      filtered = filtered.filter(
+        (r) =>
+          r.budgetMin >= filters.budgetRange[0] &&
+          r.budgetMax <= filters.budgetRange[1],
+      );
+    }
+    if (filters.title) {
+  const search = normalize(filters.title);
 
-  filteredRequirementsTemp = filteredRequirementsTemp.filter((eachItem) =>
-    eachItem.category?.toLowerCase().includes(query)
+  filtered = filtered.filter((eachItem) =>
+    normalize(eachItem.title).includes(search)
   );
 }
 
-    if (serviceType && serviceType !== "all") {
-      filteredRequirementsTemp = filteredRequirementsTemp.filter((eachItem) =>
-        eachItem.category.toLowerCase().includes(serviceType.toLowerCase()),
-      );
-    }
-    if (budgetRange) {
-      if (budgetRange === "0k-5k") {
-        filteredRequirementsTemp = filteredRequirementsTemp.filter(
-          (item) => item.budgetMax <= 5000,
-        );
-      } else if (budgetRange === "5k-10k") {
-        filteredRequirementsTemp = filteredRequirementsTemp.filter(
-          (item) => item.budgetMin >= 5000 && item.budgetMax <= 10000,
-        );
-      } else if (budgetRange === "10k-20k") {
-        filteredRequirementsTemp = filteredRequirementsTemp.filter(
-          (item) => item.budgetMin >= 10000 && item.budgetMax <= 20000,
-        );
-      } else if (budgetRange === "20k+") {
-        filteredRequirementsTemp = filteredRequirementsTemp.filter(
-          (item) => item.budgetMin > 20000,
-        );
-      }
-    }
-
-    setFilteredRequirements(filteredRequirementsTemp);
-  };
-  const handlePriceSorting = (recievedFilter: string) => {
-    let filteredRequirementsTemp = [...filteredRequirements];
-    console.log(recievedFilter);
-    if (recievedFilter === "price_asc") {
-      filteredRequirementsTemp.sort((a, b) => a.budgetMin - b.budgetMin);
-    } else if (recievedFilter === "price_desc") {
-      filteredRequirementsTemp.sort((a, b) => b.budgetMin - a.budgetMin);
-    }
-
-    setFilteredRequirements(filteredRequirementsTemp);
+    setFilteredRequirements(filtered);
   };
 
   const handleViewDetails = (recievedId) => {
-    // setSelectedRequirementId(recievedId);
-    // setShowDetailsModal(true);
-    const requirement = requriments.find((r) => r._id === recievedId);
-    setSelectedRequirement(requirement || null);
+    setSelectedRequirementId(recievedId);
     setShowDetailsModal(true);
+    const requirement = requirements.find((r) => r._id === recievedId);
+    setSelectedRequirement(requirement || null);
   };
-  console.log("Filtered Requirements::::", filteredRequirements);
+  const handleViewProposals = (recievedId) => {
+    console.log("Recieved Requirement ID::::", recievedId);
+    router.push(`/client/dashboard/proposals?requirementId=${recievedId}`);
+  };
+  const getFileNameFromUrl = (url?: string) => {
+    if (!url) return "";
+    return url.split("/").pop();
+  };
+  if (responseLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+  if (failed) {
+    return (
+      <div className="flex flex-col justify-center items-center text-center min-h-100">
+        <h1 className="text-center font-semibold">
+          Failed to Retrive the data
+        </h1>
+        <Button
+          onClick={loadData}
+          className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]"
+        >
+          Reload
+        </Button>
+      </div>
+    );
+  }
   return (
-    <div className="bg-background">
-      {/*  HERO SECTION  */}
-      <section
-        className="relative w-full overflow-hidden"
-        style={{
-          backgroundImage: `url(${bannerData.backgroundImageUrl})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
-        <div className="absolute inset-0 bg-white/35" />
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-16 sm:py-20">
-          {/* TITLE */}
-          <div className="text-center mb-10">
-            <h1 className="text-[26px] sm:text-[32px] md:text-[40px] font-bold text-[#F54A0C]">
-              Browse Requirements
-            </h1>
-            <p className="mt-[-10] text-sm sm:text-base text-[#9b9b9b] leading-tight">
-              Discover opportunities from businesses looking for your services
-            </p>
-          </div>
-
-          {/* FILTER BAR */}
-          <div className="flex justify-center">
-            <div
-              className="w-full max-w-5xl bg-white rounded-[28px]
-                   shadow-[0_20px_40px_rgba(0,0,0,0.08)]
-                   px-6 py-5 border"
-            >
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[1.5fr_1fr_1fr_auto] gap-6 items-center">
-                {/* Search */}
-                <div className="flex items-center gap-2 border-b border-[#dcdcdc] pb-2">
-                  <Input
-                    placeholder="Search Requirement"
-                    value={searchFilter}
-                    onChange={(e) => setSearchFilter(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleApllyFilter();
-                      }
-                    }}
-                    className="border-0 p-0 h-auto text-[15px] placeholder:text-[#9b9b9b]
-                focus-visible:ring-0 focus-visible:ring-offset-0"
-                  />
-                </div>
-
-                {/* Category */}
-                {/* <Select
-                  onValueChange={(value) => setServiceType(value)}
-                  value={serviceType}
-                >
-                  <SelectTrigger
-                    className="
-                border-0 border-b border-[#dcdcdc] rounded-none px-0 pb-2
-                text-[15px] font-normal
-                focus-visible:ring-0 focus-visible:ring-offset-0
-                cursor-pointer
-
-                [&_span]:text-[#9b9b9b]
-                [&_span]:text-[15px]
-                [&_span]:font-normal
-            "
-                  >
-                    <SelectValue placeholder="Select Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="web">Web Development</SelectItem>
-                    <SelectItem value="design">Design</SelectItem>
-                    <SelectItem value="marketing">Marketing</SelectItem>
-                    <SelectItem value="consulting">Consulting</SelectItem>
-                  </SelectContent>
-                </Select> */}
-
-                <ServiceDropdown
-                 value={serviceType}
-                    onChange={(value) => setServiceType(value)}
-                    triggerClassName="
-                border-0 border-b border-[#dcdcdc] rounded-none px-0 pb-2
-                text-[15px] font-normal
-                focus-visible:ring-0 focus-visible:ring-offset-0
-                cursor-pointer
-
-                [&_span]:text-[#9b9b9b]
-                [&_span]:text-[15px]
-                [&_span]:font-normal
-            "
-                  />
-
-                {/* Budget */}
-                <Select
-                  onValueChange={(value) => setBudgetRange(value)}
-                  value={budgetRange}
-                >
-                  <SelectTrigger
-                    className="
-                border-0 border-b border-[#dcdcdc] rounded-none px-0 pb-2
-                text-[15px] font-normal
-                focus-visible:ring-0 focus-visible:ring-offset-0
-                cursor-pointer
-
-                [&_span]:text-[#9b9b9b]
-                [&_span]:text-[15px]
-                [&_span]:font-normal
-            "
-                  >
-                    <SelectValue placeholder="Budget Range" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem 
-                    className="cursor-pointer data-[highlighted]:bg-[#F54A0C] data-[highlighted]:text-white"
-                    value="0k-5k">Under $5k</SelectItem>
-                    <SelectItem 
-                    className="cursor-pointer data-[highlighted]:bg-[#F54A0C] data-[highlighted]:text-white"
-                    value="5k-10k">$5k – $10k</SelectItem>
-                    <SelectItem 
-                    className="cursor-pointer data-[highlighted]:bg-[#F54A0C] data-[highlighted]:text-white"
-                    value="10k-20k">$10k – $20k</SelectItem>
-                    <SelectItem 
-                    className="cursor-pointer data-[highlighted]:bg-[#F54A0C] data-[highlighted]:text-white"
-                    value="20k+">More than $20k</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <div className="flex gap-2">
-                <Button
-                  className="h-10 px-6 rounded-full bg-[#F54A0C] hover:bg-[#d93f0b]
-                  text-white text-[14px] font-medium whitespace-nowrap"
-                  onClick={handleApllyFilter}
-                >
-                  <Filter className="h-4 w-4" />
-                  Apply
-                </Button>
-
-                <Button
-                  variant="outline"
-                  className="h-10 px-6 rounded-full text-[14px] hover:bg-black bg-gray-800 text-white whitespace-nowrap"
-                  onClick={handleClearFilters}
-                >
-                  Clear
-                </Button>
-              </div>
-
-              </div>
-            </div>
-          </div>
+    <div className="space-y-6 p-12 pt-1">
+      <div className="my-custom-class">
+        <h1 className="text-2xl font-bold text-[#F4561C] tracking-tight">
+          My Requirements
+        </h1>
+        <p className="text-[#656565] text-xl font-light ">
+          Manage all your posted requirements
+        </p>
+      </div>
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+        <div className="lg:col-span-1">
+          <FiltersPanel onFiltersChange={handleFiltersChange} />
         </div>
-      </section>
-
-      {!resLoading && !failed && (
-        <div className="px-4 py-10">
-          <div className="max-w-6xl mx-auto">
-            <ProposalsHeader
-              title={`Requirements Found: ${filteredRequirements.length}`}
-              onSortChange={(value) => handlePriceSorting(value)}
-            />
-            {/* Cards */}
-            <div
-                className={`grid gap-6 items-stretch ${
-                  filteredRequirements.length === 1
-                    ? "grid-cols-1"
-                    : "grid-cols-1 md:grid-cols-2"
-                }`}
-              >
-              {(filteredRequirements || []).length === 0 ? (
-                <div className="text-center py-10 text-gray-500">
-                  No requirements found.
-                </div>
-              ) : (
-                filteredRequirements?.slice(0, visibleCount).map((item) => (
-                  <ProposalCard
-                    key={item.id}
-                    category={item.category}
-                    title={item.category}
-                    description={item.description}
-                    budget={`${item.budgetMin} - ${item.budgetMax}`}
-                    timeline={item.timeline}
-                    location={item.client?.location || "Remote"}
-                    postedAgo={item.createdAt}
-                    onView={() => handleViewDetails(item._id)}
-                    onSubmit={() =>
-                      router.push(`/login?to=requirement-details&id=${item._id}`)
-                    }
-                  />
-                ))
+        <div className="lg:col-span-3">
+          <Card className="bg-[#fff] rounded-[16px] py-1 px-0 p-0 min-h-100">
+            <CardContent className="max-h-[600px] overflow-y-auto p-6">
+              {filteredRequirements && (
+                <RequirementList
+                  requirements={filteredRequirements}
+                  onViewProposals={handleViewProposals}
+                  onViewDetails={handleViewDetails}
+                />
               )}
-            </div>
-          </div>
+              {filteredRequirements?.length === 0 && (
+                <div className="flex justify-center items-center">
+                  <p className="text-xl font-light text-[#000]">
+                    No Requirements with these applied filters
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
-      )}
-
-      {visibleCount < filteredRequirements.length && (
-        <div className="flex justify-center mt-2 mb-2">
-          <Button
-            onClick={() => setVisibleCount((prev) => prev + 8)}
-            className="rounded-full px-6 bg-[#F54A0C] hover:bg-[#d93f0b] text-white"
-          >
-            Load More
-          </Button>
-        </div>
-      )}
-
-
-      {resLoading && (
-        <div className=" mt-20 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      )}
-
+      </div>
       {showDetailsModal && selectedRequirement && (
         <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
           <DialogContent className="sm:max-w-[520px] rounded-2xl p-0 overflow-hidden">
@@ -507,4 +523,5 @@ export default function BrowsePage() {
       )}
     </div>
   );
-}
+};
+export default RequirementsPage;

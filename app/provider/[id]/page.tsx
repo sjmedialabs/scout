@@ -4,6 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
+
+import {
   MessageSquareMore,
   Building,
   Star,
@@ -177,9 +186,8 @@ export default function ProviderProfilePage({
     { label: "Year founded", value: providerDetails.foundedYear || "N/A" },
     { label: "Team Size", value: providerDetails.teamSize || 0 },
     { label: "Projects", value: providerDetails.projectsCompleted || 0 },
-    { label: "Response Time", value: "45 min" },
-    { label: "Hourly rate", value: providerDetails.hourlyRate || 0 },
-    { label: "Success Rate", value: "98%" },
+    { label: "Min Project Size", value: providerDetails.minProjectSize || 0 },
+    { label: "Hourly rate", value: `${providerDetails.hourlyRate}$/hr` || 0 },
   ];
 
   useEffect(() => {
@@ -243,6 +251,34 @@ export default function ProviderProfilePage({
       </div>
     );
   }
+
+  // Group reviews by service & calculate avg rating
+const serviceRatings = {};
+
+reviews.forEach((review) => {
+  const service = review.project?.category || "Other";
+  if (!serviceRatings[service]) {
+    serviceRatings[service] = {
+      total: 0,
+      count: 0,
+    };
+  }
+
+  serviceRatings[service].total += review.rating || 0;
+  serviceRatings[service].count += 1;
+});
+
+// Convert to array with avg rating
+const topServices = Object.keys(serviceRatings)
+  .map((service) => ({
+    name: service,
+    value:
+      serviceRatings[service].total /
+      serviceRatings[service].count,
+  }))
+  .sort((a, b) => b.value - a.value)
+  .slice(0, 5);
+
 
   return (
     <div className="min-h-screen mt-0 bg-[#fff]">
@@ -327,9 +363,9 @@ export default function ProviderProfilePage({
                   </span>
                 </div>
 
-                <Badge className="bg-[#fff] text-[#000] rounded-2xl backdrop-blur-sm border-white/30 capitalize">
-                  {providerDetails.subscriptionTier || "Basic"} Plan
-                </Badge>
+                {/* <Badge className="bg-[#fff] text-[#000] rounded-2xl backdrop-blur-sm border-white/30 capitalize">
+                  {providerDetails.subscriptionPlanId || "Basic"} Plan
+                </Badge> */}
               </div>
             </div>
             <div className="flex flex-col gap-1">
@@ -364,34 +400,33 @@ export default function ProviderProfilePage({
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-8 lg:px-30 py-6">
-        <div className="grid lg:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-8 py-6">
+        <div className="grid lg:grid-cols-3 gap-6">
           {/* Left Column - Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-6 space-x-6">
             {/* About Section */}
             <div className="pt-0">
               <h1 className="text-2xl font-bold">Over View</h1>
               <p className="text-sm text-[#b2b2b2] mt-0.5">
                 {providerDetails.description}
               </p>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-2">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-2">
                 {stats.map((item, index) => (
                   <div
                     key={index}
                     className="
                       border border-gray-300 
                       rounded-2xl 
-                      px-6 py-1 
+                      px-2 py-1 
                       flex flex-col 
-                      text-center
-                      justify-center 
+                      items-center
                       bg-white
                     "
                   >
-                    <span className="text-md text-[#000] font-medium">
+                    <span className="text-sm text-[#000] font-medium">
                       {item.label}
                     </span>
-                    <span className="text-sm text-[#b2b2b2] font-normal mt-0">
+                    <span className="text-xs text-[#b2b2b2] font-normal mt-0">
                       {item.value}
                     </span>
                   </div>
@@ -570,34 +605,8 @@ export default function ProviderProfilePage({
               </CardContent>
             </Card> */}
 
-            {/* Technologies */}
-            <Card className="border-2 shadow-none bg-white backdrop-blur-sm">
-              <CardHeader className="text-center px-0">
-                <CardTitle className="mb-3">Technologies</CardTitle>
-                <hr className="border-[1px] w-full" />
-              </CardHeader>
-              <CardContent>
-                <div>
-                  {providerDetails.technologies.length != 0 ? (
-                    <div className="flex flex-wrap gap-2">
-                      {providerDetails.technologies.map((tech, index) => (
-                        <Badge
-                          key={index}
-                          variant="secondary"
-                          className="bg-[#ebecee] text-black h-[30px] min-w-[80px] rounded-xl "
-                        >
-                          {tech}
-                        </Badge>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center">
-                      <p className="text-gray-500 text-xl">No Technologies</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+           
+
 
             {/* Contact Info */}
             {/* <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white">

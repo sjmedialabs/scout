@@ -9,11 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider"
 import { Badge } from "@/components/ui/badge"
 import { X, Filter } from "lucide-react"
+import ServiceDropdown from "./select-category-filter"
 import { cn } from "@/lib/utils";
 
 interface FiltersState {
   serviceType: string
-  status: string
   minRating: number
   budgetRange: [number, number]
   title: ""
@@ -27,7 +27,6 @@ interface FiltersPanelProps {
 export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) {
   const [filters, setFilters] = useState<FiltersState>({
     serviceType: "",
-    status: "",
     minRating: 0,
     budgetRange: [0, 100000],
     title:"",
@@ -105,7 +104,6 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
   const clearFilters = () => {
     const clearedFilters: FiltersState = {
       serviceType: "",
-      status: "",
       minRating: 0,
       budgetRange: [0, 100000],
       title: "",
@@ -147,79 +145,13 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
 
         <div className="w-full min-w-0">
            <Label className="text-[14px] mb-0 text-[#98A0B4] font-semibold">Service Type</Label>
-                  <Select
-                    open={open}
-                    onOpenChange={setOpen}
-                    value={filters.serviceType}
-                  >
-                    <SelectTrigger
-                      className="border-2 data-[placeholder]:text-[#98A0B4] border-[#D0D5DD] rounded-full text-[12px]"
-                    >
-                      <span className="text-sm md:text-base">
-                        {filters.serviceType || "Select Service"}
-                      </span>
-                    </SelectTrigger>
-
-                    <SelectContent
-                      side="bottom"
-                      align="start"
-                      sideOffset={8}
-                      className="p-0 rounded-2xl"
-                    >
-                      <div className="flex">
-                        {/* LEFT: Subcategories */}
-                        <div className="min-w-[220px] border-r">
-                          {subCategories.map((sub) => (
-                            <div
-                              key={sub.slug}
-                              onMouseEnter={() => setActiveSubCategory(sub)}
-                              className="px-4 py-2 cursor-pointer  text-sm hover:bg-gray-100"
-                            >
-                              {sub.title}
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* RIGHT: Items */}
-                        {activeSubCategory && (
-                          <div className="min-w-[240px]">
-                            {activeSubCategory.items.map((item) => (
-                              <div
-                                key={item.slug}
-                                onClick={() => {
-                                  setSelectedService(item.title); // ✅ SHOW IN FIELD
-                                  // setServiceFilter(item.title); // your filter logic
-                                  handleFilterChange("serviceType", item.title)
-                                  setOpen(false); // ✅ close dropdown
-                                }}
-                                className="px-4 py-2 cursor-pointer text-sm hover:bg-gray-100"
-                              >
-                                {item.title}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </SelectContent>
-                  </Select>
+                  <ServiceDropdown 
+                value={filters.serviceType}
+                onChange={(value) => handleFilterChange("serviceType", value)}
+                  triggerClassName="border-2 border-[#D0D5DD] rounded-full"
+                  triggerSpanClassName="text-gray-500 text-sm"/>
                 </div>
-
-        {/* Location */}
-        <div className="space-y-2">
-          <Label className="text-[14px] mb-0 text-[#98A0B4] font-semibold">Status</Label>
-          <Select value={filters.status} onValueChange={(value) => handleFilterChange("status", value)}>
-            <SelectTrigger className="border-2 data-[placeholder]:text-[#98A0B4] border-[#D0D5DD] rounded-full text-[12px]">
-              <SelectValue placeholder="Select Status" />
-            </SelectTrigger>
-            <SelectContent>
-              {statues.map((location) => (
-                <SelectItem key={location} value={location}>
-                  {location}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        
 
         {/* Rating */}
         {/* <div className="space-y-2">

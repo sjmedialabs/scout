@@ -80,6 +80,7 @@ const languages = [
   "Arabic",
   "Hindi",
   "Russian",
+  "Telugu"
 ];
 
 export function CompanyProfileEditor({
