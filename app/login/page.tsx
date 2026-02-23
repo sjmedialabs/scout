@@ -143,7 +143,7 @@ else {
           </div>
 
           {/* RIGHT SECTION */}
-          <div className="lg:col-span-6 min-h-screen flex flex-col overflow-y-auto p-8 sm:p-4">
+          <div className="lg:col-span-6 min-h-screen flex flex-col overflow-y-auto p-8 ml-5 sm:p-4">
             <div className="flex items-center mb-2 justify-end">
               <button
                   onClick={() => router.push("/")}
