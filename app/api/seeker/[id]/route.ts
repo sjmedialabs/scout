@@ -39,6 +39,8 @@ export async function GET(
       name: seeker.name,
       email: seeker.email,
       phoneNumber: seeker.phoneNumber,
+      countryCode: seeker.countryCode,
+      country: seeker.country,
       companyName: seeker.companyName,
       position: seeker.position,
       industry: seeker.industry,
@@ -50,6 +52,7 @@ export async function GET(
       typicalProjectBudget: seeker.typicalProjectBudget,
       companySize: seeker.companySize,
       isActive: seeker.isActive,
+
       isVerified: seeker.isVerified,
       image: seeker.image,
       createdAt: seeker.createdAt,

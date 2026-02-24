@@ -25,7 +25,7 @@ export default function ClientDashboardLayout({
   return (
     <>
       {!loading && user && (
-        <div className="flex h-screen w-full overflow-hidden">
+        <div className="flex h-screen w-full">
           
           {/* Sidebar */}
           <ClientSidebar

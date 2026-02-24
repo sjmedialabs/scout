@@ -843,7 +843,7 @@ export default function ClientDashboard() {
             <Card className="bg-[#fff] rounded-2xl">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 ">
                 <CardTitle className="text-sm font-medium my-custom-class text-[#000]">
-                  Vendor Matches
+                  Agency Matches
                 </CardTitle>
                 <div className=" h-8 w-8 flex items-center justify-center rounded-full bg-[#EEF7FE]">
                   <Users className="h-4 w-4" color="#F54A0C" />
@@ -854,7 +854,7 @@ export default function ClientDashboard() {
                   {statsValues.matchedVendors}
                 </div>
                 <p className="text-sm text-green-500 font-normal">
-                  Providers matched to projects
+                  Agencies matched to projects
                 </p>
               </CardContent>
             </Card>
@@ -873,7 +873,7 @@ export default function ClientDashboard() {
                   {statsValues.proposalCount}
                 </div>
                 <p className="text-sm text-green-500 font-normal my-custom-class">
-                  Vendors submitted proposals
+                  Agencies submitted proposals
                 </p>
               </CardContent>
             </Card>
@@ -881,7 +881,7 @@ export default function ClientDashboard() {
             <Card className="bg-[#fff] rounded-2xl">
               <CardHeader className="flex flex-row items-center justify-between space-y-0">
                 <CardTitle className="text-sm font-medium my-custom-class text-[#000]">
-                  Shortlisted Vendors
+                  Shortlisted Agencies
                 </CardTitle>
                 <div className=" h-8 w-8 flex items-center justify-center rounded-full bg-[#EEF7FE]">
                   <BiHeartCircle className="h-4 w-4" color="#F54A0C" />
@@ -921,17 +921,17 @@ export default function ClientDashboard() {
             <Card className="bg-[#fff] rounded-2xl">
               <CardHeader className="px-3 md:px-6">
                 <CardTitle className="font-bold text-[#F4561C] text-lg md:text-xl leading-4 my-custom-class">
-                  Vendor Comparison
+                  Agency Comparison
                 </CardTitle>
                 <CardDescription className="text-smmd:text-md my-custom-class text-[#656565] font-normal">
-                  Compare vendors side-by-side with rating breakdown
+                  Compare agencies side-by-side with rating breakdown
                 </CardDescription>
               </CardHeader>
               <CardContent className="px-0">
                 <div className="space-y-4">
                   <div className="grid grid-cols-4 gap-2 text-xs font-medium text-muted-foreground pb-2 px-3 md:px-6">
                     <div className="font-bold text-sm text-[#6B6B6B] my-custom-class">
-                      Vendor
+                      Agency
                     </div>
                     <div className="text-center font-bold text-sm text-[#6B6B6B] my-custom-class">
                       Quality
@@ -1058,10 +1058,10 @@ export default function ClientDashboard() {
             <Card className="bg-[#fff] rounded-2xl">
               <CardHeader className="px-3 md:px-6">
                 <CardTitle className="font-bold text-[#F4561C] text-lg md:text-xl leading-4 my-custom-class">
-                  Top Vendor Locations
+                  Top Agency Locations
                 </CardTitle>
                 <CardDescription className="text-sm md:text-md my-custom-class text-[#656565] font-normal">
-                  Geographic distribution of responding vendors
+                  Geographic distribution of responding agencies
                 </CardDescription>
               </CardHeader>
 
@@ -1118,10 +1118,10 @@ export default function ClientDashboard() {
             <Card className="bg-[#fff] rounded-2xl">
               <CardHeader className="px-3 md:px-6">
                 <CardTitle className="font-bold text-[#F4561C] text-lg md:text-xl leading-4 my-custom-class">
-                  Top Vendor Specialties
+                  Top Agency Specialties
                 </CardTitle>
                 <CardDescription className="text-sm md:text-md my-custom-class text-[#656565] font-normal">
-                  Expertise areas of responding vendors
+                  Expertise areas of responding agencies
                 </CardDescription>
               </CardHeader>
               <CardContent className="px-3 md:px-6">
