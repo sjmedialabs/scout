@@ -520,7 +520,7 @@ const ProjectsPage = () => {
           </p>
         </div>
         <Button
-          onClick={() => setShowCreateProject(true)}
+          onClick={() => router.push("/client/dashboard/post-requirement")}
           className="bg-[#000] text-xs mt-2 md:mt-0 rounded-full "
         >
           <Plus className="h-4 w-4" />
@@ -528,43 +528,54 @@ const ProjectsPage = () => {
         </Button>
       </div>
 
-      <div className="grid gap-6 border-1 px-4 py-4 md:px-8 md:py-7 bg-[#FAFAFA] border-[#E6E2E2] bg-[#fff] rounded-3xl">
-        <Select
-          onValueChange={(value) => setFilterStatus(value)}
-          value={filterStatus}
-        >
-          <SelectTrigger
-             className={`
-                      border-2
-                      border-[#b2b2b2]
-                      cursor-pointer
-                      rounded-[8px]
-                      shadow-none
-                      focus:ring-0
-                      max-w-[150px]
-                      
-                      px-3
-                      h-11 
-                      text-sm
-                      data-[placeholder]:text-[#98A0B4]
-                    `}
-          >
-            <SelectValue placeholder="Rating" />
-          </SelectTrigger>
+      
 
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="underreview">UnderReview</SelectItem>
-            <SelectItem value="open">Open</SelectItem>
-            <SelectItem value="shortlisted">Shortlisted</SelectItem>
-            <SelectItem value="negotation">Negotiation</SelectItem>
-            <SelectItem value="allocated">Allocated</SelectItem>
-            <SelectItem value="closed">Closed</SelectItem>
-             <SelectItem value="notapproved">NotApproved</SelectItem>
-          </SelectContent>
-        </Select>
-        {(filteredRequirements || []).length !== 0 &&
-          filteredRequirements.map((project) => (
+      <div className="grid gap-6 border-1 px-4 py-4 md:px-8 md:py-7 bg-[#FAFAFA] border-[#E6E2E2] bg-[#fff] rounded-3xl">
+        {/* Filter and Sort Panel */}
+        {
+          requirements.length > 0 && (
+            <Select
+            onValueChange={(value) => setFilterStatus(value)}
+            value={filterStatus}
+          >
+            <SelectTrigger
+              className={`
+                        border-2
+                        border-[#b2b2b2]
+                        cursor-pointer
+                        rounded-[8px]
+                        shadow-none
+                        focus:ring-0
+                        max-w-[160px]
+                        
+                        px-3
+                        h-11 
+                        text-sm
+                        data-[placeholder]:text-[#98A0B4]
+                      `}
+            >
+              <SelectValue placeholder="Rating" />
+            </SelectTrigger>
+
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="underreview">UnderReview</SelectItem>
+              <SelectItem value="open">Open</SelectItem>
+              <SelectItem value="shortlisted">Shortlisted</SelectItem>
+              <SelectItem value="negotation">Negotiation</SelectItem>
+              <SelectItem value="allocated">Allocated</SelectItem>
+              <SelectItem value="closed">Closed</SelectItem>
+              <SelectItem value="notapproved">Rejected</SelectItem>
+            </SelectContent>
+          </Select>
+          )
+        }
+        
+        {(filteredRequirements || []).length !== 0 ?
+
+        (
+          <>
+           {filteredRequirements.map((project) => (
             <Card
               key={project._id}
               className="border-1 px-0 border-[#CFCACA] rounded-2xl"
@@ -584,7 +595,7 @@ const ProjectsPage = () => {
                     //       : "outline"
                     // }
                   >
-                    {project.status}
+                    {project.status=== "NotApproved" ? "Rejected" : project.status}
                   </Badge>
                 </div>
                 <div className="flex justify-between items-start mb-4">
@@ -701,6 +712,19 @@ const ProjectsPage = () => {
               </CardContent>
             </Card>
           ))}
+          </>
+        )
+
+        :
+        (
+          <div className="flex flex-col justify-center items-center text-center py-10">
+            <p className="text-lg text-[#656565] font-normal mb-4">No projects available</p>
+
+          </div>
+        )
+         
+         
+         }
       </div>
 
       {showCreateProject && (
