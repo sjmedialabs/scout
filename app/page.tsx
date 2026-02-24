@@ -265,8 +265,15 @@ const { cms, providers, projects, categories } = data;
           <div className="flex justify-center items-center">
             <Link href="/services">
               <Button
-                className="rounded-full py-2 text-lg font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1]"
-                size={"lg"}
+                size="lg"
+                className="
+                  rounded-full
+                  text-sm sm:text-lg
+                  px-5 sm:px-8
+                  py-2 sm:py-3
+                  font-bold
+                  bg-gradient-to-r from-[#F54A0C] to-[#2C34A1]
+                "
               >
                 Browse all services →
               </Button>
@@ -388,7 +395,14 @@ const { cms, providers, projects, categories } = data;
             <div className="flex justify-center items-center">
               <Link href="/browse">
                 <Button
-                  className="rounded-full py-2 mt-8 text-lg font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1]"
+                  className="rounded-full
+                    mt-8
+                    text-sm sm:text-lg
+                    px-5 sm:px-8
+                    py-2 sm:py-3
+                    font-bold
+                    bg-gradient-to-r from-[#F54A0C] to-[#2C34A1]
+                  "
                   size={"lg"}
                 >
                   Browse all requirements →
@@ -416,7 +430,7 @@ const { cms, providers, projects, categories } = data;
                 {cms?.topProvidersSubTitle || "Discover opportunities from businesses lookking for your services"}
               </p>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
               {[...providers]
                 .sort((a, b) => (b.rating || 0) - (a.rating || 0))
                 .map((provider: any) => (
@@ -426,14 +440,14 @@ const { cms, providers, projects, categories } = data;
                  flex flex-col h-full"
                 >
                   <div className="">
-                    <div className="text-lg w-full h-[200px] overflow-hidden rounded-t-3xl ">
+                    <div className="w-full h-[160px] sm:h-[200px] overflow-hidden rounded-t-3xl">
                       <img
                         src={provider.coverImage || "/requirements.jpg"}
                         alt=""
                         className="rounded-t-3xl w-full h-full object-cover object-center"
                       />
                     </div>
-                    <div className="flex items-center justify-between mb-2 px-8 mt-4">
+                    <div className="flex items-center justify-between mb-2 px-4 sm:px-6 lg:px-8 mt-4">
                       {/* FEATURED & VERIFIED BADGES */}
                       <div className="flex items-center gap-2">
                         {provider.isVerified && (
@@ -476,17 +490,17 @@ const { cms, providers, projects, categories } = data;
                       </div>
                     </div>
 
-                    <h3 className="text-lg px-8 font-bold capitalize">
+                    <h3 className="text-base text-base sm:text-lg px-4 sm:px-6 lg:px-8 font-bold capitalize">
                       {provider.name}
                     </h3>
                   </div>
-                  <div className="pb-4 px-8 flex flex-col flex-1">
+                  <div className="pb-4 px-4 sm:px-6 lg:px-8 flex flex-col flex-1">
                     <p className="text-sm text-gray-500 mb-0 line-clamp-1">
                         {provider.description}
                       </p>
                     <div className="flex flex-col h-full gap-4">
                       {/* SERVICES BADGES */}
-                      <div className="flex gap-2 pt-2 overflow-hidden whitespace-nowrap">
+                      <div className="flex gap-2 pt-2">
                         {provider.services?.length > 0 ? (
                           provider.services
                             .slice(0, 2)
@@ -528,7 +542,15 @@ const { cms, providers, projects, categories } = data;
             <div className="text-center mt-0">
               <Button
                 variant="outline"
-                className="rounded-full py-2 mt-6 text-lg font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] text-white"
+                className="rounded-full
+                    mt-6
+                    text-sm sm:text-lg
+                    px-5 sm:px-8
+                    py-2 sm:py-3
+                    font-bold
+                    bg-gradient-to-r from-[#F54A0C] to-[#2C34A1]
+                    text-white
+                  "
                 size={"lg"}
                 asChild
               >
@@ -548,10 +570,10 @@ const { cms, providers, projects, categories } = data;
           <p className="text-base max-w-sm mx-auto text-slate-500">
             {cms?.getStartedSubtitle || "Join thousands of businesses finding the right service providers on Spark."}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-2">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-2">
             <Button
               size="lg"
-              className="bg-orangeButton font-semibold text-sm text-white rounded-full hover:bg-gray-100"
+              className="bg-orangeButton inline-flex w-auto px-6 font-semibold text-sm text-white rounded-full hover:bg-gray-100"
               asChild
             >
               <Link href="/register?type=seeker">List Project</Link>
@@ -559,7 +581,7 @@ const { cms, providers, projects, categories } = data;
             <Button
               size="lg"
               variant="outline"
-              className="bg-blueButton font-semibold text-sm text-white rounded-full hover:bg-gray-100"
+              className="bg-blueButton inline-flex w-auto px-6 font-semibold text-sm text-white rounded-full hover:bg-gray-100"
               asChild
             >
               <Link href="/register?type=provider">Find Project</Link>
