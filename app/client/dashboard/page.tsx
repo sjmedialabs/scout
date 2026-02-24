@@ -828,13 +828,13 @@ export default function ClientDashboard() {
       {/* Left Sidebar */}
 
       {/* Main Content */}
-      <div className="flex-1 -mt-3 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none]  [&::-webkit-scrollbar]:hidden">
-        <div className="space-y-3">
-          <div className="border-b boreder-[1px] border-[#c4c3c3] pb-4">
-            <h1 className="text-xl md:text-3xl font-bold text-[#F4561C] my-custom-class">
+      <div className="flex-1 -mt-4 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none]  [&::-webkit-scrollbar]:hidden">
+        <div className="space-y-2">
+          <div className="border-b boreder-[1px] border-[#c4c3c3] pb-2">
+            <h1 className="text-xl  font-bold text-[#F4561C]">
               Dashboard Overview
             </h1>
-            <p className="text-sm md:text-lg text-[#656565] font-xl">
+            <p className="text-md text-[#656565] font-xl">
               Welcome to your client dashboard
             </p>
           </div>
@@ -918,7 +918,7 @@ export default function ClientDashboard() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="bg-[#fff] rounded-2xl">
+            {/* <Card className="bg-[#fff] rounded-2xl">
               <CardHeader className="px-3 md:px-6">
                 <CardTitle className="font-bold text-[#F4561C] text-lg md:text-xl leading-4 my-custom-class">
                   Agency Comparison
@@ -942,9 +942,9 @@ export default function ClientDashboard() {
                     <div className="text-center font-bold text-sm text-[#6B6B6B] my-custom-class">
                       Cost
                     </div>
-                    {/* <div className="text-center font-bold text-sm text-[#6B6B6B] my-custom-class">
+                    <div className="text-center font-bold text-sm text-[#6B6B6B] my-custom-class">
                       Refer
-                    </div> */}
+                    </div>
                   </div>
 
                   {topVendors.slice(0,3).map((vendor) => (
@@ -979,21 +979,21 @@ export default function ClientDashboard() {
                           {vendor?.costRating?.toFixed(1) || 0}
                         </Badge>
                       </div>
-                      {/* <div className="text-center">
+                      <div className="text-center">
                         <Badge
                           variant="secondary"
                           className="text-xs border-1 border-[#B4D2F4] rounded-full bg-[#F2F2F2] min-w-[40px] text-[#000]"
                         >
                           {vendor?.willingToRefer?.toFixed(1) || 0}
                         </Badge>
-                      </div> */}
+                      </div>
                     </div>
                   ))}
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
 
-            <Card className="bg-[#fff] rounded-2xl">
+            {/* <Card className="bg-[#fff] rounded-2xl">
               <CardHeader className="px-3 md:px-6">
                 <CardTitle className="font-bold text-[#F4561C] text-lg md:text-xl leading-4 my-custom-class">
                   Cost Distribution
@@ -1036,7 +1036,7 @@ export default function ClientDashboard() {
                       </div>
                     </div>
                   ))}
-                  {/* <div className="pt-4 border-t-[1px] mt-8 border-[#E3E3E3] px-6 pb-0 mb-0">
+                  <div className="pt-4 border-t-[1px] mt-8 border-[#E3E3E3] px-6 pb-0 mb-0">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-[#6B6B6B] text-sm font-bold">
                         Range
@@ -1046,15 +1046,15 @@ export default function ClientDashboard() {
                         {costAnalytics.maxProposalAmount.toLocaleString()}
                       </span>
                     </div>
-                  </div> */}
+                  </div>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
 
           {/*Top vendor locations */}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="bg-[#fff] rounded-2xl">
               <CardHeader className="px-3 md:px-6">
                 <CardTitle className="font-bold text-[#F4561C] text-lg md:text-xl leading-4 my-custom-class">
@@ -1155,7 +1155,7 @@ export default function ClientDashboard() {
                 </div>
               </CardContent>
             </Card>
-          </div>
+          </div> */}
 
           {/*Requirement cards Notifications*/}
 
