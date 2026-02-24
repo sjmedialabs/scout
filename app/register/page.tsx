@@ -3,7 +3,7 @@
 import { useState,useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, X } from "lucide-react";
 import OtpVerify from "@/components/otp-verification";
 import OtpVerifiedSuccess from "@/components/otp-verify-success";
 
@@ -77,15 +77,14 @@ const handleSubmit = async () => {
  },[])
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-      {/* Modal Card */}
-
-      <div className="relative w-full max-w-3xl h-[97vh] overflow-hidden rounded-3xl bg-white shadow-xl">
-        <div className="grid h-full grid-cols-1 lg:grid-cols-12">
+        <div>
+        {/* Modal Card */}
+      <div className="relative min-h-screen w-full max-w-7xl bg-white mx-auto">
+        <div className="grid min-h-screen grid-cols-1 lg:grid-cols-12">
 
           {/* LEFT SECTION */}
           <div
-            className="relative hidden lg:flex lg:col-span-6 h-full flex-col justify-between p-10 text-white bg-cover"
+            className="relative hidden lg:flex lg:col-span-6 min-h-screen flex-col justify-between p-10 text-white bg-cover bg-bottom-left bg-no-repeat"
             style={{
               backgroundImage: "url('/images/Login-Image.png')",
               backgroundPosition: "left bottom"
@@ -108,14 +107,23 @@ const handleSubmit = async () => {
           {/* RIGHT SECTION */}
           {
             (!showOtpVerifyUi && !showSuccesfullVerifiedUi) && (
-              <div className="lg:col-span-6 h-full overflow-y-auto p-8 sm:p-10">
-            <h3 className="text-lg font-semibold text-center">Create Account</h3>
-            <p className="mt-0.1 text-[10px] text-gray-400 text-center">
+              <div className="lg:col-span-6 min-h-screen overflow-y-auto p-8 sm:p-10">
+
+            <div className="flex items-center mb-2 justify-end">
+                          <button
+                              onClick={() => router.push("/")}
+                            className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition cursor-pointer"
+            >
+                            <X size={18} className="text-gray-700" />
+                          </button>
+                        </div>
+            <h3 className="text-xl font-semibold text-center">Create Account</h3>
+            <p className="mt-0.1 text-[12px] text-gray-400 text-center">
               Join Spark to connect with agencies or offer your services
             </p>
 
             {/* Account Type */}
-            <div className="mt-2">
+            <div className="mt-1">
               <label className="text-sm font-bold text-gray-700">
                 Account Type
               </label>
@@ -142,8 +150,8 @@ const handleSubmit = async () => {
             </div>
 
             {/* Inputs */}
-            <div className="mt-1 space-y-4">
-              <div>
+            <div className="mt-1 space-y-0">
+              <div className="-mt-1">
                 <label className="text-sm font-bold text-gray-600">Full name</label>
                 <input
                   value={name}
@@ -208,16 +216,18 @@ const handleSubmit = async () => {
             )}
 
             {/* Button */}
+            <div>
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="mt-4 cursor-pointer w-full rounded-xl bg-black py-2  font-medium text-sm text-white hover:bg-gray-900 transition"
+              className="mt-4 cursor-pointer justify-center px-6 rounded-xl bg-black py-2  font-medium text-sm text-white hover:bg-gray-900 transition"
             >
               {loading ? "Creating Account..." : "Create Account"}
             </button>
+            </div>
 
             {/* Footer */}
-            <p className="mt-1 text-center text-sm text-black">
+            <p className="mt-1 text-sm text-black">
               Already have an account?
               <span
                 onClick={() => router.push("/login")}
@@ -246,7 +256,7 @@ const handleSubmit = async () => {
 
           {
             (showSuccesfullVerifiedUi && !showOtpVerifyUi) && (
-              <div className="lg:col-span-6 h-full overflow-y-auto p-8 sm:p-10">
+              <div className="lg:col-span-6 min-h-screen flex flex-col justify-center p-8 sm:p-10">
                 <OtpVerifiedSuccess/>
               </div>
             )
