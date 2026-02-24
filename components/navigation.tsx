@@ -457,7 +457,7 @@ const overflowCategories = mainCategories.slice(5);
             {/* Post a Project Button */}
             <div className="hidden lg:flex flex-row gap-2">
               <Button
-                className="bg-orangeButton  hover:bg-[#f54607] text-white h-8 rounded-full"
+                className="bg-orangeButton w-35 hover:bg-[#f54607] text-white h-8 rounded-full"
                 asChild
               >
                 <Link
@@ -465,7 +465,7 @@ const overflowCategories = mainCategories.slice(5);
                     user ? "/client/dashboard?section=projects" : "/register"
                   }
                 >
-                  List Project
+                  Post Requirement
                 </Link>
               </Button>
 
@@ -595,7 +595,7 @@ const overflowCategories = mainCategories.slice(5);
                     user ? "/client/dashboard?section=projects" : "/register"
                   }
                 >
-                  List Project
+                  Post Requirement
                 </Link>
               </Button>
 

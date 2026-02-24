@@ -109,12 +109,12 @@ const handleSubmit = async () => {
             (!showOtpVerifyUi && !showSuccesfullVerifiedUi) && (
               <div className="lg:col-span-6 min-h-screen overflow-y-auto p-8 sm:p-10">
 
-            <div className="flex items-center mb-2 justify-end">
+            <div className="flex items-center mb-2">
                           <button
                               onClick={() => router.push("/")}
-                            className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition cursor-pointer"
+                            className="flex text-sm items-center justify-center rounded-full hover:text-orange-600 transition cursor-pointer"
             >
-                            <X size={18} className="text-gray-700" />
+                            ← Back to website
                           </button>
                         </div>
             <h3 className="text-xl font-semibold text-center">Create Account</h3>
@@ -123,11 +123,11 @@ const handleSubmit = async () => {
             </p>
 
             {/* Account Type */}
-            <div className="mt-1">
-              <label className="text-sm font-bold text-gray-700">
+            <div className="mt-1 text-center">
+              <label className="text-sm font-bold text-gray-700 block">
                 Account Type
               </label>
-              <div className="mt-2 flex gap-6 text-[10px] text-gray-400">
+              <div className="mt-2 flex justify-center items-center gap-6 text-[10px] text-gray-400">
                 <label className="flex items-center gap-2 text-sm font-bold cursor-pointer">
                   <input
                     type="radio"
@@ -150,8 +150,8 @@ const handleSubmit = async () => {
             </div>
 
             {/* Inputs */}
-            <div className="mt-1 space-y-0">
-              <div className="-mt-1">
+            <div className="mt-1 space-y-3 flex flex-col items-center">
+              <div className="-mt-1 w-[420px] max-w-full">
                 <label className="text-sm font-bold text-gray-600">Full name</label>
                 <input
                   value={name}
@@ -161,7 +161,7 @@ const handleSubmit = async () => {
                 />
               </div>
 
-              <div>
+              <div className="w-[420px] max-w-full">
                 <label className="text-sm font-bold text-gray-600">E-mail</label>
                 <input
                   type="email"
@@ -172,7 +172,7 @@ const handleSubmit = async () => {
                 />
               </div>
 
-                  <div>
+                  <div className="w-[420px] max-w-full">
       <label className="text-sm font-bold text-gray-600">Password</label>
 
       <div className="relative">
@@ -195,7 +195,7 @@ const handleSubmit = async () => {
     </div>
 
 
-              <div>
+              <div className="w-[420px] max-w-full">
                 <label className="text-sm font-bold text-gray-600">
                   Company Name {role === "agency" ? "(Required)" : "(Optional)"}
                 </label>
@@ -216,22 +216,22 @@ const handleSubmit = async () => {
             )}
 
             {/* Button */}
-            <div>
+            <div className="flex justify-center mb-2">
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="mt-4 cursor-pointer justify-center px-6 rounded-xl bg-black py-2  font-medium text-sm text-white hover:bg-gray-900 transition"
+              className="mt-4 cursor-pointer justify-center px-6 rounded-xl bg-black py-2  font-medium text-sm text-white hover:bg-orange-600 transition"
             >
               {loading ? "Creating Account..." : "Create Account"}
             </button>
             </div>
 
             {/* Footer */}
-            <p className="mt-1 text-sm text-black">
+            <p className="mt-1 text-sm text-black text-center">
               Already have an account?
               <span
                 onClick={() => router.push("/login")}
-                className="ml-1 cursor-pointer underline hover:text-blue-400 font-medium text-black"
+                className="ml-1 cursor-pointer underline hover:text-orange-600 font-medium text-black"
               >
                 Sign in here
               </span>

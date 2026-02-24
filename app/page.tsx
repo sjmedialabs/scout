@@ -576,12 +576,12 @@ const { cms, providers, projects, categories } = data;
               className="bg-orangeButton inline-flex w-auto px-6 font-semibold text-sm text-white rounded-full hover:bg-gray-100"
               asChild
             >
-              <Link href="/register?type=seeker">List Project</Link>
+              <Link href="/register?type=seeker">Post Requirement</Link>
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="bg-blueButton inline-flex w-auto px-6 font-semibold text-sm text-white rounded-full hover:bg-gray-100"
+              className="bg-blueButton inline-flex w-auto px-10 font-semibold text-sm text-white rounded-full hover:bg-gray-100"
               asChild
             >
               <Link href="/register?type=provider">Find Project</Link>

@@ -131,7 +131,7 @@ export function HomeHero({ cms }: HomeHeroProps) {
             </div>
 
             {/* Popular Searches */}
-            <div className="space-y-3 sm:space-y-2">
+            <div className="space-y-3 sm:space-y-2 mt-3">
               <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
                 {categories.map((search, index) => (
                   <Button

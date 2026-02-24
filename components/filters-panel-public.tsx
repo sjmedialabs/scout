@@ -115,7 +115,7 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
   return (
     <Card className="bg-[#fff] rounded-[16px]">
       <CardHeader>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center -mt-3">
           <CardTitle className="flex items-center gap-2">
             <Filter className="h-5 w-5"/>
             <span className="my-custom-class text-[14px] font-normal -ml-1 text-[#4B4B4B]"> Filter</span>
@@ -125,7 +125,7 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-3 -mt-6">
         {/* Service Type */}
         {/* <div className="space-y-2 my-custom-class">
           <Label className="text-[14px] mb-0 text-[#98A0B4] font-semibold">Service Type</Label>

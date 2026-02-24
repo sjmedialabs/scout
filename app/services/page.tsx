@@ -15,8 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import RatingStars from "@/components/rating-star";
-
+import RatingStars from "@/components/rating -star-servicesPage";
 import { Menu } from "lucide-react";
 
 
@@ -508,7 +507,7 @@ export default function ServicesPage() {
       {/* Providers Grid */}
       <div>
         {filteredProviders.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 max-h-[100vh] overflow-y-auto [scrollbar-width:none] 
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 max-h-[100vh] overflow-y-auto [scrollbar-width:none] 
           [-ms-overflow-style:none]        
           [&::-webkit-scrollbar]:hidden">
             {filteredProviders.map((p: any) => (
@@ -529,14 +528,19 @@ export default function ServicesPage() {
                 <div className="flex flex-col flex-1 p-4 justify-between">
 
                   {/* Verified + Rating */}
-                  <div className="flex items-center justify-between">
-                    {p.isVerified && (
-                      <span className="inline-flex items-center rounded-full bg-[#32359a] px-3 py-1 text-xs font-semibold text-white">
-                        Verified
-                      </span>
-                    )}
+                  <div className="relative flex items-center -mt-2 h-2">
 
-                    <div className="flex items-center gap-1.5">
+                    {/* LEFT — Verified */}
+                    <div className="absolute left-0">
+                      {p.isVerified && (
+                        <span className="inline-flex items-center rounded-lg border border-[#2c34a1] font-bold px-2 py-0 text-[10px] text-blueButton bg-white">
+                          Verified
+                        </span>
+                      )}
+                    </div>
+
+                    {/* RIGHT — Rating */}
+                    <div className="absolute right-0 flex items-center gap-1.5">
                       <div className="flex items-center gap-0.5">
                         <RatingStars rating={p.rating} />
                       </div>
@@ -544,86 +548,83 @@ export default function ServicesPage() {
                       <span className="text-xs font-semibold text-[#0E0E0E]">
                         {p.rating.toFixed(1)}
                       </span>
-
-                      
                     </div>
+
                   </div>
 
                   {/* Title + Description */}
                   <div className="py-2">
                     <h3
-                      className="text-xl font-bold text-[#0E0E0E] leading-tight"
-                      style={{ fontFamily: "CabinetGrotesk2" }}
+                      className="text-md font-bold text-[#0E0E0E] leading-tight"
+                      
                     >
                       {p.name}
                     </h3>
 
-                    <p
-                      className="text-xs font-semibold text-[#adb0b3] mt-1"
+                    {/* <p
+                      className="text-[10px] font-semibold text-[#adb0b3] mt-0"
                       style={{ fontFamily: "CabinetGrotesk2" }}
                     >
                       {p.description}
-                    </p>
+                    </p> */}
                   </div>
 
                   {/* Tags */}
-                  <div className="flex flex-wrap gap-1.5 py-1">
-                    {Array.isArray(p.tags) &&
-                      p.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="inline-flex items-center rounded-full bg-[#f2f2f2] border px-3 py-0.5 text-xs font-semibold text-slate-700"
-                        >
-                          {tag}
-                        </span>
-                      ))}
+                  <div className="flex flex-wrap py-0 -mt-1">
+                    {activeService && (
+                      <span
+                        className="inline-flex items-center rounded-lg bg-[#f2f2f2] border px-3 py-0.5 text-[10px] font-semibold text-slate-700"
+                      >
+                        {activeService.title}
+                      </span>
+                    )}
                   </div>
 
                   {/* Info Row */}
-                  <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-[#616161] py-2">
-                    <span className="inline-flex items-center gap-1">
+                  <div className=" grid text-[10px] font-semibold text-[#616161] gap-1 mt-1">
+                    <div className="inline-flex items-center gap-1">
                       <img
                         src="/Location_Icon.jpg"
                         alt="Location"
-                        className="h-4 w-4 object-contain"
+                        className="h-3 w-3 object-contain"
                       />
                       {p.location}
-                    </span>
+                    </div>
 
-                    <span className="inline-flex items-center gap-1">
+                    <div className="inline-flex items-center gap-1">
                       <img
                         src="/Projects_Icon.jpg"
                         alt="Projects"
-                        className="h-4 w-4 object-contain"
+                        className="h-3 w-3 object-contain"
                       />
                       {p.projectsCompleted} projects
-                    </span>
+                    </div>
 
-                    <span className="inline-flex items-center gap-1">
-                      <Users className="h-4 w-4 text-orangeButton" />
+                    <div className="inline-flex items-center gap-1">
+                      <Users className="h-3 w-3 text-orangeButton" />
                       {p.teamSize}
-                    </span>
+                    </div>
                   </div>
 
                   {/* Rate */}
-                  <div className="text-sm text-[#616161] font-bold py-1">
+                  <div className="text-xs text-[#616161] font-bold py-1">
                     Starting Price:
-                    <span className="ml-1">{p.hourlyRate}/hr</span>
+                    <span className="ml-1 text-gray-400">{p.hourlyRate}/hr</span>
                   </div>
 
                   {/* Buttons */}
-                  <div className="flex flex-wrap gap-2 pt-3">
+                  <div className="flex flex-wrap gap-2 pt-1">
                     <button
-                      className="flex-1 cursor-pointer rounded-full bg-[#2c34a1] px-4 py-2 text-xs font-bold text-white hover:bg-[#3f437e]"
+                      className="flex-1 cursor-pointer rounded-xl bg-[#2c34a1] py-1 text-[10px] font-bold text-white hover:bg-blue-700"
                       onClick={() =>
                         router.push(`/provider/${p.id || p._id}`)
                       }
                     >
-                      View Profile →
+                      View Profile
                     </button>
 
                     <button
-                      className="flex-1 cursor-pointer rounded-full bg-[#4d4d4d] py-2 text-xs font-bold text-white"
+                      className="flex-1 cursor-pointer rounded-xl bg-[#4d4d4d] py-1 text-[10px] font-bold text-white hover:bg-gray-500"
                       onClick={() => handleContact(p)}
                     >
                       Contact
