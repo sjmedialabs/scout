@@ -21,6 +21,7 @@ import { Menu } from "lucide-react";
 
 export default function ServicesPage() {
   const router=useRouter();
+  const [visibleCount, setVisibleCount] = useState(9);
   const searchParams = useSearchParams();
   const categoryId = searchParams.get("category") || null;
 
@@ -154,6 +155,9 @@ export default function ServicesPage() {
 
   setFilteredProviders(updatedProviders);
 
+  setFilteredProviders(updatedProviders);
+setVisibleCount(9);
+
 }, [
   providers,
   activeService,
@@ -222,7 +226,7 @@ export default function ServicesPage() {
                   className={`flex justify-between items-center cursor-pointer p-3 rounded-lg
                   ${
                     openParent === parent._id
-                      ? "text-orange-600 font-bold"
+                      ? "text-orangeButton font-bold"
                       : "hover:bg-gray-100"
                   }`}
                 >
@@ -243,7 +247,7 @@ export default function ServicesPage() {
                           className={`flex justify-between items-center cursor-pointer p-0 rounded-md
                           ${
                             openChild === child._id
-                              ? "text-orange-500 font-semibold"
+                              ? "text-orangeButton font-semibold"
                               : "hover:bg-gray-100"
                           }`}
                         >
@@ -263,8 +267,8 @@ export default function ServicesPage() {
                               className={`ml-4 mt-4 cursor-pointer p-0 rounded-md
                               ${
                                 activeServiceId === item._id
-                                  ? "text-orange-600 font-bold"
-                                  : "text-gray-600 hover:text-orange-500"
+                                  ? "text-orangeButton font-bold"
+                                  : "text-gray-600 hover:text-orangeButton"
                               }`}
                             >
                               {item.title}
@@ -295,7 +299,7 @@ export default function ServicesPage() {
               className={`flex justify-between items-center cursor-pointer p-3 rounded-lg
               ${
                 openParent === parent._id
-                  ? "text-orange-600 font-bold"
+                  ? "text-orangeButton font-bold"
                   : "hover:bg-gray-100"
               }`}
             >
@@ -316,7 +320,7 @@ export default function ServicesPage() {
                       className={`flex justify-between items-center cursor-pointer p-2 rounded-md
                       ${
                         openChild === child._id
-                          ? "text-orange-500 font-semibold"
+                          ? "text-orangeButton font-semibold"
                           : "hover:bg-gray-100"
                       }`}
                     >
@@ -335,8 +339,8 @@ export default function ServicesPage() {
                           className={`ml-4 mt-1 cursor-pointer p-2 rounded-md
                           ${
                             activeServiceId === item._id
-                              ? "text-orange-600 font-bold"
-                              : "text-gray-600 hover:text-orange-500"
+                              ? "text-orangeButton font-bold"
+                              : "text-gray-600 hover:text-orangeButton"
                           }`}
                         >
                           {item.title}
@@ -507,10 +511,10 @@ export default function ServicesPage() {
       {/* Providers Grid */}
       <div>
         {filteredProviders.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 max-h-[100vh] overflow-y-auto [scrollbar-width:none] 
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-7 max-h-[100vh] overflow-y-auto [scrollbar-width:none] 
           [-ms-overflow-style:none]        
           [&::-webkit-scrollbar]:hidden">
-            {filteredProviders.map((p: any) => (
+            {filteredProviders.slice(0, visibleCount).map((p: any) => (
             <div className="overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:shadow-md flex flex-col h-full">
 
                 {/* Image */}
@@ -528,12 +532,12 @@ export default function ServicesPage() {
                 <div className="flex flex-col flex-1 p-4 justify-between">
 
                   {/* Verified + Rating */}
-                  <div className="relative flex items-center -mt-2 h-2">
+                  <div className="relative flex items-center -mt-1 h-2">
 
                     {/* LEFT — Verified */}
                     <div className="absolute left-0">
                       {p.isVerified && (
-                        <span className="inline-flex items-center rounded-lg border border-[#2c34a1] font-bold px-2 py-0 text-[10px] text-blueButton bg-white">
+                        <span className="inline-flex items-center rounded-lg border font-bold px-2 py-0 text-[10px] text-green-500 bg-white">
                           Verified
                         </span>
                       )}
@@ -553,7 +557,7 @@ export default function ServicesPage() {
                   </div>
 
                   {/* Title + Description */}
-                  <div className="py-2">
+                  <div className="py-3">
                     <h3
                       className="text-md font-bold text-[#0E0E0E] leading-tight"
                       
@@ -570,7 +574,7 @@ export default function ServicesPage() {
                   </div>
 
                   {/* Tags */}
-                  <div className="flex flex-wrap py-0 -mt-1">
+                  <div className="flex flex-wrap py-0 -mt-2">
                     {activeService && (
                       <span
                         className="inline-flex items-center rounded-lg bg-[#f2f2f2] border px-3 py-0.5 text-[10px] font-semibold text-slate-700"
@@ -581,17 +585,17 @@ export default function ServicesPage() {
                   </div>
 
                   {/* Info Row */}
-                  <div className=" grid text-[10px] font-semibold text-[#616161] gap-1 mt-1">
-                    <div className="inline-flex items-center gap-1">
+                  <div className=" grid-cols-3 text-[10px] font-semibold text-[#616161] mt-1">
+                    <div className="inline-flex items-center mr-6 gap-1">
                       <img
                         src="/Location_Icon.jpg"
                         alt="Location"
                         className="h-3 w-3 object-contain"
                       />
-                      {p.location}
+                      {p.location || "Not specified"}
                     </div>
 
-                    <div className="inline-flex items-center gap-1">
+                    <div className="inline-flex items-center mr-6 gap-1">
                       <img
                         src="/Projects_Icon.jpg"
                         alt="Projects"
@@ -602,7 +606,7 @@ export default function ServicesPage() {
 
                     <div className="inline-flex items-center gap-1">
                       <Users className="h-3 w-3 text-orangeButton" />
-                      {p.teamSize}
+                      {p.teamSize || "Not specified"}
                     </div>
                   </div>
 
@@ -615,7 +619,11 @@ export default function ServicesPage() {
                   {/* Buttons */}
                   <div className="flex flex-wrap gap-2 pt-1">
                     <button
-                      className="flex-1 cursor-pointer rounded-xl bg-[#2c34a1] py-1 text-[10px] font-bold text-white hover:bg-blue-700"
+                      // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#e0332c] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
+                      className="flex-1 border border-transparent cursor-pointer rounded-xl 
+                      bg-[#e0332c] py-1 text-[10px] font-bold text-white
+                       duration-700 ease-out
+                      hover:bg-white hover:text-black hover:border-black transition-colors"
                       onClick={() =>
                         router.push(`/provider/${p.id || p._id}`)
                       }
@@ -624,7 +632,11 @@ export default function ServicesPage() {
                     </button>
 
                     <button
-                      className="flex-1 cursor-pointer rounded-xl bg-[#4d4d4d] py-1 text-[10px] font-bold text-white hover:bg-gray-500"
+                      // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#000000] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
+                      className="flex-1 border border-transparent cursor-pointer rounded-xl 
+                      bg-black py-1 text-[10px] font-bold text-white
+                       duration-700 ease-out
+                      hover:bg-white hover:text-black hover:border-black transition-colors"
                       onClick={() => handleContact(p)}
                     >
                       Contact
@@ -639,6 +651,19 @@ export default function ServicesPage() {
             No agencies found for this service.
           </div>
         )}
+
+        {/* Load More Button */}
+            {visibleCount < filteredProviders.length && (
+              <div className="flex justify-center mt-3">
+                <Button
+                  onClick={() => setVisibleCount((prev) => prev + 9)}
+                  className="bg-[#e0332c] border text-white px-6 py-2 rounded-xl
+                  hover:bg-white hover:text-black hover:border-black transition-colors"
+                >
+                  Load More
+                </Button>
+              </div>
+            )}
       </div>
     </div>
 

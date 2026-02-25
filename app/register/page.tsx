@@ -91,12 +91,12 @@ const handleSubmit = async () => {
             }}
           >
             <div className="relative z-10 max-w-sm">
-              <h2 className="text-2xl font-extrabold leading-tight">
+              <h2 className="text-2xl font-bold leading-tight">
                 Built to Accelerate <br /> Business Success
               </h2>
 
-              <ul className="mt-2 space-y-2 text-[10px] text-white">
-                <li>owering Smarter Business Connections</li>
+              <ul className="mt-2 space-y-2 text-[12px] text-white">
+                <li>Owering Smarter Business Connections</li>
                 <li>700+ Categories. One Trusted Platform.</li>
                 <li>Quality Work. Accelerated Results.</li>
                 <li>Your Gateway to Global Talent & Businesses</li>

@@ -123,7 +123,7 @@ export function HomeHero({ cms }: HomeHeroProps) {
               />
               <Button
                 onClick={handleSearch}
-                className="absolute top-1/2 right-2 -translate-y-1/2 flex items-center justify-center h-10  w-10 rounded-full bg-[#F54A0C] hover:bg-[#d93f0b] shadow-md transition-all rotate-90"
+                className="absolute top-1/2 right-2 -translate-y-1/2 flex items-center justify-center h-10  w-10 rounded-full bg-orangeButton shadow-md transition-all rotate-90"
               >
                 <Search className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </Button>

@@ -99,7 +99,7 @@ export default function PricingPage() {
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
-            <p className="text-1xl font-thin text-orange-400 mb-1">
+            <p className="text-1xl font-thin text-[#e0332c] mb-1">
               Choose Your Plan
             </p>
             <p className="text-xl text-muted-foreground text-balance text-center max-w-xl mx-auto leading-tight">
@@ -114,19 +114,19 @@ export default function PricingPage() {
               className={`text-lg font-bold transition-colors  ${
                 isAnnual ? "text-slate-500" : "text-slate-900"
               }`}
-              style={{ fontFamily: "sans-serif" }}
+             
             >
               Monthly
             </span>
 
             <button
               onClick={() => setIsAnnual(!isAnnual)}
-              className="relative inline-flex h-10 w-20 items-center 
+              className="relative inline-flex h-9 w-20 items-center 
           rounded-full bg-slate-700 shadow-inner transition-colors 
           focus:outline-none shrink-0"
             >
               <div
-                className={`absolute left-1 top-1 h-8 w-8 rounded-full
+                className={`absolute left-1 top-1 h-7 w-8 rounded-full
                    bg-white shadow transition-transform duration-300 
                    ease-in-out ${
                      isAnnual ? "translate-x-10" : "translate-x-0"
@@ -138,12 +138,12 @@ export default function PricingPage() {
               className={`text-lg font-bold transition-color ${
                 isAnnual ? "text-slate-900" : "text-slate-500"
               }`}
-              style={{ fontFamily: "sans-serif" }}
+             
             >
               Annually{" "}
               <span
-                className="text-orange-500"
-                style={{ fontFamily: "sans-serif" }}
+                className="text-green-500"
+                
               >
                 (save 15%)
               </span>
@@ -191,7 +191,7 @@ export default function PricingPage() {
                       <CardHeader className="text-left pb-4">
                         <CardTitle
                           className="text-3xl font-semibold tracking-tight text-zinc-900"
-                          style={{ fontFamily: "sans-serif" }}
+                          
                         >
                           {plan.title}
                         </CardTitle>
@@ -199,13 +199,13 @@ export default function PricingPage() {
                         <div className="mt-2 flex items-baseline gap-1">
                           <span
                             className="text-4xl font-semibold tracking-tight text-zinc-900"
-                            style={{ fontFamily: "sans-serif" }}
+                         
                           >
                             ${isAnnual ? plan.pricePerYear : plan.pricePerMonth}
                           </span>
                           <span
                             className="text-[14px] text-zinc-900 font-medium"
-                            style={{ fontFamily: "sans-serif" }}
+                            
                           >
                             /{label}
                           </span>
@@ -213,7 +213,7 @@ export default function PricingPage() {
 
                         <CardDescription
                           className="mt-1 text-[15px] text-zinc-400 leading-relaxed"
-                          style={{ fontFamily: "sans-serif" }}
+                       
                         >
                           {plan.description}
                         </CardDescription>
@@ -224,13 +224,13 @@ export default function PricingPage() {
                           {(plan.features || []).map((feature, index) => (
                             <li key={index} className="flex items-start gap-3">
                               <span className="grid place-items-center h-7 w-7 rounded-full bg-blue-100 flex-shrink-0">
-                                <span className="text-orange-500 text-[16px] font-extrabold leading-none translate-y-[1px]">
+                                <span className="text-[#e0332c] text-[16px] font-extrabold leading-none translate-y-[1px]">
                                   🗸
                                 </span>
                               </span>
                               <span
                                 className="text-[16px] text-zinc-700 leading-relaxed"
-                                style={{ fontFamily: "sans-serif" }}
+                              
                               >
                                 {feature}
                               </span>
@@ -245,9 +245,9 @@ export default function PricingPage() {
                         onClick={() => setSelectedId(plan.id)}
                         className={[
                           "w-full h-12 text-base font-medium transition-colors duration-300 ease-out",
-                          "border border-orange-200 text-orange-600 bg-[#feefe8]",
-                          "hover:bg-[#ff4d1d] hover:text-white hover:border-[#ff4d1d]",
-                          "group-hover:bg-[#ff4d1d] group-hover:text-white group-hover:border-[#ff4d1d]",
+                          "border border-red-200 text-[#e0332c] bg-[#feefe8]",
+                          "hover:bg-[#ff001e] hover:text-white hover:border-[#ff4d1d]",
+                          "group-hover:bg-[#e0332c] group-hover:text-white group-hover:border-[#ff4d1d]",
                           "focus:outline-none focus:ring-0 active:outline-none active:ring-0",
                           "focus-visible:outline-none focus-visible:ring-0",
                           "active:bg-orange-50 active:text-orange-600 active:border-orange-300",
