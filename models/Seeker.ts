@@ -7,6 +7,8 @@ const SeekerSchema = new Schema(
     name: { type: String },
    email: { type: String, unique: true, sparse: true },
 phoneNumber: { type: String, unique: true, sparse: true },
+countryCode: { type: String },
+country: { type: String },
     companyName: { type: String },
     position: { type: String },
     industry: { type: String },

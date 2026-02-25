@@ -70,6 +70,7 @@ import {
   Target,
   Heart,
   SeparatorVertical as Separator,
+  SquarePen,
 } from "lucide-react";
 import {
   mockRequirements,
@@ -110,6 +111,16 @@ import {
 } from "@/components/ui/popover";
 import { authFetch } from "@/lib/auth-fetch";
 import ServiceDropdown from "@/components/select-category-filter";
+const statusOptions = [
+  "All",
+  "UnderReview",
+  "NotApproved",
+  "Open",
+  "Closed",
+  "shortlisted",
+  "negotation",
+  "Allocated",
+];
 
 const ProjectsPage = () => {
   const { user, loading } = useAuth();
@@ -149,6 +160,14 @@ const ProjectsPage = () => {
 
   const [filterStatus, setFilterStatus] = useState<string>("all");
 
+  const [searchTerm, setSearchTerm] = useState("");
+const [selectedStatus, setSelectedStatus] = useState("");
+const [selectedCategory, setSelectedCategory] = useState("");
+const [startDate, setStartDate] = useState("");
+const [startInputType, setStartInputType] = useState<"text" | "date">("text");
+const [endDate, setEndDate] = useState("");
+const [endInputType, setEndInputType] = useState<"text" | "date">("text");
+
   const [showCreateProject, setShowCreateProject] = useState(false);
   const [editingProject, setEditingProject] = useState<any>(null);
   const [formData, setFormData] = useState({
@@ -180,9 +199,9 @@ const ProjectsPage = () => {
   >(null);
 
   const [requirements, setRequirements] = useState<Requirement[]>([]);
-  const [filteredRequirements, setFilteredRequirements] = useState<
-    Requirement[]
-  >([]);
+  // const [filteredRequirements, setFilteredRequirements] = useState<
+  //   Requirement[]
+  // >([]);
   const [responseLoading, setResponseLoading] = useState(false);
   const [failed, setFailed] = useState(false);
   //for sending the form staus
@@ -197,7 +216,7 @@ const ProjectsPage = () => {
       const response = await authFetch(`/api/requirements/${userId}`, {credentials: "include" });
       const data = await response.json();
       setRequirements(data.requirements);
-      setFilteredRequirements(data.requirements);
+      // setFilteredRequirements(data.requirements);
 
        
 
@@ -472,19 +491,56 @@ const ProjectsPage = () => {
         return "bg-gray-100 text-gray-800";
     }
   };
-  console.log("Fetched Requirements:::", requirements);
+ 
+  const filteredRequirements = requirements.filter((project) => {
 
-  useEffect(() => {
-    if (filterStatus === "all") {
-      setFilteredRequirements(requirements);
-    } else {
-      setFilteredRequirements(
-        requirements.filter(
-          (req) => req.status.toLowerCase() === filterStatus.toLowerCase(),
-        ),
-      );
-    }
-  }, [requirements, filterStatus]);
+  //  Search Filter
+  const matchesSearch =
+    project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    project.description?.toLowerCase().includes(searchTerm.toLowerCase());
+
+  //  Status Filter
+  const matchesStatus =
+  !selectedStatus || 
+  selectedStatus === "All" ||
+  project.status.toLowerCase() === selectedStatus.toLowerCase();
+
+  //  Category Filter
+  const matchesCategory =
+    !selectedCategory || project.category === selectedCategory;
+
+  //  Date Filter
+  const projectDate = new Date(project.createdAt);
+
+  const matchesStartDate =
+    !startDate || projectDate >= new Date(startDate);
+
+  const matchesEndDate =
+    !endDate || projectDate <= new Date(endDate);
+
+  return (
+    matchesSearch &&
+    matchesStatus &&
+    matchesCategory &&
+    matchesStartDate &&
+    matchesEndDate
+  );
+});
+
+  const [currentPage, setCurrentPage] = useState(1);
+const requirementsPerPage = 5; // 🔹 control this value
+
+const totalPages = Math.ceil(
+  (filteredRequirements?.length || 0) / requirementsPerPage
+);
+
+const startIndex = (currentPage - 1) * requirementsPerPage;
+const paginatedRequirements = filteredRequirements?.slice(
+  startIndex,
+  startIndex + requirementsPerPage
+);
+
+
 
   if (loading || responseLoading) {
     return (
@@ -508,199 +564,297 @@ const ProjectsPage = () => {
       </div>
     );
   }
+
   return (
-    <div className="space-y-3 ">
+    <div className="space-y-2 -mt-5">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center ">
         <div>
-          <h1 className="text-3xl font-bold text-[#F4561C] my-custom-class leading-6">
+          <h1 className="text-xl font-bold text-[#F4561C] my-custom-class leading-6">
             Projects
           </h1>
-          <p className="text-lg text-[#656565] font-normal my-custom-class mt-0">
+          <p className="text-md text-[#656565] font-normal my-custom-class mt-0">
             Manage your projects and track progress
           </p>
         </div>
         <Button
-          onClick={() => setShowCreateProject(true)}
-          className="bg-[#000] text-xs mt-2 md:mt-0 rounded-full "
+          onClick={() => router.push("/client/dashboard/post-requirement")}
+          className="bg-[#000] h-[35px] text-xs mt-2 md:mt-0 rounded-full "
         >
           <Plus className="h-4 w-4" />
           Add New Project
         </Button>
       </div>
 
-      <div className="grid gap-6 border-1 px-4 py-4 md:px-8 md:py-7 bg-[#FAFAFA] border-[#E6E2E2] bg-[#fff] rounded-3xl">
-        <Select
-          onValueChange={(value) => setFilterStatus(value)}
-          value={filterStatus}
-        >
-          <SelectTrigger
-             className={`
-                      border-2
-                      border-[#b2b2b2]
-                      cursor-pointer
-                      rounded-[8px]
-                      shadow-none
-                      focus:ring-0
-                      max-w-[150px]
-                      
-                      px-3
-                      h-11 
-                      text-sm
-                      data-[placeholder]:text-[#98A0B4]
-                    `}
-          >
-            <SelectValue placeholder="Rating" />
-          </SelectTrigger>
+      <div className="w-full bg-white border rounded-xl p-2   lg:p-5 mb-3">
+        {/* search filters section*/}
+        <div className="flex flex-row lg:grid lg:grid-cols-5 gap-3 items-center max-w-[96vw] overflow-x-auto">
 
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="underreview">UnderReview</SelectItem>
-            <SelectItem value="open">Open</SelectItem>
-            <SelectItem value="shortlisted">Shortlisted</SelectItem>
-            <SelectItem value="negotation">Negotiation</SelectItem>
-            <SelectItem value="allocated">Allocated</SelectItem>
-            <SelectItem value="closed">Closed</SelectItem>
-             <SelectItem value="notapproved">NotApproved</SelectItem>
-          </SelectContent>
-        </Select>
-        {(filteredRequirements || []).length !== 0 &&
-          filteredRequirements.map((project) => (
-            <Card
-              key={project._id}
-              className="border-1 px-0 border-[#CFCACA] rounded-2xl"
+          {/*  Search */}
+          <div className="relative min-w-[150px] lg:min-w-0">
+            <input
+              type="text"
+              placeholder="Search projects..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full h-[35px] mt-0.5 placeholder:text-gray-300 placeholder:text-sm border border-[#D0D5DD] rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none"
+            />
+            <svg
+              className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
             >
-              <CardContent className="px-4 md:px-6 py-0">
-                <div className="flex justify-between items-start mb-3">
-                  <Badge className="bg-[#F54A0C] text-xs rounded-full">
-                    {project.proposals} proposals recieved
-                  </Badge>
-                  <Badge
-                    className={`text-xs rounded-full ${getBgColor(project.status)}`}
-                    // variant={
-                    //   project.status === "Completed"
-                    //     ? "default"
-                    //     : project.status === "In Progress"
-                    //       ? "secondary"
-                    //       : "outline"
-                    // }
-                  >
-                    {project.status}
-                  </Badge>
-                </div>
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex-1">
-                    <h3 className="text-2xl font-bold mb-2 text-[#2C34A1]">
-                      {project.title}
-                    </h3>
-                    <p className="text-md text-[#898383] font-normal mb-3 line-clamp-2">
-                      {project.description}
-                    </p>
-                    <div className="flex items-center gap-4 text-sm flex-wrap text-muted-foreground">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                        <HiCurrencyDollar color="#F54A0C" className="h-8 w-8" />
-                        <span className="text-[14px] font-bold text-[#000]">{`$ ${project.budgetMin} - $ ${project.budgetMax}`}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2 ">
-                        <div className="bg-[#F54A0C] rounded-[50%] flex justify-center items-center h-6 w-6">
-                          <GoTag color="#fff" className="h-4 w-4" />
-                        </div>
-                        <span className="text-[14px] font-bold text-[#000]">
-                          {project.category}
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </div>
+
+          {/*  Status Filter */}
+          <div className="min-w-[150px] lg:min-w-0">
+          <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className={`w-full h-[35px] border mt-0.5 border-[#D0D5DD] rounded-lg px-3 py-2 text-sm focus:outline-none ${
+                !selectedStatus ? "text-gray-300" : "text-black"
+              }`}
+            >
+              <option value="" disabled hidden>
+                Select Status
+              </option>
+
+              {statusOptions.map((status) => (
+                <option key={status} value={status} className="text-[#000]">
+                  {status}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Category Filter */}
+          <div className="min-w-[150px] lg:min-w-0">
+            <ServiceDropdown
+              value={selectedCategory}
+              onChange={(value) => setSelectedCategory(value)}
+              triggerClassName="border -mt-0 border-[#D0D5DD] text-[#000000] rounded-lg p-2"
+              triggerSpanClassName="text-[#98A0B4] text-sm"
+            />
+          </div>
+
+          {/*  Start Date */}
+          <div className="min-w-[150px] lg:min-w-0 ">
+            <input
+              type={startInputType}
+              value={startDate}
+              max={endDate}
+              placeholder="Select start date"
+              onFocus={() => setStartInputType("date")}
+              onBlur={() => {
+                if (!startDate) setStartInputType("text");
+              }}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="placeholder:text-gray-300 placeholder:text-sm w-full -mt-0.5 h-[35px] border border-[#D0D5DD] rounded-lg p-2  text-sm focus:outline-none"
+            />
+          </div>
+
+          {/*  End Date */}
+          <div className="min-w-[150px] lg:min-w-0">
+            <input
+              type={endInputType}
+              value={endDate}
+              min={startDate}
+              placeholder="Select end date"
+              onFocus={() => setEndInputType("date")}
+              onBlur={() => {
+                if (!endDate) setEndInputType("text");
+              }}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="placeholder:text-gray-300 placeholder:text-sm w-full -mt-0.5 h-[35px] border border-[#D0D5DD] rounded-lg  p-2 text-sm focus:outline-none"
+            />
+          </div>
+
+          {/* <div>
+            <Button className="bg-black rounded-[8px] h-[30px] w-[60px] mt-0" onClick={()=>{
+          setSearchTerm("");
+         setSelectedStatus(""); // fixed
+          setSelectedCategory("");
+          setStartDate("");
+          setStartInputType("text");
+          setEndDate("");
+          setEndInputType("text");
+        }}>
+          clear 
+        </Button>
+          </div> */}
+
+        </div>
+        <Button className="bg-black rounded-[8px] h-[30px] w-[60px] mt-1" onClick={()=>{
+          setSearchTerm("");
+         setSelectedStatus(""); // fixed
+          setSelectedCategory("");
+          setStartDate("");
+          setStartInputType("text");
+          setEndDate("");
+          setEndInputType("text");
+        }}>
+          clear 
+        </Button>
+        
+      </div>
+      <div>
+        {/* projects table */}
+        {(filteredRequirements || []).length !== 0 ? (
+          <>
+            <div className="overflow-x-auto max-w-[96vw]  border rounded-xl">
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-gray-100 text-sm text-gray-600">
+                  <tr>
+                    <th className="p-4">Created</th>
+                    <th className="p-4">Title</th>
+                    <th className="p-4">Budget</th>
+                    <th className="p-4">Category</th>
+                    <th className="p-4">Proposals</th>
+                    <th className="p-4">Status</th>
+                    
+                    <th className="p-4 text-center">Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {paginatedRequirements?.map((project) => (
+                    <tr key={project._id} className="border-t text-sm">
+
+                      {/* Created */}
+                      <td className="p-4 text-xs">
+                        {new Date(project.createdAt)
+                          .toISOString()
+                          .split("T")[0]}
+                      </td>
+
+                      {/* Title */}
+                      <td className="p-4 text-xs font-semibold text-[#2C34A1]">
+                        {project.title}
+                      </td>
+
+                      {/* Budget */}
+                      <td className="p-4 text-xs">
+                        $ {project.budgetMin} - $ {project.budgetMax}
+                      </td>
+
+                      {/* Category */}
+                      <td className="p-4 text-xs">{project.category}</td>
+
+                      {/* Proposals */}
+                      <td className="p-4 text-xs">{project.proposals}</td>
+
+                      {/* Status */}
+                      <td className="p-4 text-xs">
+                        <span
+                          className={`px-3 py-1 text-xs rounded-full ${getBgColor(
+                            project.status
+                          )}`}
+                        >
+                          {project.status === "NotApproved"
+                            ? "Rejected"
+                            : project.status}
                         </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2 ">
-                        <div className="bg-[#F54A0C] rounded-[50%] flex justify-center items-center h-6 w-6">
-                          <CiCalendar
-                            color="#ffffff"
-                            className="h-4 w-4 font-bold"
-                          />
+                      </td>
+
+                      
+
+                      {/* Actions */}
+                      <td className="p-4">
+                        <div className="flex gap-2 justify-center flex-wrap">
+
+                          {/* 🔹 View Proposals */}
+                          {project.status.toLowerCase() !== "closed" &&
+                            project.status.toLowerCase() !== "completed" &&
+                            project.status.toLowerCase() !== "underreview" && (
+                              <div
+                                className="flex items-center gap-1 cursor-pointer"
+                                onClick={() =>
+                                  router.push(
+                                    `/client/dashboard/projects/${project._id}`
+                                  )
+                                }
+                                
+                              >
+                                <Eye size={15} color="#000"/>
+                              </div>
+                            )}
+
+                          {/* 🔹 Edit */}
+                          {(project.status.toLowerCase() === "underreview" ||
+                            project.status.toLowerCase() === "notapproved") && (
+                            <div
+                              
+                              onClick={() => handleEditProject(project)}
+                              className="flex items-center gap-1 cursor-pointer"
+                            >
+                              <SquarePen size={15} />
+                            </div>
+                          )}
+
+                          {/* 🔹 Submit Review */}
+                          {(project.status.toLowerCase() === "closed" ||
+                            project.status.toLowerCase() === "completed") &&
+                            !project?.isReviewed && (
+                              <Button
+                                size="sm"
+                                onClick={() => {
+                                  setReviewSubmissionProjectId(project._id);
+                                  setShowReviewModal(true);
+                                }}
+                                className="bg-[#00C951] rounded-[8px] text-white text-xs"
+                              >
+                                Submit Review
+                              </Button>
+                            )}
                         </div>
-                        <span className="text-[14px] font-bold text-[#000]">
-                          Created :{" "}
-                          {
-                            new Date(project.createdAt)
-                              .toISOString()
-                              .split("T")[0]
-                          }
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {/* <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleEditProject(project)}>
-                              <Edit className="h-4 w-4 mr-2" />
-                              Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleDeleteProject(project.id)}>
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu> */}
-                  </div>
-                </div>
-                <div className="flex justify-between items-center">
-                  {
-                   project.status.toLowerCase() !== "closed" &&
-                    project.status.toLowerCase() !== "completed" && 
-                    project.status.toLowerCase()!="underreview" && (
-                      <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      router.push(`/client/dashboard/projects/${project._id}`)
-                    }
-                    className="bg-[#2C34A1] text-xs rounded-full text-[#fff]  hover:bg-[#2C34A1] h-[40px]"
-                  >
-                    View Proposals
-                    <FaArrowRightLong className="h-1 w-1" color="#fff" />
-                  </Button>
-                    )
-                  }
-                  {(project.status.toLowerCase() === "underreview" ||
-                    project.status.toLowerCase() === "notapproved") &&
-                    (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEditProject(project)}
-                        className="bg-[#000] text-sm rounded-full text-[#fff]  hover:bg-[#000] w-[100px] h-[40px]"
-                      >
-                        Edit
-                      </Button>
-                    )}
-                  {(project.status.toLowerCase() === "closed" ||
-                    project.status.toLowerCase() === "completed") &&
-                    !project?.isReviewed && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setReviewSubmissionProjectId(project._id);
-                          setShowReviewModal(true);
-                        }}
-                        className="bg-[#00C951] text-sm rounded-full text-[#fff]  hover:bg-[#00C951] w-[140px]  h-[40px]"
-                      >
-                        Submit Review
-                      </Button>
-                    )}
-                </div>
-                
-                {
-              (project.status==="NotApproved") && (
-                <p className="teext-md text-red-500 mt-5">{project?.notApprovedMsg}</p>
-              )
-              }
-              </CardContent>
-            </Card>
-          ))}
+
+                        {/* Rejection Message */}
+                        {project.status === "NotApproved" && (
+                          <p className="text-[10px] text-red-500 mt-2">
+                            {project?.notApprovedMsg}
+                          </p>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* ✅ Pagination */}
+            <div className="flex justify-center items-center gap-3 mt-6">
+              <Button
+                size="sm"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((prev) => prev - 1)}
+              >
+                Prev
+              </Button>
+
+              <span className="text-sm font-medium">
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <Button
+                size="sm"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((prev) => prev + 1)}
+              >
+                Next
+              </Button>
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-col justify-center items-center text-center py-10">
+            <p className="text-lg text-[#656565] font-normal mb-4">
+              No projects available
+            </p>
+          </div>
+        )}
       </div>
 
       {showCreateProject && (
