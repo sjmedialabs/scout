@@ -46,9 +46,9 @@ export default function ServiceDropdown({
             rounded-none shadow-none focus:outline-none cursor-pointer
              w-full text-sm md:text-base h-12  px-3
             ${triggerClassName}
-          `}
+        `}
         >
-          <span className={` ${triggerSpanClassName}`}>
+          <span className={` ${triggerSpanClassName} ${!value ? "text-gray-300" : "text-gray-900"}`}>
             {value || placeholder}
           </span>
         </SelectTrigger>

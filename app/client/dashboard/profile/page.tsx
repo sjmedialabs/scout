@@ -63,6 +63,28 @@ import {
   SeparatorVertical as Separator,
 } from "lucide-react";
 import { ImageUpload } from "@/components/ui/image-upload";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import { isValidPhoneNumber } from "libphonenumber-js";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
+import { cn } from "@/lib/utils";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+
+import { TimezoneCombobox, TimezoneSearchableSelect } from "@/components/seeker/searchableTimezone";
+
+
+
 
 const styles = {
   input:
@@ -84,6 +106,7 @@ const styles = {
 };
 
 const ClientProfilePage = () => {
+  const timeZones = Intl.supportedValuesOf("timeZone");
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [userDetails, setUserDetails] = useState();
   const [responseLoading, setResponseLoading] = useState(true);
@@ -135,12 +158,42 @@ const ClientProfilePage = () => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-  const isValidPhone = (phone: string) => {
-    return /^[6-9]\d{9}$/.test(phone); // Indian phone numbers
-  };
+ const isValidPhone = (phone: string) => {
+  return isValidPhoneNumber("+" + phone);
+};
 
   const isValidURL = (url: string) => {
   return /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/\S*)?$/.test(url);
+};
+
+const getFormattedPhone = () => {
+  if (!profileData.phoneNumber) return null;
+
+  let phone = profileData.phoneNumber.trim();
+
+  // Remove "+" if exists
+  if (phone.startsWith("+")) {
+    phone = phone.slice(1);
+  }
+
+  // If countryCode exists
+  if (profileData.countryCode) {
+    const code = profileData.countryCode;
+
+    // If phone already starts with countryCode → remove it
+    if (phone.startsWith(code)) {
+      phone = phone.slice(code.length);
+    }
+
+    return `+${code} ${phone}`;
+  }
+
+  // If no countryCode → assume India
+  if (phone.startsWith("91")) {
+    phone = phone.slice(2);
+  }
+
+  return `+91 ${phone}`;
 };
 
   const handleSaveProfile = async () => {
@@ -161,7 +214,7 @@ const ClientProfilePage = () => {
 
       // 🔹 Phone validation
       if (!isValidPhone(profileData.phoneNumber)) {
-        toast.error("Please enter a valid 10-digit phone number");
+        toast.error("Please enter a valid phone number");
         return;
       }
 
@@ -405,31 +458,43 @@ const ClientProfilePage = () => {
               </div>
 
               <div className="space-y-2">
-                <Label
-                  htmlFor="phone"
-                  className={styles.label}
-                >
-                  Phone Number
-                </Label>
-                {isEditingProfile ? (
-                  <Input
-                    id="phone"
-                    className={styles.input}
-                    placeholder="Enter your phone number"
-                    value={profileData.phoneNumber}
-                    onChange={(e) =>
-                      handleProfileUpdate("phoneNumber", e.target.value)
-                    }
-                  />
-                ) : (
-                  <div className={`${styles.inputCardContainer} ${!profileData.phoneNumber ? "text-gray-300":""}`}>
-                    {" "}
-                    <p className={styles.paraTag}>
-                      {profileData.phoneNumber || "No phone number provided"}
-                    </p>
-                  </div>
-                )}
-              </div>
+  <Label htmlFor="phone" className={styles.label}>
+    Phone Number
+  </Label>
+
+  {isEditingProfile ? (
+    <PhoneInput
+      country={"in"} // default country
+      enableSearch={true}
+      value={profileData.phoneNumber}
+      onChange={(value, country: any) => {
+        handleProfileUpdate("phoneNumber", value);
+        handleProfileUpdate("countryCode", country.dialCode);
+        handleProfileUpdate("country", country.name);
+      }}
+      inputStyle={{
+        width: "100%",
+        height: "40px",
+      }}
+      containerStyle={{
+        width: "100%",
+      }}
+      inputClass={styles.input}
+    />
+  ) : (
+    <div
+  className={`${styles.inputCardContainer} ${
+    !profileData.phoneNumber ? "text-gray-300" : ""
+  }`}
+>
+  <p className={styles.paraTag}>
+    {profileData.phoneNumber
+      ? getFormattedPhone()
+      : "No phone number provided"}
+  </p>
+</div>
+  )}
+</div>
 
               <div className="space-y-2">
                 <Label
@@ -611,52 +676,28 @@ const ClientProfilePage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label
-                  htmlFor="timezone"
-                  className={styles.label}
-                >
-                  Timezone
-                </Label>
-                {isEditingProfile ? (
-                  <Select
-                    value={profileData.timeZone}
-                    onValueChange={(value) =>
-                      handleProfileUpdate("timeZone", value)
-                    }
-                  >
-                    <SelectTrigger className={`${styles.input} data-[placeholder]:text-gray-300`}>
-                      <SelectValue  placeholder="Select timezone"/>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="America/Los_Angeles">
-                        Pacific Time (PT)
-                      </SelectItem>
-                      <SelectItem value="America/Denver">
-                        Mountain Time (MT)
-                      </SelectItem>
-                      <SelectItem value="America/Chicago">
-                        Central Time (CT)
-                      </SelectItem>
-                      <SelectItem value="America/New_York">
-                        Eastern Time (ET)
-                      </SelectItem>
-                      <SelectItem value="Europe/London">GMT</SelectItem>
-                      <SelectItem value="Europe/Paris">CET</SelectItem>
-                      <SelectItem value="Asia/Tokyo">JST</SelectItem>
-                      <SelectItem value="Asia/Kolkata">
-                        Indian Standard Time (IST)
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <div className={`${styles.inputCardContainer} ${!profileData.timeZone ? "text-gray-300":""}`}>
-                    {" "}
-                    <p className={styles.paraTag}>
-                      {profileData.timeZone || "No timezone provided"}
-                    </p>
-                  </div>
-                )}
-              </div>
+  <Label htmlFor="timezone" className={styles.label}>
+    Timezone
+  </Label>
+
+  {isEditingProfile ? (
+   <TimezoneSearchableSelect
+  value={profileData.timeZone}
+  onChange={(value) => handleProfileUpdate("timeZone", value)}
+  timeZones={timeZones}
+/>
+  ) : (
+    <div
+      className={`${styles.inputCardContainer} ${
+        !profileData.timeZone ? "text-gray-300" : ""
+      }`}
+    >
+      <p className={styles.paraTag}>
+        {profileData.timeZone || "No timezone provided"}
+      </p>
+    </div>
+  )}
+</div>
 
               <div className="space-y-2">
                 <Label

@@ -410,13 +410,13 @@ const textareaClass =
                           <CardContent className=" px-5 py-6">
                             <div className="flex flex-col lg:flex-row lg:justify-start gap-4">
                               {/* Left Image */}
-                              <div className="max-h-[300px] max-w-100 lg:max-h-[100%] lg:max-w-[300px] rounded-[18px] overflow-hidden shrink-0">
-                                <img
-                                  src={proposal.agency.coverImage || "/proposal.jpg"}
-                                  alt={proposal.agency.name}
-                                  className="h-full w-full object-cover"
-                                />
-                              </div>
+                              <div className="w-full lg:w-[300px] rounded-[18px] overflow-hidden shrink-0 self-stretch">
+                                  <img
+                                    src={proposal.agency.coverImage || "/proposal.jpg"}
+                                    alt={proposal.agency.name}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
 
                               {/* Right Content */}
                               <div>

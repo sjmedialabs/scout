@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState,useEffect } from "react"
 import { LogOut, PanelLeft } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { useRouter, usePathname } from "next/navigation"
@@ -40,12 +40,18 @@ import {
 
 const menuItems: MenuItem[] = [
   {
+    id: "dashboard",
+    label: "DASHBOARD",
+    icon: Home,
+    path: "/client/dashboard", // ✅ Direct path (no children)
+  },
+  {
     id: "overview",
     label: "OVERVIEW",
     icon: Home,
     children: [
-      { id: "dashboard", label: "Dashboard", icon: Home, path: "/client/dashboard" },
-      { id: "profile", label: "Profile", icon: User, path: "/client/dashboard/profile" },
+      // { id: "dashboard", label: "Dashboard", icon: Home, path: "/client/dashboard" },
+      // { id: "profile", label: "Profile", icon: User, path: "/client/dashboard/profile" },
       // { id: "requirements", label: "My Requirements", icon: FileText, path: "/client/dashboard/requirements" },
       { id: "proposals", label: "Proposals", icon: MessageSquare, path: "/client/dashboard/proposals" },
       { id: "projects", label: "Projects", icon: Briefcase, path: "/client/dashboard/projects" },
@@ -58,19 +64,19 @@ const menuItems: MenuItem[] = [
     label: "PERFORMANCE",
     icon: BarChart3,
     children: [
-      { id: "analytics", label: "Project Analytics", icon: TrendingUp, path: "/client/dashboard/analytics" },
+      // { id: "analytics", label: "Project Analytics", icon: TrendingUp, path: "/client/dashboard/analytics" },
       { id: "provider-comparison", label: "Provider Comparison", icon: GitCompare, path: "/client/dashboard/provider-comparison" },
       { id: "wishlist", label: "Wish List", icon: Eye, path: "/client/dashboard/wishlist" },
     ],
   },
-  {
-    id: "account-settings",
-    label: "SETTINGS",
-    icon: Settings,
-    children: [
-      { id: "notifications", label: "Notifications", icon: Bell, path: "/client/dashboard/notifications" },
-    ],
-  },
+  // {
+  //   id: "account-settings",
+  //   label: "SETTINGS",
+  //   icon: Settings,
+  //   children: [
+  //     { id: "notifications", label: "Notifications", icon: Bell, path: "/client/dashboard/notifications" },
+  //   ],
+  // },
 ]
 
 export default function ClientSidebar({
@@ -88,6 +94,20 @@ export default function ClientSidebar({
 
   const [expandedSections, setExpandedSections] = useState<string[]>([])
   const [collapsed, setCollapsed] = useState(false)
+
+  useEffect(() => {
+  const handleResize = () => {
+    if (window.innerWidth < 1024) {
+      setCollapsed(false)
+    }
+  }
+
+  // Run once on mount
+  handleResize()
+
+  window.addEventListener("resize", handleResize)
+  return () => window.removeEventListener("resize", handleResize)
+}, [])
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections((prev) =>
@@ -184,18 +204,27 @@ export default function ClientSidebar({
               <div key={section.id}>
                 {/* Parent */}
                 <button
-                  onClick={() => toggleSection(section.id)}
+                  onClick={() => {
+                    if (section.path) {
+                      router.push(section.path)
+                      onClose()
+                    } else {
+                      toggleSection(section.id)
+                    }
+                  }}
                   className="w-full cursor-pointer flex items-center justify-between p-3 text-sm font-medium rounded-lg"
                 >
-                  <div className={cn(
-                    "flex items-center gap-3 text-white",
-                    collapsed && "justify-center w-full"
-                  )}>
+                  <div
+                    className={cn(
+                      "flex items-center gap-3 text-white",
+                      collapsed && "justify-center w-full"
+                    )}
+                  >
                     <section.icon className="h-4 w-4" />
                     {!collapsed && section.label}
                   </div>
 
-                  {!collapsed &&
+                  {!collapsed && section.children &&
                     (expandedSections.includes(section.id) ? (
                       <ChevronDown className="h-4 w-4 text-white" />
                     ) : (
@@ -239,7 +268,7 @@ export default function ClientSidebar({
 
         {/* Footer */}
         <div className="p-4 bg-[#3C3A3E] flex flex-col gap-2">
-          <Button
+          {/* <Button
             size="sm"
             className={cn(
               "rounded-2xl bg-[#2C34A1] text-white border-none hover:bg-[#232a85] flex items-center justify-center",
@@ -253,7 +282,7 @@ export default function ClientSidebar({
           >
             <Plus className="h-4 w-4" />
             {!collapsed && <span className="ml-2">Post Requirement</span>}
-          </Button>
+          </Button> */}
 
           <Button
             size="sm"
