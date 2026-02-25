@@ -4,7 +4,7 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardHeader,
+  CardHeader, 
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -245,8 +245,8 @@ const AnalyticsPage = () => {
           <div className="flex items-center gap-6 p-4 border shadow rounded-xl">
             <div className="w-30 font-semibold text-lg">Submissions</div>
             <div className="flex-1">
-              <div className="w-full bg-muted rounded-full h-10">
-                <div className="h-7 rounded-full bg-green-600 flex items-center justify-center text-white font-semibold">
+              <div className="w-full bg-gray-300 rounded-full h-6">
+                <div className="h-6 rounded-full bg-green-600 flex items-center justify-center text-white font-normal text-sm">
                   {proposalStats.submissions} Proposals
                 </div>
               </div>
@@ -257,9 +257,9 @@ const AnalyticsPage = () => {
           <div className="flex items-center gap-6 p-4 shadow border rounded-xl">
             <div className="w-30 font-semibold text-lg">Responses</div>
             <div className="flex-1">
-              <div className="w-full bg-muted rounded-full h-10">
+              <div className="w-full bg-gray-300 rounded-full h-6">
                 <div
-                  className="h-7 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold"
+                  className="h-6 rounded-full bg-blue-500 flex items-center justify-center text-white font-normal text-sm"
                   style={{
                     width: `${proposalStats.responsePercentage}%`,
                   }}
@@ -274,10 +274,10 @@ const AnalyticsPage = () => {
           <div className="flex items-center gap-6 p-4 border shadow rounded-xl">
             <div className="w-30 font-semibold text-lg">Won Projects</div>
             <div className="flex-1">
-              <div className="w-full bg-muted rounded-full h-10">
+              <div className="w-full bg-gray-300 rounded-full h-6">
                 <div
-                  className="h-7 rounded-full bg-teal-400 flex items-center justify-center 
-                            text-white font-semibold whitespace-nowrap px-4"
+                  className="h-6 rounded-full bg-teal-400 flex items-center justify-center 
+                            text-white font-normal text-sm whitespace-nowrap px-4"
                   style={{
                     width: `${proposalStats.winsPercentage}%`,
                     minWidth: "140px",

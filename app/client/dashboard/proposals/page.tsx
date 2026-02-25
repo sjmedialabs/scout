@@ -672,8 +672,8 @@ console.log("Filtered Proposals:::::::",filteredProposals)
         </button>  */}
       </div>
 
-      <Card className="bg-[#fff] py-0 rounded-[22px]">
-        <CardContent className="p-4 px-2 sm:px-6">
+      <div >
+        <div className="sm:px-6">
           {selectedRequirement ? (
             <ProposalList
               // proposals={getProposalsForRequirement(selectedRequirement)}
@@ -688,7 +688,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
               {/*Filterss block */}
               {
                 (projectTitles.length>=1) && (
-                  <div className="flex flex-row     gap-4 overflow-x-auto mx-1 lg:mx-3">
+                  <div className="flex flex-row     gap-4 overflow-x-auto mx-1 mb-2 lg:mx-3">
                     <div className="mb-2 md:mb-0">
                       {/* <p className="text-md text-gray-500 ml-2">Proposal Status</p> */}
                       <Select
@@ -1012,8 +1012,8 @@ console.log("Filtered Proposals:::::::",filteredProposals)
               </div>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
           {/*Negotaatiion Modal */}
 
            {showNegotationModal && (

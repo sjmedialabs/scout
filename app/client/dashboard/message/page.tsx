@@ -533,20 +533,20 @@ useEffect(() => {
   return (
   <div className="space-y-2 -mt-2">
     {/* Header */}
-    <div>
+    {/* <div>
       <h1 className="text-xl lg:text-3xl font-bold text-orangeButton my-custum-class">
         Messages
       </h1>
       <p className="text-gray-500 text-md lg:text-xl">
         Manage your conversations and project inquiries
       </p>
-    </div>
+    </div> */}
 
-    <div className="grid lg:grid-cols-[340px_1fr] gap-6 min-h-[100vh]">
+    <div className="grid lg:grid-cols-[340px_1fr]  gap-6">
 
       {/* ================= LEFT SIDEBAR ================= */}
       {(!isMobile || !isMobileChatOpen) && (
-        <Card className="rounded-2xl p-4  bg-white">
+        <Card className="rounded-2xl p-4 min-h-[90vh]  bg-white">
           <div className="h-4">
             <h3 className="font-semibold text-2xl mb-3">
               Messages{" "}
@@ -648,7 +648,7 @@ useEffect(() => {
           {!resLoading &&
           !failed &&
           dynamicActiveConversation ? (
-            <Card className="rounded-2xl px-1 flex flex-col bg-white border-0 shadow-none">
+            <Card className="rounded-2xl px-1 -mt-5 flex flex-col bg-white border-0 shadow-none">
 
               {/* Chat Header */}
               <div className="flex items-start flex-wrap justify-between bg-[#f9f9f9] px-6 py-4 border-b">
@@ -692,7 +692,7 @@ useEffect(() => {
               </div>
 
               {/* Chat Messages */}
-              <div className="flex-1 px-6 py-4 space-y-5 overflow-y-auto max-h-[60vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <div className="flex-1 px-6 py-0 space-y-5 overflow-y-auto max-h-[50vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 {!chatLaoding && (dynamicMessages || []).length !== 0 ? (
                   <div>
                     {dynamicMessages.map((msg: Message) => (
@@ -767,7 +767,7 @@ useEffect(() => {
               </div>
 
               {/* Message Input */}
-              <div className="px-6 py-4 border-t">
+              <div className="px-6 py-0 border-t">
                 <div className="mb-2">
                   {uploading && <span>Uploading...</span>}
                   {uplodedUrl.url && (
@@ -813,7 +813,7 @@ useEffect(() => {
                     placeholder="Message"
                     className="border-0 bg-transparent shadow-none placeholder:text-gray-400 focus-visible:ring-0"
                   />
-                  <Camera className="h-5 w-5 text-blue-600" />
+                  {/* <Camera className="h-5 w-5 text-blue-600" /> */}
                   {sendMsgLoading && (
                     <p className="text-gray-300 text-sm">sending...</p>
                   )}
