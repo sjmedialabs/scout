@@ -88,15 +88,15 @@ import { TimezoneCombobox, TimezoneSearchableSelect } from "@/components/seeker/
 
 const styles = {
   input:
-    "border-2 rounded-[8px] border-[#D0D5DD] placeholder:text-gray-300",
+    "border rounded-[8px] bg-[#f2f1f6] h-7 mt-0.5 border-[#D0D5DD] placeholder:text-gray-300",
  
-  label:"text-[#000000] font-normal text-sm mb-0 my-custom-class ml-1 -mb-0.5",
+  label:"text-[#000000] font-bold text-xs mb-0 my-custom-class ml-1 -mb-0.5",
 
   inputCardContainer:
-    "border-2 rounded-[8px] border-[#D0D5DD] placeholder:text-gray-300",
+    "border rounded-[8px] h-7 mt-0.5 bg-[#f2f1f6] border-[#D0D5DD] placeholder:text-gray-300",
 
   paraTag:
-    "text-sm py-2 my-custom-class ml-[10px]",
+    "text-xs py-1 my-custom-class ml-[10px]",
 
   descriptionText:
     "text-gray-500 text-sm",
@@ -268,14 +268,14 @@ const getFormattedPhone = () => {
   // }
 
   return (
-    <div className="space-y-3 -mt-5">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-[#c4c3c3] pb-2 gap-4 ">
+    <div className="space-y-3 -mt-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-[#c4c3c3] pb-2 gap-4 ">
         {/* Left section */}
         <div className="w-full">
           <h1 className="text-xl font-bold my-custom-class text-[#F54A0C] ">
             Profile Overview
           </h1>
-          <p className="text-[#656565] text-sm md:text-md my-custom-class font-normal">
+          <p className="text-[#656565] text-sm -mt-1 md:text-md my-custom-class font-normal">
             Manage your client profile information
           </p>
         </div>
@@ -287,7 +287,7 @@ const getFormattedPhone = () => {
               <Button
                 variant="outline"
                 onClick={handleCancelEdit}
-                className="h-[40px] w-[100px] rounded-3xl bg-[#E8E8E8]"
+                className="h-[30px] w-[100px] rounded-3xl bg-[#E8E8E8]"
               >
                 <LuCircleX className="h-4 w-4 mr-1" />
                 Cancel
@@ -295,7 +295,7 @@ const getFormattedPhone = () => {
 
               <Button
                 onClick={handleSaveProfile}
-                className="h-[40px] w-[140px] rounded-3xl bg-[#000]"
+                className="h-[30px] w-[140px] rounded-3xl bg-[#000]"
               >
                 <Save className="h-4 w-4 mr-1" />
                 Save Changes
@@ -304,7 +304,7 @@ const getFormattedPhone = () => {
           ) : (
             <Button
               onClick={() => setIsEditingProfile(true)}
-              className="h-[30px] w-[140px] rounded-3xl bg-[#000]"
+              className="h-[30px] w-[140px] rounded-3xl bg-[#000] hover"
             >
               <Edit className="h-4 w-4 mr-1" />
               Edit Profile
@@ -313,7 +313,7 @@ const getFormattedPhone = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 -mt-4">
         {/* Profile Overview Card */}
         <Card className="lg:col-span-1 bg-[#fff] rounded-[24px] ">
           <CardHeader>
@@ -321,7 +321,7 @@ const getFormattedPhone = () => {
               Profile Overview
             </CardTitle> */}
           </CardHeader>
-          <CardContent className="space-y-2 px-0 py-0 -mt-5">
+          <CardContent className="space-y-2 px-0 py-0 -mt-12">
             <div className="flex flex-col items-center text-center">
               {isEditingProfile ? (
                 <div className="space-y-2 m-5 items-center">
@@ -332,11 +332,11 @@ const getFormattedPhone = () => {
                       setProfileData({ ...profileData, image: value })
                     }
                     description="Upload your Profile image (PNG, JPG) or provide a URL"
-                    previewClassName="w-24 h-24"
+                    previewClassName="w-15 h-15"
                   />
                 </div>
               ) : (
-                <div className="h-[110px] w-[110px] rounded-full overflow-hidden  flex items-center justify-center">
+                <div className="h-[70px] w-[70px] rounded-full overflow-hidden  flex items-center justify-center">
                   <img
                     src={profileData.image || "/uploadImage.png"}
                     alt={profileData.name}
@@ -389,20 +389,20 @@ const getFormattedPhone = () => {
         </Card>
 
         {/* Profile Details */}
-        <Card className="lg:col-span-2 bg-[#fff] rounded-[24px]">
+        <Card className="lg:col-span-2 bg-[#fff] rounded-[24px] border-gray-100 shadow-md">
           <CardHeader>
-            <CardTitle className="-mt-3 text-[#F54A0C]  font-semibold text-[14px] my-custom-class">
+            <CardTitle className="-mt-3 text-[#e0332c] border-b border-b-gray-200 font-semibold text-[14px] my-custom-class">
               Profile Details
             </CardTitle>
-            <CardDescription className="text-[14px] font-normal text-[#656565] -mt-2 my-custom-class">
+            {/* <CardDescription className="text-[12px] font-normal text-[#656565] -mt-3 my-custom-class">
               {isEditingProfile
                 ? "Edit your profile information"
                 : "Your profile information"}
-            </CardDescription>
+            </CardDescription> */}
           </CardHeader>
-          <CardContent className="space-y-6 -mt-4">
+          <CardContent className="space-y-2 -mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <Label
                   htmlFor="name"
                   className={styles.label}
@@ -412,7 +412,7 @@ const getFormattedPhone = () => {
                 {isEditingProfile ? (
                   <Input
                     id="name"
-                    className={styles.input}
+                    className={`${styles.input} !text-xs`}
                     placeholder="Enter your full name"
                     value={profileData.name}
                     onChange={(e) =>
@@ -439,7 +439,7 @@ const getFormattedPhone = () => {
                 {isEditingProfile ? (
                   <Input
                     id="email"
-                    className={styles.input}
+                    className={`${styles.input} !text-xs`}
                     placeholder="Enter your company email"
                     type="email"
                     value={profileData.email}
@@ -474,12 +474,12 @@ const getFormattedPhone = () => {
       }}
       inputStyle={{
         width: "100%",
-        height: "40px",
+        height: "28px",
       }}
       containerStyle={{
         width: "100%",
       }}
-      inputClass={styles.input}
+      inputClass={`${styles.input} !text-xs`}
     />
   ) : (
     <div
@@ -506,7 +506,7 @@ const getFormattedPhone = () => {
                 {isEditingProfile ? (
                   <Input
                     id="company"
-                    className={styles.input}
+                    className={`${styles.input} !text-xs`}
                     placeholder="Enter your company name"
                     value={profileData.companyName}
                     onChange={(e) =>
@@ -533,7 +533,7 @@ const getFormattedPhone = () => {
                 {isEditingProfile ? (
                   <Input
                     id="position"
-                    className={styles.input}
+                    className={`${styles.input} !text-xs`}
                     placeholder="Enter your position in the company"
                     value={profileData.position}
                     onChange={(e) =>
@@ -564,7 +564,7 @@ const getFormattedPhone = () => {
                       handleProfileUpdate("industry", value)
                     }
                   >
-                    <SelectTrigger className={styles.input}>
+                    <SelectTrigger className={`${styles.input} !text-xs`}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -599,7 +599,7 @@ const getFormattedPhone = () => {
                 {isEditingProfile ? (
                   <Input
                     id="location"
-                    className={styles.input}
+                    className={`${styles.input} !text-xs`}
                     placeholder="Enter your city name"
                     value={profileData.location}
                     onChange={(e) =>
@@ -626,7 +626,7 @@ const getFormattedPhone = () => {
                 {isEditingProfile ? (
                   <Input
                     id="website"
-                    className={styles.input}
+                    className={`${styles.input} !text-xs`}
                     placeholder="htts://media.com"
                     value={profileData.website}
                     onChange={(e) =>
@@ -655,10 +655,10 @@ const getFormattedPhone = () => {
                 <Textarea
                   id="bio"
                   value={profileData.bio}
-                  className={styles.input}
+                  className={`${styles.input} !text-xs`}
                   placeholder="about your company"
                   onChange={(e) => handleProfileUpdate("bio", e.target.value)}
-                  rows={4}
+                  rows={2}
 
                   
                   placeholder="Tell us about yourself and your company..."
@@ -713,7 +713,7 @@ const getFormattedPhone = () => {
                       handleProfileUpdate("preferredCommunication", value)
                     }
                   >
-                    <SelectTrigger className={`${styles.input} data-[placeholder]:text-gray-300`}>
+                    <SelectTrigger className={`${styles.input} data-[placeholder]:text-gray-300 !text-xs`}>
                       <SelectValue  placeholder="Select preferred communication method"/>
                     </SelectTrigger>
                     <SelectContent>
@@ -747,7 +747,7 @@ const getFormattedPhone = () => {
                       handleProfileUpdate("typicalProjectBudget", value)
                     }
                   >
-                    <SelectTrigger className={`${styles.input} data-[placeholder]:text-gray-300`}>
+                    <SelectTrigger className={`${styles.input} data-[placeholder]:text-gray-300 !text-xs`}>
                       <SelectValue  placeholder="Select typical project budget"/>
                     </SelectTrigger>
                     <SelectContent>
@@ -790,7 +790,7 @@ const getFormattedPhone = () => {
                       handleProfileUpdate("companySize", value)
                     }
                   >
-                    <SelectTrigger className={`${styles.input} data-[placeholder]:text-gray-300`}>
+                    <SelectTrigger className={`${styles.input} data-[placeholder]:text-gray-300 !text-xs`}>
                       <SelectValue  placeholder="Select company size"/>
                     </SelectTrigger>
                     <SelectContent>
