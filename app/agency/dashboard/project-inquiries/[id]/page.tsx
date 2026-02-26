@@ -267,17 +267,23 @@ export default function SubmitProposalPage() {
           
           </div>
          {
-          requirement.documentUrl && (
-            <a
-              href={requirement.documentUrl}
+          requirement?.attachmentUrls?.length > 0 && (
+           <div className="flex flex-row gap-4">
+             {
+              requirement.attachmentUrls.map((url,index)=>(
+                <a key={index}
+              href={url}
               download
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center cursor-pointer gap-0 -mt-1 text-gray-500"
             >
               <File height={20} width={20} />
-              Attachments
+              Attachment {index + 1}
             </a>
+              ))
+             }
+           </div>
           )
         }
 

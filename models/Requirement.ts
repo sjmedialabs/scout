@@ -16,6 +16,7 @@ export interface IRequirement extends Document {
   allocatedToId:mongoose.Types.ObjectId
   createdAt: Date
   updatedAt: Date
+  attachmentUrls?: string[] // New field for multiple attachments
   isReviewed?: boolean,
   notApprovedMsg:String
 
@@ -39,6 +40,7 @@ const RequirementSchema = new Schema<IRequirement>(
     status: { type: String, enum: ["UnderReview" , "NotApproved" ,"Open", "Closed","shortlisted","negotation","Allocated"], default: "UnderReview" },
 
     clientId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    attachmentUrls: [{ type: String }], // New field for multiple attachments
     allocatedToId:{ type: Schema.Types.ObjectId, ref: "User" },
     isReviewed: { type: Boolean, default: false },
     notApprovedMsg:{type:String}

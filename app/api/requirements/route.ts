@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
       budgetMax: body.budgetMax,
       timeline: body.timeline,
       description: body.description,
-      documentUrl: body.documentUrl,
+      attachmentUrls: body.attachmentUrls,
       clientId: user.userId, // 👈 IMPORTANT: logged-in client
     });
 

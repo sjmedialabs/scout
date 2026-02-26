@@ -11,18 +11,17 @@ interface PdfUploadProps {
 export default function PdfUpload({
   maxSizeMB = 5,
   onUploadSuccess,
-  placeholderText = "Upload Project Brief, wireframes, or reference materials (PDF)",
+  placeholderText = "Upload Project Brief, wireframes, or reference materials (PDF / JPG / PNG)",
 }: PdfUploadProps) {
-  const [fileName, setFileName] = useState<string | null>(null);
+
+  const [files, setFiles] = useState<
+    { name: string; url?: string }[]
+  >([]);
   const [loading, setLoading] = useState(false);
-  const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  /* ---------------- FILE UPLOAD ---------------- */
   const uploadFile = async (file: File) => {
-    setLoading(true);
-    setError(null);
-    setFileUrl(null);
-
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -38,101 +37,172 @@ export default function PdfUpload({
         throw new Error(data.error || "Upload failed");
       }
 
-      setFileUrl(data.url);
+      // update uploaded file url
+      setFiles((prev) =>
+        prev.map((f) =>
+          f.name === file.name ? { ...f, url: data.url } : f
+        )
+      );
 
-      // ✅ send URL to parent
+      // send latest uploaded file to parent
       onUploadSuccess(data.url);
+
     } catch (err: any) {
       setError(err.message);
-    } finally {
-      setLoading(false);
     }
   };
 
+  /* ---------------- VALIDATION ---------------- */
+  const validateAndUpload = (selectedFiles: FileList | File[]) => {
+    setError(null);
+
+    const allowedTypes = [
+      "application/pdf",
+      "image/jpeg",
+      "image/png",
+    ];
+
+    Array.from(selectedFiles).forEach((file) => {
+      if (!allowedTypes.includes(file.type)) {
+        setError("Only PDF, JPG, PNG files allowed");
+        return;
+      }
+
+      if (file.size > maxSizeMB * 1024 * 1024) {
+        setError(`File size should not exceed ${maxSizeMB} MB`);
+        return;
+      }
+
+      setFiles((prev) => [...prev, { name: file.name }]);
+      uploadFile(file);
+    });
+  };
+
+  /* ---------------- INPUT CHANGE ---------------- */
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    setError(null);
-
-    if (!selectedFile) return;
-
-    // Validate PDF
-    if (selectedFile.type !== "application/pdf") {
-      setError("Only PDF files are allowed");
-      return;
-    }
-
-    // Validate size
-    if (selectedFile.size > maxSizeMB * 1024 * 1024) {
-      setError(`File size should not exceed ${maxSizeMB} MB`);
-      return;
-    }
-
-    setFileName(selectedFile.name);
-
-    // 🚀 AUTO UPLOAD
-    uploadFile(selectedFile);
+    if (!e.target.files) return;
+    setLoading(true);
+    validateAndUpload(e.target.files);
+    setLoading(false);
   };
 
-  // ✅ NEW REMOVE FUNCTION
-  const handleRemove = () => {
-    setFileName(null);
-    setFileUrl(null);
-    setError(null);
+  /* ---------------- DRAG EVENTS ---------------- */
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    validateAndUpload(e.dataTransfer.files);
+    setLoading(false);
+  };
 
-    // inform parent that file is removed
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
+  /* ---------------- REMOVE FILE ---------------- */
+  const handleRemove = (name: string) => {
+    setFiles((prev) => prev.filter((f) => f.name !== name));
     onUploadSuccess("");
   };
 
   return (
-    <div className="border border-[#D0D5DD] rounded-lg p-6 text-center space-y-4">
+    <div
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+      className="border border-[#D0D5DD] rounded-lg p-6 text-center space-y-4 transition hover:bg-gray-50"
+    >
       <p className="text-sm text-gray-500">
         {placeholderText}
       </p>
 
+      {/* Hidden input */}
       <input
         type="file"
-        accept="application/pdf"
+        multiple
+        accept="application/pdf,image/jpeg,image/png"
         onChange={handleFileChange}
         className="hidden"
         id="pdf-upload"
       />
 
+      {/* Button */}
       <label
         htmlFor="pdf-upload"
         className="inline-block px-4 py-2 bg-[#D1E9FC] text-[#000] text-[12px] rounded-xl border-[#D0D5DD] font-semibold cursor-pointer"
       >
-        Choose File
+        Choose Files
       </label>
 
-      {fileName && (
+      {/* Uploaded files list */}
+      {/* {files.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm text-gray-700">{fileName}</p>
+          {files.map((file) => (
+            <div key={file.name}>
+              <p className="text-sm text-gray-700">{file.name}</p>
 
-          {/* ✅ Remove Button */}
-          <button
-            type="button"
-            onClick={handleRemove}
-            className="text-sm text-red-600 underline cursor-pointer"
-          >
-            Remove File
-          </button>
+              <button
+                type="button"
+                onClick={() => handleRemove(file.name)}
+                className="text-sm text-red-600 underline cursor-pointer"
+              >
+                Remove File
+              </button>
+
+              {file.url && (
+                <p className="text-sm text-green-600">
+                  Uploaded Successfully:{" "}
+                  <a href={file.url} target="_blank" className="underline">
+                    View File
+                  </a>
+                </p>
+              )}
+            </div>
+          ))}
         </div>
-      )}
+      )} */}
+
+      {files.length > 0 && (
+  <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-3">
+    {files.map((file) => (
+      <div
+        key={file.name}
+        className="border border-[#D0D5DD] rounded-lg p-3 text-left bg-white shadow-sm"
+      >
+        {/* File Name */}
+        <p className="text-sm font-medium text-gray-700 truncate">
+          {file.name}
+        </p>
+
+        {/* Success */}
+        {file.url && (
+          <a
+            href={file.url}
+            target="_blank"
+            className="text-xs text-green-600 underline"
+          >
+            View File
+          </a>
+        )}
+
+        {/* Remove */}
+        <button
+          type="button"
+          onClick={() => handleRemove(file.name)}
+          className="block text-xs text-red-600 underline mt-1 cursor-pointer"
+        >
+          Remove
+        </button>
+      </div>
+    ))}
+  </div>
+)}
 
       {loading && (
-        <p className="text-sm text-blue-600 animate-pulse">Uploading...</p>
+        <p className="text-sm text-blue-600 animate-pulse">
+          Uploading...
+        </p>
       )}
 
       {error && <p className="text-sm text-red-600">{error}</p>}
-
-      {fileUrl && !loading && (
-        <p className="text-sm text-green-600">
-          Uploaded Successfully:{" "}
-          <a href={fileUrl} target="_blank" className="underline">
-            View File
-          </a>
-        </p>
-      )}
     </div>
   );
 }

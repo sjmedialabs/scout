@@ -485,10 +485,10 @@ const ProviderComparisonPage = () => {
   return (
     <div className="space-y-3">
       <div>
-        <h1 className="text-md lg:text-3xl text-[#F4561C] my-custom-class leading-6">
+        <h1 className="text-xl text-[#F4561C] my-custom-class leading-6">
           Provider Comparison
         </h1>
-        <p className="text-sm lg:text-lg text-[#656565] my-custom-class mt-0">
+        <p className="text-md text-[#656565] my-custom-class mt-0">
           Compare vendors side-by-side to make informed decisions
         </p>
       </div>
@@ -510,14 +510,14 @@ const ProviderComparisonPage = () => {
                 variant="outline"
                 onClick={() => setShowVendorModal(true)}
                 size="sm"
-                className="border-[1px] border-[#DEDEDE] rounded-full bg-[#2C34A1] text-[#fff] hover:text-[#000] active:bg-[#2C34A1] hover:bg-[#2C34A1]"
+                className="border-[1px] border-[#DEDEDE] rounded-full bg-[#2C34A1] text-[#fff] hover:text-[#fff] active:bg-[#2C34A1] hover:bg-[#2C34A1]"
               >
                 Add Vendor
               </Button>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="py-0">
           <div className="flex flex-wrap gap-2">
             {(selectedVendor || []).length !== 0 &&
               selectedVendor.map((item) => (
