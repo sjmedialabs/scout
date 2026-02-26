@@ -1036,7 +1036,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
       className={`px-3 py-1 rounded-md ${
         page === 1
           ? "text-gray-400 cursor-not-allowed"
-          : "text-black cursor-pointer"
+          : "text-black cursor-pointer " 
       }`}
     >
       Prev
