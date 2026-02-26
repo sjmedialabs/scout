@@ -536,13 +536,13 @@ const ProviderComparisonPage = () => {
 
       {/* Side-by-Side Comparison */}
       {(selectedVendor || []).length !== 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
           {(selectedVendor || []).map((proposal) => (
-            <Card
+            <div
               key={proposal.id}
               className="relative px-0 py-3 border-[1px] shadow-none rounded-2xl bg-[#fff]  border-[#EBEBEB]  "
             >
-              <CardHeader className="px-0 py-0 mb-0">
+              <div className="px-0 py-0 mb-0">
                 <div className="flex justify-end mr-5">
                   <FaRegTimesCircle
                     className="h-5 w-5 cursor-pointer"
@@ -550,7 +550,7 @@ const ProviderComparisonPage = () => {
                     onClick={() => removeVendorHandle(proposal)}
                   />
                 </div>
-                <div className="flex items-start justify-start gap-2 p-4 pt-0 bg-[#fff]">
+                <div className="flex items-start justify-start gap-2 px-1 pb-0 pt-0 bg-[#fff]">
                   <div className="items-center">
                     <img
                       src={proposal.agency?.logo || "/demilogo.png"}
@@ -564,17 +564,17 @@ const ProviderComparisonPage = () => {
                     </CardTitle>
                     <div className="flex items-center  mt-1">
                       <StarRating rating={proposal.agency.rating || 0} />
-                      <span className="text-sm ml-1  font-bold text-[#000]">{` (${proposal.agency.reviewCount || 0})`}</span>
+                      {/* <span className="text-sm ml-1  font-bold text-[#000]">{` (${proposal.agency.reviewCount || 0})`}</span> */}
                     </div>
                   </div>
                   {/* <Button variant="ghost" size="sm">
                         <X className="h-4 w-4" />
                       </Button> */}
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-0 mb-1 px-0 py-0">
-                {/* Proposal Details */}
-                <div className="space-y-0 bg-[#DBE8F2]  -mt-8 p-6">
+              </div>
+              <div className="space-y-0 mb-1 px-0 py-0">
+                
+                {/* <div className="space-y-0 bg-[#DBE8F2]  -mt-8 p-6">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-[#000] text-xl font-bold">
                       Proposal Amount
@@ -599,7 +599,7 @@ const ProviderComparisonPage = () => {
                       {proposal.agency.location || "Remote"}
                     </span>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Rating Breakdown */}
                 <div className="space-y-0 bg-[#E9F5FF] p-6">
@@ -690,14 +690,14 @@ const ProviderComparisonPage = () => {
                 </div>
 
                 {/* Key Strengths */}
-                <div className="space-y-2 bg-[#fffff] p-6">
-                  {/* <h4 className="text-[#F54A0C] font-bold text-lg">
+                {/* <div className="space-y-2 bg-[#fffff] p-6">
+                  <h4 className="text-[#F54A0C] font-bold text-lg">
                     Key Strengths
-                  </h4> */}
+                  </h4>
                   <div className="flex flex-wrap gap-2">
-                    {/* <Badge variant="secondary" className="bg-[#1C96F4] rounded-full text-xs my-custom-class min-h-[40px] min-w-[100px] text-[#fff]">Fast Delivery</Badge>
+                    <Badge variant="secondary" className="bg-[#1C96F4] rounded-full text-xs my-custom-class min-h-[40px] min-w-[100px] text-[#fff]">Fast Delivery</Badge>
                         <Badge variant="secondary" className="bg-[#1C96F4] rounded-full text-xs my-custom-class min-h-[40px] min-w-[100px] text-[#fff]">Great Communication</Badge>
-                        <Badge variant="secondary" className="bg-[#1C96F4] rounded-full text-xs my-custom-class min-h-[40px] min-w-[100px] text-[#fff]">High Quality</Badge> */}
+                        <Badge variant="secondary" className="bg-[#1C96F4] rounded-full text-xs my-custom-class min-h-[40px] min-w-[100px] text-[#fff]">High Quality</Badge>
                     {(proposal.keyHighlights || []).map((item) => (
                       <Badge
                         variant="secondary"
@@ -707,10 +707,10 @@ const ProviderComparisonPage = () => {
                       </Badge>
                     ))}
                   </div>
-                </div>
+                </div> */}
 
                 {/* Action Buttons */}
-                <div className="flex gap-2 p-6 pt-0 bg-[#fff]">
+                <div className="flex gap-2 p-6  bg-[#fff]">
                   <a
                     href={`/provider/${proposal.agency._id}`}
                     target="_blank"
@@ -732,8 +732,8 @@ const ProviderComparisonPage = () => {
                     <Heart className="h-8 w-8" color="#fff" />
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       )}

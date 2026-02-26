@@ -121,10 +121,13 @@ const statusOptions = [
   "negotation",
   "Allocated",
 ];
+import { useSearchParams } from "next/navigation";
 
 const ProjectsPage = () => {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const searchParams=useSearchParams();
+  const status=searchParams.get("status");
   // const [projects, setProjects] = useState([
   //   {
   //     id: "1",
@@ -161,7 +164,9 @@ const ProjectsPage = () => {
   const [filterStatus, setFilterStatus] = useState<string>("all");
 
   const [searchTerm, setSearchTerm] = useState("");
-const [selectedStatus, setSelectedStatus] = useState("");
+const [selectedStatus, setSelectedStatus] = useState(
+  status ? status[0].toUpperCase() + status.slice(1) : ""
+);
 const [selectedCategory, setSelectedCategory] = useState("");
 const [startDate, setStartDate] = useState("");
 const [startInputType, setStartInputType] = useState<"text" | "date">("text");
@@ -371,9 +376,8 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
   Number(reviewForm.costRating) <= 0 ||
   Number(reviewForm.qualityRating) <= 0 ||
   Number(reviewForm.scheduleRating) <= 0 ||
-  Number(reviewForm.willingToReferRating) <= 0 ||
-  !reviewForm.projectStartDate ||
-  !reviewForm.projectEndDate
+  Number(reviewForm.willingToReferRating) <= 0
+ 
 ) {
   toast.error("All fields are required for review submission");
   return;
@@ -387,8 +391,7 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
       qualityRating: reviewForm.qualityRating,
       scheduleRating: reviewForm.scheduleRating,
       willingToReferRating: reviewForm.willingToReferRating,
-      projectStartDate: reviewForm.projectStartDate,
-      projectEndDate: reviewForm.projectEndDate,
+      
       providerId: projectTemp?.allocatedToId,
       projectId: projectTemp?._id,
     };
@@ -566,28 +569,28 @@ const paginatedRequirements = filteredRequirements?.slice(
   }
 
   return (
-    <div className="space-y-2 -mt-5">
+    <div className="space-y-2 -mt-4">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center ">
         <div>
-          <h1 className="text-xl font-bold text-[#F4561C] my-custom-class leading-6">
+          <h1 className="text-xl font-bold text-[#182142]  leading-6">
             Projects
           </h1>
-          <p className="text-md text-[#656565] font-normal my-custom-class mt-0">
+          <p className="text-md text-[#2e2f48] font-normal my-custom-class mt-0">
             Manage your projects and track progress
           </p>
         </div>
         <Button
           onClick={() => router.push("/client/dashboard/post-requirement")}
-          className="bg-[#000] h-[35px] text-xs mt-2 md:mt-0 rounded-full "
+          className="bg-gradient-to-r from-[#6b6ee8] to-[#3c41c6] h-[35px] text-xs mt-2 md:mt-0 rounded-full "
         >
           <Plus className="h-4 w-4" />
           Add New Project
         </Button>
       </div>
 
-      <div className="w-full bg-white border rounded-xl p-2   lg:p-5 mb-3">
+      <div className="w-full bg-white border rounded-xl max-w-[96vw] overflow-x-auto mr-2 md:mr-0  mb-3">
         {/* search filters section*/}
-        <div className="flex flex-row lg:grid lg:grid-cols-5 gap-3 items-center max-w-[96vw] overflow-x-auto">
+        <div className="flex flex-row p-2 lg:p-0 lg:py-4 lg:px-1 xl:px-4 gap-1 xl:gap-3 items-center max-w-[96vw] lg:max-w-full overflow-x-auto">
 
           {/*  Search */}
           <div className="relative min-w-[150px] lg:min-w-0">
@@ -642,7 +645,7 @@ const paginatedRequirements = filteredRequirements?.slice(
           </div>
 
           {/*  Start Date */}
-          <div className="min-w-[150px] lg:min-w-0 ">
+          <div className="lg:min-w-0 ">
             <input
               type={startInputType}
               value={startDate}
@@ -653,12 +656,12 @@ const paginatedRequirements = filteredRequirements?.slice(
                 if (!startDate) setStartInputType("text");
               }}
               onChange={(e) => setStartDate(e.target.value)}
-              className="placeholder:text-gray-300 placeholder:text-sm w-full -mt-0.5 h-[35px] border border-[#D0D5DD] rounded-lg p-2  text-sm focus:outline-none"
+              className="placeholder:text-gray-300 placeholder:text-sm w-[80px] xl:w-full -mt-0.5 h-[35px] border border-[#D0D5DD] rounded-lg p-2  text-sm focus:outline-none"
             />
           </div>
 
           {/*  End Date */}
-          <div className="min-w-[150px] lg:min-w-0">
+          <div className=" lg:min-w-0">
             <input
               type={endInputType}
               value={endDate}
@@ -669,12 +672,12 @@ const paginatedRequirements = filteredRequirements?.slice(
                 if (!endDate) setEndInputType("text");
               }}
               onChange={(e) => setEndDate(e.target.value)}
-              className="placeholder:text-gray-300 placeholder:text-sm w-full -mt-0.5 h-[35px] border border-[#D0D5DD] rounded-lg  p-2 text-sm focus:outline-none"
+              className="placeholder:text-gray-300 placeholder:text-sm w-[80px] xl:w-full -mt-0.5 h-[35px] border border-[#D0D5DD] rounded-lg  p-2 text-sm focus:outline-none"
             />
           </div>
 
-          {/* <div>
-            <Button className="bg-black rounded-[8px] h-[30px] w-[60px] mt-0" onClick={()=>{
+          <div>
+            <Button className="bg-gradient-to-r from-[#6b6ee8] to-[#3c41c6] rounded-[8px] h-[30px] w-[60px] mt-0" onClick={()=>{
           setSearchTerm("");
          setSelectedStatus(""); // fixed
           setSelectedCategory("");
@@ -685,10 +688,10 @@ const paginatedRequirements = filteredRequirements?.slice(
         }}>
           clear 
         </Button>
-          </div> */}
+          </div>
 
         </div>
-        <Button className="bg-black rounded-[8px] h-[30px] w-[60px] mt-1" onClick={()=>{
+        {/* <Button className="bg-black rounded-[8px] h-[30px] w-[60px] mt-1" onClick={()=>{
           setSearchTerm("");
          setSelectedStatus(""); // fixed
           setSelectedCategory("");
@@ -698,14 +701,16 @@ const paginatedRequirements = filteredRequirements?.slice(
           setEndInputType("text");
         }}>
           clear 
-        </Button>
-        
-      </div>
-      <div>
+        </Button> */}
+
+
+
+        {/*projects table */}
+        <div className="mt-3">
         {/* projects table */}
         {(filteredRequirements || []).length !== 0 ? (
           <>
-            <div className="overflow-x-auto max-w-[96vw]  border rounded-xl">
+            <div className="overflow-x-auto max-w-[96vw]">
               <table className="w-full text-left border-collapse">
                 <thead className="bg-gray-100 text-sm text-gray-600">
                   <tr>
@@ -795,6 +800,8 @@ const paginatedRequirements = filteredRequirements?.slice(
                             </div>
                           )}
 
+                       
+
                           {/* 🔹 Submit Review */}
                           {(project.status.toLowerCase() === "closed" ||
                             project.status.toLowerCase() === "completed") &&
@@ -805,7 +812,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                                   setReviewSubmissionProjectId(project._id);
                                   setShowReviewModal(true);
                                 }}
-                                className="bg-[#00C951] rounded-[8px] text-white text-xs"
+                                className="bg-gradient-to-r from-[#6b6ee8] to-[#3c41c6] h-[30px] w-[80px] rounded-[8px] text-white text-[10px]"
                               >
                                 Submit Review
                               </Button>
@@ -825,8 +832,10 @@ const paginatedRequirements = filteredRequirements?.slice(
               </table>
             </div>
 
-            {/* ✅ Pagination */}
-            <div className="flex justify-center items-center gap-3 mt-6">
+            {/* Pagination */}
+            <div className="flex flex-wrap justify-center items-center gap-2 mt-6 mb-4">
+
+              {/* Prev Button */}
               <Button
                 size="sm"
                 disabled={currentPage === 1}
@@ -835,10 +844,30 @@ const paginatedRequirements = filteredRequirements?.slice(
                 Prev
               </Button>
 
-              <span className="text-sm font-medium">
-                Page {currentPage} of {totalPages}
-              </span>
+              {/* Page Numbers */}
+              <div className="flex flex-wrap items-center gap-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .slice(
+                    Math.floor((currentPage - 1) / 9) * 9,
+                    Math.floor((currentPage - 1) / 9) * 9 + 9
+                  )
+                  .map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`min-w-[36px] h-[36px] px-3 rounded-md text-sm font-medium transition-all
+                        ${
+                          currentPage === page
+                            ? "bg-[#4F46E5] text-white"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+              </div>
 
+              {/* Next Button */}
               <Button
                 size="sm"
                 disabled={currentPage === totalPages}
@@ -856,6 +885,9 @@ const paginatedRequirements = filteredRequirements?.slice(
           </div>
         )}
       </div>
+        
+      </div>
+      
 
       {showCreateProject && (
         <Dialog open={showCreateProject} onOpenChange={setShowCreateProject}>
@@ -1167,8 +1199,8 @@ const paginatedRequirements = filteredRequirements?.slice(
                 </div>
               ))}
 
-              {/* ✅ Start Date – Calendar Popover */}
-              <div className="space-y-2">
+              {/*  Start Date – Calendar Popover */}
+              {/* <div className="space-y-2">
                 <Label
                   htmlFor="startDate"
                   className="text-[#000] text-[14px] font-bold"
@@ -1188,10 +1220,10 @@ const paginatedRequirements = filteredRequirements?.slice(
                   }
                   required
                 />
-              </div>
+              </div> */}
 
-              {/* ✅ End Date – Calendar Popover */}
-              <div className="space-y-2">
+              {/*  End Date – Calendar Popover */}
+              {/* <div className="space-y-2">
                 <Label
                   htmlFor="endDate"
                   className="text-[#000] text-[14px] font-bold"
@@ -1212,7 +1244,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                   min={reviewForm.projectStartDate} // prevents selecting earlier date
                   required
                 />
-              </div>
+              </div> */}
             </form>
 
             {/* ✅ FIXED FOOTER */}

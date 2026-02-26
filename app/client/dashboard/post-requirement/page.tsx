@@ -82,7 +82,7 @@ const PostRequirementPage = () => {
   };
 
   return (
-    <div className="bg-[#fff]">
+    <div className="bg-transparent">
       <div className="container max-w-7xl py-8 px-4">
         <PostRequirementForm
           onSubmit={handlePostRequirement}
