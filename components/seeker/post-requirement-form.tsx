@@ -166,8 +166,8 @@ console.log("Form Data Url is:::",formData.documentUrl)
 
   
   return (
-    <div className="-ml-3 -mt-13">
-      <div className="max-w-7xl bg-[#fff]">
+    <div className="-ml-3 -mt-10">
+      <div className="max-w-7xl bg-transparent">
 
         <h1 className="text-xl text-[#F54A0C] font-bold">
           Post New Requirement
@@ -429,7 +429,7 @@ console.log("Form Data Url is:::",formData.documentUrl)
               </div>
             </div>
           )}
-
+ 
           {/* STEP NAVIGATION (ONLY ADDITION) */}
           <div className="flex justify-between pt-0">
             {step > 1 ? (
