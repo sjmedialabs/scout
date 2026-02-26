@@ -12,11 +12,13 @@ const ITEMS_PER_LOAD = 4;
 export default function ServiceDropdown({
   value,
   onChange,
+  icon = null,
   triggerClassName = "",
   triggerSpanClassName="",
   contentClassName = "",
   leftPanelClassName = "",
   rightPanelClassName = "",
+  hoverClassName = "",
   placeholder = "Select Service",
 }) {
   const [serviceCategories, setServiceCategories] = useState([]);
@@ -48,9 +50,20 @@ export default function ServiceDropdown({
             ${triggerClassName}
         `}
         >
-          <span className={` ${triggerSpanClassName} ${!value ? "text-gray-300" : "text-gray-900"}`}>
+          {/* <span className={` ${triggerSpanClassName} ${!value ? "text-gray-300" : "text-gray-900"}`}>
             {value || placeholder}
-          </span>
+          </span> */}
+
+          <span
+  className={`
+    flex items-center gap-1.5
+    ${triggerSpanClassName}
+    ${!value ? "text-gray-500" : "text-gray-900"}
+  `}
+>
+  {icon}
+  {value || placeholder}
+</span>
         </SelectTrigger>
 
         <SelectContent
@@ -72,8 +85,8 @@ export default function ServiceDropdown({
           className={`px-4 py-2 cursor-pointer text-sm transition-colors
             ${
               activeSubCategory?.slug === sub.slug
-                ? "bg-orange-50 text-[#F54A0C] font-medium"
-                : "hover:bg-gray-100"
+              ? hoverClassName || "bg-orange-50 text-[#F54A0C] font-medium"
+              : hoverClassName ? "" : "hover:bg-gray-100"
             }`}
         >
           {sub.title}
@@ -94,7 +107,9 @@ export default function ServiceDropdown({
                 onChange(item.title);
                 setOpen(false);
               }}
-              className="px-4 py-2 cursor-pointer text-sm hover:bg-orange-50 transition-colors"
+              className={`px-4 py-2 cursor-pointer text-sm transition-colors ${
+                hoverClassName || "hover:bg-orange-50"
+              }`}
             >
               {item.title}
             </div>

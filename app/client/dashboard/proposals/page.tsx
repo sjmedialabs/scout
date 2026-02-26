@@ -292,11 +292,25 @@ const ProposalPage = () => {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
     null,
   );
+
   
    const [filterStatus, setFilterStatus] = useState<string>("");
    const[projectTitles,setProjectTitles]=useState([]);
    const[projectFilter,setProjectFilter]=useState<string>("");
    const[filteredProposals,setFilteredProposals]=useState<Proposal[]>([]);
+
+   /* ---------------- PAGINATION ---------------- */
+        const ITEMS_PER_PAGE = 2;
+        const [page, setPage] = useState(1);
+
+        const totalPages = Math.ceil(
+          filteredProposals.length / ITEMS_PER_PAGE
+        );
+
+        const paginatedProposals = filteredProposals.slice(
+          (page - 1) * ITEMS_PER_PAGE,
+          page * ITEMS_PER_PAGE
+        );
 
   // negotation modal and message
     const[showNegotationModal,setShowNegotationModal]=useState(false);
@@ -606,6 +620,7 @@ const ProposalPage = () => {
   }
 
   setFilteredProposals(tempFiltered)
+  setPage(1);
 }, [filterStatus, projectFilter,proposals])
     
 console.log("Filtered Proposals:::::::",filteredProposals)
@@ -632,7 +647,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
     );
   }
   return (
-    <div className="space-y-3 -mt-2">
+    <div className="space-y-3 -mt-5">
       <div>
         <h1 className="text-2xl font-bold my-custom-class text-[#F4561C]">
           Proposals
@@ -642,14 +657,14 @@ console.log("Filtered Proposals:::::::",filteredProposals)
             </span>
           )}
         </h1>
-        <p className="text-[#656565] text-xl font-medium my-custom-class">
+        <p className="text-[#656565] -mt-1 text-xl font-medium my-custom-class">
           {selectedRequirement
             ? "Review and manage proposals for the selected requirement"
             : "All proposals received for your projects"}
         </p>
       </div>
 
-      <div className="flex gap-4  h-[40px] w-fit  justify-center items-center font-bold text-sm text-[#000] bg-[#E6EDF5] rounded-full">
+      <div className="flex gap-4 -mt-1 h-[40px] w-fit  justify-center items-center font-bold text-sm text-[#000] bg-[#E6EDF5] rounded-full">
         <button
           className={`h-[100%] ${
             !selectedRequirement
@@ -672,8 +687,8 @@ console.log("Filtered Proposals:::::::",filteredProposals)
         </button>  */}
       </div>
 
-      <div >
-        <div className="sm:px-6">
+      <Card className="bg-transparent py-0 border-none shadow-none rounded-[22px]">
+        <CardContent className=" px-2 sm:px-0">
           {selectedRequirement ? (
             <ProposalList
               // proposals={getProposalsForRequirement(selectedRequirement)}
@@ -688,7 +703,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
               {/*Filterss block */}
               {
                 (projectTitles.length>=1) && (
-                  <div className="flex flex-row     gap-4 overflow-x-auto mx-1 mb-2 lg:mx-3">
+                  <div className="flex flex-row  gap-4 overflow-x-auto mx-1 lg:mx-0">
                     <div className="mb-2 md:mb-0">
                       {/* <p className="text-md text-gray-500 ml-2">Proposal Status</p> */}
                       <Select
@@ -758,7 +773,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                   </div>
                 )
               }
-              <div className="max-h-[600px] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden sm:pr-2">
+              <div className="sm:pr-2">
                 {filteredProposals.length > 0 ? (
                 <div>
                   <div className="space-y-4 mb-4">
@@ -776,7 +791,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
 
                   </div>
 
-                 {filteredProposals.map((proposal) => (
+                 {paginatedProposals.map((proposal) => (
                     <Card
                       key={proposal.id}
                       className="py-0 px-0 rounded-[22px] mb-3"
@@ -1010,10 +1025,63 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                 </div>
               )}
               </div>
+              {/* ---------------- PAGINATION ---------------- */}
+{totalPages > 1 && (
+  <div className="flex justify-center items-center gap-2 mt-6 mb-2 flex-wrap text-sm">
+
+    {/* PREV */}
+    <button
+      disabled={page === 1}
+      onClick={() => setPage((p) => p - 1)}
+      className={`px-3 py-1 rounded-md ${
+        page === 1
+          ? "text-gray-400 cursor-not-allowed"
+          : "text-black cursor-pointer"
+      }`}
+    >
+      Prev
+    </button>
+
+    {/* PAGE NUMBERS */}
+    {Array.from({ length: totalPages }).map((_, i) => {
+      const pageNumber = i + 1;
+
+      return (
+        <button
+          key={pageNumber}
+          onClick={() => setPage(pageNumber)}
+          className={`
+            w-8 h-8 rounded-lg cursor-pointer
+            ${
+              page === pageNumber
+                ? "bg-[#2C34A1] text-white font-semibold"
+                : "text-gray-500"
+            }
+          `}
+        >
+          {pageNumber}
+        </button>
+      );
+    })}
+
+    {/* NEXT */}
+    <button
+      disabled={page === totalPages}
+      onClick={() => setPage((p) => p + 1)}
+      className={`px-3 py-1 rounded-md ${
+        page === totalPages
+          ? "text-gray-400 cursor-not-allowed"
+          : "text-black cursor-pointer"
+      }`}
+    >
+      Next
+    </button>
+  </div>
+)}
             </div>
           )}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
           {/*Negotaatiion Modal */}
 
            {showNegotationModal && (
