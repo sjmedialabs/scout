@@ -111,7 +111,7 @@ export default function ClientHeader({ user, onMenuClick }: Props) {
 
 
   return (
-    <header className="flex items-center justify-between p-2 px-[40px] mb-0 border-b border-border bg-white ">
+    <header className="flex items-center justify-between p-2 px-[23px] mb-0 border-b border-border bg-[#f4eefd] ">
       
       {/* 🔹 Left Section */}
       <div className="flex items-center gap-3">

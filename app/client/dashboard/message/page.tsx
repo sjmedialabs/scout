@@ -531,7 +531,7 @@ useEffect(() => {
   console.log("Filtered Conversatoions are::::::", filteredDynamicConversation);
 
   return (
-  <div className="space-y-2 -mt-2">
+  <div className="space-y-2 -mt-2 ">
     {/* Header */}
     {/* <div>
       <h1 className="text-xl lg:text-3xl font-bold text-orangeButton my-custum-class">
@@ -542,7 +542,7 @@ useEffect(() => {
       </p>
     </div> */}
 
-    <div className="grid lg:grid-cols-[340px_1fr]  gap-6">
+    <div className="grid lg:grid-cols-[340px_1fr]  gap-3">
 
       {/* ================= LEFT SIDEBAR ================= */}
       {(!isMobile || !isMobileChatOpen) && (
@@ -648,7 +648,7 @@ useEffect(() => {
           {!resLoading &&
           !failed &&
           dynamicActiveConversation ? (
-            <Card className="rounded-2xl px-1 -mt-5 flex flex-col bg-white border-0 shadow-none">
+            <Card className="rounded-2xl px-0 py-0  flex flex-col justify-between bg-white border-0 shadow-none">
 
               {/* Chat Header */}
               <div className="flex items-start flex-wrap justify-between bg-[#f9f9f9] px-6 py-4 border-b">
@@ -692,7 +692,7 @@ useEffect(() => {
               </div>
 
               {/* Chat Messages */}
-              <div className="flex-1 px-6 py-0 space-y-5 overflow-y-auto max-h-[50vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <div className="flex-1 px-6 py-0 space-y-5 overflow-y-auto max-h-[55vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 {!chatLaoding && (dynamicMessages || []).length !== 0 ? (
                   <div>
                     {dynamicMessages.map((msg: Message) => (
@@ -767,7 +767,7 @@ useEffect(() => {
               </div>
 
               {/* Message Input */}
-              <div className="px-6 py-0 border-t">
+              <div className="px-6 py-0 border-t mb-[20px]">
                 <div className="mb-2">
                   {uploading && <span>Uploading...</span>}
                   {uplodedUrl.url && (

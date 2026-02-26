@@ -115,6 +115,10 @@ import { FiTag } from "react-icons/fi";
 
 import { FaArrowRightLong } from "react-icons/fa6";
 
+
+import StatCard from "@/components/seeker/dashboardCard";
+import { Check, Clock } from "lucide-react"
+
 const token =
   typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
@@ -285,52 +289,9 @@ const mockProjectProposals: ProjectProposal[] = [
   },
 ];
 
-interface MenuItem {
-  id: string;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  children?: MenuItem[];
-}
 
-const menuItems: MenuItem[] = [
-  {
-    id: "overview",
-    label: "OVERVIEW",
-    icon: Home,
-    children: [
-      { id: "dashboard", label: "Dashboard", icon: Home },
-      { id: "profile", label: "Profile", icon: User },
-      { id: "requirements", label: "My Requirements", icon: FileText },
-      { id: "proposals", label: "Proposals", icon: MessageSquare },
-      { id: "projects", label: "Projects", icon: Briefcase },
-      { id: "providers", label: "Find Agencies", icon: Users },
-    ],
-  },
-  {
-    id: "performance",
-    label: "PERFORMANCE",
-    icon: BarChart3,
-    children: [
-      { id: "analytics", label: "Project Analytics", icon: TrendingUp },
-      { id: "spending", label: "Spending Insights", icon: Eye },
-      {
-        id: "provider-comparison",
-        label: "Provider Comparison",
-        icon: GitCompare,
-      },
-    ],
-  },
-  {
-    id: "account-settings",
-    label: "ACCOUNT & SETTINGS",
-    icon: Settings,
-    children: [
-      { id: "billing", label: "Billing & Payments", icon: CreditCard },
-      { id: "notifications", label: "Notifications", icon: Bell },
-      { id: "account-settings", label: "Account Settings", icon: Shield },
-    ],
-  },
-];
+
+
 
 export default function ClientDashboard() {
   const { user, loading } = useAuth();
@@ -361,6 +322,7 @@ export default function ClientDashboard() {
     proposalCount: 0,
     shorlistedVendors: 0,
     avgProposalAmount: 0,
+    closedProjectsCount:0
   });
 
   const [costDistributionStats, setCostDistributionStats] = useState([
@@ -482,6 +444,7 @@ export default function ClientDashboard() {
         proposalCount: proposalsData.proposals.length,
         avgProposalAmount: avgBudget,
         shorlistedVendors: shortlistVendorsData.data.length,
+        closedProjectsCount:reqData.requirements.filter((e)=>e?.status==="Closed").length
       }));
 
       let proposalsLessThanFiveThousand = 0;
@@ -800,7 +763,7 @@ export default function ClientDashboard() {
 
   if (loading || responseLoading) {
     return (
-      <div className="bg-background flex items-center justify-center">
+      <div className="bg-transparent flex items-center justify-center">
         Loading...
       </div>
     );
@@ -865,16 +828,16 @@ export default function ClientDashboard() {
       {/* Main Content */}
       <div className="flex-1 -mt-4 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none]  [&::-webkit-scrollbar]:hidden">
         <div className="space-y-2">
-          <div className="border-b boreder-[1px] border-[#c4c3c3] pb-2">
-            <h1 className="text-xl  font-bold text-[#F4561C]">
-              Dashboard Overview
+          <div className="border-b border-[#E5E7EB] pb-4">
+            <h1 className="text-2xl font-semibold text-[#111827] flex items-center gap-2">
+              Welcome back, {user.name} 👋
             </h1>
-            <p className="text-md text-[#656565] font-xl">
-              Welcome to your client dashboard
+            <p className="text-base text-[#6B7280] mt-1">
+              Dashboard Overview
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             <Card className="bg-[#fff] rounded-2xl">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 ">
                 <CardTitle className="text-sm font-medium my-custom-class text-[#000]">
@@ -932,7 +895,7 @@ export default function ClientDashboard() {
               </CardContent>
             </Card>
 
-            {/* <Card className="bg-[#fff]">
+            <Card className="bg-[#fff]">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium my-custom-class text-[#000]">
                   Avg Proposal
@@ -949,8 +912,66 @@ export default function ClientDashboard() {
                   Average proposal amount
                 </p>
               </CardContent>
-            </Card> */}
-          </div>
+            </Card>
+          </div> */}
+
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              {/* Card 1 */}
+              <StatCard
+                title="Agencies Matches"
+                subtitle="Agencies matched to projects"
+                count={statsValues.matchedVendors}
+                buttonText="Agencies Matches"
+                icon={<Users className="h-3 w-3" color="#fff" />}
+                accentColor="#3B82F6"
+                gradientFrom="#3B82F6"
+                gradientTo="#60A5FA"
+                iconBg="#3B82F6"
+                linkUrl="/client/dashboard/providers"
+              />
+
+              {/* Card 2 */}
+              <StatCard
+                title="Proposals Recieved"
+                subtitle="Agencies submitted proposals"
+                count= {statsValues.proposalCount}
+                buttonText="Proposals Recieved"
+                icon={ <FaFileAlt className="h-3 w-3" color="#fff" />}
+                accentColor="#F59E0B"
+                gradientFrom="#F59E0B"
+                gradientTo="#FBBF24"
+                iconBg="#F59E0B"
+                linkUrl="/client/dashboard/proposals"
+              />
+
+              {/* Card 3 */}
+              <StatCard
+                title="Shortlisted Agencies"
+                subtitle="Compare and choose the best fit"
+                count={statsValues.shorlistedVendors}
+                buttonText="Shortlisted Agencies"
+                icon={<Heart className="h-3 w-3" color="#fff"/>}
+                accentColor="#EF4444"
+                gradientFrom="#EF4444"
+                gradientTo="#F87171"
+                iconBg="#EF4444"
+                linkUrl="/client/dashboard/wishlist"
+              />
+
+              {/* Card 4 */}
+              <StatCard
+                title="Closed Projects"
+                subtitle="Work completed and delivered"
+                count={statsValues.closedProjectsCount}
+                buttonText="Closed Projects"
+                icon={<DollarSign className="h-3 w-3" color="#fff" />}
+                accentColor="#10B981"
+                gradientFrom="#10B981"
+                gradientTo="#34D399"
+                iconBg="#10B981"
+                linkUrl={`/client/dashboard/projects?status=closed`}
+              />
+            </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* <Card className="bg-[#fff] rounded-2xl">
@@ -1194,11 +1215,11 @@ export default function ClientDashboard() {
 
           {/*Requirement cards Notifications*/}
 
-          <div >
+          {/* <div >
             <div >
               <Card className="bg-[#fff] rounded-2xl">
                 <CardContent className="px-3 sm:px-6">
-                  {/* {(requirements || []).length !== 0 ? (
+                  {(requirements || []).length !== 0 ? (
                     <RequirementList
                       requirements={requirements.slice(0, 3)}
                       onViewProposals={handleViewProposals}
@@ -1206,249 +1227,20 @@ export default function ClientDashboard() {
                     />
                   ) : (
                     <p className="text-center">No Posted requirements</p>
-                  )} */}
-                  {
-                    (proposals || []).length>0 &&(
-                      <>
-                        {
-                          proposals.slice(0,3).map((proposal:any)=>(
-                             <Card
-                      key={proposal.id}
-                      className="py-0 px-0 rounded-[22px] mb-3"
-                    >
-                      <CardContent className="px-2 sm:px-5 py-6">
-                        <div className="flex flex-col lg:flex-row gap-4">
-                          
-                          {/* Left Image */}
-                          <div className="max-h-[300px] max-w-full lg:max-w-[300px] rounded-[18px] overflow-hidden sm:shrink-0">
-                            <img
-                              src={proposal?.agency?.coverImage || "/proposal.jpg"}
-                              alt={proposal.agency?.name}
-                              className="h-full w-full object-cover"
-                            />
-                          </div>
-
-                          {/* Right Side Content */}
-                          <div className="flex-1">
-
-                            {/* Top Section (Title + Cost) */}
-                            <div className="flex justify-between items-start mb-2 w-full">
-                              
-                              {/* LEFT CONTENT */}
-                              <div className="flex-1 pr-6">
-                                <div className="flex items-center gap-2 mb-2">
-                                  <Badge
-                                    variant="outline"
-                                    className="text-xs border-[#DEDEDE] bg-[#EDEDED] rounded-full h-[30px] px-3"
-                                  >
-                                    {proposal?.requirement?.title || "Unknown Project"}
-                                  </Badge>
-                                </div>
-
-                                <h3
-                                  className="text-2xl font-bold text-[#000] mb-0 cursor-pointer"
-                                  onClick={() =>
-                                    handleViewProfile(proposal.providerId)
-                                  }
-                                >
-                                  {proposal.agency?.name}
-                                </h3>
-
-                                <p className="text-sm ml-1 -mt-1 text-[#939191] font-normal">
-                                  {proposal.agency?.name}
-                                </p>
-
-                                {/* Rating */}
-                                <div className="flex items-center mt-0 gap-1 text-sm font-medium">
-                                  <RatingStars
-                                    rating={proposal.agency?.rating}
-                                    reviews={proposal.agency?.reviewCount}
-                                  />
-                                  <span className="text-sm font-bold text-[#000] mt-1">
-                                    {`${proposal.agency?.rating || 0} (${proposal.agency?.reviewCount || 0})`}
-                                  </span>
-                                </div>
-                              </div>
-
-                              {/* RIGHT COST SECTION */}
-                              <div className="text-right shrink-0">
-                                <div className="text-2xl font-bold text-[#39A935]">
-                                  ${proposal.proposedBudget.toLocaleString()}
-                                </div>
-                                <div className="text-sm text-[#A0A0A0] -mt-1">
-                                  {proposal.proposedTimeline}
-                                </div>
-                              </div>
-
-                            </div>
-
-                            {/* Description Section */}
-                            <div className="space-y-2">
-
-                              {proposal?.coverLetter && (
-                                <div>
-                                  <h4 className="font-bold text-xl text-[#616161] mb-0">
-                                    Cover Letter
-                                  </h4>
-                                  <p className="text-[#939191] font-normal text-sm">
-                                    {proposal?.coverLetter}
-                                  </p>
-                                </div>
-                              )}
-
-                              <div>
-                              <h4 className="font-bold text-xl text-[#616161] mb-0">
-                                Proposal Description
-                              </h4>
-                              <p className="text-[#939191] font-normal text-sm line-clamp-2">
-                                {proposal.proposalDescription}
-                              </p>
-                            </div>
-
-
-                              {/* Status Section */}
-                              <div className="flex items-center mt-2 mb-3 gap-2">
-                                <span className="text-sm text-[#000000] font-noormal">
-                                  Submitted on :{" "}
-                                  {new Date(
-                                    proposal.updatedAt
-                                  ).toLocaleDateString()}
-                                </span>
-
-                                <Badge
-                                  variant={
-                                    proposal.status === "accepted"
-                                      ? "default"
-                                      : proposal.status === "shortlisted"
-                                      ? "secondary"
-                                      : proposal.status === "rejected"
-                                      ? "destructive"
-                                      : "outline"
-                                  }
-                                  className="border-[#DEDEDE] bg-[#EDEDED] rounded-full text-xs text-[#000]"
-                                >
-                                  {proposal.status.charAt(0).toUpperCase() +
-                                    proposal.status.slice(1)}
-                                </Badge>
-                              </div>
-
-                              {/* Buttons */}
-                              <div className="flex items-center justify-between pt-4 border-[#DDDDDD] border-t-2">
-                                <div className="flex flex-wrap gap-2">
-
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() =>
-                                      handleViewPortfolio(proposal.agency._id)
-                                    }
-                                    className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
-                                  >
-                                    View Portfolio
-                                  </Button>
-
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() =>
-                                      router.push(`proposals/${proposal.id}`)
-                                    }
-                                    className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
-                                  >
-                                    View Proposal Details
-                                  </Button>
-
-                                  {/* Shortlist */}
-                                  {proposal.status !== "shortlisted" &&
-                                    proposal.status !== "accepted" &&
-                                    proposal.status !== "rejected" &&
-                                    proposal.status !== "completed" && (
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() =>
-                                          handleShortlist(proposal.id)
-                                        }
-                                        className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
-                                      >
-                                        Shortlist
-                                      </Button>
-                                    )}
-
-                                  {/* Negotiation */}
-                                  {proposal.status !== "accepted" &&
-                                    proposal.status !== "rejected" &&
-                                    proposal.status !== "shortlisted" &&
-                                    proposal.status !== "negotation" &&
-                                    proposal.status !== "completed" && (
-                                      <Button
-                                        variant="default"
-                                        size="sm"
-                                        onClick={() =>
-                                          handlNegotation(proposal.id)
-                                        }
-                                        className="bg-[#F5A30C] rounded-full text-xs font-bold hover:bg-[#F5A30C] active:bg-[#F5A30C]"
-                                      >
-                                        Negotation
-                                      </Button>
-                                    )}
-
-                                  {/* Accept */}
-                                  {proposal.status !== "accepted" &&
-                                    proposal.status !== "rejected" &&
-                                    proposal.status !== "completed" && (
-                                      <Button
-                                        variant="default"
-                                        size="sm"
-                                        onClick={() =>
-                                          handleAccept(proposal.id)
-                                        }
-                                        className="bg-[#39A935] rounded-full text-xs font-bold hover:bg-[#39A935] active:bg-[#39A935]"
-                                      >
-                                        Accept
-                                      </Button>
-                                    )}
-
-                                  {/* Reject */}
-                                  {proposal.status !== "rejected" &&
-                                    proposal.status !== "accepted" &&
-                                    proposal.status !== "completed" && (
-                                      <Button
-                                        variant="destructive"
-                                        size="sm"
-                                        onClick={() =>
-                                          handleReject(proposal.id)
-                                        }
-                                        className="bg-[#FF0000] rounded-full text-xs font-bold hover:bg-[#FF0000] active:bg-[#FF0000]"
-                                      >
-                                        Reject
-                                      </Button>
-                                    )}
-                                </div>
-                              </div>
-
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                          ))
-                        }
-                      </>
-                    )
-                  }
+                  )}
+                  
                 </CardContent>
               </Card>
             </div>
 
-            {/* <div>
+            <div>
               <NotificationsWidget
                 notifications={notifications}
                 onMarkAsRead={handleMarkNotificationAsRead}
                 onDismiss={handleDismissNotification}
               />
-            </div> */}
-          </div>
+            </div>
+          </div> */}
         </div>
       </div>
 

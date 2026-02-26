@@ -20,7 +20,6 @@ interface MenuItem {
   label: string
   icon: React.ComponentType<{ className?: string }>
   path?: string
-  children?: MenuItem[]
 }
 
 import {
@@ -38,45 +37,15 @@ import {
   BarChart3,
 } from "lucide-react"
 
+/* ✅ Flattened Menu Items */
 const menuItems: MenuItem[] = [
-  {
-    id: "dashboard",
-    label: "DASHBOARD",
-    icon: Home,
-    path: "/client/dashboard", // ✅ Direct path (no children)
-  },
-  {
-    id: "overview",
-    label: "OVERVIEW",
-    icon: Home,
-    children: [
-      // { id: "dashboard", label: "Dashboard", icon: Home, path: "/client/dashboard" },
-      // { id: "profile", label: "Profile", icon: User, path: "/client/dashboard/profile" },
-      // { id: "requirements", label: "My Requirements", icon: FileText, path: "/client/dashboard/requirements" },
-      { id: "proposals", label: "Proposals", icon: MessageSquare, path: "/client/dashboard/proposals" },
-      { id: "projects", label: "Projects", icon: Briefcase, path: "/client/dashboard/projects" },
-      { id: "providers", label: "Find Agencies", icon: Users, path: "/client/dashboard/providers" },
-      { id: "messages", label: "Messages", icon: MessageSquare, path: "/client/dashboard/message" },
-    ],
-  },
-  {
-    id: "performance",
-    label: "PERFORMANCE",
-    icon: BarChart3,
-    children: [
-      // { id: "analytics", label: "Project Analytics", icon: TrendingUp, path: "/client/dashboard/analytics" },
-      { id: "provider-comparison", label: "Provider Comparison", icon: GitCompare, path: "/client/dashboard/provider-comparison" },
-      { id: "wishlist", label: "Wish List", icon: Eye, path: "/client/dashboard/wishlist" },
-    ],
-  },
-  // {
-  //   id: "account-settings",
-  //   label: "SETTINGS",
-  //   icon: Settings,
-  //   children: [
-  //     { id: "notifications", label: "Notifications", icon: Bell, path: "/client/dashboard/notifications" },
-  //   ],
-  // },
+  { id: "dashboard", label: "Dashboard", icon: Home, path: "/client/dashboard" },
+  { id: "proposals", label: "Proposals", icon: MessageSquare, path: "/client/dashboard/proposals" },
+  { id: "projects", label: "Projects", icon: Briefcase, path: "/client/dashboard/projects" },
+  { id: "providers", label: "Find Agencies", icon: Users, path: "/client/dashboard/providers" },
+  { id: "messages", label: "Messages", icon: MessageSquare, path: "/client/dashboard/message" },
+  { id: "provider-comparison", label: "Provider Comparison", icon: GitCompare, path: "/client/dashboard/provider-comparison" },
+  { id: "wishlist", label: "Wish List", icon: Eye, path: "/client/dashboard/wishlist" },
 ]
 
 export default function ClientSidebar({
@@ -92,30 +61,20 @@ export default function ClientSidebar({
   const pathname = usePathname()
   const { logout } = useAuth()
 
-  const [expandedSections, setExpandedSections] = useState<string[]>([])
   const [collapsed, setCollapsed] = useState(false)
 
   useEffect(() => {
-  const handleResize = () => {
-    if (window.innerWidth < 1024) {
-      setCollapsed(false)
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setCollapsed(false)
+      }
     }
-  }
 
-  // Run once on mount
-  handleResize()
+    handleResize()
 
-  window.addEventListener("resize", handleResize)
-  return () => window.removeEventListener("resize", handleResize)
-}, [])
-
-  const toggleSection = (sectionId: string) => {
-    setExpandedSections((prev) =>
-      prev.includes(sectionId)
-        ? prev.filter((id) => id !== sectionId)
-        : [...prev, sectionId]
-    )
-  }
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   const handleMenuClick = (item: MenuItem) => {
     router.push(item.path!)
@@ -147,15 +106,15 @@ export default function ClientSidebar({
         )}
       >
         {/* Header */}
-        <div className="p-6 border-b border-border bg-[#3C3A3E] flex justify-between items-start">
+        <div className="p-3.5 border-b border-gray-300 bg-[#e0dbfa] flex justify-between items-start">
           {!collapsed && (
             <div>
-              <h2 className="text-xl font-bold text-white">
+              <h2 className="text-xl font-bold text-[#000]">
                 Client Dashboard
               </h2>
-              <p className="text-sm text-[#8B8585]">
+              {/* <p className="text-sm text-[#8B8585]">
                 Welcome back, {user.name}
-              </p>
+              </p> */}
 
               {/* <div className="flex items-center gap-2 mt-3">
                 <Badge
@@ -182,9 +141,9 @@ export default function ClientSidebar({
           <div className="flex gap-2">
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="hidden lg:block cursor-pointer"
+              className={`hidden lg:block cursor-pointer ${collapsed?"ml-[15px]":""}`}
             >
-              <PanelLeft className="h-5 w-5 mt-[6px] text-white" />
+              <PanelLeft className="h-5 w-5 mt-[6px] text-[#8480a8]" />
             </button>
 
             <button onClick={onClose} className="lg:hidden">
@@ -194,80 +153,33 @@ export default function ClientSidebar({
         </div>
 
         {/* Menu */}
-        <div className="flex-1 overflow-y-auto p-4 bg-[#3C3A3E] 
+        <div className="flex-1 overflow-y-auto p-4 bg-[#e0dbfa] 
           [scrollbar-width:none] 
           [-ms-overflow-style:none]        
           [&::-webkit-scrollbar]:hidden"
         >
           <nav className="space-y-2">
-            {menuItems.map((section) => (
-              <div key={section.id}>
-                {/* Parent */}
-                <button
-                  onClick={() => {
-                    if (section.path) {
-                      router.push(section.path)
-                      onClose()
-                    } else {
-                      toggleSection(section.id)
-                    }
-                  }}
-                  className="w-full cursor-pointer flex items-center justify-between p-3 text-sm font-medium rounded-lg"
-                >
-                  <div
-                    className={cn(
-                      "flex items-center gap-3 text-white",
-                      collapsed && "justify-center w-full"
-                    )}
-                  >
-                    <section.icon className="h-4 w-4" />
-                    {!collapsed && section.label}
-                  </div>
-
-                  {!collapsed && section.children &&
-                    (expandedSections.includes(section.id) ? (
-                      <ChevronDown className="h-4 w-4 text-white" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4 text-white" />
-                    ))}
-                </button>
-
-                {/* Children */}
-                {section.children &&
-                  expandedSections.includes(section.id) && (
-                    <div
-                      className={cn(
-                        "mt-2 space-y-1",
-                        collapsed ? "flex flex-col items-center ml-5" : "ml-4"
-                      )}
-                    >
-                      {section.children.map((item) => (
-                        <button
-                          key={item.id}
-                          onClick={() => handleMenuClick(item)}
-                          className={cn(
-                            "cursor-pointer flex items-center gap-3 p-2 text-sm rounded-lg text-white",
-                            pathname === item.path
-                              ? "text-[#F54A0C]"
-                              : "",
-                            collapsed
-                              ? "justify-center w-full"
-                              : "w-full"
-                          )}
-                        >
-                          <item.icon className="h-4 w-4" />
-                          {!collapsed && item.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-              </div>
+            {menuItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => handleMenuClick(item)}
+                className={cn(
+                  "cursor-pointer flex items-center gap-3 p-3 text-sm rounded-lg text-[#000] w-full",
+                  pathname === item.path
+                    ? "bg-[#ebe6f8] border-1 border-[#e4dff6] text-[#000] rounded-[8px]"
+                    : "",
+                  collapsed ? "justify-center" : ""
+                )}
+              >
+                <item.icon className="h-4 w-4" />
+                {!collapsed && item.label}
+              </button>
             ))}
           </nav>
         </div>
 
         {/* Footer */}
-        <div className="p-4 bg-[#3C3A3E] flex flex-col gap-2">
+        <div className="p-4 bg-[#e0dbfa] flex flex-col gap-2">
           {/* <Button
             size="sm"
             className={cn(
@@ -288,7 +200,7 @@ export default function ClientSidebar({
             size="sm"
             onClick={handleLogout}
             className={cn(
-              "rounded-2xl bg-orangeButton text-white border-none flex items-center justify-center",
+              "rounded-2xl bg-orangeButton text-[#fff] border-none flex items-center justify-center",
               collapsed ? "w-12 h-12 p-0" : "w-full"
             )}
           >
