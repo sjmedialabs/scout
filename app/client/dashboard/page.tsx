@@ -1219,7 +1219,7 @@ export default function ClientDashboard() {
             <div >
               <Card className="bg-[#fff] rounded-2xl">
                 <CardContent className="px-3 sm:px-6">
-                  {(requirements || []).length !== 0 ? (
+                  {/* {(requirements || []).length !== 0 ? (
                     <RequirementList
                       requirements={requirements.slice(0, 3)}
                       onViewProposals={handleViewProposals}
