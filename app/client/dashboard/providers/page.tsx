@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Users } from "lucide-react";
+import { MapPin, Users } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -295,11 +295,15 @@ export default function ServicesPage() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-[#616161] py-2">
-                  <span>{p.location}</span>
-                  <span>{p.projectsCompleted} projects</span>
+                  <span className="inline-flex items-center gap-1">
+                    <MapPin className="h-4 w-4 text-orangeButton" />
+                    {p.location}</span>
+                  <span className="inline-flex items-center gap-1">
+                    <img src="/Projects_Icon.jpg" alt="Projects" className="h-4 w-4 object-contain" />
+                    {p.projectsCompleted} projects</span>
                   <span className="inline-flex items-center gap-1">
                     <Users className="h-4 w-4 text-orangeButton" />
-                    {p.teamSize}
+                    {p.teamSize || 0}
                   </span>
                 </div>
 
@@ -311,7 +315,7 @@ export default function ServicesPage() {
                 <div className="flex gap-2 pt-3 cursor-pointer">
                   <a href={`/provider/${p.id || p._id}`} className="flex-1" target="_blank">
                     <button
-                    className="flex-1 rounded-full bg-[#2c34a1] px-4 py-2 text-xs font-bold text-white"
+                    className="flex-1 cursor-pointer rounded-full bg-[#2c34a1] px-4 py-2 text-xs font-bold text-white"
                    
                   >
                     View Profile →
@@ -320,7 +324,7 @@ export default function ServicesPage() {
                   
 
                   <button
-                    className="flex-1 rounded-full bg-[#4d4d4d] py-2 text-xs font-bold text-white"
+                    className="flex-1 cursor-pointer rounded-full bg-[#4d4d4d] py-2 text-xs font-bold text-white"
                     onClick={() => handleContact(p)}
                   >
                     Contact

@@ -43,6 +43,7 @@ const PostRequirementPage = () => {
   const [requirements, setRequirements] =
     useState<Requirement[]>(mockRequirements);
   const [sending, setSending] = useState(false);
+
   const handlePostRequirement = async (newRequirement: any) => {
     setSending(true);
     try {
@@ -56,7 +57,7 @@ const PostRequirementPage = () => {
         budgetMax: newRequirement.budgetMax,
         timeline: newRequirement.timeline,
         description: newRequirement.description,
-        documentUrl: newRequirement.documentUrl,
+        attachmentUrls: newRequirement.attachmentUrls,
       };
 
       // API CALL

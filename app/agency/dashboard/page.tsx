@@ -59,6 +59,7 @@ import {
   X,
   Target,
   Handshake,
+  CircleDollarSign,
 } from "lucide-react";
 import {
   mockNotifications,
@@ -700,15 +701,15 @@ export default function AgencyDashboard() {
 
   return (
     <div>
-      <div className="space-y-3">
+      <div className="space-y-3 -mt-6">
         <div>
-          <h1 className="text-2xl font-bold text-orangeButton my-custom-class">
+          <h1 className="text-xl font-bold text-orangeButton">
             Dashboard Overview
           </h1>
-          <p className="text-gray-500 text-xl my-custom-class">
+          <p className="text-gray-500 text-md">
             Quick stats and recent activity
           </p>
-          <div className="mt-4 h-px bg-border" />
+          <div className="mt-2 h-px bg-border" />
         </div>
 
         <div className="">
@@ -787,23 +788,23 @@ export default function AgencyDashboard() {
                     //   </p>
                     // </div>
                     <Card className="bg-[#fff] rounded-2xl">
-                                  <CardHeader className="flex flex-row items-center justify-between space-y-0 ">
-                                    <CardTitle className="text-sm font-medium my-custom-class text-[#000]">
-                                      {item.label}
-                                    </CardTitle>
-                                    <div className=" h-8 w-8 flex items-center justify-center rounded-full bg-[#EEF7FE]">
-                                       <Icon className="h-3 w-3 text-orangeButton" />
-                                    </div>
-                                  </CardHeader>
-                                  <CardContent className="space-y-0 py-0 -mt-3">
-                                    <div className="text-2xl font-bold text-[#000]">
-                                      {item.value}
-                                    </div>
-                                    <p className="text-sm text-green-500 font-normal">
-                                     {item.footer}
-                                    </p>
-                                  </CardContent>
-                                </Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 ">
+                      <CardTitle className="text-sm font-medium my-custom-class text-[#000]">
+                        {item.label}
+                      </CardTitle>
+                      <div className=" h-8 w-8 flex items-center justify-center rounded-full bg-[#EEF7FE]">
+                          <Icon className="h-3 w-3 text-orangeButton" />
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-0 py-0 -mt-6">
+                      <div className="text-2xl font-bold text-[#000]">
+                        {item.value}
+                      </div>
+                      <p className="text-sm text-green-500 font-normal">
+                        {item.footer}
+                      </p>
+                    </CardContent>
+                  </Card>
                   );
                 })}
               </div>
@@ -878,7 +879,7 @@ export default function AgencyDashboard() {
             </div> */}
 
             {/* Active Projects */}
-            <Card className="rounded-2xl shadow-lg bg-white p-3 pl-0">
+            <Card className="rounded-2xl  bg-white  pl-0">
               <CardHeader className="h-8">
                 <CardTitle className="text-lg h-5 text-orangeButton my-custom-class">
                   Active Projects
@@ -894,7 +895,7 @@ export default function AgencyDashboard() {
                       {activeProjects.map((project) => (
                         <div
                           key={project.id}
-                          className="shadow-md rounded-2xl pt-1 mb-4 p-5"
+                          className="shadow-md border-1 border-gray-300 py-6 rounded-2xl  mb-4 p-5"
                         >
                           <div className="flex justify-between mb-2">
                             <h4 className="font-bold my-custom-class">
@@ -908,18 +909,19 @@ export default function AgencyDashboard() {
                             </Badge>
                           </div>
                           <div className="flex gap-6 text-sm text-muted-foreground">
-                            <div className="flex items-center gap-2 text-gray-500">
-                              <DollarSign className="h-4 w-4 text-orangeButton" />
+                            <div className="flex items-center gap-1 text-gray-500">
+                              <CircleDollarSign className="h-4 w-4 text-orangeButton"/>
+                              {/* <DollarSign  /> */}
                               {project.proposedBudget.toLocaleString()}
                             </div>
-                            <div className="flex items-center gap-2 text-gray-500">
+                            <div className="flex items-center gap-1 -mt-1 text-gray-500">
                               <Calendar className="h-4 w-4 text-orangeButton" />
                               {project.proposedTimeline}
                             </div>
                           </div>
                           {/* PROGRESS */}
-                          <div>
-                            <div className="flex justify-between h-5 text-sm mb-1">
+                          <div className="mt-2">
+                            <div className="flex  justify-between h-5 text-sm mb-1">
                               <span>
                                 {`progress ${project.milestones.filter((eachItem) => eachItem.completed).length}/${project.milestones.length}`}{" "}
                               </span>

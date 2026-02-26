@@ -80,6 +80,21 @@ export default function Sidebar({
     });
   }, [pathname, menuItems]);
 
+  
+  useEffect(() => {
+  const handleResize = () => {
+    if (window.innerWidth < 1024) {
+      setIsCollapsed(false)
+    }
+  }
+
+  // Run once on mount
+  handleResize()
+
+  window.addEventListener("resize", handleResize)
+  return () => window.removeEventListener("resize", handleResize)
+}, [])
+
   return (
     <>
       {isMobileOpen && (
@@ -96,7 +111,7 @@ export default function Sidebar({
           ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
           lg:translate-x-0
           ${isCollapsed ? "lg:w-20" : "lg:w-80"}
-          w-40
+          w-80 
         `}
       >
         {/* HEADER */}
