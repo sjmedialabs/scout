@@ -19,7 +19,7 @@ import { Search } from "lucide-react";
 import Image from "next/image";
 import { categories } from "@/lib/mock-data";
 
-const ITEMS_PER_LOAD = 4;
+const ITEMS_PER_LOAD = 9;
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
@@ -263,7 +263,7 @@ export default function SearchPage() {
 
                 {/* APPLY */}
                 <Button
-                  className="h-10 px-6 rounded-full bg-[#F54A0C] hover:bg-orange-600 text-white"
+                  className="h-10 px-6 rounded-full bg-orangeButton text-white"
                   onClick={handleSearch}
                 >
                   Apply
@@ -272,7 +272,7 @@ export default function SearchPage() {
                 {/* CLEAR */}
                 <Button
                   variant="outline"
-                  className="h-10 px-6 rounded-full bg-black text-white hover:bg-gray-900"
+                  className="h-10 px-6 rounded-full bg-blueButton text-white"
                   onClick={clearFilters}
                 >
                   Clear

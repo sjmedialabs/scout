@@ -25,14 +25,14 @@ export default function StatsGrid({ stats }: { stats: Start[] }) {
                          h-[150px] md:h-[170px] text-center"
             >
               <div
-                className="text-[36px] sm:text-[34px] md:text-[40px] font-semibold leading-none text-[#F15927]"
-                style={{ fontFamily: "CabinetGrotesk2" }}
+                className="text-[36px] sm:text-[34px] md:text-[40px] font-bold leading-none text-[#e0332c]"
+                
               >
                 {s.value}
               </div>
               <div
-                className="mt-3 text-[18px] md:text-[20px] font-extrabold text-[#0E0E0E]"
-                style={{ fontFamily: "CabinetGrotesk2" }}
+                className="mt-3 text-[18px] md:text-[20px] font-bold text-[#0E0E0E]"
+                
               >
                 {s.label}
               </div>

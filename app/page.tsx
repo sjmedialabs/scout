@@ -192,7 +192,7 @@ const { cms, providers, projects, categories } = data;
                 Service Categories
               </span>
             </div>
-            <h2 className="stext-mediun uppercase font-bold text-black ">
+            <h2 className="stext-mediun uppercase font-bold text-blueButton ">
              {cms?.homeServiceTitle}
               {/* <span className="text-blueButton font-bold my-custom-class">
                 any project
@@ -249,7 +249,7 @@ const { cms, providers, projects, categories } = data;
                     <div className="mt-auto pt-6">
                       <Button
                         size="sm"
-                        className=" bg-[#2C34A1] cursor-pointer  text-white rounded-full hover:bg-[#2C34A1]/90"
+                        className=" bg-blueButton cursor-pointer  text-white rounded-full"
                         onClick={() =>
                       router.push(`/services?category=${category._id}`)
                     }
@@ -292,7 +292,7 @@ const { cms, providers, projects, categories } = data;
                   Newly added
                 </span>
               </div>
-              <h2 className="stext-mediun uppercase font-bold text-black ">
+              <h2 className="stext-mediun uppercase font-bold text-blueButton ">
                 {cms?.recentRequirementTitle || "Requirements"}
               </h2>
               <p className="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">
@@ -318,7 +318,7 @@ const { cms, providers, projects, categories } = data;
                     </div>
                   </div>
                    <div className="pb-10 px-6">
-                        <Button variant="outline" size="sm" asChild className="bg-black text-white rounded-full text-xs">
+                        <Button variant="outline" size="sm" asChild className="bg-blueButton text-white rounded-full text-xs">
                           <Link href="/login?to=project-enquiries">Submit Proposal →</Link>
                         </Button>
                       </div>
@@ -348,7 +348,7 @@ const { cms, providers, projects, categories } = data;
                     >
                       {project.category}
                     </Badge>
-                    <span className="text-sm font-semibold text-black">
+                    <span className="text-sm font-semibold text-blueButton">
                       Timeline - <span className="text-red-500">{project.timeline}</span>
                     </span>
                   </div>
@@ -380,7 +380,7 @@ const { cms, providers, projects, categories } = data;
                         <Button
                           variant="outline"
                           size="sm"
-                          className="bg-black text-white rounded-full text-xs px-5 py-2 hover:bg-black"
+                          className="bg-blueButton text-white rounded-full text-xs px-5 py-2"
                         >
                           View Details →
                         </Button>
@@ -423,7 +423,7 @@ const { cms, providers, projects, categories } = data;
                   Top Agencies
                 </span>
               </div>
-              <h2 className="text-mediun uppercase font-bold text-black ">
+              <h2 className="text-mediun uppercase font-bold text-blueButton ">
                 {cms?.topProvidersTitle || "Top Providers"}
               </h2>
               <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
@@ -453,7 +453,7 @@ const { cms, providers, projects, categories } = data;
                         {provider.isVerified && (
                           <Badge
                             variant="outline"
-                            className="bg-blueButton text-white rounded-full px-3 py-0.5 text-[10px] font-semibold"
+                            className="bg-white text-green-500 rounded-full px-3 py-0.5 text-[10px] font-semibold"
                           >
                             Verified
                           </Badge>
@@ -507,7 +507,7 @@ const { cms, providers, projects, categories } = data;
                             .map((service: string, idx: number) => (
                               <span
                                 key={idx}
-                                className="bg-gray-100 text-black px-2 py-1 rounded-full text-xs font-semibold"
+                                className="bg-gray-100 text-blueButtton px-2 py-1 rounded-full text-xs font-semibold"
                               >
                                 {service}
                               </span>
@@ -576,12 +576,12 @@ const { cms, providers, projects, categories } = data;
               className="bg-orangeButton inline-flex w-auto px-6 font-semibold text-sm text-white rounded-full hover:bg-gray-100"
               asChild
             >
-              <Link href="/register?type=seeker">List Project</Link>
+              <Link href="/register?type=seeker">Post Requirement</Link>
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="bg-blueButton inline-flex w-auto px-6 font-semibold text-sm text-white rounded-full hover:bg-gray-100"
+              className="bg-blueButton inline-flex w-auto px-10 font-semibold text-sm text-white rounded-full hover:bg-gray-100"
               asChild
             >
               <Link href="/register?type=provider">Find Project</Link>

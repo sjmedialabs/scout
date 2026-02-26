@@ -10,8 +10,8 @@
   /* Updated design tokens to match wireframe aesthetic */
   --background: oklch(1 0 0); /* #ffffff */
   --blueBackground: #E7F0F8; /*sky blue background color */
-  --blueButton: #2C34A1;
-  --orangeButton: #F54A0C;
+  --blueButton: #000000;
+  --orangeButton: #e0332c;
   --sidebarMain: #3C3A3E; /* Dark gray sidebar color */
   --foreground: oklch(0.205 0 0); /* #1f2937 */
   --card: oklch(0.985 0 0); /* #f8fafc */

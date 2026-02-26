@@ -457,7 +457,7 @@ const overflowCategories = mainCategories.slice(5);
             {/* Post a Project Button */}
             <div className="hidden lg:flex flex-row gap-2">
               <Button
-                className="bg-orangeButton  hover:bg-[#f54607] text-white h-8 rounded-full"
+                className="bg-orangeButton hover:bg-none w-35 text-white h-8 rounded-full"
                 asChild
               >
                 <Link
@@ -465,16 +465,16 @@ const overflowCategories = mainCategories.slice(5);
                     user ? "/client/dashboard?section=projects" : "/register"
                   }
                 >
-                  List Project
+                  Post Requirement
                 </Link>
               </Button>
 
-               <Button className="bg-orangeButton mr-3 hover:bg-[#f54607] text-white h-8 rounded-full"  onClick={()=>router.push("/browse")}>
+               <Button className="bg-orangeButton mr-3  text-white h-8 rounded-full"  onClick={()=>router.push("/browse")}>
                 <SearchIcon/> Projects
               </Button>
              
                <div  onClick={()=>router.push("/login")} className="cursor-pointer">
-                   <CircleUserRound className="h-6 w-6 mt-1" color="#f54607" />
+                   <CircleUserRound className="h-6 w-6 mt-1" color="#e0332c" />
                </div>
                
                 
@@ -595,7 +595,7 @@ const overflowCategories = mainCategories.slice(5);
                     user ? "/client/dashboard?section=projects" : "/register"
                   }
                 >
-                  List Project
+                  Post Requirement
                 </Link>
               </Button>
 

@@ -137,8 +137,8 @@ export default function ServicePage({ params }: PageProps) {
         </div>
         <div className="relative z-10 w-full mx-auto max-w-7xl px-4 py-20 text-center md:px-8">
           <h1
-            className="mx-auto max-w-[980px] text-[clamp(20px,2.4vw,20px)]  md:text-5xl font-extrabold text-orange-600 leading-normal"
-            style={{ fontFamily: "CabinetGrotesk2" }}
+            className="mx-auto max-w-[980px] text-[clamp(20px,2.4vw,20px)]  md:text-5xl font-bold text-orangeButton leading-normal"
+          
           >
             {slug.replace(/-/g, " ").toUpperCase()}
           </h1>
@@ -156,7 +156,7 @@ export default function ServicePage({ params }: PageProps) {
           <div className="flex flex-col items-center md:items-start">
             <h2
               className="text-[20px] md:text-[30px] font-extrabold leading-[1.15] text-[#0E0E0E]"
-              style={{ fontFamily: "" }}
+             
             >
               {`Need ${slug.replace(/-/g, " ")} Services?`}
             </h2>
@@ -176,10 +176,11 @@ export default function ServicePage({ params }: PageProps) {
             <button
               onClick={() => router.push("/register")}
               className="h-12 px-10 md:px-6 rounded-full 
-                      bg-[#2c34a1] hover:bg-[#2B34C3] 
+                      bg-black border
                       text-white text-[12px] font-semibold 
-                      transition-all duration-200 cursor-pointer"
-              style={{ fontFamily: "Poppins, sans-serif" }}
+                      hover:bg-white hover:text-black hover:border-black transition-colors
+                      duration-800 cursor-pointer"
+             
             >
               {"Click here to post project"} →
             </button>

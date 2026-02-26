@@ -3,6 +3,8 @@
 import {Star,  Users } from "lucide-react";
 import { Provider } from "./types/service";
 import { useRouter } from "next/navigation";
+import { BriefcaseBusiness } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 
 
@@ -26,7 +28,7 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-wrap items-center gap-3">
                     {p.isVerified && (
-                       <span className="inline-flex items-center rounded-full border bg-[#32359a] px-4 py-1 sm:text-xs font-medium text-white text-bold">
+                       <span className="inline-flex items-center rounded-full border bg-white px-4 py-1 sm:text-xs font-bold text-green-500 text-bold">
                             Verified
                         </span>
                     )}
@@ -116,19 +118,21 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
                 {/* Location / Projects / Response */}
                 <div className=" flex flex-wrap items-center gap-6 text-sm sm:text-sm font-bold text-[#616161] py-1">
                     <span className="inline-flex items-center gap-2">
-                        <img
+                        <MapPin className="h-5 w-5 sm:h-6 sm:w-6 text-orangeButton"/>
+                        {/* <img
                         src="/Location_Icon.jpg"
                         alt="Location"
                         className="h-5 w-5 sm:h-6 sm:w-6 object-contain"
-                        />
+                        /> */}
                         {p.location}
                     </span>
                     <span className="inline-flex items-center gap-2">
-                        <img
+                        <BriefcaseBusiness className="h-5 w-5 sm:h-6 sm:w-6 text-orangeButton" />
+                        {/* <img
                         src="/Projects_Icon.jpg"
                         alt="Projects"
                         className="h-5 w-5 sm:h-6 sm:w-6 object-contain"
-                        />
+                        /> */}
                         {p.projectsCompleted} projects
                         </span>
                     <span className="inline-flex items-center gap-2">
@@ -148,13 +152,13 @@ export default function ServiceCard({ provider }: { provider: Provider }) {
                 {/*Buttons*/}
                 <div className="flex sm:flex-row sm:items-center sm:justify-between pt-3">
                     <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                    <button className="mt-auto rounded-full bg-[#2c34a1] cursor-pointer px-4 py-3 text-sm font-bold text-white hover:bg-[#3f437e]" 
+                    <button className="mt-auto rounded-full bg-orangeButton cursor-pointer px-4 py-3 text-sm font-bold text-white hover:bg-[#3f437e]" 
                     onClick={() => router.push(`/provider/${provider.id || provider._id}`)}>
                          View Profile  →
                     
                     </button>
                      <button
-        className="w-full sm:w-40 bg-[#4d4d4d] cursor-pointer rounded-3xl text-white"
+        className="w-full sm:w-40 bg-blueButton cursor-pointer rounded-3xl text-white"
         onClick={handleContact}
       >
         Contact Provider

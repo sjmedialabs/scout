@@ -369,22 +369,19 @@ setFilteredRequirements(openRequirements);
     );
   }
   return (
-    <div className="space-y-6 p-12 pt-1">
-      <div className="my-custom-class">
+    <div className="space-y-2 p-12 pt-1">
+      <div>
         <h1 className="text-2xl font-bold text-[#F4561C] tracking-tight">
-          My Requirements
+        Requirements
         </h1>
-        <p className="text-[#656565] text-xl font-light ">
-          Manage all your posted requirements
-        </p>
       </div>
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
         <div className="lg:col-span-1">
           <FiltersPanel onFiltersChange={handleFiltersChange} />
         </div>
         <div className="lg:col-span-3">
-          <Card className="bg-[#fff] rounded-[16px] py-1 px-0 p-0 min-h-100">
-            <CardContent className="max-h-[600px] overflow-y-auto p-6">
+          <Card className="bg-[#fff] rounded-[16px] py-0 px-0 p-0 min-h-100">
+            <CardContent className="max-h-[600px] overflow-y-auto p-6 -mt-2">
               {filteredRequirements && (
                 <RequirementList
                   requirements={filteredRequirements}

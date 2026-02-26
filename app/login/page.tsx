@@ -129,11 +129,11 @@ else {
             }}
           >
             <div className="relative max-w-sm -ml-2">
-              <h2 className="text-2xl font-extrabold leading-tight pb-3">
+              <h2 className="text-2xl font-bold leading-tight pb-3">
                 Built to Accelerate <br /> Business Success
               </h2>
 
-              <ul className="mt-2 space-y-2 text-[10px] text-white">
+              <ul className="mt-2 space-y-2 text-[12px] text-white">
                 <li>Owering Smarter Business Connections</li>
                 <li>700+ Categories. One Trusted Platform.</li>
                 <li>Quality Work. Accelerated Results.</li>
@@ -147,7 +147,7 @@ else {
             <div className="flex items-center mb-2">
               <button
                   onClick={() => router.push("/")}
-                className="flex text-sm items-center justify-center rounded-full hover:text-orange-600 transition cursor-pointer"
+                className="flex text-sm items-center justify-center rounded-full hover:text-[#e0332c] transition cursor-pointer"
 >
                 ← Back to website
               </button>
@@ -247,7 +247,7 @@ else {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="mt-4 justify-center cursor-pointer rounded-xl bg-black px-6 py-2 text-sm font-medium text-white hover:bg-orange-600 transition"
+              className="mt-4 justify-center cursor-pointer rounded-xl bg-black px-6 py-2 text-sm font-medium text-white hover:bg-[#e0332c] transition"
             >
               {loading ? "Signing In..." : "Sign in"}
             </button>

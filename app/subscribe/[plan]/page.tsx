@@ -96,7 +96,7 @@ export default function SubscribePage({ params }: SubscribePageProps) {
           <div className="max-w-5xl mx-auto">
             {/* Header */}
             <div className="text-center mb-10">
-              <p className="text-orange-500 text-sm font-medium mb-2">
+              <p className="text-[#e0332c] text-sm font-medium mb-2">
                 Subscribe to {selectedPlan.title}
               </p>
               <h1 className="text-2xl sm:text-2xl font-medium">
@@ -135,9 +135,9 @@ export default function SubscribePage({ params }: SubscribePageProps) {
                         <button
                           type="button"
                           className="h-7 px-3 rounded-full text-xs font-medium
-                                  border border-zinc-300 bg-zinc-700
-                                  hover:bg-zinc-600 text-white
-                                  transition-colors"
+                                  border bg-black duration-800 cursor-pointer
+                                   text-white
+                                  transition-colors hover:bg-white hover:text-black hover:border-black"
                         >
                           Change
                         </button>
@@ -226,10 +226,10 @@ export default function SubscribePage({ params }: SubscribePageProps) {
                     {/* Proceed to pay */}
                     <button
                       type="button"
-                      className="h-9 px-8 rounded-full
-                              bg-orangeButton text-white text-[10px] font-medium
-                              hover:bg-orange-600
-                              transition-colors"
+                      className="h-9 px-8 rounded-full border
+                              bg-[#e0332c] text-white text-[10px] font-medium
+                              hover:bg-white hover:text-black hover:border-black duration-800
+                              transition-colors cursor-pointer"
                       onClick={() => {
                         // BACKEND CHECKOUT HOOK (to be implemented)
                         router.push("/register");
@@ -242,12 +242,12 @@ export default function SubscribePage({ params }: SubscribePageProps) {
                     <Link href="/pricing">
                       <button
                         type="button"
-                        className="h-9 px-8 rounded-full
-                                bg-zinc-700 text-white text-[10px] font-medium
-                                hover:bg-zinc-800
-                                transition-colors"
+                        className="h-9 px-8 rounded-full border
+                                bg-black text-white text-[10px] font-medium
+                                hover:bg-white hover:text-black hover:border-black duration-800
+                                transition-colors cursor-pointer"
                       >
-                        Cancel/Exit
+                        Cancel / Exit
                       </button>
                     </Link>
                   </div>
@@ -259,7 +259,7 @@ export default function SubscribePage({ params }: SubscribePageProps) {
             <div className="mt-8 text-center">
               <Link
                 href="/pricing"
-                className="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-700"
+                className="inline-flex items-center text-sm text-zinc-500 hover:text-[#e0332c]"
               >
                 <ArrowLeft className="h-4 w-4 mr-1" />
                 Back to Pricing
