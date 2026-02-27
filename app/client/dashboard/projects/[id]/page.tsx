@@ -33,7 +33,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import  { ArrowLeft, File, MoveLeft } from "lucide-react";
+import  { ArrowLeft, File, MoveLeft,ChevronLeft,ChevronRight } from "lucide-react";
+
+import countries from "i18n-iso-countries";
+import en from "i18n-iso-countries/langs/en.json";
+
+countries.registerLocale(en);
 const ProjectDetailPage = () => {
   const [projectDetails, setProjectDetails] = useState();
   const [filterStatus, setFilterStatus] = useState("");
@@ -55,6 +60,19 @@ const ProjectDetailPage = () => {
     status:"success",
     msg:""
   })
+
+   /* ---------------- PAGINATION ---------------- */
+          const ITEMS_PER_PAGE = 2;
+          const [page, setPage] = useState(1);
+  
+          const totalPages = Math.ceil(
+            filteredProposals.length / ITEMS_PER_PAGE
+          );
+  
+          const paginatedProposals = filteredProposals.slice(
+            (page - 1) * ITEMS_PER_PAGE,
+            page * ITEMS_PER_PAGE
+          );
 
   const loadData = async () => {
     setLoading(true);
@@ -111,6 +129,7 @@ const ProjectDetailPage = () => {
   };
 
   const handleShortlist = async (proposalId: string) => {
+    console.log("Recieved Proposal Id for the Shortlist:::",proposalId)
     setProposals((prev) =>
       prev.map((p) =>
         p.id === proposalId ? { ...p, status: "shortlisted" as const } : p,
@@ -181,6 +200,7 @@ const ProjectDetailPage = () => {
            p.id === proposalId ? { ...p, status: "accepted" as const } : p,
          ),
        );
+      window.location.reload();
      } catch (error) {
        console.log("failed to update the  status", error);
        alert("Staus failed to shortlist the proposal");
@@ -281,6 +301,10 @@ const ProjectDetailPage = () => {
       }
   }
 
+  const handleViewPortfolio=(proposalId:string)=>{
+    window.open(`/provider/${proposalId}`, "_blank");
+  }
+
   // if (loading) {
   //     return (
   //       <div className="min-h-screen flex items-center justify-center">
@@ -305,6 +329,8 @@ const ProjectDetailPage = () => {
           (req) => req.status.toLowerCase() === filterStatus.toLowerCase(),
         ),
       );
+    }else{
+      setFilteredProposals(proposals)
     }
   }, [proposals, filterStatus]);
   console.log("Project Details is ::::::::::",projectDetails);
@@ -315,6 +341,10 @@ const ProjectDetailPage = () => {
 const textareaClass =
   "rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-[16px] text-gray-900 leading-[1.6] whitespace-pre-wrap"
 
+  const getCountryIso = (countryName?: string) => {
+    if (!countryName) return "";
+    return countries.getAlpha2Code(countryName, "en")?.toLowerCase() || "";
+  };
 
   return (
     <div className="space-6 ">
@@ -358,7 +388,7 @@ const textareaClass =
               </div>
               <div>
                 <Button
-                  className="bg-[#000] rounded-full h-[30px] w-[120px] text-xs lg:text-sm lg:h-[40px] lg:w-[160px]"
+                  className="bg-[#000] rounded-full h-[30px] mb-3 w-[120px] text-xs lg:text-sm lg:h-[40px] lg:w-[160px]"
                   onClick={() => router.push("/client/dashboard/projects")}
                 >
                   <MoveLeft className="h-4 w-4 " />Back to
@@ -367,8 +397,8 @@ const textareaClass =
               </div>
               </div>
             {(proposals || []).length > 0 && (
-                <Card className="mt-3 md:mt-6 p-3  bg-[#fff] py-5 rounded-[22px]">
-                  <CardContent className="px-2" >
+                <div>
+                  <div className="px-2" >
                     <Select
                       onValueChange={(value) => setFilterStatus(value)}
                       value={filterStatus}
@@ -381,9 +411,9 @@ const textareaClass =
                         rounded-[8px]
                         shadow-none
                         focus:ring-0
-                        mb-3
+                        mb-3 
                         max-w-[160px]
-                        px-3
+                        
                         h-11 
                         text-sm
                         data-[placeholder]:text-[#98A0B4]
@@ -398,183 +428,309 @@ const textareaClass =
                         <SelectItem value="shortlisted">Shortlisted</SelectItem>
                         <SelectItem value="negotation">Negotiation</SelectItem>
                         <SelectItem value="rejected">Rejected</SelectItem>
-                        <SelectItem value="withdrawn">Withdrawn</SelectItem>
+                        
                       </SelectContent>
                     </Select>
                     {filteredProposals.length > 0 ? (
-                      (filteredProposals || []).map((proposal) => (
-                        <Card
-                          key={proposal.id}
-                          className="py-0 px-0 rounded-[22px] mb-3"
-                        >
-                          <CardContent className=" px-5 py-6">
-                            <div className="flex flex-col lg:flex-row lg:justify-start gap-4">
-                              {/* Left Image */}
-                              <div className="w-full lg:w-[300px] rounded-[18px] overflow-hidden shrink-0 self-stretch">
-                                  <img
-                                    src={proposal.agency.coverImage || "/proposal.jpg"}
-                                    alt={proposal.agency.name}
-                                    className="w-full h-full object-cover"
+                     <>
+                     { (paginatedProposals || []).map((proposal) => (
+                       <Card
+                      key={proposal.id}
+                      className="py-0 px-0 rounded-[22px] mb-3"
+                    >
+                      <CardContent className="px-0 lg:px-5 py-0 lg:py-6">
+                        <div className="flex flex-col lg:flex-row gap-4">
+                          
+                          {/* Left Image */}
+                          <div className="max-h-[200px] lg:max-h-[300px] max-w-full lg:max-w-[300px] rounded-t-[18px] lg:rounded-[18px] overflow-hidden sm:shrink-0">
+                            <img
+                              src={proposal?.agency?.coverImage || "/proposal.jpg"}
+                              alt={proposal.agency?.name}
+                              className="h-auto lg:h-full w-full object-cover"
+                            />
+                          </div>
+
+                          {/* Right Side Content */}
+                          <div className="flex-1 px-3 py-2 lg:py-0 lg:pr-5">
+
+                            {/* Top Section (Title + Cost) */}
+                            <div className="flex justify-between flex-wrap items-start mb-2 w-full">
+                              
+                              {/* LEFT CONTENT */}
+                              <div className="flex-1 pr-6">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Badge
+                                    variant="outline"
+                                    className="text-xs border-[#DEDEDE] bg-[#EDEDED] rounded-full h-[30px] px-3"
+                                  >
+                                    {proposal?.requirement?.title || "Unknown Project"}
+                                  </Badge>
+                                </div>
+ 
+                                <h3
+                                  className="text-2xl font-bold text-[#000] mb-0 cursor-pointer"
+                                  // onClick={() =>
+                                  //   handleViewProfile(proposal.providerId)
+                                  // }
+                                >
+                                  {proposal.agency?.name}
+                                </h3>
+
+                                {/* <p className="text-sm ml-1 -mt-1 text-[#939191] font-normal">
+                                  {proposal.agency?.name}
+                                </p> */}
+
+                                {/* Rating */}
+                                <div className="flex items-center mt-0 gap-1 text-sm font-medium">
+                                  <RatingStars
+                                    rating={proposal.agency?.rating}
+                                    reviews={proposal.agency?.reviewCount}
                                   />
-                                </div>
-
-                              {/* Right Content */}
-                              <div>
-                                <div className="flex justify-between items-center mb-2">
-                                  <div>
-                                    <div className="flex items-center gap-2 mb-2">
-                                      <Badge
-                                        variant="outline"
-                                        className="text-xs border-[#DEDEDE] bg-[#EDEDED] rounded-full h-[30px] px-3"
-                                      >
-                                        {proposal?.requirement?.title ||
-                                          "Unknown Project"}
-                                      </Badge>
-                                    </div>
-
-                                    <h3 className="text-2xl font-bold text-[#000] mb-0">
-                                      {proposal.agency.name}
-                                    </h3>
-
-                                    <p className="text-sm ml-1 -mt-1 text-[#939191] font-normal">
-                                      {proposal.agency.name}
-                                    </p>
-
-                                    {/* Rating */}
-                                    <div className="flex items-center mt-0 gap-1 text-sm font-medium">
-                                      <RatingStars
-                                        rating={proposal.agency.rating}
-                                        reviews={proposal.agency.reviewCount}
-                                      />
-                                      <span className="text-sm font-bold text-[#000] mt-1">
-                                        {`${proposal.agency.rating || 0} (${proposal.agency.reviewCount || 0})`}
-                                      </span>
-                                    </div>
-                                  </div>
-
-                                  <div className="text-right mb-0">
-                                    <div className="text-2xl font-bold text-[#39A935]">
-                                      ${proposal.proposedBudget.toLocaleString()}
-                                    </div>
-                                    <div className="text-sm text-[#A0A0A0] -mt-1">
-                                      {proposal.proposedTimeline}
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                  {
-                                    proposal?.coverLetter &&(
-                                      <div>
-                                    <h4 className="font-bold text-xl text-[#616161] mb-0">
-                                      Cover Letter
-                                    </h4>
-                                    <p className="text-[#939191] font-normal text-sm">
-                                      {proposal?.coverLetter}
-                                    </p>
-                                  </div>
+                                  <span className="text-sm font-bold text-[#000] mt-1">
+                                    {proposal.agency?.rating || 0} ({proposal.agency?.reviewCount || 0}{" "}
+                                    <span className="text-gray-500 text-sm font-light">
+                                      Reviews
+                                    </span>
                                     )
-                                  }
-
-                                  <div className="mb-4">
-                                    <h4 className="font-bold text-xl text-[#616161] mb-0">
-                                      Proposal Description
-                                    </h4>
-                                    <p className="text-[#939191] font-normal text-sm">
-                                      {proposal.proposalDescription}
-                                    </p>
-                                  </div>
-
-                                  <div className="flex flex-col md:flex-row items-center justify-between pt-4 border-[#DDDDDD] border-t-2">
-                                    <div className="flex items-center mt-2 mb-3 gap-2">
-                                      <span className="text-sm text-[#000000] font-noormal">
-                                        Submitted on :{" "}
-                                        {new Date(
-                                          proposal.updatedAt,
-                                        ).toLocaleDateString()}
-                                      </span>
-
-                                      <Badge
-                                        className={`border-[#DEDEDE] bg-[#EDEDED] rounded-full text-xs text-[#000] ${getBgColor(
-                                          proposal.status,
-                                        )}`}
-                                      >
-                                        {proposal.status.charAt(0).toUpperCase() +
-                                          proposal.status.slice(1)}
-                                      </Badge>
-                                    </div>
-
-                                    <div className="flex flex-wrap gap-2">
-                                      {/* Shortlist */}                        
-                                        {
-                                          (proposal.status!=="shortlisted"  && proposal.status!=="accepted" && proposal.status!=="rejected") && (
-                                            <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => handleShortlist(proposal.id)}
-                                          className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
-                                        >
-                                          Shortlist
-                                        </Button>
-                                          )
-                                        }
-                                      
-
-                                      {/* Accept */}
-                                      {proposal.status !== "accepted" &&
-                                        proposal.status !== "rejected" && (
-                                          <Button
-                                            variant="default"
-                                            size="sm"
-                                            onClick={() => handleAccept(proposal.id)}
-                                            className="bg-[#39A935] rounded-full text-xs font-bold hover:bg-[#39A935] active:bg-[#39A935]"
-                                          >
-                                            Accept
-                                          </Button>
-                                        )}
-                                      {/*negotation */}
-                                        {proposal.status !== "accepted" &&
-                                        proposal.status !== "rejected" && 
-                                        proposal.status!=="shortlisted" &&
-                                        proposal.status!=="negotation" &&
-                                        proposal.status !== "completed" &&(
-                                          <Button
-                                            variant="default"
-                                            size="sm"
-                                            onClick={() => handlNegotation(proposal.id)}
-                                            className="bg-[#F5A30C] rounded-full text-xs font-bold hover:bg-[#F5A30C] active:bg-[#F5A30C]"
-                                          >
-                                            Negotation
-                                          </Button>
-                                        )}
-
-                                      {/* Reject */}
-                                      {proposal.status !== "accepted" &&
-                                        proposal.status !== "rejected" && (
-                                          <Button
-                                            variant="destructive"
-                                            size="sm"
-                                            onClick={() => handleReject(proposal.id)}
-                                            className="bg-[#FF0000] rounded-full text-xs font-bold hover:bg-[#FF0000] active:bg-[#FF0000]"
-                                          >
-                                            Reject
-                                          </Button>
-                                        )}
-                                    </div>
-                                  </div>
+                                  </span>
                                 </div>
                               </div>
+
+                              {/* RIGHT COST SECTION */}
+                              <div className="md:text-right shrink-0">
+                                <div className="text-md font-bold text-[#39A935]">
+                                  <span className="text-[#000]">Proposed Budget:</span> <span className="text-md"> ${proposal.proposedBudget.toLocaleString()}</span> 
+                                </div>
+                                <div className="text-xs  font-bold text-[#A0A0A0] mt-1">
+                                 <span className="text-[#000]">Proposed Timeline:</span> <span className="text-md">{proposal.proposedTimeline}</span>
+                                </div>
+                              </div>
+
                             </div>
-                          </CardContent>
-                        </Card>
-                      ))
+
+                            {/* Description Section */}
+                            <div className="space-y-2">
+
+                              {proposal?.coverLetter && (
+                                <div>
+                                  <h4 className="font-bold text-xl text-[#616161] mb-0">
+                                    Cover Letter
+                                  </h4>
+                                  <p className="text-[#939191] font-normal line-clamp-2 text-sm">
+                                    {proposal?.coverLetter}
+                                  </p>
+                                </div>
+                              )}
+
+                              <div>
+                              <h4 className="font-bold text-xl text-[#616161] mb-0">
+                                Proposal Description
+                              </h4>
+                              <p className="text-[#939191] font-normal text-sm line-clamp-2">
+                                {proposal.proposalDescription}
+                              </p>
+                            </div>
+
+
+                              {/* Status Section */}
+                              <div className="flex items-center mt-2 mb-3 gap-2">
+                                <span className="text-sm text-[#000000] font-noormal">
+                                  Submitted on :{" "}
+                                  {new Date(
+                                    proposal.updatedAt
+                                  ).toLocaleDateString()}
+                                </span>
+
+                                <Badge
+                                  variant={
+                                    proposal.status === "accepted"
+                                      ? "default"
+                                      : proposal.status === "shortlisted"
+                                      ? "secondary"
+                                      : proposal.status === "rejected"
+                                      ? "destructive"
+                                      : "outline"
+                                  }
+                                  className="border-[#DEDEDE] bg-[#EDEDED] rounded-full text-xs text-[#000]"
+                                >
+                                  {proposal.status.charAt(0).toUpperCase() +
+                                    proposal.status.slice(1)}
+                                </Badge>
+                              </div>
+
+                              {/* Buttons */}
+                              <div className="flex items-center justify-between pt-4 border-[#DDDDDD] border-t-2">
+                                <div className="flex flex-wrap gap-2">
+
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                      handleViewPortfolio(proposal.agency._id)
+                                    }
+                                    className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
+                                  >
+                                    View Profile
+                                  </Button>
+
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                      router.push(`proposals/${proposal.id}`)
+                                    }
+                                    className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
+                                  >
+                                    View Proposal Details
+                                  </Button>
+
+                                  {/* Shortlist */}
+                                  {proposal.status !== "shortlisted" &&
+                                    proposal.status !== "accepted" &&
+                                    proposal.status !== "rejected" &&
+                                    proposal.status !== "completed" && (
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                          handleShortlist(proposal.id)
+                                        }
+                                        className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
+                                      >
+                                        Shortlist
+                                      </Button>
+                                    )}
+
+                                  {/* Negotiation */}
+                                  {proposal.status !== "accepted" &&
+                                    proposal.status !== "rejected" &&
+                                    proposal.status !== "shortlisted" &&
+                                    proposal.status !== "negotation" &&
+                                    proposal.status !== "completed" && (
+                                      <Button
+                                        variant="default"
+                                        size="sm"
+                                        onClick={() =>
+                                          handlNegotation(proposal.id)
+                                        }
+                                        className="bg-[#F5A30C] rounded-full text-xs font-bold hover:bg-[#F5A30C] active:bg-[#F5A30C]"
+                                      >
+                                        Negotation
+                                      </Button>
+                                    )}
+
+                                  {/* Accept */}
+                                  {proposal.status !== "accepted" &&
+                                    proposal.status !== "rejected" &&
+                                    proposal.status !== "completed" && (
+                                      <Button
+                                        variant="default"
+                                        size="sm"
+                                        onClick={() =>
+                                          handleAccept(proposal.id)
+                                        }
+                                        className="bg-[#39A935] rounded-full text-xs font-bold hover:bg-[#39A935] active:bg-[#39A935]"
+                                      >
+                                        Accept
+                                      </Button>
+                                    )}
+
+                                  {/* Reject */}
+                                  {proposal.status !== "rejected" &&
+                                    proposal.status !== "accepted" &&
+                                    proposal.status !== "completed" && (
+                                      <Button
+                                        variant="destructive"
+                                        size="sm"
+                                        onClick={() =>
+                                          handleReject(proposal.id)
+                                        }
+                                        className="bg-[#FF0000] rounded-full text-xs font-bold hover:bg-[#FF0000] active:bg-[#FF0000]"
+                                      >
+                                        Reject
+                                      </Button>
+                                    )}
+                                </div>
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                      ))}
+                       {/* ---------------- PAGINATION ---------------- */}
+                        {totalPages > 1 && (
+                          <div className="flex justify-center items-center gap-2 mt-6 mb-2 flex-wrap text-sm">
+
+                            {/* PREV */}
+                            <button
+                              disabled={page === 1}
+                              onClick={() => setPage((p) => p - 1)}
+                              className={`px-3 py-1 rounded-md ${
+                                page === 1
+                                  ? "text-gray-400 cursor-not-allowed"
+                                  : "text-black cursor-pointer"
+                              }`}
+                            >
+                              Prev
+                            </button>
+
+                            {/* PAGE NUMBERS */}
+                            {/* PAGE NUMBERS */}
+                            {(() => {
+                              const visiblePages = 6; //  show 7 at a time
+
+                              let startPage = Math.max(1, page - visiblePages + 1);
+                              let endPage = startPage + visiblePages - 1;
+
+                              if (endPage > totalPages) {
+                                endPage = totalPages;
+                                startPage = Math.max(1, endPage - visiblePages + 1);
+                              }
+
+                              return Array.from(
+                                { length: endPage - startPage + 1 },
+                                (_, i) => startPage + i
+                              ).map((pageNumber) => (
+                                <button
+                                  key={pageNumber}
+                                  onClick={() => setPage(pageNumber)}
+                                  className={`
+                                    w-8 h-8 rounded-lg cursor-pointer
+                                    ${
+                                      page === pageNumber
+                                        ? "bg-[#2C34A1] text-white font-semibold"
+                                        : "text-gray-500"
+                                    }
+                                  `}
+                                >
+                                  {pageNumber}
+                                </button>
+                              ));
+                            })()}
+                            {/* NEXT */}
+                            <button
+                              disabled={page === totalPages}
+                              onClick={() => setPage((p) => p + 1)}
+                              className={`px-3 py-1 rounded-md ${
+                                page === totalPages
+                                  ? "text-gray-400 cursor-not-allowed"
+                                  : "text-black cursor-pointer"
+                              }`}
+                            >
+                              Next
+                            </button>
+                          </div>
+                        )}
+                     </>
                     ) : (
                       <h2 className="text-2xl text-center mt-10 font-semibold text-[#656565]">
                         No Proposals Found
                       </h2>
                     )}
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               )}
           </div>
         )
@@ -583,148 +739,213 @@ const textareaClass =
           (projectDetails || {}).status === "Allocated" && (
             <div className="space-y-4">
 
-                          {/* HEADER */}
-                          <Card className="rounded-[36px] border border-gray-300 bg-white">
-                            <CardContent className="px-12 py-0 space-y-6">
+        {/* ===================== TOP SECTION ===================== */}
+     
 
-                              {/* Heading */}
-                              <div className="space-y-3 flex flex-wrap justify-between">
-                                <h1 className="text-[28px] font-extrabold text-orange-600 h-8">
-                                  {acceptedProposal.requirement.title}
-                                </h1>
+          {/* Requirement Title */}
+          <div className="flex flex-row flex-wrap justify-between">
 
-                                <Button
-                                  className="bg-[#000] rounded-full w-[100px] hover:bg-[#000] cursor-pointer"
-                                  onClick={() => router.push("/client/dashboard/projects")}
-                                >
-                                  <BsArrowLeft color="#fff" height={8} width={8} />
-                                  Back
-                                </Button>
-                              </div>
+            <h1 className="text-[22px] font-medium text-[#101828]">
+           Project Title:<span className="text-gray-700"> {acceptedProposal.requirement?.title}</span>
+          </h1>
 
-                              {/* Meta row */}
-                              <div className="flex flex-wrap items-center   gap-4 text-[16px]">
-                                <span className="rounded-md leading-none bg-gray-100 px-3 py-1 text-[14px] font-medium text-gray-500">
-                                  {acceptedProposal.requirement.category}
-                                </span>
+          <Button
+              className="bg-[#000] rounded-full h-[30px] mb-3 w-[120px] text-xs lg:text-sm lg:h-[40px] lg:w-[160px]"
+              onClick={() => router.push("/client/dashboard/projects")}
+            >
+          <MoveLeft className="h-4 w-4 " />Back to
+          Projects
+        </Button>
 
-                                <span className="text-gray-900">
-                                  <span className="font-semibold">Budget:</span>{" "}
-                                  <span className="text-gray-500">
-                                    ${acceptedProposal.requirement.budgetMin} – $
-                                    {acceptedProposal.requirement.budgetMax}
-                                  </span>
-                                </span>
+          </div>
+          {/* Agency Details */}
+          <div className="flex items-center -mt-4 justify-between flex-wrap gap-6">
 
-                                <span className="text-gray-900">
-                                  <span className="font-semibold">Timeline:</span>{" "}
-                                  <span className="text-gray-500">
-                                    {acceptedProposal.requirement.timeline}
-                                  </span>
-                                </span>
-                              </div>
+            <div className="flex items-center gap-4">
+              <img
+                src={acceptedProposal.agency?.logo || "/placeholder-logo.png"}
+                alt="agency-logo"
+                className="h-16 w-16 rounded-full object-cover border"
+              />
 
-                              {/* Description */}
-                              <p className="max-w-full text-[14px] leading-5 text-gray-500">
-                                {acceptedProposal.requirement.description}
-                              </p>
+              <div className="space-y-1">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {acceptedProposal.agency?.name}
+                </h2>
 
-                            </CardContent>
-                          </Card>
+          <p className="text-sm text-gray-500 flex items-center gap-2">
+  {acceptedProposal.agency?.country && (
+    <img
+      src={`https://flagcdn.com/24x18/${getCountryIso(
+        acceptedProposal.agency.country
+      )}.png`}
+      alt="flag"
+      className="w-5 h-4 object-cover rounded-sm border"
+    />
+  )}
 
-                          {/* PROPOSAL DETAILS */}
-                          <Card className="rounded-[36px] border border-gray-300 bg-white">
-                            <CardContent className="px-6 py-6 space-y-4">
+  <span>
+    +{acceptedProposal.agency?.countryCode}{" "}
+    {acceptedProposal.agency?.adminContactPhone}
+  </span>
+</p>
 
-                              <div className="flex justify-end">
-                                <Badge className="rounded-full bg-green-500 text-sm h-[30px]">
-                                  {acceptedProposal.status}
-                                </Badge>
-                              </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  
+                   <RatingStars
+                    rating={acceptedProposal.agency?.rating}
+                    
+                     />
+                     <span className="text-sm text-[#000]">{acceptedProposal.agency?.rating}</span>
 
-                              {/* COST & TIMELINE */}
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                <div className="space-y-2">
-                                  <label className="text-[14px] font-bold text-[#98A0B4]">
-                                    Proposed Cost ($)
-                                  </label>
-                                  <div className={fieldClass}>
-                                    ${acceptedProposal.proposedBudget}
-                                  </div>
-                                </div>
+                   <span className="text-gray-400">
+                    ({acceptedProposal.agency?.reviewCount || 0} reviews)
+                  </span> 
+                </div>
+              </div>
+            </div>
 
-                                <div className="space-y-2">
-                                  <label className="text-[14px] font-bold text-[#98A0B4]">
-                                    Estimated Timeline
-                                  </label>
-                                  <div className={fieldClass}>
-                                    {acceptedProposal.proposedTimeline}
-                                  </div>
-                                </div>
-                              </div>
+            {/* <Button
+              variant="outline"
+              className="rounded-full"
+              onClick={() => router.push("/client/dashboard/proposals")}
+            >
+              Back
+            </Button> */}
 
-                              {/* WORK APPROACH */}
-                              <div className="space-y-3">
-                                <label className="text-[14px] font-bold text-[#98A0B4]">
-                                  Work Approach
-                                </label>
-                                <div className={`${textareaClass}`}>
-                                  {acceptedProposal.proposalDescription}
-                                </div>
-                              </div>
+          </div>
+        
 
-                              {/* COVER LETTER */}
-                             {
-                              acceptedProposal?.coverLetter &&(
-                                 <div className="space-y-3">
-                                <label className="text-[14px] font-bold text-[#98A0B4]">
-                                  Cover Letter
-                                </label>
-                                <div className={`${textareaClass}`}>
-                                  {acceptedProposal?.coverLetter}
-                                </div>
-                              </div>
-                              )
-                             }
+      {/* ===================== PROPOSAL DETAILS ===================== */}
+      <Card className="rounded-[14px] border border-[#E4E7EC] bg-white shadow-sm">
+        <CardContent className="px-6 md:px-4 py-0 space-y-0">
 
-                              {/* MILESTONES */}
-                              <div className="space-y-4">
-                                <label className="text-[14px] font-bold text-[#98A0B4]">
-                                  Project Milestones
-                                </label>
+          {/* Status Badge */}
+          <div className="flex justify-end">
+            <Badge
+              className={`rounded-full text-sm px-4 py-1 font-medium bg-green-400`}
+            >
+              Accepted
+            </Badge>
+          </div>
 
-                                {acceptedProposal.milestones.map((milestone, index) => (
-                                  <div
-                                    key={index}
-                                    className={`${fieldClass} ${
-                                      milestone.completed ? "line-through" : ""
-                                    }`}
-                                  >
-                                    {milestone.title}
-                                  </div>
-                                ))}
-                              </div>
+          {/* Cost & Timeline */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-4">
+              <label className="text-sm font-semibold text-[#667085]">
+                Proposed Cost ($)
+              </label>
+              <div className="h-[40px] rounded-xl border border-[#E4E7EC] bg-[#F9FAFB] flex items-center px-4 text-[#344054] font-medium">
+                ${acceptedProposal.proposedBudget}
+              </div>
+            </div>
 
-                              {/*Attachment Document */}
-                              
-                              {
-                                    acceptedProposal.documentUrl && (
-                                      <a
-                                        href={acceptedProposal.documentUrl}
-                                        download
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center cursor-pointer gap-0 -mt-1 text-gray-500"
-                                      >
-                                        <File height={20} width={20} />
-                                        <span className="ml-2 text-md underline">Download Attached Document</span>
-                                      </a>
-                                    )
-                                  }
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-[#667085]">
+                Estimated Timeline
+              </label>
+              <div className="h-[40px] rounded-xl border border-[#E4E7EC] bg-[#F9FAFB] flex items-center px-4 text-[#344054] font-medium">
+                {acceptedProposal.proposedTimeline}
+              </div>
+            </div>
+          </div>
 
-                            </CardContent>
-                          </Card>
+          {/* Work Approach */}
+          <div className="space-y-3 mt-3">
+            <label className="text-sm font-semibold text-[#667085]">
+              Work Approach
+            </label>
+            <div className="rounded-xl border border-[#E4E7EC] bg-[#F9FAFB] p-4 text-[#475467] leading-relaxed text-sm md:text-base">
+              {acceptedProposal.proposalDescription}
+            </div>
+          </div>
 
+          {/* Cover Letter */}
+          {acceptedProposal.coverLetter && (
+            <div className="space-y-3 mt-3">
+              <label className="text-sm font-semibold text-[#667085]">
+                Cover Letter
+              </label>
+              <div className="rounded-xl border border-[#E4E7EC] bg-[#F9FAFB] p-4 text-[#475467] leading-relaxed text-sm md:text-base">
+                {acceptedProposal.coverLetter}
+              </div>
+            </div>
+          )}
+
+          {/* Project Milestones */}
+          <div className="space-y-4 mt-3">
+            <label className="text-sm font-semibold text-[#667085]">
+              Project Milestones
+            </label>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {acceptedProposal.milestones?.map((milestone, index) => (
+                <div
+                  key={index}
+                  className=" flex flex-col justify-between border border-[#E4E7EC] bg-[#F9FAFB] rounded-2xl  hover:shadow-sm transition"
+                >
+                  <div className="flex flex-row justify-end mt-2 mr-3">
+                   {
+                    milestone?.completed &&(
+                       <Badge className="bg-green-400 border-1 rounded-xl text-[10px] h-[18px] ">Completed</Badge>
+                    )
+                   }
+                  </div>
+                  <div className="flex  items-start justify-between px-4 py-2 gap-4">
+                        {/* Left Content */}
+                      <div className="flex gap-3">
+                        
+                        {/* Number Circle */}
+                        <div className="min-w-[28px] h-[28px] rounded-full bg-[#1570EF] text-white text-xs font-semibold flex items-center justify-center">
+                          {index + 1}
+                        </div>
+
+                        {/* Title + Description */}
+                        <div>
+                          <p className="text-sm font-semibold text-[#344054]">
+                            {milestone.title}
+                          </p>
+                          {milestone.description && (
+                            <p className="text-xs text-[#667085] mt-1">
+                              {milestone.description}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Right Arrow */}
+                      <ChevronRight className="text-[#98A2B3] w-4 h-4 mt-1" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Document */}
+          {acceptedProposal.documentUrl && (
+            <a
+              href={acceptedProposal.documentUrl}
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-[#475467] hover:text-[#1570EF] transition text-sm"
+            >
+              <File size={18} />
+              <span className="underline">Download Attached Document</span>
+            </a>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex flex-col border-t border-gray-400 sm:flex-row  justify-between items-center gap-4 mt-3  pt-0">
+            <a className="flex flex-row items-center mt-3  cursor-pointer gap-1" href="/client/dashboard/projects">
+              <ChevronLeft  size={20} className="text-gray-400"/>
+              <span className="text-xs underline text-gray-400">Back to projects</span>
+            </a>
+           
+          </div>
+
+        </CardContent>
+      </Card>
             </div>
           )
       }
