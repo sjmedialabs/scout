@@ -45,6 +45,10 @@ export async function POST(request: NextRequest) {
       lastMessage: content,
       lastMessageAt: new Date(),
       $inc: { [`unreadCount.${receiverId}`]: 1 },
+      // $pull: { deletedFor: receiverId },
+      $pull: {
+  deletedFor: new mongoose.Types.ObjectId(receiverId),
+},
     });
 
     return NextResponse.json({ message });

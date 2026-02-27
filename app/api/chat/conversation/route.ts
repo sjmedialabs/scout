@@ -82,6 +82,10 @@ export async function GET() {
     const conversations = await Conversation.find({
       participants: user.userId,
       isActive: true,
+      // deletedFor: { $nin: [user.userId] },
+      deletedFor: {
+  $nin: [new mongoose.Types.ObjectId(user.userId)],
+},
     })
       .sort({ lastMessageAt: -1 })
       .lean();
