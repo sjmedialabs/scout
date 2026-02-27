@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, use } from "react";
+import { Pencil, Trash2 } from "lucide-react";
 import {
   Phone,
   Video,
@@ -48,16 +49,19 @@ type Attachment = {
 type MessageStatus = "sent" | "delivered" | "read";
 
 type Message = {
-  id: string;
+  _id: string;
+  senderId: string;
   sender: "me" | "them";
   text?: string;
   time: string;
   status: MessageStatus;
   attachments?: Attachment[];
+   createdAt: string;
 };
 
 type Conversation = {
-  id: string;
+  conversationId: string;
+  // id: string;
   name: string;
   avatar: string;
   lastMessage: string;
@@ -164,6 +168,9 @@ const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
   const [sendMsgLoading, setSendMsgLoading] = useState(false);
   const [failed, setFailed] = useState(false);
   const socketRef = useRef<any>(null)
+  const [editMode, setEditMode] = useState(false);
+  const [favorites, setFavorites] = useState<string[]>([]);
+const [deletingId, setDeletingId] = useState<string | null>(null);
 
         useEffect(() => {
       if (socketRef.current) return
@@ -222,6 +229,12 @@ const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
       setResLoading(false);
     }
   };
+//   if (!dynamicConversation.length) return;
+
+//   setFileteredDynamicConversation((prev) => {
+//     return [...dynamicConversation];
+//   });
+// }, [dynamicConversation]);
 
   useEffect(() => {
   const checkScreen = () => {
@@ -234,6 +247,15 @@ const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
   return () => window.removeEventListener("resize", checkScreen);
 }, []);
 
+useEffect(() => {
+  const saved = localStorage.getItem("chatFavorites");
+  if (saved) setFavorites(JSON.parse(saved));
+}, []);
+
+useEffect(() => {
+  localStorage.setItem("chatFavorites", JSON.stringify(favorites));
+}, [favorites]);
+
   useEffect(() => {
     if (!loading && (!user || user.role !== "client")) {
       router.push("/login");
@@ -242,6 +264,15 @@ const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
       loadData();
     }
   }, [user, loading, router]);
+
+//   useEffect(() => {
+//   const saved = localStorage.getItem("chatFavorites");
+//   if (!saved) return;
+
+//   const favs = JSON.parse(saved);
+//   setFavorites(favs);
+// }, [dynamicConversation.length]);
+
 useEffect(() => {
   const socket = socketRef.current
   if (!socket) return
@@ -252,9 +283,33 @@ useEffect(() => {
     dynamicActiveConversation.conversationId
   )
 
-  const handler = (message: any) => {
-    setDynamicMessages((prev) => [...prev, message])
-  }
+  // const handler = (message: any) => {
+  //   setDynamicMessages((prev) => [...prev, message])
+  // }
+
+//   const handler = (message: any) => {
+//   setDynamicMessages((prev) => {
+//     const exists = prev.some(m => m._id === message._id);
+//     if (exists) return prev;
+//     return [...prev, message];
+//   });
+// };
+
+const handler = (payload: any) => {
+  setDynamicMessages((prev) => {
+
+    // ✅ If server sends ARRAY (full history)
+    if (Array.isArray(payload)) {
+      return payload;
+    }
+
+    // ✅ If server sends single message
+    const exists = prev.some(m => m._id === payload._id);
+    if (exists) return prev;
+
+    return [...prev, payload];
+  });
+};
 
   socket.on("receive-message", handler)
 
@@ -315,7 +370,7 @@ useEffect(() => {
 
       //  REAL-TIME UPDATE
       socketRef.current.emit("send-message", message)
-      await fetchMessages(dynamicActiveConversation.conversationId);
+      // await fetchMessages(dynamicActiveConversation.conversationId);
       setUploadedUrl({
         url: "",
         type: "",
@@ -444,6 +499,68 @@ useEffect(() => {
   }
   };
 
+  // const handleDeleteConversation = async (conversationId: string) => {
+  // try {
+  //   setDeletingId(conversationId);
+    
+  //   await authFetch(`/api/chat/conversation/${conversationId}`, {
+  //     method: "DELETE",
+  //   });
+     
+  //   await loadData();
+
+    // remove locally
+    // setDynamicConversation((prev) =>
+    //   prev.filter((c: any) => c.conversationId !== conversationId)
+    // );
+
+    // setFileteredDynamicConversation((prev) =>
+    //   prev.filter((c: any) => c.conversationId !== conversationId)
+    // );
+
+    // // if deleted active chat
+    // if (
+    //   dynamicActiveConversation?.conversationId === conversationId
+    // ) {
+    //   setDynamicActiveConversation(null);
+    //   setDynamicMessages([]);
+    // }
+//   } catch (err) {
+//     console.log("Delete failed", err);
+//   } finally {
+//     setDeletingId(null);
+//   }
+// };
+
+const handleDeleteConversation = async (conversationId: string) => {
+  try {
+    setDeletingId(conversationId);
+
+    const res = await authFetch(
+      `/api/chat/conversation/${conversationId}`,
+      { method: "DELETE" }
+    );
+
+    if (!res.ok) throw new Error();
+
+    // ALWAYS reload from DB
+    await loadData();
+
+  } catch (err) {
+    console.log("Delete failed", err);
+  } finally {
+    setDeletingId(null);
+  }
+};
+
+const toggleFavorite = (conversationId: string) => {
+  setFavorites((prev) =>
+    prev.includes(conversationId)
+      ? prev.filter((id) => id !== conversationId)
+      : [...prev, conversationId]
+  );
+};
+
   //----------------------------------attachements handle ----------------------
   const [uploading, setUploading] = useState(false);
   const [uplodedUrl, setUploadedUrl] = useState({
@@ -547,13 +664,21 @@ useEffect(() => {
       {/* ================= LEFT SIDEBAR ================= */}
       {(!isMobile || !isMobileChatOpen) && (
         <Card className="rounded-2xl p-4 min-h-[90vh]  bg-white">
-          <div className="h-4">
+          <div className="h-5 flex justify-between items-center">
             <h3 className="font-semibold text-2xl mb-3">
               Messages{" "}
               <span className="ml-1 text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full">
                 {totalUnreadMessagesCount}
               </span>
             </h3>
+
+             <button
+              onClick={() => setEditMode((prev) => !prev)}
+              className="flex items-center gap-1 text-sm text-blue-600 hover:opacity-70"
+            >
+              <Pencil className="h-4 w-4" />
+              {editMode ? "Done" : "Edit"}
+            </button>
           </div>
 
           <div className="relative mb-4 h-2 bg-white">
@@ -576,16 +701,37 @@ useEffect(() => {
 
           {(filteredDynamicConversation || []).length !== 0 ? (
             <div className="space-y-2">
-              {filteredDynamicConversation.map((c) => (
+              {[...filteredDynamicConversation]
+              .slice()
+                .sort((a, b) => {
+                  const aFav = favorites.includes(a.conversationId);
+                  const bFav = favorites.includes(b.conversationId);
+                  return aFav === bFav ? 0 : aFav ? -1 : 1;
+                })
+                .map((c) => (
+                // <div
+                //   key={c.conversationId}
+                //   onClick={() => handleClickedConversation(c.conversationId)}
+                //   className={clsx(
+                //     "flex items-center gap-3 p-3 rounded-xl cursor-pointer transition",
+                //     dynamicActiveConversation?.conversationId ===
+                //       c.conversationId
+                //       ? "bg-blue-50"
+                //       : "hover:bg-gray-100",
+                //   )}
+                // >
+
                 <div
                   key={c.conversationId}
-                  onClick={() => handleClickedConversation(c.conversationId)}
+                  onClick={() =>
+                    !editMode && handleClickedConversation(c.conversationId)
+                  }
                   className={clsx(
-                    "flex items-center gap-3 p-3 rounded-xl cursor-pointer transition",
-                    dynamicActiveConversation?.conversationId ===
-                      c.conversationId
+                    "flex items-center gap-3 p-3 rounded-xl transition",
+                    editMode ? "cursor-default" : "cursor-pointer",
+                    dynamicActiveConversation?.conversationId === c.conversationId
                       ? "bg-blue-50"
-                      : "hover:bg-gray-100",
+                      : "hover:bg-gray-100"
                   )}
                 >
                   <div className="relative">
@@ -629,6 +775,58 @@ useEffect(() => {
                       ) : null}
                     </div>
                   </div>
+
+                  {/* ACTION BUTTONS (Edit Mode Only) */}
+{editMode && (
+  <div className="flex items-center gap-3 ml-2">
+
+    {/* Favorite */}
+    {/* <button
+      onClick={() => toggleFavorite(c.conversationId)}
+      className="text-yellow-500 hover:scale-110 transition"
+    >
+      {favorites.includes(c.conversationId) ? "⭐" : "☆"}
+    </button> */}
+    {/* <button
+  onClick={(e) => {
+    e.stopPropagation();
+    toggleFavorite(c.conversationId);
+  }}
+  className="text-yellow-500 hover:scale-110 transition"
+>
+  {favorites.includes(c.conversationId) ? "⭐" : "☆"}
+</button> */}
+
+    {/* Delete */}
+    {/* <button
+      onClick={() =>
+        handleDeleteConversation(c.conversationId)
+      }
+      className="text-red-500 hover:scale-110 transition"
+    >
+      {deletingId === c.conversationId ? (
+        <span className="text-xs">...</span>
+      ) : (
+        <Trash2 className="h-4 w-4" />
+      )}
+    </button> */}
+
+    <button
+  onClick={(e) => {
+    e.stopPropagation();
+    handleDeleteConversation(c.conversationId);
+  }}
+  className="text-red-500 hover:scale-110 transition"
+>
+  {deletingId === c.conversationId ? (
+    <span className="text-xs">...</span>
+  ) : (
+    <Trash2 className="h-4 w-4" />
+  )}
+</button>
+
+  </div>
+)}
                 </div>
               ))}
             </div>
@@ -651,7 +849,7 @@ useEffect(() => {
             <Card className="rounded-2xl px-0 py-0  flex flex-col justify-between bg-white border-0 shadow-none">
 
               {/* Chat Header */}
-              <div className="flex items-start flex-wrap justify-between bg-[#f9f9f9] px-6 py-4 border-b">
+              <div className="flex items-start flex-wrap justify-between bg-[#f9f9f9] px-6 py-2 border-b">
                 <div className="flex items-center gap-3">
 
                   {/* Mobile Back Button */}
@@ -697,7 +895,7 @@ useEffect(() => {
                   <div>
                     {dynamicMessages.map((msg: Message) => (
                       <div
-                        key={msg.id}
+                        key={msg._id}
                         className={clsx(
                           "flex",
                           msg.senderId === user?.id
@@ -852,3 +1050,4 @@ useEffect(() => {
   </div>
 );
 }
+

@@ -23,6 +23,7 @@ export interface IConversation extends Document {
   lastMessage?: string
   lastMessageAt?: Date
   unreadCount: Map<string, number>
+  deletedFor?: mongoose.Types.ObjectId[]
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -63,6 +64,9 @@ const ConversationSchema = new Schema<IConversation>(
     lastMessageAt: { type: Date },
 
     unreadCount: { type: Map, of: Number, default: {} },
+
+    deletedFor: [{ type: Schema.Types.ObjectId, ref: "User", default: [] }],
+
     isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
