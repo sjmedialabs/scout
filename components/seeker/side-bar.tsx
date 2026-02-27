@@ -37,6 +37,7 @@ import {
   BarChart3,
 } from "lucide-react"
 
+
 /* ✅ Flattened Menu Items */
 const menuItems: MenuItem[] = [
   { id: "dashboard", label: "Dashboard", icon: Home, path: "/client/dashboard" },
@@ -46,6 +47,7 @@ const menuItems: MenuItem[] = [
   { id: "messages", label: "Messages", icon: MessageSquare, path: "/client/dashboard/message" },
   { id: "provider-comparison", label: "Provider Comparison", icon: GitCompare, path: "/client/dashboard/provider-comparison" },
   { id: "wishlist", label: "Wish List", icon: Eye, path: "/client/dashboard/wishlist" },
+  {id:"notifications",label:"Notifications",icon:Bell,path:"/client/dashboard/notifications"}
 ]
 
 export default function ClientSidebar({

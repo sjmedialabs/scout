@@ -115,158 +115,7 @@ interface ProjectProposal {
   coverLetter: string;
 }
 
-const mockProjectProposals: ProjectProposal[] = [
-  {
-    id: "pp1",
-    projectId: "proj1",
-    providerId: "prov1",
-    providerName: "TechSolutions Inc",
-    providerRating: 4.8,
-    proposalAmount: 15000,
-    timeline: "8 weeks",
-    description:
-      "We propose to develop a comprehensive e-commerce platform using React, Node.js, and MongoDB. Our team has extensive experience in building scalable web applications with modern technologies. We'll implement advanced features like real-time inventory management, secure payment processing, and analytics dashboard.",
-    submittedAt: "2024-01-15",
-    status: "pending",
-    coverLetter:
-      "We are excited to work on your e-commerce project and deliver a high-quality solution that meets your business needs. Our portfolio includes 20+ successful e-commerce projects.",
-  },
-  {
-    id: "pp2",
-    projectId: "proj1",
-    providerId: "prov2",
-    providerName: "WebCraft Studios",
-    providerRating: 4.6,
-    proposalAmount: 12000,
-    timeline: "10 weeks",
-    description:
-      "Our approach focuses on creating a user-friendly e-commerce platform with advanced features like real-time inventory management, payment gateway integration, and responsive design. We'll use Next.js for optimal performance and SEO.",
-    submittedAt: "2024-01-16",
-    status: "shortlisted",
-    coverLetter:
-      "With 5+ years of e-commerce development experience, we're confident in delivering exceptional results for your project. We guarantee 99.9% uptime and mobile-first design.",
-  },
-  {
-    id: "pp3",
-    projectId: "proj1",
-    providerId: "prov3",
-    providerName: "Digital Commerce Pro",
-    providerRating: 4.7,
-    proposalAmount: 18000,
-    timeline: "6 weeks",
-    description:
-      "Premium e-commerce solution with AI-powered recommendations, advanced analytics, multi-vendor support, and integrated CRM. We'll deliver a future-ready platform that scales with your business.",
-    submittedAt: "2024-01-18",
-    status: "pending",
-    coverLetter:
-      "We specialize in enterprise-level e-commerce solutions and have helped 100+ businesses increase their online revenue by 300% on average.",
-  },
-  {
-    id: "pp4",
-    projectId: "proj2",
-    providerId: "prov4",
-    providerName: "MobileFirst Dev",
-    providerRating: 4.9,
-    proposalAmount: 8000,
-    timeline: "6 weeks",
-    description:
-      "We specialize in React Native development and will create a cross-platform mobile app with native performance, push notifications, offline capabilities, and seamless user experience across iOS and Android.",
-    submittedAt: "2024-01-17",
-    status: "accepted",
-    coverLetter:
-      "Our team has developed 50+ mobile apps with excellent user ratings. We're excited to bring your vision to life with cutting-edge mobile technology.",
-  },
-  {
-    id: "pp5",
-    projectId: "proj2",
-    providerId: "prov5",
-    providerName: "AppCrafters",
-    providerRating: 4.5,
-    proposalAmount: 9500,
-    timeline: "8 weeks",
-    description:
-      "Native iOS and Android development with Flutter framework. We'll create a high-performance mobile app with custom animations, biometric authentication, and cloud synchronization.",
-    submittedAt: "2024-01-19",
-    status: "shortlisted",
-    coverLetter:
-      "We're a team of certified mobile developers with expertise in Flutter, React Native, and native development. Your app will be optimized for performance and user engagement.",
-  },
-  {
-    id: "pp6",
-    projectId: "proj3",
-    providerId: "prov6",
-    providerName: "BrandVision Agency",
-    providerRating: 4.8,
-    proposalAmount: 5000,
-    timeline: "4 weeks",
-    description:
-      "Complete brand identity package including logo design, color palette, typography, brand guidelines, business cards, letterheads, and social media templates. We'll create a memorable brand that resonates with your target audience.",
-    submittedAt: "2024-01-20",
-    status: "pending",
-    coverLetter:
-      "We've created successful brand identities for 200+ companies across various industries. Our designs are modern, timeless, and strategically crafted to drive business growth.",
-  },
-  {
-    id: "pp7",
-    projectId: "proj3",
-    providerId: "prov7",
-    providerName: "Creative Minds Studio",
-    providerRating: 4.6,
-    proposalAmount: 4500,
-    timeline: "3 weeks",
-    description:
-      "Professional brand identity design with focus on minimalist aesthetics and strong visual impact. Includes logo variations, brand style guide, and application mockups across different mediums.",
-    submittedAt: "2024-01-21",
-    status: "rejected",
-    coverLetter:
-      "Our award-winning design team specializes in creating distinctive brand identities that stand out in competitive markets. We guarantee unlimited revisions until you're 100% satisfied.",
-  },
-  {
-    id: "pp8",
-    projectId: "proj4",
-    providerId: "prov8",
-    providerName: "DataFlow Solutions",
-    providerRating: 4.9,
-    proposalAmount: 25000,
-    timeline: "12 weeks",
-    description:
-      "Enterprise CRM system with advanced analytics, automated workflows, customer segmentation, email marketing integration, and comprehensive reporting dashboard. Built with scalability and security in mind.",
-    submittedAt: "2024-01-22",
-    status: "shortlisted",
-    coverLetter:
-      "We're CRM specialists with 10+ years of experience building enterprise solutions for Fortune 500 companies. Our systems handle millions of customer records with 99.99% uptime.",
-  },
-  {
-    id: "pp9",
-    projectId: "proj4",
-    providerId: "prov9",
-    providerName: "Enterprise Tech Hub",
-    providerRating: 4.7,
-    proposalAmount: 22000,
-    timeline: "10 weeks",
-    description:
-      "Custom CRM solution with AI-powered lead scoring, automated sales pipeline management, integration with popular tools (Salesforce, HubSpot), and mobile app for field sales teams.",
-    submittedAt: "2024-01-23",
-    status: "pending",
-    coverLetter:
-      "We understand the complexity of enterprise CRM requirements and have successfully delivered 30+ CRM projects. Our solution will streamline your sales process and boost productivity by 40%.",
-  },
-  {
-    id: "pp10",
-    projectId: "proj5",
-    providerId: "prov10",
-    providerName: "EduTech Innovators",
-    providerRating: 4.8,
-    proposalAmount: 18000,
-    timeline: "10 weeks",
-    description:
-      "Comprehensive learning management system with video streaming, interactive quizzes, progress tracking, certificate generation, discussion forums, and mobile-responsive design for seamless learning experience.",
-    submittedAt: "2024-01-24",
-    status: "pending",
-    coverLetter:
-      "We specialize in educational technology and have built LMS platforms for universities and corporate training programs. Our solutions support 10,000+ concurrent users with excellent performance.",
-  },
-];
+
 
 const ProposalPage = () => {
   const { user, loading } = useAuth();
@@ -508,11 +357,8 @@ const ProposalPage = () => {
   };
 
   const handleViewPortfolio = (providerId: string) => {
-    // setSelectedCompanyId(providerId)
-    // setViewingPortfolio(true)
-    // setViewingProfile(false)
-    // setActiveSection("company-portfolio")
-    router.push(`/client/dashboard/proposals/agency/${providerId}`);
+    
+    window.open(`/provider/${providerId}`, "_blank");
   };
 
   const handleViewProfile = (providerId: string) => {
@@ -650,7 +496,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
     <div className="space-y-3 -mt-5">
       <div>
         <h1 className="text-2xl font-bold my-custom-class text-[#F4561C]">
-          Proposals
+          Proposals <span className="text-[#656565] text-[18px]">({proposals.length})</span> 
           {selectedRequirementProposals[0]?.requirement?.title && (
             <span className="text-[#656565] font-normal text-sm">
               {` (for  ${selectedRequirementProposals[0].requirement?.title} )`}
@@ -664,7 +510,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
         </p>
       </div>
 
-      <div className="flex gap-4 -mt-1 h-[40px] w-fit  justify-center items-center font-bold text-sm text-[#000] bg-[#E6EDF5] rounded-full">
+      {/* <div className="flex gap-4 -mt-1 h-[40px] w-fit  justify-center items-center font-bold text-sm text-[#000] bg-[#E6EDF5] rounded-full">
         <button
           className={`h-[100%] ${
             !selectedRequirement
@@ -675,7 +521,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
         >
           Project Proposals ({proposals.length})
         </button>
-        {/* <button
+        <button
           className={`h-[100%] ${
             selectedRequirement
               ? "bg-[#F54A0C] rounded-full text-[#fff] px-5"
@@ -684,8 +530,8 @@ console.log("Filtered Proposals:::::::",filteredProposals)
           onClick={() => setSelectedRequirement("req" || null)}
         >
           Requirement Proposals
-        </button>  */}
-      </div>
+        </button> 
+      </div> */}
 
       <Card className="bg-transparent py-0 border-none shadow-none rounded-[22px]">
         <CardContent className=" px-2 sm:px-0">
@@ -796,23 +642,23 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                       key={proposal.id}
                       className="py-0 px-0 rounded-[22px] mb-3"
                     >
-                      <CardContent className="px-2 sm:px-5 py-6">
+                      <CardContent className="px-0 lg:px-5 py-0 lg:py-6">
                         <div className="flex flex-col lg:flex-row gap-4">
                           
                           {/* Left Image */}
-                          <div className="max-h-[300px] max-w-full lg:max-w-[300px] rounded-[18px] overflow-hidden sm:shrink-0">
+                          <div className="max-h-[200px] lg:max-h-[300px] max-w-full lg:max-w-[300px] rounded-t-[18px] lg:rounded-[18px] overflow-hidden sm:shrink-0">
                             <img
                               src={proposal?.agency?.coverImage || "/proposal.jpg"}
                               alt={proposal.agency?.name}
-                              className="h-full w-full object-cover"
+                              className="h-auto lg:h-full w-full object-cover"
                             />
                           </div>
 
                           {/* Right Side Content */}
-                          <div className="flex-1">
+                          <div className="flex-1 px-3 py-2 lg:py-0 lg:pr-5">
 
                             {/* Top Section (Title + Cost) */}
-                            <div className="flex justify-between items-start mb-2 w-full">
+                            <div className="flex justify-between flex-wrap items-start mb-2 w-full">
                               
                               {/* LEFT CONTENT */}
                               <div className="flex-1 pr-6">
@@ -824,7 +670,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                     {proposal?.requirement?.title || "Unknown Project"}
                                   </Badge>
                                 </div>
-
+ 
                                 <h3
                                   className="text-2xl font-bold text-[#000] mb-0 cursor-pointer"
                                   onClick={() =>
@@ -834,9 +680,9 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                   {proposal.agency?.name}
                                 </h3>
 
-                                <p className="text-sm ml-1 -mt-1 text-[#939191] font-normal">
+                                {/* <p className="text-sm ml-1 -mt-1 text-[#939191] font-normal">
                                   {proposal.agency?.name}
-                                </p>
+                                </p> */}
 
                                 {/* Rating */}
                                 <div className="flex items-center mt-0 gap-1 text-sm font-medium">
@@ -845,18 +691,22 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                     reviews={proposal.agency?.reviewCount}
                                   />
                                   <span className="text-sm font-bold text-[#000] mt-1">
-                                    {`${proposal.agency?.rating || 0} (${proposal.agency?.reviewCount || 0})`}
+                                    {proposal.agency?.rating || 0} ({proposal.agency?.reviewCount || 0}{" "}
+                                    <span className="text-gray-500 text-sm font-light">
+                                      Reviews
+                                    </span>
+                                    )
                                   </span>
                                 </div>
                               </div>
 
                               {/* RIGHT COST SECTION */}
-                              <div className="text-right shrink-0">
-                                <div className="text-2xl font-bold text-[#39A935]">
-                                  ${proposal.proposedBudget.toLocaleString()}
+                              <div className="md:text-right shrink-0">
+                                <div className="text-md font-bold text-[#39A935]">
+                                  <span className="text-[#000]">Proposed Budget:</span> <span className="text-md"> ${proposal.proposedBudget.toLocaleString()}</span> 
                                 </div>
-                                <div className="text-sm text-[#A0A0A0] -mt-1">
-                                  {proposal.proposedTimeline}
+                                <div className="text-xs  font-bold text-[#A0A0A0] mt-1">
+                                 <span className="text-[#000]">Proposed Timeline:</span> <span className="text-md">{proposal.proposedTimeline}</span>
                                 </div>
                               </div>
 
@@ -870,7 +720,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                   <h4 className="font-bold text-xl text-[#616161] mb-0">
                                     Cover Letter
                                   </h4>
-                                  <p className="text-[#939191] font-normal text-sm">
+                                  <p className="text-[#939191] font-normal line-clamp-2 text-sm">
                                     {proposal?.coverLetter}
                                   </p>
                                 </div>
@@ -924,7 +774,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                     }
                                     className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
                                   >
-                                    View Portfolio
+                                    View Profile
                                   </Button>
 
                                   <Button
@@ -1026,58 +876,69 @@ console.log("Filtered Proposals:::::::",filteredProposals)
               )}
               </div>
               {/* ---------------- PAGINATION ---------------- */}
-{totalPages > 1 && (
-  <div className="flex justify-center items-center gap-2 mt-6 mb-2 flex-wrap text-sm">
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-6 mb-2 flex-wrap text-sm">
 
-    {/* PREV */}
-    <button
-      disabled={page === 1}
-      onClick={() => setPage((p) => p - 1)}
-      className={`px-3 py-1 rounded-md ${
-        page === 1
-          ? "text-gray-400 cursor-not-allowed"
-          : "text-black cursor-pointer"
-      }`}
-    >
-      Prev
-    </button>
+                  {/* PREV */}
+                  <button
+                    disabled={page === 1}
+                    onClick={() => setPage((p) => p - 1)}
+                    className={`px-3 py-1 rounded-md ${
+                      page === 1
+                        ? "text-gray-400 cursor-not-allowed"
+                        : "text-black cursor-pointer"
+                    }`}
+                  >
+                    Prev
+                  </button>
 
-    {/* PAGE NUMBERS */}
-    {Array.from({ length: totalPages }).map((_, i) => {
-      const pageNumber = i + 1;
+                  {/* PAGE NUMBERS */}
+                  {/* PAGE NUMBERS */}
+                  {(() => {
+                    const visiblePages = 6; //  show 7 at a time
 
-      return (
-        <button
-          key={pageNumber}
-          onClick={() => setPage(pageNumber)}
-          className={`
-            w-8 h-8 rounded-lg cursor-pointer
-            ${
-              page === pageNumber
-                ? "bg-[#2C34A1] text-white font-semibold"
-                : "text-gray-500"
-            }
-          `}
-        >
-          {pageNumber}
-        </button>
-      );
-    })}
+                    let startPage = Math.max(1, page - visiblePages + 1);
+                    let endPage = startPage + visiblePages - 1;
 
-    {/* NEXT */}
-    <button
-      disabled={page === totalPages}
-      onClick={() => setPage((p) => p + 1)}
-      className={`px-3 py-1 rounded-md ${
-        page === totalPages
-          ? "text-gray-400 cursor-not-allowed"
-          : "text-black cursor-pointer"
-      }`}
-    >
-      Next
-    </button>
-  </div>
-)}
+                    if (endPage > totalPages) {
+                      endPage = totalPages;
+                      startPage = Math.max(1, endPage - visiblePages + 1);
+                    }
+
+                    return Array.from(
+                      { length: endPage - startPage + 1 },
+                      (_, i) => startPage + i
+                    ).map((pageNumber) => (
+                      <button
+                        key={pageNumber}
+                        onClick={() => setPage(pageNumber)}
+                        className={`
+                          w-8 h-8 rounded-lg cursor-pointer
+                          ${
+                            page === pageNumber
+                              ? "bg-[#2C34A1] text-white font-semibold"
+                              : "text-gray-500"
+                          }
+                        `}
+                      >
+                        {pageNumber}
+                      </button>
+                    ));
+                  })()}
+                  {/* NEXT */}
+                  <button
+                    disabled={page === totalPages}
+                    onClick={() => setPage((p) => p + 1)}
+                    className={`px-3 py-1 rounded-md ${
+                      page === totalPages
+                        ? "text-gray-400 cursor-not-allowed"
+                        : "text-black cursor-pointer"
+                    }`}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </CardContent>

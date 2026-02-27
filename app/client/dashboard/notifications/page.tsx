@@ -28,7 +28,8 @@ const [dynamicNotifications, setDynamicNotifications] = useState<any[]>([]);
       const data = await res.json();
 
       // assuming API response shape: { data: [...] }
-      setDynamicNotifications((data?.data || []).filter((eachItem)=>!eachItem.isRead));
+      // setDynamicNotifications((data?.data || []).filter((eachItem)=>!eachItem.isRead));
+      setDynamicNotifications(data?.data)
     } catch (error) {
       console.error("Notification fetch error:", error);
       setFailed(true);
@@ -108,8 +109,8 @@ useEffect(() => {
 
       {/* NOTIFICATIONS LIST */}
       {!resLoading && !failed && dynamicNotifications.length > 0 && (
-        <Card className="rounded-2xl bg-[#f7f7f7] border">
-          <CardContent className="p-6 space-y-4">
+        <div className="">
+          <div className=" space-y-4">
             {dynamicNotifications.map((item) => (
               <div
                 key={item._id}
@@ -151,8 +152,8 @@ useEffect(() => {
                 </Button>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* EMPTY STATE */}

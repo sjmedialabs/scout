@@ -18,6 +18,13 @@ import { authFetch } from "@/lib/auth-fetch";
 import { BsArrowLeft } from "react-icons/bs";
 import { File } from "lucide-react";
 import PdfUpload from "@/components/pdfUpload";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 
 export default function SubmitProposalPage() {
@@ -84,11 +91,21 @@ export default function SubmitProposalPage() {
   const handleSubmitProposal = async () => {
     if (!validateForm()) return;
 
-    if(!((milestones ||  []).length>=2)){
-      alert("Atleast two milestones will required for the proposal")
-      return
-    }
+      if (!milestones || milestones.length < 2) {
+      alert("At least two milestones are required for the proposal");
+      return;
+      }
 
+    // Check each milestone
+    const hasEmptyFields = milestones.some(
+      (milestone) =>
+        !milestone.title.trim() || !milestone.description.trim()
+    );
+
+    if (hasEmptyFields) {
+      alert("Each milestone must have both title and description");
+      return;
+    }
     setIsSubmitting(true);
     setSuccess(false);
 
@@ -102,7 +119,7 @@ export default function SubmitProposalPage() {
         proposedTimeline: timeline,
         proposalDescription: approach,
         coverLetter: coverLetter,
-        milestones: milestones.map((eachItem) => ({ title: eachItem })),
+        milestones: milestones.map((eachItem) => ({ title: eachItem.title,description:eachItem.description })),
         documentUrl: documentUrl
       };
 
@@ -178,8 +195,10 @@ export default function SubmitProposalPage() {
 
   const [cost, setCost] = useState("");
   const [timeline, setTimeline] = useState("");
+  const [timelineUnit, setTimelineUnit] = useState("Days"); // 
+  const [timelineValue, setTimelineValue] = useState("");
   const [approach, setApproach] = useState("");
-  const [milestones, setMilestones] = useState([""]);
+  const [milestones, setMilestones] = useState([{title:"",description:""}]);
   const [coverLetter, setCoverLetter] = useState("");
   const[documentUrl,setDocumentUrl] = useState("");
 
@@ -325,30 +344,58 @@ export default function SubmitProposalPage() {
               </div>
 
               {/* Estimated Timeline */}
-              <div className="space-y-2">
-                <label className="text-[15px] font-bold text-[#98A0B4]">
-                  Estimated Timeline
-                </label>
+               <div className="space-y-2">
+  <label className="text-[15px] font-bold text-[#98A0B4]">
+    Estimated Timeline
+  </label>
 
-                <Input
-                  value={timeline}
-                  onChange={(e) => {
-                    setTimeline(e.target.value);
-                    if (errors.timeline || errors.form) {
-                      setErrors({ ...errors, timeline: false, form: false });
-                    }
-                  }}
-                  placeholder="Enter Estimated Timeline"
-                  className={`
-                  h-10 rounded-xl text-[16px] placeholder:text-[12px] placeholder:text-[#98A0B4]
-                  ${errors.timeline ? "border-red-500" : "border-gray-200"}
-                `}
-                />
+  <div className="flex gap-2">
+    {/* Number Input */}
+    <Input
+      type="number"
+      value={timelineValue}
+      onChange={(e) => {
+        const value = e.target.value;
+        setTimelineValue(value);
 
-                <p className="text-[12px] text-gray-300">
-                  Client expectation: {requirement.timeline}
-                </p>
-              </div>
+        setTimeline(`${value} ${timelineUnit}`);
+
+        if (errors.timeline || errors.form) {
+          setErrors({ ...errors, timeline: false, form: false });
+        }
+      }}
+      placeholder="Enter value"
+      className={`
+        h-10 rounded-xl text-[16px] placeholder:text-[12px] placeholder:text-[#98A0B4]
+        ${errors.timeline ? "border-red-500" : "border-gray-200"}
+      `}
+    />
+
+    {/* ShadCN Select */}
+    <Select
+      value={timelineUnit}
+      onValueChange={(unit) => {
+        setTimelineUnit(unit);
+        setTimeline(`${timelineValue} ${unit}`);
+      }}
+    >
+      <SelectTrigger className="h-10 w-[140px] rounded-xl border-gray-200 text-[14px]">
+        <SelectValue placeholder="Select Unit" />
+      </SelectTrigger>
+
+      <SelectContent>
+        <SelectItem value="Days">Days</SelectItem>
+        <SelectItem value="Weeks">Weeks</SelectItem>
+        <SelectItem value="Months">Months</SelectItem>
+        <SelectItem value="Years">Years</SelectItem>
+      </SelectContent>
+    </Select>
+  </div>
+
+  <p className="text-[12px] text-gray-300">
+    Client expectation: {requirement.timeline}
+  </p>
+</div>
             </div>
 
             {/* WORK APPROACH */}
@@ -397,43 +444,64 @@ export default function SubmitProposalPage() {
                 <Button
                   type="button"
                   className="h-8 rounded-lg bg-black px-4 text-[14px] font-medium text-white flex items-center gap-2 hover:bg-black/80"
-                  onClick={() => setMilestones([...milestones, ""])}
+                  onClick={() =>
+                    setMilestones([...milestones, { title: "", description: "" }])
+                  }
                 >
                   + Add Milestone
                 </Button>
               </div>
-
-              {milestones.map((milestone, index) => (
-                <div key={index} className="relative">
-                  <Input
-                    value={milestone}
-                    onChange={(e) => {
-                      const updated = [...milestones];
-                      updated[index] = e.target.value;
-                      setMilestones(updated);
-                    }}
-                    placeholder={`Milestone -${index + 1}`}
-                    className="h-10 border border-gray-200 rounded-xl text-[16px] placeholder:text-[#98A0B4]"
-                  />
-
-                  {/* Remove button */}
-                  {milestones.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setMilestones(milestones.filter((_, i) => i !== index))
-                      }
-                      className="
-                    absolute right-3 top-1/2 -translate-y-1/2
-                    text-gray-400 hover:text-red-500
-                    text-sm font-medium
-                  "
+                  {milestones.map((milestone, index) => (
+                    <div
+                      key={index}
+                      className="relative border border-gray-200 rounded-xl p-4 space-y-3"
                     >
-                      ✕
-                    </button>
-                  )}
-                </div>
-              ))}
+                      {/* Title Input */}
+                      <Input
+                        value={milestone.title}
+                        onChange={(e) => {
+                          const updated = [...milestones];
+                          updated[index].title = e.target.value;
+                          setMilestones(updated);
+                        }}
+                        placeholder={`Milestone Title - ${index + 1}`}
+                        className="h-10 border mt-3 border-gray-200 rounded-xl text-[16px] placeholder:text-[#98A0B4]"
+                      />
+
+                      {/* Description Input */}
+                      <div className="relative">
+                        <textarea
+                          value={milestone.description}
+                          maxLength={50}
+                          onChange={(e) => {
+                            const updated = [...milestones];
+                            updated[index].description = e.target.value;
+                            setMilestones(updated);
+                          }}
+                          placeholder="Milestone Description (Max 50 characters)"
+                          className="w-full h-20 border border-gray-200 rounded-xl text-[14px] p-2 resize-none placeholder:text-[#98A0B4]"
+                        />
+
+                        {/* Character Counter */}
+                        <span className="absolute bottom-2 right-3 text-xs text-gray-400">
+                          {milestone.description?.length}/50
+                        </span>
+                      </div>
+
+                      {/* Remove Button */}
+                      {milestones.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setMilestones(milestones.filter((_, i) => i !== index))
+                          }
+                          className="absolute top-0 right-3  text-gray-400 hover:text-red-500 text-sm font-medium"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                  ))}
 
 
             </div>

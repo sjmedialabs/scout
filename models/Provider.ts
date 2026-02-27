@@ -34,6 +34,8 @@ export interface IProvider extends Document {
   salesEmail?: string
   phone?: string
   adminContactPhone?: string
+  countryCode?:string
+  country?:string
   services: string[]
   technologies: string[]
   industries: string[]
@@ -111,6 +113,8 @@ const ProviderSchema = new Schema<IProvider>(
     salesEmail: { type: String },
     phone: { type: String },
     adminContactPhone: { type: String },
+    country:{type:String},
+    countryCode:{type:String},
     services: [{ type: String }],
     technologies: [{ type: String }],
     industries: [{ type: String }],

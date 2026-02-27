@@ -67,7 +67,7 @@ export async function GET(
       userId: { $in: agencyUserIds },
     })
       .select(
-        "userId name logo coverImage rating reviewCount location services technologies",
+        "userId name logo adminContactPhone countryCode country coverImage rating reviewCount location services technologies",
       )
       .lean();
 

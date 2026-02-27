@@ -27,6 +27,10 @@ import { ImageUpload } from "../ui/image-upload";
 import { authFetch } from "@/lib/auth-fetch";
 import ServiceDropdown from "../select-category-filter";
 
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import { isValidPhoneNumber } from "libphonenumber-js";
+
 interface CompanyProfileEditorProps {
   provider: Provider;
   onSave: (provider: Provider) => void;
@@ -47,10 +51,14 @@ const validateURL = (url: string): boolean => {
   }
 };
 
-const validatePhone = (phone: string): boolean => {
-  if (!phone) return true; // Optional field
-  const phoneRegex = /^[+]?[1-9][\d]{0,15}$/;
-  return phoneRegex.test(phone.replace(/[\s\-$$$$]/g, ""));
+// const isValidPhone = (phone: string) => {
+//   return isValidPhoneNumber("+" + phone);
+// };
+
+
+const validatePhone = (countryCode: string, phone: string): boolean => {
+  if (!countryCode || !phone) return false;
+  return isValidPhoneNumber(`+${countryCode}${phone}`);
 };
 
 const validateTagline = (tagline: string): boolean => {
@@ -101,6 +109,8 @@ export function CompanyProfileEditor({
     salesEmail: provider.salesEmail || "",
     schedulingLink: provider.schedulingLink || "",
     adminContactPhone: provider.adminContactPhone || "",
+    countryCode:provider.countryCode || "91",
+    country:provider.country || "India",
     foundedYear: provider.foundedYear || new Date().getFullYear(),
     totalEmployees: provider.teamSize || "",
     tagline: provider.tagline || "",
@@ -215,11 +225,11 @@ export function CompanyProfileEditor({
     }
 
     if (
-      formData.adminContactPhone &&
-      !validatePhone(formData.adminContactPhone)
-    ) {
-      newErrors.adminContactPhone = "Please enter a valid phone number";
-    }
+  formData.adminContactPhone &&
+  !validatePhone(formData.countryCode, formData.adminContactPhone)
+) {
+  newErrors.adminContactPhone = "Please enter a valid phone number";
+}
 
     if (formData.companyVideoLink && !validateURL(formData.companyVideoLink)) {
       newErrors.companyVideoLink = "Please enter a valid URL";
@@ -242,6 +252,8 @@ export function CompanyProfileEditor({
         salesEmail: formData.salesEmail,
         phone: formData.phone,
         adminContactPhone: formData.adminContactPhone,
+        countryCode:formData.countryCode,
+        country:formData.country,
         minProjectSize: formData.minProjectSize,
         focusArea: formData.focusArea,
 
@@ -679,32 +691,53 @@ export function CompanyProfileEditor({
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label
-              htmlFor="adminContactPhone"
-              className="text-sm text-[#98A0B4] font-semibold font-inter"
-            >
-              Admin Contact Phone
-            </Label>
-            <Input
-              id="adminContactPhone"
-              type="tel"
-              value={formData.adminContactPhone}
-              onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  adminContactPhone: e.target.value,
-                }));
-                if (errors.adminContactPhone)
-                  setErrors((prev) => ({ ...prev, adminContactPhone: "" }));
-              }}
-              className={`${errors.adminContactPhone ? "border-red-500" : ""} placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
-              placeholder="Admin Contact Phone"
-            />
-            {errors.adminContactPhone && (
-              <p className="text-sm text-red-500">{errors.adminContactPhone}</p>
-            )}
-          </div>
+ <div className="space-y-2">
+  <Label
+    htmlFor="adminContactPhone"
+    className="text-sm text-[#98A0B4] font-semibold font-inter"
+  >
+    Admin Contact Phone
+  </Label>
+
+  <PhoneInput
+    country={"in"}
+    enableSearch={true}                 // ✅ enables search
+    searchPlaceholder="Search country"
+    searchNotFound="No country found"
+    autocompleteSearch={true}
+    value={`${formData.countryCode || ""}${formData.adminContactPhone || ""}`}
+    onChange={(value, data: any) => {
+      const dialCode = data.dialCode;
+      const phoneNumber = value.slice(dialCode.length);
+
+      setFormData((prev) => ({
+        ...prev,
+        adminContactPhone: phoneNumber,
+        country: data.name,
+        countryCode: dialCode,
+      }));
+
+      if (errors.adminContactPhone) {
+        setErrors((prev) => ({ ...prev, adminContactPhone: "" }));
+      }
+    }}
+    inputProps={{
+      name: "adminContactPhone",
+      required: true,
+    }}
+    inputClass={`!w-full !h-[40px] !text-sm !border-[#D0D5DD] !rounded-[6px] font-inter ${
+      errors.adminContactPhone ? "!border-red-500" : ""
+    }`}
+    buttonClass="!border-[#D0D5DD] !rounded-l-[6px]"
+    containerClass="!w-full"
+  />
+
+  {errors.adminContactPhone && (
+    <p className="text-sm text-red-500">
+      {errors.adminContactPhone}
+    </p>
+  )}
+</div>
 
           <div className="space-y-2">
             <Label
