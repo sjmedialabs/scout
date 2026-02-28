@@ -29,7 +29,8 @@ export interface IProposal extends Document {
     cost: number
     willingToRefer: number
   }
-  documentUrl?: string,
+  documentUrl?: string
+  acceptedAt:Date
   createdAt: Date
   updatedAt: Date
 }
@@ -63,6 +64,7 @@ const ProposalSchema = new Schema<IProposal>(
     clientResponded: { type: Boolean, default: false },
     proposalDescription:{type:String},
     clientRespondedAt: { type: Date },
+    acceptedAt:{type:Date},
     conversationStarted: { type: Boolean, default: false },
     rating: {
       quality: { type: Number, min: 1, max: 5 },

@@ -108,6 +108,7 @@ export async function GET(request: NextRequest) {
       status: p.status,
       createdAt: p.createdAt,
       updatedAt: p.updatedAt,
+      acceptedAt:p.acceptedAt,
       clientViewed:p.clientViewed,
       clientResponded:p.clientResponded,
       clientId:p.clientId,
