@@ -26,7 +26,7 @@ export interface Lead{
   countryCode: string
   country: string
   message: string
-  status: "pending" | "cleared"
+  status: "pending" | "contacted" | "won" | "dropped"
   projectTitle: string
   category: string
   description: string

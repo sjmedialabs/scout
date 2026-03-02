@@ -10,7 +10,7 @@ export interface ILead extends Document {
   countryCode: string
   country: string
   message: string
-  status: "pending" | "cleared"
+  status: "pending" | "contacted" | "won" |"dropped"
   projectTitle?: string
   category?: string
   description?: string
@@ -59,7 +59,7 @@ const LeadSchema = new Schema<ILead>(
     },
     status: {
       type: String,
-      enum: ["pending", "cleared"],
+      enum: ["pending" , "contacted" , "won" ,"dropped"],
       default: "pending",
     },
 

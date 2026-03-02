@@ -43,17 +43,17 @@ const menuItems: MenuItem[] = [
   // OVERVIEW
   { id: "dashboard", label: "Dashboard", icon: Home, path: "/agency/dashboard" },
   { id: "editprofile", label: "EditProfile", icon: Briefcase, path: "/agency/dashboard/editprofile" },
-  { id: "portfolio", label: "Portfolio", icon: Briefcase, path: "/agency/dashboard/portfolio" },
+  // { id: "portfolio", label: "Portfolio", icon: Briefcase, path: "/agency/dashboard/portfolio" },
   { id: "reviews", label: "Reviews", icon: Star, path: "/agency/dashboard/reviews" },
   { id: "messages", label: "Messages", icon: MessageSquare, path: "/agency/dashboard/messages" },
-  { id: "project-inquiries", label: "Project Inquiries", icon: FileSearch, path: "/agency/dashboard/project-inquiries" },
+  // { id: "project-inquiries", label: "Project Inquiries", icon: FileSearch, path: "/agency/dashboard/project-inquiries" },
   { id: "proposals", label: "Proposals", icon: FileText, path: "/agency/dashboard/proposals" },
   { id: "projects", label: "Projects", icon: Briefcase, path: "/agency/dashboard/projects" },
 
   // PERFORMANCE
-  { id: "performance-analytics", label: "Performance Analytics", icon: TrendingUp, path: "/agency/dashboard/performance/analytics" },
+  // { id: "performance-analytics", label: "Performance Analytics", icon: TrendingUp, path: "/agency/dashboard/performance/analytics" },
   // { id: "audience-insights", label: "Audience Insights", icon: Eye, path: "/agency/dashboard/performance/audience-insights" },
-  { id: "competitor-comparison", label: "Competitor Comparison", icon: GitCompare, path: "/agency/dashboard/performance/competitor-comparison" },
+  // { id: "competitor-comparison", label: "Competitor Comparison", icon: GitCompare, path: "/agency/dashboard/performance/competitor-comparison" },
 
   // MARKETING
   { id: "lead-generation", label: "Lead Management", icon: Download, path: "/agency/dashboard/leads" },

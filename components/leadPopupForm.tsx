@@ -88,6 +88,12 @@ export default function ContactProviderModal({
     try {
       setLoading(true)
 
+      const phoneWithoutCode = form.phone.startsWith(
+      form.countryCode.replace("+", "")
+    )
+      ? form.phone.slice(form.countryCode.replace("+", "").length)
+      : form.phone;
+
       const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -95,7 +101,7 @@ export default function ContactProviderModal({
           userId,
           name: form.name,
           email: form.email,
-          contactNumber: form.phone,
+          contactNumber: phoneWithoutCode, // ✅ only number
           countryCode: form.countryCode,
           country: form.country,
           message: form.message,
@@ -107,8 +113,7 @@ export default function ContactProviderModal({
           maxbudget: form.maxbudget,
           timeline: form.timeline,
           attachmentUrls: form.attachmentUrls,
-        }),
-      })
+        }),})
 
       const data = await res.json()
 
@@ -158,6 +163,8 @@ export default function ContactProviderModal({
               onChange={(e) =>
                 setForm({ ...form, name: e.target.value })
               }
+              placeholder="Enter your name"
+              className="border-1 text-[#000] border-gray-600 rounded-[8px] placeholder:text-[#6a7282]"
             />
           </div>
 
@@ -170,6 +177,8 @@ export default function ContactProviderModal({
               onChange={(e) =>
                 setForm({ ...form, email: e.target.value })
               }
+               placeholder="Enter your email"
+              className="border-1 text-[#000] border-gray-600 rounded-[8px] placeholder:text-[#6a7282]"
             />
           </div>
 
@@ -177,23 +186,23 @@ export default function ContactProviderModal({
           <div>
             <Label>Phone Number</Label>
             <PhoneInput
-              country={"in"}
-              enableSearch
-              value={form.phone}
-              onChange={(phone, data) =>
-                setForm({
-                  ...form,
-                  phone,
-                  country: data.name,
-                  countryCode: "+" + data.dialCode,
-                })
-              }
-              inputStyle={{
-                width: "100%",
-                borderRadius: "8px",
-                height: "40px",
-              }}
-            />
+  country={"in"}
+  enableSearch
+  value={form.phone}
+  onChange={(phone, data) => {
+    setForm({
+      ...form,
+      phone, // ✅ store full number
+      country: data.name,
+      countryCode: "+" + data.dialCode,
+    });
+  }}
+  inputStyle={{
+    width: "100%",
+    borderRadius: "8px",
+    height: "40px",
+  }}
+/>
           </div>
 
           {/* Project Title */}
@@ -204,6 +213,8 @@ export default function ContactProviderModal({
               onChange={(e) =>
                 setForm({ ...form, projectTitle: e.target.value })
               }
+               placeholder="Enter your project title"
+              className="border-1 text-[#000] border-gray-600 rounded-[8px] placeholder:text-[#6a7282]"
             />
           </div>
 
@@ -222,7 +233,7 @@ export default function ContactProviderModal({
                                 setForm((p) => ({ ...p, category: value }))
                               }
                               placeholder="Select service"
-                              triggerClassName="border-2 border-[#D0D5DD] text-[#000] rounded-[8px] p-4
+                              triggerClassName="border-2 border-gray-400 text-[#000] rounded-[8px] p-4
                                   text-xs"
                               triggerSpanClassName="text-[#000]"
                             />
@@ -236,6 +247,8 @@ export default function ContactProviderModal({
               onChange={(e) =>
                 setForm({ ...form, description: e.target.value })
               }
+               placeholder="Enter your project description"
+              className="border-1 text-[#000] border-gray-600 rounded-[8px] placeholder:text-[#6a7282]"
             />
           </div>
 
@@ -249,6 +262,8 @@ export default function ContactProviderModal({
                 onChange={(e) =>
                   setForm({ ...form, minbudget: e.target.value })
                 }
+                 placeholder="Enter your minimum budget"
+              className="border-1 text-[#000] border-gray-600 rounded-[8px] placeholder:text-[#6a7282]"
               />
             </div>
 
@@ -260,6 +275,8 @@ export default function ContactProviderModal({
                 onChange={(e) =>
                   setForm({ ...form, maxbudget: e.target.value })
                 }
+                 placeholder="Enter your maximum bdget"
+              className="border-1 text-[#000] border-gray-600 rounded-[8px] placeholder:text-[#6a7282]"
               />
             </div>
           </div>
@@ -273,7 +290,9 @@ export default function ContactProviderModal({
                 type="number"
                 min={1}
                 placeholder="Enter Timeline"
-                className="w-40"
+                
+              className="border-1 w-40 text-[#000] border-gray-600 rounded-[8px] placeholder:text-[#6a7282]"
+                
                 onChange={(e) => {
                   const value = e.target.value
                   const unit = form.timeline.split(" ")[1] || "days"
@@ -306,7 +325,7 @@ export default function ContactProviderModal({
                   }))
                 }}
               >
-                <SelectTrigger className="w-[120px]">
+                <SelectTrigger className="w-[120px] border-1  text-[#000] border-gray-600 rounded-[8px]" >
                   <SelectValue />
                 </SelectTrigger>
 
@@ -335,7 +354,7 @@ export default function ContactProviderModal({
           </div>
 
           {/* Message */}
-          <div>
+          {/* <div>
             <Label>Message</Label>
             <Textarea
               value={form.message}
@@ -350,7 +369,7 @@ export default function ContactProviderModal({
             <div className="text-right text-xs text-gray-500">
               {form.message.length}/{MAX_LENGTH}
             </div>
-          </div>
+          </div> */}
 
           {error && (
             <p className="text-sm text-red-500">{error}</p>

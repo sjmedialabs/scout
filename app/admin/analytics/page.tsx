@@ -22,6 +22,7 @@ import { authFetch } from "@/lib/auth-fetch";
 import { FaAws } from "react-icons/fa";
 
 export default function AnalyticsPage() {
+  
   const [stats, setStats] = useState(mockAdminStats);
   // const [subscriptionStats, setSubscriptionStats] = useState(
   //   mockSubscriptionStats,
@@ -40,6 +41,16 @@ export default function AnalyticsPage() {
     monthlyRevenue:0,
     percentageIncrease:0
   });
+  const[topCardsStats,setTopCardsStats]=useState({
+    totalUsers:0,
+    usersAddedInthisMonth:0,
+    totalClients:0,
+    clientsAddedInThisMonth:0,
+    totalAgencies:0,
+    agenciesAddedInThisMonth:0,
+    monthlyRevenue:0,
+    totalMonthlyRevenue:0
+  })
   const [topPerformingAgencies, setTopPerformingAgencies] = useState<
     Provider[]
   >([]);
@@ -103,6 +114,9 @@ export default function AnalyticsPage() {
         let agenciesCount = totalUsers - clientCounts;
         let agencyCountPercentage =
           totalUsers > 0 ? Math.round((agenciesCount / totalUsers) * 100) : 0;
+
+
+      
 
         // console.log("Total users count::::", totalUsers);
         // console.log("clients counts::::", clientCounts);
@@ -250,7 +264,49 @@ export default function AnalyticsPage() {
           const reportsData=await reportsRes.json();
           setReports(reportsData.reports.filter((item)=>item.status==="pending"));
 
+         
+          const usersAddedThisMonth = usersData.users.filter((user) => {
+        const createdDate = new Date(user.createdAt);
 
+        return (
+          createdDate.getMonth() === currentMonth &&
+          createdDate.getFullYear() === currentYear
+        );
+      }).length;
+
+      let clientsAddedThisMonth = usersData.users.filter((eachItem) => {
+        if (eachItem.role !== "client") return false;
+
+        const createdDate = new Date(eachItem.createdAt);
+
+        return (
+          createdDate.getMonth() === currentMonth &&
+          createdDate.getFullYear() === currentYear
+        );
+      }).length;
+
+      let agenciesAddedThisMonth = usersData.users.filter((eachItem) => {
+        if (eachItem.role !== "agency") return false;
+
+        const createdDate = new Date(eachItem.createdAt);
+
+        return (
+          createdDate.getMonth() === currentMonth &&
+          createdDate.getFullYear() === currentYear
+        );
+      }).length;
+
+        
+        setTopCardsStats({
+          totalUsers:totalUsers,
+          usersAddedInthisMonth:usersAddedThisMonth,
+          totalClients:clientCounts,
+          clientsAddedInThisMonth:clientsAddedThisMonth,
+          totalAgencies:agenciesCount,
+          agenciesAddedInThisMonth:agenciesAddedThisMonth,
+          monthlyRevenue:0,
+          totalMonthlyRevenue:0
+        })
 
 
       } catch (error) {
@@ -346,26 +402,26 @@ const getARPU = (payments) => {
           title="Total Users"
           icon={<Users className="h-4 w-4 text-orangeButton" />}
           gradient="from-blue-100 to-blue-200"
-          value={users.length}
-          helper={`${userDistribution.pendingApproval} pending approval`}
+          value={topCardsStats.totalUsers}
+          helper={`${topCardsStats.usersAddedInthisMonth}  this month`}
         />
 
         {/* Active Projects */}
         <DashboardCard
-          title="Active Projects"
+          title="Clients"
           icon={<FileText className="h-4 w-4 text-orangeButton" />}
           gradient="from-green-100 to-green-200"
-          value={activeRequirements}
-          helper={`${requirements.length} requirements posted`}
+          value={topCardsStats.totalClients}
+          helper={`${topCardsStats.clientsAddedInThisMonth} this month`}
         />
 
         {/* Pending Reports */}
         <DashboardCard
-          title="Pending Reports"
+          title="Agencies"
           icon={<AlertTriangle className="h-4 w-4 text-orangeButton" />}
           gradient="from-orange-100 to-orange-200"
-          value={pendingReports}
-          helper="Require moderation"
+          value={topCardsStats.totalAgencies}
+          helper={`${topCardsStats.agenciesAddedInThisMonth} this month`}
         />
 
         {/* Monthly Revenue */}
@@ -388,8 +444,8 @@ const getARPU = (payments) => {
         topProviders={topPerformingAgencies}
       />
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Total Users */}
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        
         <DashboardCard
           title="Average Revenue Per User"
           icon={<Users className="h-4 w-4 text-orangeButton" />}
@@ -398,7 +454,7 @@ const getARPU = (payments) => {
           helper={`From ${bottomCardStats.activeSubscriberCount || 0} active subscriptions`}
         />
 
-        {/* Average Revenue per user */}
+       
         <DashboardCard
           title="Average Revenue Per User"
           icon={<FileText className="h-4 w-4 text-orangeButton" />}
@@ -407,7 +463,7 @@ const getARPU = (payments) => {
           helper={`Per paying user`}
         />
 
-        {/* Platform Growth percentage */}
+        
         <DashboardCard
           title="Platform Growth"
           icon={<AlertTriangle className="h-4 w-4 text-orangeButton" />}
@@ -415,7 +471,7 @@ const getARPU = (payments) => {
           value={`${bottomCardStats.platformGrowthPercentage}%`}
           helper="Month over month growth"
         />
-      </div>
+      </div> */}
     </div>
   );
 }

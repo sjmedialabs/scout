@@ -59,7 +59,7 @@ import type {
   Requirement,
   Notification,
   Project,
-  Review,
+  Review, 
 } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { BrowseRequirements } from "@/components/provider/browse-requirements";

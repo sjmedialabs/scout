@@ -11,54 +11,7 @@ import { authFetch } from "@/lib/auth-fetch";
    BACKEND / CMS READY DATA
 ---------------------------------- */
 
-const notifications = [
-  {
-    id: 1,
-    type: "user",
-    avatar:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100",
-    message:
-      "Woohoo! Kian Jhonson hired you for Social Media Marketing Campaign project",
-    time: "1 year ago",
-    action: "View proposals",
-  },
-  {
-    id: 2,
-    type: "system",
-    message:
-      'Congratulations! You have successfully purchased the "Economy Plan" package. You can now post a service and get orders',
-    time: "1 year ago",
-    action: "Post a task",
-  },
-  {
-    id: 3,
-    type: "system",
-    message:
-      '"" has cancelled the order of Logo design and unique brand Identity and has left some comments for you.',
-    time: "2 years ago",
-    action: "View activity",
-  },
-  {
-    id: 4,
-    type: "user",
-    avatar:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100",
-    message:
-      'You have received a note from "Kian Jhonson" on the task "Logo design and unique brand Identity"',
-    time: "2 years ago",
-    action: "View order details",
-  },
-  {
-    id: 5,
-    type: "user",
-    avatar:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100",
-    message:
-      'You have received a note from "Kian Jhonson" on the task "Logo design and unique brand Identity"',
-    time: "2 years ago",
-    action: "View order details",
-  },
-];
+
 
 /* ----------------------------------
    PAGE
@@ -76,11 +29,11 @@ export default function NotificationsPage() {
     try {
       const response = await authFetch("/api/notifications");
       const data = await response.json();
-      const notificationsData = (data.data || []).filter(
-        (item: any) => item.isRead === false,
-      );
-      console.log("Fetched notifications data:", notificationsData);
-      setDynamicNotifications(notificationsData);
+      // const notificationsData = (data.data || []).filter(
+      //   (item: any) => item.isRead === false,
+      // );
+      // console.log("Fetched notifications data:", notificationsData);
+      setDynamicNotifications(data.data);
     } catch (err) {
       setFailed(true);
       console.log("Error loading notifications data:", err);

@@ -25,7 +25,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
 
     const { id } = params
 
-    // ✅ Validate MongoDB ObjectId
+    // Validate MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
         { message: "Invalid Lead ID" },
@@ -36,8 +36,8 @@ export async function PUT(req: NextRequest, { params }: Params) {
     const body = await req.json()
     const { status } = body
 
-    // ✅ Validate status
-    if (!["pending", "cleared"].includes(status)) {
+    //  Validate status
+    if (!["pending", "contacted","won","dropped"].includes(status)) {
       return NextResponse.json(
         { message: "Invalid status value" },
         { status: 400 }
