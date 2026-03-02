@@ -3,6 +3,12 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -144,6 +150,7 @@ export function CompanyProfileEditor({
   );
   const [newTechnology, setNewTechnology] = useState("");
   const [newIndustry, setNewIndustry] = useState("");
+  const [isEditMode, setIsEditMode] = useState(false);
   const [newAward, setNewAward] = useState("");
   const [newCertificate, setNewCertificate] = useState("");
   const [portfolioTechnology, setPortfolioTechnology] = useState("");
@@ -197,7 +204,7 @@ export function CompanyProfileEditor({
     }
 
     if (!formData.foundedYear) {
-      newErrors.foundedYear = "Founding year is required";
+      newErrors.foundedYear = "Founded year is required";
     } else if (
       formData.foundedYear < 1900 ||
       formData.foundedYear > new Date().getFullYear()
@@ -282,6 +289,8 @@ export function CompanyProfileEditor({
       };
 
       onSave(payload);
+
+      setIsEditMode(false);
     }
   };
 
@@ -550,12 +559,38 @@ export function CompanyProfileEditor({
   };
 
   return (
-    <div className="space-y-6 bg-[#ffffff]">
+      <div className="space-y-1 bg-[#ffffff]">
+
+      <div className="flex justify-between items-center -mt-5">
+        <h1 className="text-2xl font-semibold">Agency Profile</h1>
+
+        {!isEditMode ? (
+          <Button onClick={() => setIsEditMode(true)}>
+            Edit Profile
+          </Button>
+        ) : (
+          <Button onClick={handleSave}>
+            Save Changes
+          </Button>
+        )}
+      </div>
+
+      <Tabs defaultValue="overview" className="w-full">
+
+        <TabsList className="mb-6 flex flex-wrap gap-2 border bg-[#f2f1f6]">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="services">Services</TabsTrigger>
+          <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
+          <TabsTrigger value="awards">Awards</TabsTrigger>
+        </TabsList>
+
+      <TabsContent value="overview">
+        <div className={!isEditMode ? "pointer-events-none opacity-90" : ""}>
       {/* Company Information */}
-      <div className="space-y-4">
+      <div className="space-y-0 border p-1 -mt-5 ">
         {/*comapny loago and coverimage */}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 ">
+        <div className="grid grid-cols-1 max-h-[50vh] overflow-y-auto md:grid-cols-2 gap-5 mt-0 mb-3">
           {/*logo  */}
           <div className="space-y-2">
             <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
@@ -565,7 +600,8 @@ export function CompanyProfileEditor({
               value={formData.logo}
               onChange={(value) => setFormData({ ...formData, logo: value })}
               description="Upload your company logo (PNG, JPG) or provide a URL"
-              previewClassName="w-24 h-24"
+              previewClassName="w-24 h-24 border"
+              isEditable={isEditMode}
             />
           </div>
 
@@ -580,13 +616,14 @@ export function CompanyProfileEditor({
               onChange={(value) =>
                 setFormData({ ...formData, coverImage: value })
               }
-              description="Upload your company ccover image (PNG, JPG) or provide a URL"
-              previewClassName="w-24 h-24"
+              description="Upload your company cover image (PNG, JPG) or provide a URL"
+              previewClassName="w-24 h-24 border"
+              isEditable={isEditMode} 
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
           <div className="space-y-2">
             <Label
               htmlFor="companyName"
@@ -605,8 +642,8 @@ export function CompanyProfileEditor({
                 if (errors.companyName)
                   setErrors((prev) => ({ ...prev, companyName: "" }));
               }}
-              className={`${errors.companyName ? "border-red-500" : ""} placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
-              placeholder="digiDZN"
+              className={`${errors.companyName ? "border-red-500" : ""} bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+              placeholder="Enter company name"
             />
             {errors.companyName && (
               <p className="text-sm text-red-500">{errors.companyName}</p>
@@ -628,8 +665,8 @@ export function CompanyProfileEditor({
                 if (errors.website)
                   setErrors((prev) => ({ ...prev, website: "" }));
               }}
-              className={`${errors.website ? "border-red-500" : ""} placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
-              placeholder="https://digidzn.com/"
+              className={`${errors.website ? "border-red-500" : ""} bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+              placeholder="Enter website url"
             />
             {errors.website && (
               <p className="text-sm text-red-500">{errors.website}</p>
@@ -637,6 +674,54 @@ export function CompanyProfileEditor({
           </div>
 
           <div className="space-y-2">
+            <Label
+              htmlFor="adminContactPhone"
+              className="text-sm text-[#98A0B4] font-semibold font-inter"
+            >
+              Contact Number
+            </Label>
+
+            <PhoneInput
+              country={"in"}
+              enableSearch={true}                 // ✅ enables search
+              searchPlaceholder="Search country"
+              searchNotFound="No country found"
+              autocompleteSearch={true}
+              value={`${formData.countryCode || ""}${formData.adminContactPhone || ""}`}
+              onChange={(value, data: any) => {
+                const dialCode = data.dialCode;
+                const phoneNumber = value.slice(dialCode.length);
+
+                setFormData((prev) => ({
+                  ...prev,
+                  adminContactPhone: phoneNumber,
+                  country: data.name,
+                  countryCode: dialCode,
+                }));
+
+                if (errors.adminContactPhone) {
+                  setErrors((prev) => ({ ...prev, adminContactPhone: "" }));
+                }
+              }}
+              inputProps={{
+                name: "adminContactPhone",
+                required: true,
+              }}
+              inputClass={`!w-full !h-[39px] !text-sm !bg-[#f2f1f6] !border-[#D0D5DD] !rounded-[6px] font-inter ${
+                errors.adminContactPhone ? "!border-red-500" : ""
+              }`}
+              buttonClass="!border-[#D0D5DD] !rounded-l-[6px] "
+              containerClass="!w-full "
+            />
+
+            {errors.adminContactPhone && (
+              <p className="text-sm text-red-500">
+                {errors.adminContactPhone}
+              </p>
+            )}
+          </div>
+
+          {/* <div className="space-y-2">
             <Label
               htmlFor="salesEmail"
               className="text-sm font-inter text-[#98A0B4] font-semibold"
@@ -661,11 +746,11 @@ export function CompanyProfileEditor({
             {errors.salesEmail && (
               <p className="text-sm text-red-500">{errors.salesEmail}</p>
             )}
-          </div>
+          </div> */}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
+          {/* <div className="space-y-2">
             <Label
               htmlFor="schedulingLink"
               className="text-sm font-inter text-[#98A0B4] font-semibold"
@@ -689,62 +774,14 @@ export function CompanyProfileEditor({
             {errors.schedulingLink && (
               <p className="text-sm text-red-500">{errors.schedulingLink}</p>
             )}
-          </div>
-
- <div className="space-y-2">
-  <Label
-    htmlFor="adminContactPhone"
-    className="text-sm text-[#98A0B4] font-semibold font-inter"
-  >
-    Admin Contact Phone
-  </Label>
-
-  <PhoneInput
-    country={"in"}
-    enableSearch={true}                 // ✅ enables search
-    searchPlaceholder="Search country"
-    searchNotFound="No country found"
-    autocompleteSearch={true}
-    value={`${formData.countryCode || ""}${formData.adminContactPhone || ""}`}
-    onChange={(value, data: any) => {
-      const dialCode = data.dialCode;
-      const phoneNumber = value.slice(dialCode.length);
-
-      setFormData((prev) => ({
-        ...prev,
-        adminContactPhone: phoneNumber,
-        country: data.name,
-        countryCode: dialCode,
-      }));
-
-      if (errors.adminContactPhone) {
-        setErrors((prev) => ({ ...prev, adminContactPhone: "" }));
-      }
-    }}
-    inputProps={{
-      name: "adminContactPhone",
-      required: true,
-    }}
-    inputClass={`!w-full !h-[40px] !text-sm !border-[#D0D5DD] !rounded-[6px] font-inter ${
-      errors.adminContactPhone ? "!border-red-500" : ""
-    }`}
-    buttonClass="!border-[#D0D5DD] !rounded-l-[6px]"
-    containerClass="!w-full"
-  />
-
-  {errors.adminContactPhone && (
-    <p className="text-sm text-red-500">
-      {errors.adminContactPhone}
-    </p>
-  )}
-</div>
+          </div> */}
 
           <div className="space-y-2">
             <Label
               htmlFor="foundedYear"
               className="text-sm text-[#98A0B4] font-inter font-semibold"
             >
-              Founding Year
+              Founded Year
             </Label>
             <Select
               value={formData.foundedYear?.toString() || ""}
@@ -758,7 +795,7 @@ export function CompanyProfileEditor({
               }}
             >
               <SelectTrigger
-                className={`${errors.foundedYear ? "border-red-500" : ""} placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+                className={`${errors.foundedYear ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] !h-[39px] border-[#D0D5DD] rounded-[6px] font-inter`}
               >
                 <SelectValue placeholder="2022" />
               </SelectTrigger>
@@ -777,13 +814,11 @@ export function CompanyProfileEditor({
               <p className="text-sm text-red-500">{errors.foundedYear}</p>
             )}
           </div>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label
               htmlFor="totalEmployees"
-              className="text-sm font-inter text-[#98A0B4] font-semibold"
+              className="text-sm font-inter text-[#98A0B4] font-semibold "
             >
               Total Employees
             </Label>
@@ -796,7 +831,7 @@ export function CompanyProfileEditor({
               }}
             >
               <SelectTrigger
-                className={`${errors.totalEmployees ? "border-red-500" : ""} border-[#D0D5DD] rounded-[6px] font-inter`}
+                className={`${errors.totalEmployees ? "border-red-500" : ""} !bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px] !h-[39px] font-inter`}
               >
                 <SelectValue placeholder="10 - 49" />
               </SelectTrigger>
@@ -816,7 +851,7 @@ export function CompanyProfileEditor({
           <div className="space-y-2">
             <Label
               htmlFor="tagline"
-              className="text-sm font-inter text-[#98A0B4] font-semibold"
+              className="text-sm font-inter text-[#98A0B4] font-semibold "
             >
               Tagline
             </Label>
@@ -825,7 +860,7 @@ export function CompanyProfileEditor({
                 id="tagline"
                 value={formData.tagline}
                 onChange={(e) => handleTaglineChange(e.target.value)}
-                className={`${errors.tagline ? "border-red-500" : ""} placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+                className={`${errors.tagline ? "border-red-500" : ""} h-[39px] !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
                 placeholder="We value your Needs"
                 maxLength={50}
               />
@@ -837,7 +872,10 @@ export function CompanyProfileEditor({
               <p className="text-sm text-red-500">{errors.tagline}</p>
             )}
           </div>
+        </div>
 
+        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          
           <div className="space-y-2">
             <Label
               htmlFor="companyVideoLink"
@@ -863,9 +901,9 @@ export function CompanyProfileEditor({
               <p className="text-sm text-red-500">{errors.companyVideoLink}</p>
             )}
           </div>
-        </div>
+        </div> */}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
           <div className="space-y-2">
             <Label
               htmlFor="projects"
@@ -885,7 +923,7 @@ export function CompanyProfileEditor({
                     projectsCompleted: e.target.value,
                   }))
                 }
-                className={`${errors.tagline ? "border-red-500" : ""} placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+                className={`${errors.tagline ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
                 placeholder="Enter number of projects completed"
               />
             </div>
@@ -904,7 +942,7 @@ export function CompanyProfileEditor({
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, location: e.target.value }))
                 }
-                className={`${errors.tagline ? "border-red-500" : ""} placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+                className={`${errors.tagline ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
                 placeholder="Enter your company location"
               />
             </div>
@@ -928,15 +966,15 @@ export function CompanyProfileEditor({
                     hourlyRate: e.target.value,
                   }))
                 }
-                className={`${errors.tagline ? "border-red-500" : ""} placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+                className={`${errors.tagline ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
                 placeholder="Enter starting proice per hour"
               />
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
+          {/* <div className="space-y-2">
             <Label
               htmlFor="insta"
               className="text-sm font-inter text-[#98A0B4] font-semibold"
@@ -1035,8 +1073,8 @@ export function CompanyProfileEditor({
                 placeholder="https://twitter.com/yourcompany"
               />
             </div>
-          </div>
-          <div className="space-y-2">
+          </div> */}
+          {/* <div className="space-y-2">
             <Label
               htmlFor="languagesSpoken"
               className="text-sm font-inter text-[#98A0B4] font-semibold"
@@ -1079,7 +1117,7 @@ export function CompanyProfileEditor({
                 </Badge>
               ))}
             </div>
-          </div>
+          </div> */}
           <div className="space-y-2">
             <Label
               htmlFor="min-project-size"
@@ -1097,13 +1135,13 @@ export function CompanyProfileEditor({
                   minProjectSize: e.target.value,
                 }));
               }}
-              className={`placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+              className={`placeholder:text-[#b2b2b2] !bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px] font-inter`}
               placeholder="200"
             />
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 mb-2">
           <Label
             htmlFor="description"
             className="text-sm font-inter text-[#98A0B4] font-semibold"
@@ -1119,14 +1157,14 @@ export function CompanyProfileEditor({
                 setErrors((prev) => ({ ...prev, description: "" }));
             }}
             rows={6}
-            className={`${errors.description ? "border-red-500" : ""} placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+            className={`${errors.description ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
             placeholder="about company"
           />
           {errors.description && (
             <p className="text-sm text-red-500">{errors.description}</p>
           )}
         </div>
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           <Label
             htmlFor="focus-area"
             className="text-sm font-inter text-[#98A0B4] font-semibold"
@@ -1143,53 +1181,95 @@ export function CompanyProfileEditor({
             className={` placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
             placeholder="Focus areas about the company"
           />
-        </div>
-      </div>
+        </div> */}
 
-      {/* Services Offered */}
-      <div>
-        <h1 className="font-inter text-xl text-[#000000] font-normal leading-6">
-          Services Offered
+      {/*Technologies offered */}
+
+      <div className="mt-3">
+        <h1 className="font-inter text-sm text-[#a2a9bb] font-bold leading-6">
+          Technologies Offered
         </h1>
-        <p className="font-inter text-sm text-[#000000] font-normal mb-2 ">
-          Manage Services you provide
-        </p>
-        <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
+        {/* <p className="font-inter text-sm text-[#000000] font-normal mb-2 ">
+          Manage the Technologies you provide
+        </p> */}
+        <Card className="bg-[#fff] border-1  border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
           <CardContent className="space-y-4 py-6">
             <div className="flex flex-wrap gap-2">
-              {(formData.services || []).map((service) => (
+              {(formData.technologies || []).map((tech) => (
                 <Badge
-                  key={service}
+                  key={tech}
                   variant="secondary"
                   className="flex items-center gap-2 bg-[#1C96F4] font-inter"
                 >
-                  {service}
-                  <div onClick={() => removeService(service)}>
+                  {tech}
+
+                  {isEditMode && (
+                  <div onClick={() => removeTech(tech)}>
                     <X className="h-3 w-3 cursor-pointer" />
                   </div>
+                  )}
                 </Badge>
               ))}
             </div>
 
-            {/* <div className="flex gap-2 w-[50%]">
-            <Select value={newService} onValueChange={setNewService}>
-              <SelectTrigger className="flex-1 placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] rounded-[6px] h-[100px]">
-                <SelectValue placeholder="Select a service to add" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories
-                  .filter((cat) => !(formData.services || []).includes(cat))
-                  .map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-            <Button onClick={addService}  className="bg-[#F54A0C] h-[36px] w-[70px] mt-1">
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div> */}
+            {isEditMode && (
+            <div className="flex gap-2 w-[50%]">
+              <Input
+                type="text"
+                value={newTechnology}
+                onChange={(e) => setNewTechnology(e.target.value)}
+                placeholder="Datsience..."
+                className=" placeholder:text-[#b2b2b2] mt-1 !bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px]"
+              />
+
+              <Button
+                onClick={addTech}
+                className="bg-[#F54A0C] h-[36px] w-[70px] mt-1.5"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+      </div>
+      </div>
+      </TabsContent>
+
+      {/* Services Offered */}
+      <TabsContent value="services">
+  <div className="-mt-6">
+    <h1 className="font-inter text-xl mb-2 text-[#000000] font-normal leading-6">
+      Services Offered
+    </h1>
+
+    <Card className="bg-[#fff] border border-[#D0D5DD] rounded-[6px] shadow-none">
+      <CardContent className="space-y-4 py-2">
+
+        {/* ✅ ALWAYS SHOW ADDED SERVICES */}
+        <div className="flex flex-wrap gap-2">
+          {(formData.services || []).map((service) => (
+            <Badge
+              key={service}
+              variant="secondary"
+              className="flex items-center gap-2 bg-[#1C96F4]"
+            >
+              {service}
+
+              {/* ❌ remove icon hidden in view mode */}
+              {isEditMode && (
+                <div onClick={() => removeService(service)}>
+                  <X className="h-3 w-3 cursor-pointer" />
+                </div>
+              )}
+            </Badge>
+          ))}
+        </div>
+
+        {/* ✅ CATEGORY SELECT (EDIT MODE ONLY) */}
+        {isEditMode && (
+          <>
             {/* Step 1: Main Category */}
             <Select
               onValueChange={(title) => {
@@ -1198,7 +1278,7 @@ export function CompanyProfileEditor({
                 setSelectedChild(null);
               }}
             >
-              <SelectTrigger className="w-[50%] mt-1">
+              <SelectTrigger className="w-[50%] mt-1 !bg-[#f2f1f6]">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
@@ -1215,16 +1295,16 @@ export function CompanyProfileEditor({
               <Select
                 onValueChange={(title) => {
                   const child = selectedCategory.children.find(
-                    (c: any) => c.title === title,
+                    (c) => c.title === title
                   );
                   setSelectedChild(child);
                 }}
               >
-                <SelectTrigger className="w-[50%] mt-1">
+                <SelectTrigger className="w-[50%] mt-1 bg-[#f2f1f6]">
                   <SelectValue placeholder="Select sub category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {selectedCategory.children.map((child: any) => (
+                  {selectedCategory.children.map((child) => (
                     <SelectItem key={child.title} value={child.title}>
                       {child.title}
                     </SelectItem>
@@ -1233,12 +1313,12 @@ export function CompanyProfileEditor({
               </Select>
             )}
 
-            {/* Step 3: Service Items (Checkboxes) */}
+            {/* Step 3: Service Checkboxes */}
             {selectedChild && (
               <div className="flex flex-col gap-2 mt-3">
-                {selectedChild.items.map((item: any) => {
+                {selectedChild.items.map((item) => {
                   const checked = (formData.services || []).includes(
-                    item.title,
+                    item.title
                   );
 
                   return (
@@ -1254,7 +1334,7 @@ export function CompanyProfileEditor({
                             ...prev,
                             services: checked
                               ? prev.services.filter(
-                                  (s: string) => s !== item.title,
+                                  (s) => s !== item.title
                                 )
                               : [...(prev.services || []), item.title],
                           }));
@@ -1266,197 +1346,19 @@ export function CompanyProfileEditor({
                 })}
               </div>
             )}
-          </CardContent>
-        </Card>
-      </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  </div>
+</TabsContent>
 
-      {/*Technologies offered */}
-
-      <div>
-        <h1 className="font-inter text-xl text-[#000000] font-normal leading-6">
-          Technologies Offered
-        </h1>
-        <p className="font-inter text-sm text-[#000000] font-normal mb-2 ">
-          Manage the Technologies you provide
-        </p>
-        <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
-          <CardContent className="space-y-4 py-6">
-            <div className="flex flex-wrap gap-2">
-              {(formData.technologies || []).map((tech) => (
-                <Badge
-                  key={tech}
-                  variant="secondary"
-                  className="flex items-center gap-2 bg-[#1C96F4] font-inter"
-                >
-                  {tech}
-                  <div onClick={() => removeTech(tech)}>
-                    <X className="h-3 w-3 cursor-pointer" />
-                  </div>
-                </Badge>
-              ))}
-            </div>
-
-            <div className="flex gap-2 w-[50%]">
-              <Input
-                type="text"
-                value={newTechnology}
-                onChange={(e) => setNewTechnology(e.target.value)}
-                placeholder="Datsience..."
-                className=" placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] rounded-[6px]"
-              />
-
-              <Button
-                onClick={addTech}
-                className="bg-[#F54A0C] h-[36px] w-[70px] mt-1.5"
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/*Industries working */}
-      <div>
-        <h1 className="font-inter text-xl text-[#000000] font-normal leading-6">
-          Industries Working
-        </h1>
-        <p className="font-inter text-sm text-[#000000] font-normal mb-2 ">
-          Manage the Industries you working
-        </p>
-        <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
-          <CardContent className="space-y-4 py-6">
-            <div className="flex flex-wrap gap-2">
-              {(formData.industries || []).map((ind) => (
-                <Badge
-                  key={ind}
-                  variant="secondary"
-                  className="flex items-center gap-2 bg-[#1C96F4]"
-                >
-                  {ind}
-                  <div onClick={() => removeIndustry(ind)}>
-                    <X className="h-3 w-3 cursor-pointer" />
-                  </div>
-                </Badge>
-              ))}
-            </div>
-
-            <div className="flex gap-2 w-[50%]">
-              <Input
-                type="text"
-                value={newIndustry}
-                onChange={(e) => setNewIndustry(e.target.value)}
-                placeholder="Consulting..."
-                className=" placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] rounded-[6px]"
-              />
-
-              <Button
-                onClick={addIndustry}
-                className="bg-[#F54A0C] h-[36px] w-[70px] mt-1.5"
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/*Awards added */}
-      <div>
-        <h1 className="font-inter text-xl text-[#000000] font-normal leading-6">
-          Awards Recieved
-        </h1>
-        <p className="font-inter text-sm text-[#000000] font-normal mb-2 ">
-          Manage the Awards you recieved
-        </p>
-
-        <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
-          <CardContent className="space-y-4 py-6">
-            <div className="flex flex-wrap gap-2">
-              {(formData.awards || []).map((item) => (
-                <Badge
-                  key={item}
-                  variant="secondary"
-                  className="flex items-center bg-[#1C96F4] gap-2"
-                >
-                  {item}
-                  <div onClick={() => removeAward(item)}>
-                    <X className="h-3 w-3 cursor-pointer" />
-                  </div>
-                </Badge>
-              ))}
-            </div>
-
-            <div className="flex gap-2 w-[50%]">
-              <Input
-                type="text"
-                value={newAward}
-                onChange={(e) => setNewAward(e.target.value)}
-                placeholder="Best Company of the Year..."
-                className=" placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] rounded-[6px]"
-              />
-
-              <Button
-                onClick={addAward}
-                className="bg-[#F54A0C] h-[36px] w-[70px] mt-1.5"
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/*Certifications added */}
-      <div>
-        <h1 className="font-inter text-xl text-[#000000] font-normal leading-6">
-          Certification Recieved
-        </h1>
-        <p className="font-inter text-sm text-[#000000] font-normal mb-2 ">
-          Manage the Certification you recieved
-        </p>
-        <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
-          <CardContent className="space-y-4 py-6">
-            <div className="flex flex-wrap gap-2">
-              {(formData.certifications || []).map((item) => (
-                <Badge
-                  key={item}
-                  variant="secondary"
-                  className="flex items-center bg-[#1C96F4] gap-2"
-                >
-                  {item}
-                  <div onClick={() => removeCertification(item)}>
-                    <X className="h-3 w-3 cursor-pointer" />
-                  </div>
-                </Badge>
-              ))}
-            </div>
-
-            <div className="flex w-[50%] gap-2">
-              <Input
-                type="text"
-                value={newCertificate}
-                onChange={(e) => setNewCertificate(e.target.value)}
-                placeholder="ISO..."
-                className=" placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] rounded-[6px]"
-              />
-
-              <Button
-                onClick={addCertificate}
-                className="bg-[#F54A0C] h-[36px] w-[70px] mt-1.5"
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Portfolio */}
+    {/* Portfolio */}
+    <TabsContent value="portfolio">
       <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
         <CardHeader>
-          <div className="flex justify-between items-center">
-            <div>
+          <div className="flex justify-between items-center -mt-2 ">
+            <div className="">
               <CardTitle className="font-inter text-xl text-[#000000] font-normal leading-6">
                 Portfolio
               </CardTitle>
@@ -1464,6 +1366,8 @@ export function CompanyProfileEditor({
                 Showcase your past projects
               </CardDescription>
             </div>
+
+            {isEditMode && (
             <div className="flex flex-row gap-2">
               <Button
                 onClick={() => setShowPortfolioForm(true)}
@@ -1474,10 +1378,11 @@ export function CompanyProfileEditor({
               </Button>
               {/* <Button onClick={addPortfolioItem} className="bg-[#39761E] hover:bg-[#39761E] w-[120px] rounded-full text-[12px]">{editPortfolioId?"Update":"Save Project"}</Button> */}
             </div>
+            )}
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {showPortfolioForm && (
+          {isEditMode && showPortfolioForm && (
             <div className="pt-6 space-y-4">
               {/*project image */}
               <div className="space-y-2">
@@ -1506,8 +1411,8 @@ export function CompanyProfileEditor({
                         title: e.target.value,
                       }))
                     }
-                    placeholder="Project name"
-                    className=" placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter"
+                    placeholder="Enter project name"
+                    className=" placeholder:text-[#b2b2b2] bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px] font-inter"
                   />
                 </div>
                 <div className="space-y-2">
@@ -1539,7 +1444,7 @@ export function CompanyProfileEditor({
                           onChange={(value) =>
                       setPortfolioForm((prev) => ({ ...prev, category: value }))
                     }
-                          triggerClassName="border-[#D0D5DD] rounded-[6px] font-inter"
+                          triggerClassName="border-[#D0D5DD] bg-[#f2f1f6] rounded-[6px] font-inter"
                         />
                 </div>
               </div>
@@ -1558,7 +1463,7 @@ export function CompanyProfileEditor({
                   }
                   placeholder="Describe the project and your role..."
                   rows={3}
-                  className=" placeholder:text-[#b2b2b2] border-[#D0D5DD] border-1 rounded-[6px] font-inter"
+                  className=" placeholder:text-[#b2b2b2] bg-[#f2f1f6] border-[#D0D5DD] border-1 rounded-[6px] font-inter"
                 />
               </div>
 
@@ -1575,16 +1480,17 @@ export function CompanyProfileEditor({
                         projectUrl: e.target.value,
                       }))
                     }
-                    placeholder="https://project-url.com"
-                    className=" placeholder:text-[#b2b2b2] border-[#D0D5DD] border-1 rounded-[6px] font-inter"
+                    placeholder="Enter project url"
+                    className=" placeholder:text-[#b2b2b2] bg-[#f2f1f6] border-[#D0D5DD] border-1 rounded-[6px] font-inter"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
+                  <Label className="text-sm font-inter  text-[#98A0B4] font-semibold">
                     Completion Date
                   </Label>
                   <Input
                     type="date"
+                    className="bg-[#f2f1f6] rounded-[6px] border-gray-300"
                     value={
                       portfolioForm.completedAt instanceof Date
                         ? portfolioForm.completedAt.toISOString().split("T")[0]
@@ -1627,8 +1533,8 @@ export function CompanyProfileEditor({
                     type="text"
                     value={portfolioTechnology}
                     onChange={(e) => setPortfolioTechnology(e.target.value)}
-                    placeholder="Datsience..."
-                    className=" placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] border-1 rounded-[6px] font-inter"
+                    placeholder="Enter Technology"
+                    className=" placeholder:text-[#b2b2b2] bg-[#f2f1f6] mt-1 border-[#D0D5DD] border-1 rounded-[6px] font-inter"
                   />
 
                   <Button
@@ -1706,6 +1612,7 @@ export function CompanyProfileEditor({
                             View Project <ExternalLink className="h-3 w-3" />
                           </a>
                         )} */}
+                        {isEditMode && (
                   <div className="flex justify-between">
                     <Button
                       className="bg-[#F54A0C] h-[30px] w-[80px] rounded-xl"
@@ -1720,16 +1627,217 @@ export function CompanyProfileEditor({
                       Edit
                     </Button>
                   </div>
+                        )}
                 </div>
               </div>
             ))}
           </div>
         </CardContent>
       </Card>
+        
+      </TabsContent>
+
+      {/*Industries working */}
+      {/* <div>
+        <h1 className="font-inter text-xl text-[#000000] font-normal leading-6">
+          Industries Working
+        </h1>
+        <p className="font-inter text-sm text-[#000000] font-normal mb-2 ">
+          Manage the Industries you working
+        </p>
+        <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
+          <CardContent className="space-y-4 py-6">
+            <div className="flex flex-wrap gap-2">
+              {(formData.industries || []).map((ind) => (
+                <Badge
+                  key={ind}
+                  variant="secondary"
+                  className="flex items-center gap-2 bg-[#1C96F4]"
+                >
+                  {ind}
+                  <div onClick={() => removeIndustry(ind)}>
+                    <X className="h-3 w-3 cursor-pointer" />
+                  </div>
+                </Badge>
+              ))}
+            </div>
+
+            <div className="flex gap-2 w-[50%]">
+              <Input
+                type="text"
+                value={newIndustry}
+                onChange={(e) => setNewIndustry(e.target.value)}
+                placeholder="Consulting..."
+                className=" placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] rounded-[6px]"
+              />
+
+              <Button
+                onClick={addIndustry}
+                className="bg-[#F54A0C] h-[36px] w-[70px] mt-1.5"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div> */}
+
+      {/*Awards added */}
+
+      <TabsContent value="awards">
+  <div>
+    <h1 className="font-inter text-xl text-[#000000] font-normal leading-6">
+      Awards Recieved
+    </h1>
+
+    <p className="font-inter text-sm text-[#000000] font-normal mb-2">
+      Manage the Awards you recieved
+    </p>
+
+    <Card className="bg-[#fff] border border-[#D0D5DD] rounded-[6px] shadow-none">
+      <CardContent className="space-y-4 py-6">
+
+        {/* ✅ ALWAYS SHOW ADDED AWARDS */}
+        <div className="flex flex-wrap gap-2">
+          {(formData.awards || []).map((item) => (
+            <Badge
+              key={item}
+              variant="secondary"
+              className="flex items-center bg-[#1C96F4] gap-2"
+            >
+              {item}
+
+              {/* ✅ REMOVE BUTTON ONLY IN EDIT MODE */}
+              {isEditMode && (
+                <div onClick={() => removeAward(item)}>
+                  <X className="h-3 w-3 cursor-pointer" />
+                </div>
+              )}
+            </Badge>
+          ))}
+        </div>
+
+        {/* ✅ SHOW INPUT ONLY IN EDIT MODE */}
+        {isEditMode && (
+          <div className="flex gap-2 w-[50%]">
+            <Input
+              type="text"
+              value={newAward}
+              onChange={(e) => setNewAward(e.target.value)}
+              placeholder="Enter award title"
+              className="placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] rounded-[6px]"
+            />
+
+            <Button
+              onClick={addAward}
+              className="bg-green-500 h-[36px] w-[70px] mt-1.5"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+
+      </CardContent>
+    </Card>
+  </div>
+</TabsContent>
+      {/* <TabsContent value="awards">
+        <div className={!isEditMode ? "pointer-events-none opacity-90" : ""}>
+      <div className="-mt-5">
+        <h1 className="font-inter text-xl text-[#000000] font-normal leading-6">
+          Awards Recieved
+        </h1>
+        <p className="font-inter text-sm text-[#000000] font-normal mb-2 ">
+          Manage the Awards you recieved
+        </p>
+
+        <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
+          <CardContent className="space-y-4 py-6">
+            <div className="flex flex-wrap gap-2">
+              {(formData.awards || []).map((item) => (
+                <Badge
+                  key={item}
+                  variant="secondary"
+                  className="flex items-center bg-[#1C96F4] gap-2"
+                >
+                  {item}
+                  <div onClick={() => removeAward(item)}>
+                    <X className="h-3 w-3 cursor-pointer" />
+                  </div>
+                </Badge>
+              ))}
+            </div>
+
+            <div className="flex gap-2 w-[50%]">
+              <Input
+                type="text"
+                value={newAward}
+                onChange={(e) => setNewAward(e.target.value)}
+                placeholder="Enter award title"
+                className=" placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] rounded-[6px]"
+              />
+
+              <Button
+                onClick={addAward}
+                className="bg-[#F54A0C] h-[36px] w-[70px] mt-1.5"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      </div>
+    </TabsContent> */}
+
+      {/*Certifications added */}
+      {/* <div>
+        <h1 className="font-inter text-xl text-[#000000] font-normal leading-6">
+          Certification Recieved
+        </h1>
+        <p className="font-inter text-sm text-[#000000] font-normal mb-2 ">
+          Manage the Certification you recieved
+        </p>
+        <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
+          <CardContent className="space-y-4 py-6">
+            <div className="flex flex-wrap gap-2">
+              {(formData.certifications || []).map((item) => (
+                <Badge
+                  key={item}
+                  variant="secondary"
+                  className="flex items-center bg-[#1C96F4] gap-2"
+                >
+                  {item}
+                  <div onClick={() => removeCertification(item)}>
+                    <X className="h-3 w-3 cursor-pointer" />
+                  </div>
+                </Badge>
+              ))}
+            </div>
+
+            <div className="flex w-[50%] gap-2">
+              <Input
+                type="text"
+                value={newCertificate}
+                onChange={(e) => setNewCertificate(e.target.value)}
+                placeholder="ISO..."
+                className=" placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] rounded-[6px]"
+              />
+
+              <Button
+                onClick={addCertificate}
+                className="bg-[#F54A0C] h-[36px] w-[70px] mt-1.5"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div> */}
 
       {/*Testimonials */}
 
-      <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
+      {/* <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
@@ -1753,7 +1861,7 @@ export function CompanyProfileEditor({
         <CardContent className="space-y-4">
           {showTestimonialForm && (
             <div className="pt-6 space-y-4">
-              {/* Avatar Image */}
+           
               <div className="space-y-2">
                 <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
                   Client Avatar
@@ -1769,7 +1877,7 @@ export function CompanyProfileEditor({
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                {/* Client Name */}
+             
                 <div className="space-y-2">
                   <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
                     Client Name
@@ -1787,7 +1895,7 @@ export function CompanyProfileEditor({
                   />
                 </div>
 
-                {/* Company */}
+           
                 <div className="space-y-2">
                   <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
                     Company
@@ -1806,7 +1914,6 @@ export function CompanyProfileEditor({
                 </div>
               </div>
 
-              {/* Testimonial Text */}
               <div className="space-y-2">
                 <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
                   Feedback
@@ -1826,7 +1933,7 @@ export function CompanyProfileEditor({
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                {/* Rating */}
+            
                 <div className="space-y-2">
                   <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
                     Rating
@@ -1853,7 +1960,6 @@ export function CompanyProfileEditor({
                   </Select>
                 </div>
 
-                {/* Date */}
                 <div className="space-y-2">
                   <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
                     Date
@@ -1872,7 +1978,7 @@ export function CompanyProfileEditor({
                 </div>
               </div>
 
-              {/* Buttons */}
+           
               <div className="flex gap-2">
                 <Button
                   onClick={addOrUpdateTestimonial}
@@ -1891,7 +1997,7 @@ export function CompanyProfileEditor({
             </div>
           )}
 
-          {/* Testimonials List */}
+         
           <div className="grid md:grid-cols-2 gap-4">
             {(formData.testimonials || []).map((item) => (
               <div
@@ -1947,11 +2053,12 @@ export function CompanyProfileEditor({
             ))}
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
 
-      <div className="flex justify-end">
+            {/* <div className="flex justify-end">
         <Button onClick={handleSave}>Save Changes</Button>
-      </div>
-    </div>
+      </div> */}
+     </Tabs>
+        </div>
   );
 }
