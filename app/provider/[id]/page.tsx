@@ -57,6 +57,7 @@ export default function ProviderProfilePage({
   const [serviceFilter, setServiceFilter] = useState("");
   const [sortByFilter, setSortByFilter] = useState("");
   const [providerDetails, setProviderDetails] = useState({});
+  const [activeTab, setActiveTab] = useState("overview");
   const [reviews, setReviews] = useState([]);
   const [filteredReviews, setFilteredReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -279,8 +280,17 @@ const topServices = Object.keys(serviceRatings)
   .sort((a, b) => b.value - a.value)
   .slice(0, 5);
 
+  const SERVICE_COLORS = [
+  "#2C34A1", // primary blue
+  "#F54A0C", // orange
+  "#22C55E", // green
+  "#A855F7", // purple
+  "#FACC15", // yellow
+];
+
 
   return (
+    <>
     <div className="min-h-screen mt-0 bg-[#fff]">
       {/* Hero Section */}
       <div
@@ -399,383 +409,240 @@ const topServices = Object.keys(serviceRatings)
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-8 py-6">
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Left Column - Main Content */}
-          <div className="lg:col-span-2 space-y-6 space-x-6">
-            {/* About Section */}
-            <div className="pt-0">
-              <h1 className="text-2xl font-bold">Over View</h1>
-              <p className="text-sm text-[#b2b2b2] mt-0.5">
-                {providerDetails.description}
-              </p>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-2">
-                {stats.map((item, index) => (
-                  <div
-                    key={index}
-                    className="
-                      border border-gray-300 
-                      rounded-2xl 
-                      px-2 py-1 
-                      flex flex-col 
-                      items-center
-                      bg-white
-                    "
-                  >
-                    <span className="text-sm text-[#000] font-medium">
-                      {item.label}
-                    </span>
-                    <span className="text-xs text-[#b2b2b2] font-normal mt-0">
-                      {item.value}
-                    </span>
-                  </div>
-                ))}
+      {/* ================= TABS ================= */}
+      <div className="bg-[#7fa5c2]">
+    <div className="bg-white border-b border-[#E5E7EB] rounded-t-2xl">
+      <div className="max-w-7xl mx-auto px-10 flex gap-10 font-medium text-[16px]">
+        {["overview","services","portfolio","awards","reviews"].map(tab => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`py-4 capitalize border-b-2 transition
+              ${
+                activeTab === tab
+                  ? "border-[#2C34A1] text-[#2C34A1]"
+                  : "border-transparent text-gray-500"
+              }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+    </div>
+    </div>
+
+    {/* ================= CONTENT ================= */}
+    <div className="max-w-7xl mx-auto px-10 py-8">
+
+      {/* ================= OVERVIEW TAB ================= */}
+      {activeTab === "overview" && (
+        <div className="grid lg:grid-cols-3 gap-6 -mt-4">
+
+          {/* LEFT STATS */}
+          <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-[#ECEEF3]">
+            <h1 className="text-2xl font-semibold mb-4 -mt-4">Company Overview</h1>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {stats.map((item, i) => (
+                <div
+                  key={i}
+                  className="bg-[#e9ecfc] border border-[#ECEEF3] rounded-xl p-4 text-center"
+                >
+                  <p className="font-medium">{item.label}</p>
+                  <p className="text-sm text-gray-500">{item.value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* RIGHT TECHNOLOGIES */}
+          <div className="bg-white rounded-2xl p-6 border border-[#ECEEF3]">
+            <h1 className="text-lg font-semibold mb-4 -mt-4">
+              Technologies Offered
+            </h1>
+
+            <div className="flex flex-wrap gap-2">
+              {(providerDetails.technologies || []).map((tech, i) => (
+                <span
+                  key={i}
+                  className="px-3 py-2 bg-[#e9ecfc] text-gray-500 rounded-xl text-sm font-medium"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= SERVICES TAB ================= */}
+      {activeTab === "services" && (
+        <div className="grid lg:grid-cols-3 gap-6 -mt-4">
+
+          <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-[#ECEEF3]">
+            <h1 className="text-2xl font-semibold mb-4 -mt-4">
+              Services Offered
+            </h1>
+
+            <div className="flex flex-wrap gap-3">
+              {(providerDetails.services || []).map((service, i) => (
+                <div
+                  key={i}
+                  className="px-4 py-2 bg-[#e9ecfc] text-black rounded-xl text-sm font-medium"
+                >
+                  {service}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* TOP SERVICES CHART */}
+          <div className="bg-white rounded-2xl p-6 border border-[#ECEEF3]">
+            <h1 className="text-lg font-semibold mb-4 -mt-4">
+              Top Services
+            </h1>
+
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={topServices}
+                  dataKey="value"
+                  nameKey="name"
+                  outerRadius={90}
+                >
+                  {topServices.map((_, index) => (
+                    <Cell 
+                    key={`cell-${index}`}
+    fill=           {SERVICE_COLORS[index % SERVICE_COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
+      {/* ================= PORTFOLIO TAB ================= */}
+      {activeTab === "portfolio" && (
+        <div className="grid sm:grid-cols-2 gap-8">
+          {(providerDetails.portfolio || []).map((item) => (
+            <div
+              key={item.id}
+              className="bg-white rounded-2xl border border-[#ECEEF3] shadow-sm"
+            >
+              <img
+                src={item.image}
+                className="aspect-video w-full object-cover rounded-t-2xl"
+              />
+
+              <div className="p-4">
+                <h4 className="font-semibold">{item.title}</h4>
+                <p className="text-sm text-gray-500 mb-2">
+                  {item.description}
+                </p>
+
+                <div className="flex flex-wrap gap-1">
+                  {item.technologies?.map((tech, i) => (
+                    <Badge key={i}>{tech}</Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ================= AWARDS TAB ================= */}
+      {activeTab === "awards" && (
+        <div className="bg-white rounded-2xl p-6 border border-[#ECEEF3]">
+          <h1 className="text-2xl font-semibold mb-4">Awards</h1>
+
+          <div className="flex flex-wrap gap-3">
+            {(providerDetails.awards || []).map((award, i) => (
+              <Badge key={i}>{award}</Badge>
+            ))}
+          </div>
+        </div>
+      )}
+
+     
+      {/* ================= REVIEWS TAB ================= */}
+        {activeTab === "reviews" && (
+          <div className="space-y-6 mt-6">
+
+            {/* Filters */}
+            <div className="flex flex-col lg:flex-row justify-between gap-4">
+              <h2 className="text-2xl font-bold">
+                Creative Design Studios Reviews
+              </h2>
+
+              <div className="flex gap-3">
+                {/* Service Filter */}
+                <Select
+                  onValueChange={(value) => setServiceFilter(value)}
+                  value={serviceFilter}
+                >
+                  <SelectTrigger className="bg-[#f5f5f5] rounded-full w-[170px] h-12 border-[#e5e5e5]">
+                    <SelectValue placeholder="Select Services" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Services</SelectItem>
+                    <SelectItem value="development">Development</SelectItem>
+                    <SelectItem value="design">Design</SelectItem>
+                    <SelectItem value="marketing">Marketing</SelectItem>
+                    <SelectItem value="consulting">Consulting</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Sort */}
+                <Select
+                  onValueChange={(value) => setSortByFilter(value)}
+                  value={sortByFilter}
+                >
+                  <SelectTrigger className="bg-[#f5f5f5] rounded-full w-[170px] h-12 border-[#e5e5e5]">
+                    <SelectValue placeholder="Rating" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low-to-high">Low to high</SelectItem>
+                    <SelectItem value="high-to-low">High to low</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
-            {/* Services Section */}
-
-            <h1 className="text-2xl font-bold mb-1 pt-0">Services Offered</h1>
-
-            <div>
-              {providerDetails.services.length != 0 ? (
-                <div className="flex flex-row flex-wrap gap-3">
-                  {providerDetails.services.map((service, index) => (
-                    <div
-                      key={index}
-                      className="p-3 text-center rounded-xl bg-[#d9e4f6]"
-                    >
-                      <span className="font-medium text-sm">{service}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center">
-                  <p className="text-gray-500 text-xl my-10">
-                    No Services Offered
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Portfolio Section */}
-
-            <h1 className="text-2xl font-bold">Portfolio & Awards</h1>
-
-            <div className="grid sm:grid-cols-2 gap-6">
-              {providerDetails?.portfolio?.length > 0 ? (
-                providerDetails.portfolio.map((item) => (
-                  <div
-                    key={item.id}
-                    className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300"
-                  >
-                    <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100">
-                      <img
-                        src={
-                          item.image ||
-                          `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(item.title)}`
-                        }
-                        alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                    </div>
-
-                    <div className="p-4">
-                      <Badge
-                        variant="outline"
-                        className="mb-2 bg-[#ebecee] rounded-2xl text-[12px] text-[#000]"
-                      >
-                        {item.category}
-                      </Badge>
-
-                      <h4 className="font-semibold text-md mb-1">
-                        {item.title}
-                      </h4>
-                      <p className="text-sm text-[#b2b2b2] line-clamp-2 mb-3">
-                        {item.description}
-                      </p>
-
-                      <div className="flex flex-wrap gap-1 mb-3">
-                        {item.technologies.slice(0, 3).map((tech, idx) => (
-                          <Badge
-                            key={idx}
-                            variant="secondary"
-                            className="text-xs bg-[#d9e4f6] text-[#000] rounded-2xl"
-                          >
-                            {tech}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
-                  <p className="text-lg font-semibold text-gray-600">
-                    No Portfolio & Awards
-                  </p>
-                  <p className="text-sm text-gray-400 mt-1">
-                    This provider hasn’t added any portfolio items yet.
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Client Testimonials */}
-            {/* <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-2xl">Client Testimonials</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {testimonials.map((testimonial) => (
-                  <div
-                    key={testimonial.id}
-                    className="p-6 rounded-xl bg-gradient-to-br from-slate-50 to-blue-50 border border-blue-100"
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <h4 className="font-semibold">{testimonial.client}</h4>
-                        <p className="text-sm text-muted-foreground">{testimonial.company}</p>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        {Array.from({ length: testimonial.rating }).map((_, i) => (
-                          <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        ))}
-                      </div>
-                    </div>
-                    <p className="text-muted-foreground italic mb-2">"{testimonial.comment}"</p>
-                    <p className="text-xs text-muted-foreground">{testimonial.date}</p>
-                  </div>
-                ))}
-              </CardContent>
-            </Card> */}
-          </div>
-
-          {/* Right Column - Sidebar */}
-          <div className="space-y-6 sticky">
-            {/* Company Stats */}
-            {/* <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle>Company Stats</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between py-2 border-b">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Calendar className="h-4 w-4" />
-                    <span className="text-sm">Founded</span>
-                  </div>
-                  <span className="font-semibold">{companyStats.founded}</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Users className="h-4 w-4" />
-                    <span className="text-sm">Team Size</span>
-                  </div>
-                  <span className="font-semibold">{companyStats.teamSize}</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Briefcase className="h-4 w-4" />
-                    <span className="text-sm">Projects</span>
-                  </div>
-                  <span className="font-semibold">{companyStats.projectsCompleted}+</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Star className="h-4 w-4" />
-                    <span className="text-sm">Rating</span>
-                  </div>
-                  <span className="font-semibold">{companyStats.clientRating}/5.0</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Clock className="h-4 w-4" />
-                    <span className="text-sm">Response Time</span>
-                  </div>
-                  <span className="font-semibold">{companyStats.responseTime}</span>
-                </div>
-                <div className="flex items-center justify-between py-2">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <CheckCircle2 className="h-4 w-4" />
-                    <span className="text-sm">Success Rate</span>
-                  </div>
-                  <span className="font-semibold text-green-600">{companyStats.successRate}</span>
-                </div>
-              </CardContent>
-            </Card> */}
-
-           
-
-
-            {/* Contact Info */}
-            {/* <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white">
-              <CardHeader>
-                <CardTitle>Contact Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {provider.salesEmail && (
-                  <div className="flex items-center gap-3">
-                    <Mail className="h-4 w-4 shrink-0" />
-                    <a href={`mailto:${provider.salesEmail}`} className="text-sm hover:underline break-all">
-                      {provider.salesEmail}
-                    </a>
-                  </div>
-                )}
-                {provider.adminContactPhone && (
-                  <div className="flex items-center gap-3">
-                    <Phone className="h-4 w-4 shrink-0" />
-                    <a href={`tel:${provider.adminContactPhone}`} className="text-sm hover:underline">
-                      {provider.adminContactPhone}
-                    </a>
-                  </div>
-                )}
-                <div className="flex items-center gap-3">
-                  <MapPin className="h-4 w-4 shrink-0" />
-                  <span className="text-sm">{provider.location}</span>
-                </div>
-                {provider.website && (
-                  <div className="flex items-center gap-3">
-                    <Globe className="h-4 w-4 shrink-0" />
-                    <a
-                      href={provider.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm hover:underline break-all"
-                    >
-                      {provider.website}
-                    </a>
-                  </div>
-                )}
-                <Button className="w-full mt-4 bg-white text-blue-600 hover:bg-white/90">
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  Send Message
-                </Button>
-              </CardContent>
-            </Card> */}
-
-            {/* Pricing */}
-            {/* {providerDetails.hourlyRate && (
-              <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-                <CardHeader>
-                  <CardTitle>Pricing</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-4">
-                    <div className="flex items-baseline justify-center gap-2 mb-2">
-                      <DollarSign className="h-6 w-6 text-muted-foreground" />
-                      <span className="text-4xl font-bold text-blue-600">{providerDetails.hourlyRate}</span>
-                      <span className="text-muted-foreground">/hour</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">Starting rate</p>
-                  </div>
-                </CardContent>
-              </Card>
-            )} */}
-          </div>
-        </div>
-
-        {/*Filter s header */}
-        <div className="flex flex-col lg:flex-row justify-between my-8">
-          <h1 className="text-3xl text-[#000] mb-4 lg:mb-0">
-            Creative Design Studios Reviews
-          </h1>
-          <div className="flex gap-2 items-center mb-4 lg:mb-0">
-            <span className="text-md font-semibold">Services:</span>
-            <Select
-              onValueChange={(value) => setServiceFilter(value)}
-              value={serviceFilter}
-            >
-              <SelectTrigger
-                className="
-                bg-[#f5f5f5]
-                h-14
-                w-[160px]
-                rounded-full
-                shadow-none
-                border border-[#e5e5e5]
-                cursor-pointer
-                text-[#555]
-                px-4
-                focus:outline-none
-                focus:ring-0
-                focus:ring-offset-0
-                focus:border-[#e5e5e5]
-              "
-              >
-                <SelectValue placeholder="Select Services" />
-              </SelectTrigger>
-
-              <SelectContent>
-                <SelectItem value="all">All Services</SelectItem>
-                <SelectItem value="development">Development</SelectItem>
-                <SelectItem value="design">Design</SelectItem>
-                <SelectItem value="marketing">Marketing</SelectItem>
-                <SelectItem value="consulting">Consulting</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex gap-2 items-center">
-            <span className="text-md font-semibold">Sortby:</span>
-            <Select
-              onValueChange={(value) => setSortByFilter(value)}
-              value={sortByFilter}
-            >
-              <SelectTrigger
-                className="
-                bg-[#f5f5f5]
-                h-14
-                w-[160px]
-                cursor-pointer
-                rounded-full
-                shadow-none
-                border border-[#e5e5e5]
-                text-[#555]
-                px-4
-                focus:outline-none
-                focus:ring-0
-                focus:ring-offset-0
-                focus:border-[#e5e5e5]
-              "
-              >
-                <SelectValue placeholder="Rating" />
-              </SelectTrigger>
-
-              <SelectContent>
-                <SelectItem value="low-to-high">Low to high</SelectItem>
-                <SelectItem value="high-to-low">High to low</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        {/*Reviews contenet */}
-        {filteredReviews.length !== 0 ? (
-          <div>
-            {filteredReviews.map((review) => (
-              <div className="border border-gray-300 rounded-3xl  bg-white max-w-6xl mx-auto mb-5">
-                <div className="w-full rounded-3xl border border-[#e6e6e6] bg-white p-8">
-                  {/* TOP SECTION */}
+            {/* Reviews List */}
+            {filteredReviews.length !== 0 ? (
+              <div className=" grid grid-cols-2 gap-4">
+                {
+                  filteredReviews.map((review) => (
+                <div
+                  key={review._id}
+                  className="border  border-gray-200 rounded-3xl p-8 bg-white shadow-sm"
+                >
+                  {/* TOP */}
                   <div className="flex flex-col lg:flex-row justify-between gap-6">
-                    {/* LEFT — REVIEW CONTENT */}
-                    <div className="flex-1">
-                      <h2 className="text-xl font-bold text-black">
-                        The Review
-                      </h2>
 
-                      <p className="text-sm text-[#b2b2b2] mt-0">
+                    {/* LEFT CONTENT */}
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold">The Review</h3>
+
+                      <p className="text-sm text-[#b2b2b2]">
                         {formatDate(review.createdAt)}
                       </p>
 
-                      <h4 className="text-md font-semibold mt-2">
-                        Feed back summary
+                      <h4 className="font-semibold mt-3">
+                        Feedback summary
                       </h4>
 
-                      <p className="text-sm text-[#9c9c9c] leading-relaxed mt-0">
+                      <p className="text-sm text-[#9c9c9c] mt-1 leading-relaxed">
                         {review.content}
                       </p>
                     </div>
 
-                    {/* RIGHT — RATING */}
+                    {/* RIGHT RATING */}
                     <div className="flex flex-col items-end min-w-[120px]">
                       <span className="text-5xl font-bold text-[#898383]">
                         {review.rating || 0}
@@ -784,74 +651,89 @@ const topServices = Object.keys(serviceRatings)
                       <RatingStars rating={review.rating || 0} />
 
                       <p className="text-sm mt-1">
-                        <span className="font-semibold text-black">
+                        {/* <span className="font-semibold">
                           {review.rating || 0}
-                        </span>{" "}
-                        <span className="text-[#898383]">
-                          {`(${reviews.length})`}
                         </span>
+                        <span className="text-[#898383]">
+                          {" "}({reviews.length})
+                        </span> */}
                       </p>
                     </div>
                   </div>
 
-                  {/* BOTTOM SECTION */}
-                  <div className="flex flex-col lg:flex-row justify-between gap-6">
-                    {/* LEFT — REVIEWER */}
-                    <div>
-                      <h3 className="text-md font-bold mt-4">The Reviewer</h3>
+                  {/* BOTTOM */}
+                  <div className="flex flex-col lg:flex-row justify-between mt-6 gap-6">
 
-                      <p className="text-sm text-[#b2b2b2] mt-0">
-                        {review.client.position}
+                    {/* REVIEWER */}
+                    <div>
+                      <h4 className="font-bold">The Reviewer</h4>
+
+                      <p className="text-sm text-[#b2b2b2]">
+                        {review.client?.position}
                       </p>
 
-                      <div className="flex items-center gap-2 mt-0 text-[#bdbdbd]">
+                      <div className="flex items-center gap-2 text-[#bdbdbd] mt-1">
                         <FaCircleUser className="h-5 w-5" />
                         <span className="text-sm font-medium">
-                          {review.client.name}
+                          {review.client?.name}
                         </span>
                       </div>
                     </div>
 
-                    {/* RIGHT — META INFO */}
+                    {/* META INFO — RESTORED */}
                     <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-[#9c9c9c]">
-                      {/* <div className="flex items-center gap-1">
-                        <Building className="h-4 w-4" />
-                        {review.reviewer.industry}
-                      </div>
 
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-4 w-4" />
-                        {review.reviewer.location}
-                      </div>
+                      {/* {review.client?.industry && (
+                        <div className="flex items-center gap-1">
+                          <Building className="h-4 w-4" />
+                          {review.client.industry}
+                        </div>
+                      )} */}
 
-                      <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4" />
-                        {review.reviewer.employees}
-                      </div>
+                      {/* {review.client?.location && (
+                        <div className="flex items-center gap-1">
+                          <MapPin className="h-4 w-4" />
+                          {review.client.location}
+                        </div>
+                      )} */}
 
-                      <div className="flex items-center gap-1">
-                        <MessageSquareMore className="h-4 w-4" />
-                        {review.reviewer.reviewType}
-                      </div>
+                      {review.client?.employees && (
+                        <div className="flex items-center gap-1">
+                          <Users className="h-4 w-4" />
+                          {review.client.employees}
+                        </div>
+                      )}
 
-                      {review.reviewer.verified && (
+                      {review.client?.reviewType && (
+                        <div className="flex items-center gap-1">
+                          <MessageSquareMore className="h-4 w-4" />
+                          {review.client.reviewType}
+                        </div>
+                      )}
+
+                      {review.client?.verified && (
                         <div className="flex items-center gap-1 text-green-600">
                           <CheckCircle2 className="h-4 w-4" />
                           Verified
                         </div>
-                      )} */}
+                      )}
+
                     </div>
                   </div>
                 </div>
+              ))
+                }
+                </div>
+            ) : (
+              <div className="text-center mt-20">
+                <p className="text-xl">No Reviews for this provider</p>
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center mt-20">
-            <p className="text-xl">No Reviews for this provider</p>
+            )}
           </div>
         )}
-      </div>
+
     </div>
-  );
+  </div>
+  </>
+);
 }
