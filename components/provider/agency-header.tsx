@@ -108,7 +108,7 @@ export default function AgencyHeader({ user, onMenuClick }: Props) {
   const handleLogout = async () => {
     await logout()
     router.replace("/login")
-  }
+  } 
 
   return (
   <header className="flex  items-center justify-end p-3 ml-auto border-border bg-transparent">
@@ -166,7 +166,7 @@ export default function AgencyHeader({ user, onMenuClick }: Props) {
               </div>
 
               {/* Profile Dropdown */}
-              <div className="relative  mr-4 lg:mr-10 " ref={dropdownRef}>
+              <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                   className="flex items-center gap-2 cursor-pointer"

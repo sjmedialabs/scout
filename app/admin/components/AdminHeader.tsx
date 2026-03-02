@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 interface Notification {
   _id: string;
   title: string;
-  message: string;
+  message: string; 
   isRead: boolean;
   createdAt: string;
   linkUrl?: string;
@@ -27,20 +27,20 @@ export default function AdminHeader({ onMenuClick }: Props) {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // 🔹 Fetch Admin Notifications
-  const fetchNotifications = async () => {
-    try {
-      const res = await authFetch(`/api/admin/notifications`);
-      const data = await res.json();
+  // const fetchNotifications = async () => {
+  //   try {
+  //     const res = await authFetch(`/api/admin/notifications`);
+  //     const data = await res.json();
 
-      setNotifications((data.data || []).filter((n: Notification) => !n.isRead));
-    } catch (error) {
-      console.error("Failed to fetch admin notifications", error);
-    }
-  };
+  //     setNotifications((data.data || []).filter((n: Notification) => !n.isRead));
+  //   } catch (error) {
+  //     console.error("Failed to fetch admin notifications", error);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
+  // useEffect(() => {
+  //   fetchNotifications();
+  // }, []);
 
   // 🔹 Close dropdown on outside click
   useEffect(() => {
@@ -97,18 +97,18 @@ export default function AdminHeader({ onMenuClick }: Props) {
       </div>
 
       {/* 🔹 Right Section */}
-      <div className="relative" ref={dropdownRef}>
+      <div className="relative mr-2" ref={dropdownRef}>
         <button
           onClick={() => setDropdownOpen(!dropdownOpen)}
           className="relative"
         >
           <Bell className="h-6 w-6 text-gray-700" />
 
-          {unreadCount > 0 && (
+          {/* {unreadCount > 0 && (
             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
               {unreadCount}
             </span>
-          )}
+          )} */}
         </button>
 
         {dropdownOpen && (

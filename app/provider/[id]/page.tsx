@@ -44,6 +44,7 @@ import { mockProviders } from "@/lib/mock-data";
 import RatingStars from "@/components/rating-star";
 import { useEffect, useState } from "react";
 import { authFetch } from "@/lib/auth-fetch";
+import ContactProviderModal from "@/components/leadPopupForm";
 
 export default function ProviderProfilePage({
   params,
@@ -51,6 +52,7 @@ export default function ProviderProfilePage({
   params: { id: string };
 }) {
   const { id } = params;
+  const [open, setOpen] = useState(false)
 
   // Find provider by ID
   const provider = mockProviders.find((p) => p.id === id);
@@ -86,78 +88,7 @@ export default function ProviderProfilePage({
       setLoading(false);
     }
   };
-  const mockReviews = [
-    {
-      id: 1,
-      project: {
-        title: "The Project",
-        type: "UX/UI Design Web Design Web Development",
-        timeline: "July 2024 - Oct. 2025",
-        budget: "$50,000 to $199,999",
-        summary:
-          "Goji Labs has been hired by an investment firm to build their website. The team has been tasked with creating solutions for the client’s unique requests.",
-      },
-      review: {
-        quote:
-          "They are fantastic in almost every aspect and my experience so far has been great.",
-        date: "May 31, 2025",
-        summary:
-          "Goji Labs has successfully built the website and helped the client solve real-world problems through digital means. The team has been transparent and communicative throughout the collaboration. Overall, their strategic planning and problem-solving skills have pleased the client.",
-      },
-      rating: {
-        overall: 4.5,
-        totalReviews: 357,
-        quality: 5.0,
-        cost: 4.5,
-        schedule: 4.2,
-        refer: 5.0,
-      },
-      reviewer: {
-        name: "Sudheer uppuluri",
-        role: "Founder, Investment Firm",
-        industry: "Advertising & marketing",
-        location: "New Delhi",
-        employees: "1-10 Employees",
-        reviewType: "Online Review",
-        verified: true,
-      },
-    },
-    {
-      id: 2,
-      project: {
-        title: "The Project",
-        type: "UX/UI Design Web Design Web Development",
-        timeline: "July 2024 - Oct. 2025",
-        budget: "$50,000 to $199,999",
-        summary:
-          "Goji Labs has been hired by an investment firm to build their website. The team has been tasked with creating solutions for the client’s unique requests.",
-      },
-      review: {
-        quote:
-          "They are fantastic in almost every aspect and my experience so far has been great.",
-        date: "May 31, 2025",
-        summary:
-          "Goji Labs has successfully built the website and helped the client solve real-world problems through digital means. The team has been transparent and communicative throughout the collaboration. Overall, their strategic planning and problem-solving skills have pleased the client.",
-      },
-      rating: {
-        overall: 4.5,
-        totalReviews: 357,
-        quality: 5.0,
-        cost: 4.5,
-        schedule: 4.2,
-        refer: 5.0,
-      },
-      reviewer: {
-        name: "Sudheer uppuluri",
-        role: "Founder, Investment Firm",
-        industry: "Advertising & marketing",
-        location: "New Delhi",
-        employees: "1-10 Employees",
-        reviewType: "Online Review",
-        verified: true,
-      },
-    },
-  ];
+ 
 
   console.log("Providers Details are :::", providerDetails);
 
@@ -369,10 +300,11 @@ const topServices = Object.keys(serviceRatings)
               </div>
             </div>
             <div className="flex flex-col gap-1">
-              <a href={`mailto:${providerDetails.email}`}>
+              
                 <Button
                   size="lg"
-                  className="bg-white text-[#2C34A1] hover:bg-white/90 text-sm font-semibold  active:bg-white  rounded-3xl"
+                  onClick={() => setOpen(true)}
+                  className="bg-white  text-[#2C34A1] hover:bg-white/90 text-sm font-semibold  active:bg-white  rounded-3xl"
                 >
                   <img
                     src="/providerDetailPageBannerButton.jpg"
@@ -380,7 +312,13 @@ const topServices = Object.keys(serviceRatings)
                   />
                   Contact Provider
                 </Button>
-              </a>
+                  <ContactProviderModal
+                  open={open}
+                  onClose={() => setOpen(false)}
+                  userId={providerDetails.userId}    
+                  />
+
+              
               {providerDetails.website && (
                 <a href={`${providerDetails.website}`} target="_blank">
                   <Button

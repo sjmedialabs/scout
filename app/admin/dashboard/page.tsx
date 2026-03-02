@@ -13,10 +13,20 @@ import {
   AlertTriangle,
   TriangleAlert,
   Loader2,
+  ChartNoAxesCombined
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Provider, User } from "@/lib/types";
 import { Switch } from "@radix-ui/react-switch";
+interface DashboardCardProps {
+  title: string
+  value: number | string
+  icon: React.ReactNode
+  helper?: string
+  gradientFrom?: string   // top gradient color
+  gradientTo?: string     // bottom gradient color
+  accentColor?: string    // top border color
+}
 
 export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -191,7 +201,7 @@ if(isLoading){
         {/* Total Users */}
         <DashboardCard
           title="Total Users"
-          icon={<Users className="h-4 w-4 text-orangeButton" />}
+          icon={<Users className="h-4 w-4 text-orangeButton" color="#fff" />}
           gradient="from-blue-100 to-blue-200"
           value={users.length}
           helper={`${pendingUsers} pending approval`}
@@ -200,8 +210,9 @@ if(isLoading){
         {/* Active Projects */}
         <DashboardCard
           title="Active Projects"
-          icon={<FileText className="h-4 w-4 text-orangeButton" />}
+          icon={<FileText className="h-4 w-4 text-orangeButton" color="#fff" />}
           gradient="from-green-100 to-green-200"
+          accentColor="#609ae1"
           value={activeRequirements.length}
           helper={`${requirements.length} requirements posted`}
         />
@@ -209,8 +220,9 @@ if(isLoading){
         {/* Pending Reports */}
         <DashboardCard
           title="Pending Reports"
-          icon={<AlertTriangle className="h-4 w-4 text-orangeButton" />}
+          icon={<AlertTriangle className="h-4 w-4 text-orangeButton"color="#fff" />}
           gradient="from-orange-100 to-orange-200"
+          accentColor="#a085cc"
           value={pendingReports}
           helper="Require moderation"
         />
@@ -219,14 +231,12 @@ if(isLoading){
         <DashboardCard
           title="Monthly Revenue"
           icon={
-            <img
-              src="/images/revenue-icon.png"
-              className="h-4 w-4 text-orangeButton"
-            />
+            <ChartNoAxesCombined className="h-4 w-4 text-orangeButton"color="#fff"  />
           }
           gradient="from-purple-100 to-purple-200"
+          accentColor="#88c6ac"
           value={`$${revenueStats.monthlyRevenue.toLocaleString()}`}
-          helper={`+${revenueStats.increasedPercentageThanLastMonth}% growth`}
+          helper={`${revenueStats.increasedPercentageThanLastMonth}% ${revenueStats.increasedPercentageThanLastMonth>=0?"growth":"drop"}`}
         />
       </div>
 
@@ -242,28 +252,52 @@ if(isLoading){
 /* ---------------------------------------------------------
    REUSABLE DASHBOARD CARD COMPONENT
 --------------------------------------------------------- */
-function DashboardCard({ title, value, icon, helper, gradient }: any) {
+export function DashboardCard({
+  title,
+  value,
+  icon,
+  helper,
+  gradientFrom = "#ffffff",
+  gradientTo = "#f8fafc",
+  accentColor = "#f97316", // default orange
+}: DashboardCardProps) {
   return (
     <div
-      className="group bg-white rounded-2xl p-6 pt-5 pb-3  shadow-md
-                 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+      className="relative rounded-2xl px-3 py-3 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+      style={{
+        background: `linear-gradient(to bottom, ${gradientFrom}, ${gradientTo})`,
+      }}
     >
-      <div className="flex items-center justify-between pb-1 -mt-4">
-        <div>
-          <h3 className="text-sm font-semibold">{title}</h3>
-        </div>
-        <div
-          className={`p-2 rounded-full flex items-center justify-center
-          bg-[#EEF7FE] group-hover:scale-110 transition-transform`}
-        >
+      {/* Top Accent Line */}
+      <div
+        className="absolute top-0 left-0 w-full h-2 rounded-t-2xl"
+        style={{ backgroundColor: accentColor }}
+      />
+
+      {/* Header */}
+      <div className="flex items-center justify-between mt-3">
+        <h3 className="text-sm font-semibold text-gray-600">
+          {title}
+        </h3>
+
+        <div className={`p-2 rounded-full  flex items-center justify-center`} style={{ backgroundColor: accentColor }}>
           {icon}
         </div>
       </div>
 
-      <div className="text-2xl font-bold text-slate-800">{value}</div>
-      <p className="text-xs text-green-500 font-extralight mt-1">{helper}</p>
+      {/* Value */}
+      <div className="text-xl font-bold text-slate-800 ">
+        {value}
+      </div>
+
+      {/* Helper */}
+      {helper && (
+        <p className={`text-sm ${parseInt(value)>0?"text-green-600":"text-red-500"} mt-1 font-medium`}>
+          {helper}
+        </p>
+      )}
     </div>
-  );
+  )
 }
 
 function RecentUserActivityCard({recentUsers}) {

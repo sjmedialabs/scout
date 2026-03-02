@@ -227,6 +227,7 @@ export async function PUT(
           );
         }
         if (body.status.toLocaleLowerCase() === "accepted") {
+          updates.acceptedAt=new Date();
           console.log("----Accepted proposal:::");
           const requirementStaus = await Requirement.findById(
             proposal.requirementId,

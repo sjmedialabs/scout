@@ -40,54 +40,28 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  {
-    id: "overview",
-    label: "OVERVIEW",
-    icon: Home,
-    children: [
-      { id: "dashboard", label: "Dashboard", icon: Home, path: "/agency/dashboard" },
+  // OVERVIEW
+  { id: "dashboard", label: "Dashboard", icon: Home, path: "/agency/dashboard" },
+  { id: "editprofile", label: "EditProfile", icon: Briefcase, path: "/agency/dashboard/editprofile" },
+  // { id: "portfolio", label: "Portfolio", icon: Briefcase, path: "/agency/dashboard/portfolio" },
+  { id: "reviews", label: "Reviews", icon: Star, path: "/agency/dashboard/reviews" },
+  { id: "messages", label: "Messages", icon: MessageSquare, path: "/agency/dashboard/messages" },
+  // { id: "project-inquiries", label: "Project Inquiries", icon: FileSearch, path: "/agency/dashboard/project-inquiries" },
+  { id: "proposals", label: "Proposals", icon: FileText, path: "/agency/dashboard/proposals" },
+  { id: "projects", label: "Projects", icon: Briefcase, path: "/agency/dashboard/projects" },
 
-      {id:"editprofile",label:"EditProfile",icon: Briefcase, path: "/agency/dashboard/editprofile"},
+  // PERFORMANCE
+  // { id: "performance-analytics", label: "Performance Analytics", icon: TrendingUp, path: "/agency/dashboard/performance/analytics" },
+  // { id: "audience-insights", label: "Audience Insights", icon: Eye, path: "/agency/dashboard/performance/audience-insights" },
+  // { id: "competitor-comparison", label: "Competitor Comparison", icon: GitCompare, path: "/agency/dashboard/performance/competitor-comparison" },
 
-      { id: "portfolio", label: "Portfolio", icon: Briefcase, path: "/agency/dashboard/portfolio" },
-      { id: "reviews", label: "Reviews", icon: Star, path: "/agency/dashboard/reviews" },
-      { id: "messages", label: "Messages", icon: MessageSquare, path: "/agency/dashboard/messages" },
-      { id: "project-inquiries", label: "Project Inquiries", icon: FileSearch, path: "/agency/dashboard/project-inquiries" },
-      { id: "proposals", label: "Proposals", icon: FileText, path: "/agency/dashboard/proposals" },
-      { id: "projects", label: "Projects", icon: Briefcase, path: "/agency/dashboard/projects" },
-    ],
-  },
+  // MARKETING
+  { id: "lead-generation", label: "Lead Management", icon: Download, path: "/agency/dashboard/leads" },
 
-  {
-    id: "performance",
-    label: "PERFORMANCE",
-    icon: BarChart3,
-    children: [
-      { id: "performance-analytics", label: "Performance Analytics", icon: TrendingUp, path: "/agency/dashboard/performance/analytics" },
-      // { id: "audience-insights", label: "Audience Insights", icon: Eye, path: "/agency/dashboard/performance/audience-insights" },
-      { id: "competitor-comparison", label: "Competitor Comparison", icon: GitCompare, path: "/agency/dashboard/performance/competitor-comparison" },
-    ],
-  },
-
-  // {
-  //   id: "marketing",
-  //   label: "MARKETING",
-  //   icon: Megaphone,
-  //   children: [
-  //     { id: "lead-generation", label: "Lead Management", icon: Download, path: "/agency/dashboard/marketing/lead-generation" },
-  //   ],
-  // },
-
-  {
-    id: "account-settings",
-    label: "ACCOUNT & SETTINGS",
-    icon: Settings,
-    children: [
-      { id: "billing-subscription", label: "Billing & Subscription", icon: CreditCard, path: "/agency/dashboard/account/billing" },
-      { id: "subscription", label: "Subscription", icon:Briefcase, path: "/agency/dashboard/account/subscriptions" },
-      { id: "notifications", label: "Notifications", icon: Bell, path: "/agency/dashboard/account/notifications" },
-    ],
-  },
+  // ACCOUNT & SETTINGS
+  { id: "billing-subscription", label: "Billing & Subscription", icon: CreditCard, path: "/agency/dashboard/account/billing" },
+  { id: "subscription", label: "Subscription", icon: Briefcase, path: "/agency/dashboard/account/subscriptions" },
+  { id: "notifications", label: "Notifications", icon: Bell, path: "/agency/dashboard/account/notifications" },
 ];
 
 export default function AgencyDashboardLayout({ children }: { children: React.ReactNode }) {
@@ -134,7 +108,13 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
 
         // 🔑 MENU DECISION HERE
         if (isExpired) {
-          setFilteredMenuItems([menuItems[menuItems.length - 1]]) // Account only
+         const accountItems = menuItems.filter(
+            (item) =>
+              item.id === "billing-subscription" ||
+              item.id === "subscription"
+          );
+
+           setFilteredMenuItems(accountItems); // Account only
         } else {
           setFilteredMenuItems(menuItems)
         }
@@ -161,12 +141,12 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
     <div className="min-h-screen flex flex-col lg:flex-row bg-background">
 
       {/* MOBILE TOP BAR */}
-      <header className="lg:hidden fixed top-0  left-0 bg-[#ffffff] right-0 h-14  border-b z-40 flex items-center justify-between px-4">
+      <header className="lg:hidden fixed top-0  left-0 bg-[#f4eefd] right-0 h-14  border-b z-40 flex items-center justify-between px-0">
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 ml-3">
           <button
             onClick={() => setIsMobileOpen(true)}
-            className="p-2 -ml-2 rounded-lg hover:bg-accent"
+            className="p-2  rounded-lg hover:bg-accent"
           >
             <Menu className="h-6 w-6" />
           </button>
@@ -202,12 +182,12 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
        {/*  Desktop Fixed Header */}
           <div
             className={`
-              hidden lg:flex fixed top-0 right-0 h-16 bg-white border-b z-40
+              hidden lg:flex fixed top-0 right-0 h-16 bg-[#f4eefd] border-b z-40
               transition-all duration-300
               ${isCollapsed ? "left-20" : "left-80"}
             `}
           >
-            <div className="w-full px-8 flex items-center">
+            <div className="w-full px-5 flex items-center">
               <AgencyHeader user={user} />
             </div>
           </div>

@@ -60,7 +60,10 @@ import {
   Target,
   Handshake,
   CircleDollarSign,
+  Heart,
 } from "lucide-react";
+import { FaFileAlt } from "react-icons/fa";
+
 import {
   mockNotifications,
   mockProviderProjects,
@@ -75,6 +78,10 @@ import {
   type Review,
   Proposal,
 } from "@/lib/types";
+import { Hand } from "lucide-react";
+import StatCard from "@/components/provider/dashboardCardAgency";
+import { Folder } from "lucide-react"
+import ProjectCard from "@/components/provider/activeProjectCard";
 
 const token =
   typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -86,73 +93,7 @@ interface MenuItem {
   children?: MenuItem[];
 }
 
-const menuItems: MenuItem[] = [
-  {
-    id: "overview",
-    label: "OVERVIEW",
-    icon: Home,
-    children: [
-      { id: "dashboard", label: "Dashboard", icon: Home },
-      {
-        id: "edit-profile",
-        label: "Edit Profile",
-        icon: User,
-        children: [
-          { id: "company-details", label: "Company Details", icon: Building2 },
-          { id: "services", label: "Services", icon: Briefcase },
-          { id: "team", label: "Team", icon: Users },
-          { id: "contact-info", label: "Contact Info", icon: MessageCircle },
-          { id: "certifications", label: "Certifications", icon: Award },
-        ],
-      },
-      { id: "portfolio", label: "Portfolio", icon: Briefcase },
-      { id: "reviews", label: "Reviews", icon: Star },
-      { id: "messages", label: "Messages", icon: MessageSquare },
-      { id: "project-inquiries", label: "Project Inquiries", icon: FileSearch },
-      { id: "proposals", label: "Proposals", icon: FileText },
-      { id: "projects", label: "Projects", icon: Briefcase },
-    ],
-  },
-  {
-    id: "performance",
-    label: "PERFORMANCE",
-    icon: BarChart3,
-    children: [
-      {
-        id: "performance-analytics",
-        label: "Performance Analytics",
-        icon: TrendingUp,
-      },
-      { id: "audience-insights", label: "Audience Insights", icon: Eye },
-      {
-        id: "competitor-comparison",
-        label: "Competitor Comparison",
-        icon: GitCompare,
-      },
-    ],
-  },
-  {
-    id: "marketing",
-    label: "MARKETING",
-    icon: Megaphone,
-    children: [
-      { id: "lead-generation", label: "Lead Management", icon: Download },
-    ],
-  },
-  {
-    id: "account-settings",
-    label: "ACCOUNT & SETTINGS",
-    icon: Settings,
-    children: [
-      {
-        id: "billing-subscription",
-        label: "Billing & Subscription",
-        icon: CreditCard,
-      },
-      { id: "notifications", label: "Notifications", icon: Bell },
-    ],
-  },
-];
+
 
 // REMOVED LOCAL REQUIREMENTS ARRAY
 
@@ -160,41 +101,13 @@ export default function AgencyDashboard() {
   console.log("[v0] Agency dashboard rendering");
   const { user, loading } = useAuth();
   const router = useRouter();
-  // Changed initial activeSection state to "overview"
-  const [activeSection, setActiveSection] = useState("overview");
+  
 
-  const [projectTab, setProjectTab] = useState<
-    "active" | "completed" | "invitations"
-  >("active");
-  const [provider, setProvider] = useState<Provider>({
-    id: "1",
-    name: "Jane Smith",
-    email: "jane@sparkdev.com",
-    subscriptionTier: "standard", // Changed from "basic" to "standard"
-    isVerified: true,
-    isFeatured: true,
-    profileCompletion: 85,
-    totalProjects: 47,
-    activeProjects: 8,
-    completedProjects: 39,
-    totalEarnings: 125000,
-    monthlyEarnings: 12500,
-    rating: 4.9,
-    responseTime: "2 hours",
-    successRate: 98,
-    minimumBudget: 500,
-    hourlyRate: { min: 25, max: 150 },
-  });
-
-  const [notifications, setNotifications] =
-    useState<Notification[]>(mockNotifications);
-  const [projects] = useState<Project[]>(mockProviderProjects);
-  const [reviews, setReviews] = useState<Review[]>(mockProviderReviews);
   const [selectedRequirement, setSelectedRequirement] =
     useState<Requirement | null>(null);
   const [showProposalForm, setShowProposalForm] = useState(false);
 
-  const [selectedReview, setSelectedReview] = useState<Review | null>(null);
+ 
 
   const [selectedConversation, setSelectedConversation] =
     useState<string>("john-doe");
@@ -329,114 +242,119 @@ export default function AgencyDashboard() {
     },
   ]);
 
-  const [providerDetails, setProviderDetails] = useState<Provider[]>();
-  const [proposals, setProposals] = useState<Proposal[]>([]);
-  const [requirements, setRequirements] = useState<Requirement[]>([]);
+  
   const [dynamicStats, setDynamicStats] = useState({
-    profileViews: 0,
-    profileViewsPercentage: 0,
-    websiteClicks: 0,
-    websiteClicksPercentage: 0,
+    activeProjects: 0,
+    projectsInThisMonth: 0,
     proposals: 0,
     proposalResponses: 0,
-    conversionPercentage: 0,
-    leadsPercentage: 0,
-    leads: 0,
+    leadsCount:0,
+    leadsInThisMonth:0
   });
   const [activeProjects, setActiveProjects] = useState<Requirement[]>([]);
-  const [dynamicNotifications, setDynamicNotifications] = useState<
-    Notification[]
-  >([]);
+  
   const [resLoading, setResLoading] = useState(false);
+
+  const getProjectsInThisMonth = (proposals: any[]) => {
+  const now = new Date()
+
+  return proposals.filter((proposal) => {
+    if (!proposal.acceptedAt) return false
+
+    const acceptedDate = new Date(proposal.acceptedAt)
+
+    return (
+      acceptedDate.getMonth() === now.getMonth() &&
+      acceptedDate.getFullYear() === now.getFullYear()
+    )
+  }).length
+}
+const getLeadsInThisMonth = (leads: any[]) => {
+  const now = new Date()
+
+  return leads.filter((lead) => {
+    if (!lead.createdAt) return false
+
+    const createdDate = new Date(lead.createdAt)
+
+    return (
+      createdDate.getMonth() === now.getMonth() &&
+      createdDate.getFullYear() === now.getFullYear()
+    )
+  }).length
+}
   const loadData = async () => {
     setResLoading(true);
     try {
-      const [providerDetailRes, proposalRes, requirementRes, notificationRes] =
+      const [providerDetailRes, proposalRes, requirementRes,leadsRes] =
         await Promise.all([
           authFetch(`/api/providers/${user?.id}`, {}),
           authFetch("/api/proposals", {}),
           authFetch("/api/requirements", {}),
-          authFetch("/api/notifications", {}),
+          authFetch("/api/leads",{})
+          
         ]);
       if (
         providerDetailRes.ok &&
         proposalRes.ok &&
         requirementRes.ok &&
-        notificationRes.ok
+        leadsRes.ok
       ) {
         const [
           providerDetailsData,
           proposalData,
           requirementData,
-          notificationsData,
+          leadsData,
+          
         ] = await Promise.all([
           providerDetailRes.json(),
           proposalRes.json(),
           requirementRes.json(),
-          notificationRes.json(),
+          leadsRes.json()
+        
         ]);
         console.log("Provider Details Data::::", providerDetailsData);
         console.log("Proposals Data:::", proposalData);
         console.log("Requirements Data::::", requirementData);
-        console.log("fetched Notifications:::::", notificationsData);
-        let profileViewPercentage =
-          providerDetailsData.provider.currentMonthProfileViews > 0
-            ? Math.round(
-                (providerDetailsData.provider.currentMonthProfileViews /
-                  providerDetailsData.provider.profileViews) *
-                  100,
-              )
-            : 0;
-        let websiteClicksPercentage =
-          providerDetailsData.provider.currentMonthWebsiteClicks > 0
-            ? Math.round(
-                (providerDetailsData.provider.currentMonthWebsiteClicks /
-                  providerDetailsData.provider.websiteClicks) *
-                  100,
-              )
-            : 0;
+        
+        
         let responsesCount = proposalData.proposals.filter(
           (eachItem) => eachItem.status != "pending",
         ).length;
-        let totalProjectsDone = requirementData.requirements.filter(
-          (eachItem) => eachItem?.allocatedToId === user?.id,
-        );
-        let conversionPercentage =
-          proposalData.proposals.length > 0
-            ? Math.round(
-                (totalProjectsDone.length / proposalData.proposals.length) *
-                  100,
-              )
-            : 0;
-
-        console.log("percntage of profile views", profileViewPercentage);
-        console.log("percntage of website clicks", websiteClicksPercentage);
-        console.log("response Count is::::", responsesCount);
-        console.log("total Project allocated::::", totalProjectsDone);
-        console.log("conversion percentage is:::", conversionPercentage);
+        const projectsInThisMonth = getProjectsInThisMonth(
+          proposalData.proposals || []
+        )
+        const leadsInThisMonth = getLeadsInThisMonth(leadsData.data || [])
 
         setDynamicStats({
-          profileViews: providerDetailsData.provider.profileViews,
-          profileViewsPercentage: profileViewPercentage,
-          websiteClicks: providerDetailsData.provider.websiteClicks,
-          websiteClicksPercentage: websiteClicksPercentage,
-          proposals: proposalData.proposals.length,
-          proposalResponses: responsesCount,
-          conversionPercentage: conversionPercentage,
-          leadsPercentage: 0,
-          leads: totalProjectsDone.length,
-        });
+        activeProjects: proposalData.proposals.filter((item)=>item.status==="accepted").length,
+        projectsInThisMonth: projectsInThisMonth,
+        proposals: proposalData.proposals.length,
+        proposalResponses: responsesCount,
+        leadsCount:(leadsData.data || []).length,
+        leadsInThisMonth:leadsInThisMonth
+      })
+
+       
+
+        
 
         let currentActiveProjects = proposalData.proposals.filter(
           (eachItem: any) => eachItem.status === "accepted",
         );
         console.log("current active projects::::", currentActiveProjects);
 
-        setActiveProjects(currentActiveProjects);
-        //unread notifications
-        setDynamicNotifications(
-          notificationsData.data.filter((eachitem) => !eachitem.isRead),
-        );
+        setActiveProjects(
+          [...currentActiveProjects]
+            .sort(
+              (a, b) =>
+                new Date(b.acceptedAt).getTime() -
+                new Date(a.acceptedAt).getTime()
+            )
+            .slice(0, 2)
+        )
+        
+        
       } else {
         throw new Error();
       }
@@ -447,77 +365,11 @@ export default function AgencyDashboard() {
     }
   };
 
-  const handleConversationSelect = (conversationId: string) => {
-    setSelectedConversation(conversationId);
-    // Mark conversation as read
-    setConversations((prev) =>
-      prev.map((conv) =>
-        conv.id === conversationId ? { ...conv, unread: false } : conv,
-      ),
-    );
-  };
+ 
 
-  const handleSendMessage = async () => {
-    if (!newMessage.trim()) return;
 
-    const selectedConv = conversations.find(
-      (c) => c.id === selectedConversation,
-    );
-    if (!selectedConv) return;
-
-    const newMsg = {
-      id: Date.now().toString(),
-      sender: "agency" as const,
-      content: newMessage,
-      timestamp: "Just now",
-      avatar: "S",
-    };
-
-    // Update conversations with new message
-    setConversations((prev) =>
-      prev.map((conv) =>
-        conv.id === selectedConversation
-          ? {
-              ...conv,
-              messages: [...conv.messages, newMsg],
-              message: newMessage,
-              time: "Just now",
-            }
-          : conv,
-      ),
-    );
-
-    setNewMessage("");
-
-    // TODO: Send to backend API
-    try {
-      const response = await authFetch("/api/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          conversationId: selectedConversation,
-          message: newMessage,
-          sender: "agency",
-        }),
-      });
-
-      if (!response.ok) {
-        console.error("Failed to send message");
-      }
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
-
-  const selectedConv = conversations.find((c) => c.id === selectedConversation);
-  const unreadCount = conversations.filter((c) => c.unread).length;
+ 
+ 
 
   const handleProposalSubmit = (requirement: Requirement) => {
     // Placeholder for handleProposalSubmit logic
@@ -526,51 +378,13 @@ export default function AgencyDashboard() {
     setSelectedRequirement(null);
   };
 
-  const handleMarkNotificationAsRead = async (
-    notificationId: string,
-    redirectionUrl: string,
-  ) => {
-    try {
-      const res = await authFetch(
-        `/api/notifications/${notificationId}`,
-        { method: "PUT" },
-        user?.token,
-      );
-      console.log("response of the mark as read::", res);
-      if (res.ok) {
-        setDynamicNotifications((prev) =>
-          prev.filter((eachItem) => eachItem._id !== notificationId),
-        );
-      }
-    } catch (error) {
-      console.log("Failed to update the status of the notification::", error);
-    }
-    router.push(redirectionUrl);
-  };
+  
 
-  const handleDismissNotification = (notificationId: string) => {
-    // Placeholder for handleDismissNotification logic
-  };
+  
 
-  const handleSaveProfile = (updatedProvider: Provider) => {
-    setProvider(updatedProvider);
-  };
+  
 
-  const handleRespondToReview = (review: Review) => {
-    setSelectedReview(review);
-    setShowRespondToReview(true);
-  };
-
-  // ADDED HANDLER FOR VIEWING REQUIREMENT DETAILS
-  const handleViewRequirementDetails = (requirementId: string) => {
-    const requirement = mockRequirements.find((r) => r.id === requirementId);
-    if (requirement) {
-      setSelectedRequirement(requirement);
-      // For now, just show the proposal form - later we can add a details modal
-      setShowProposalForm(true);
-    }
-  };
-
+  
   useEffect(() => {
     if (!loading && (!user || user.role !== "agency")) {
       router.push("/login");
@@ -592,85 +406,9 @@ export default function AgencyDashboard() {
     return null;
   }
 
-  const stats = {
-    totalProposals: 15,
-    activeProjects: projects.filter((p) => p.status === "active").length,
-    completedProjects: 12,
-    averageRating:
-      reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length || 0,
-  };
+ 
 
-  const analyticsData = {
-    profileViews: 1247,
-    profileViewsChange: 12,
-    clicksToWebsite: 342,
-    clicksChange: 8,
-    impressions: 5680,
-    impressionsChange: 15,
-    projectInvitations: 23,
-    invitationsChange: 5,
-    proposalSubmissions: 15,
-    proposalResponses: 8,
-    conversionRate: 53,
-    leadsGenerated: 34,
-    leadsChange: 18,
-    leadToClientRate: 23.5,
-    premiumImpact: 45,
-  };
-
-  const searchQueries = [
-    { keyword: "Web Development", count: 234, trend: "up" },
-    { keyword: "E-commerce Solutions", count: 189, trend: "up" },
-    { keyword: "Mobile App Development", count: 156, trend: "stable" },
-    { keyword: "UI/UX Design", count: 142, trend: "up" },
-    { keyword: "Digital Marketing", count: 98, trend: "down" },
-  ];
-
-  const marketInsights = {
-    topIndustries: [
-      { name: "E-commerce", percentage: 35, projects: 12 },
-      { name: "SaaS", percentage: 28, projects: 9 },
-      { name: "Healthcare", percentage: 18, projects: 6 },
-      { name: "Finance", percentage: 12, projects: 4 },
-      { name: "Education", percentage: 7, projects: 3 },
-    ],
-    topGeographies: [
-      { location: "United States", percentage: 45, projects: 15 },
-      { location: "United Kingdom", percentage: 22, projects: 7 },
-      { location: "Canada", percentage: 15, projects: 5 },
-      { location: "Australia", percentage: 10, projects: 3 },
-      { location: "Germany", percentage: 8, projects: 4 },
-    ],
-  };
-
-  const monthlyReport = {
-    profileImpressions: 5680,
-    profileViews: 1247,
-    categoryRanking: {
-      current: 12,
-      previous: 18,
-      category: "Web Development",
-    },
-    leadsGenerated: {
-      inquiries: 34,
-      proposals: 15,
-      total: 49,
-    },
-    conversionFunnel: {
-      views: 1247,
-      contacts: 89,
-      proposals: 15,
-      won: 5,
-    },
-    reviewsAdded: 3,
-    ratingsDistribution: {
-      5: 12,
-      4: 5,
-      3: 2,
-      2: 0,
-      1: 0,
-    },
-  };
+  
 
   // Added state for project tab navigation
   // const [projectTab, setProjectTab] = useState<"active" | "completed" | "invitations">("active")
@@ -689,282 +427,187 @@ export default function AgencyDashboard() {
       </div>
     );
   }
-  const calculateProgress = (milestones = []) => {
-    if (!milestones.length) return 0;
+  
+  console.log("Dynamic Top Cards Stats are the::::",dynamicStats)
 
-    const completedCount = milestones.filter(
-      (milestone) => milestone.completed === true,
-    ).length;
+  const formatDateToShort=(dateString: string): string=> {
+  const date = new Date(dateString)
 
-    return Math.round((completedCount / milestones.length) * 100);
-  };
+  if (isNaN(date.getTime())) return ""
+
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  })
+}
+const getCompletionPercentage = (
+  items: { title: string; description: string; completed: boolean }[]
+): number => {
+  if (!items.length) return 0
+
+  const completedCount = items.filter(item => item.completed).length
+
+  return Math.round((completedCount / items.length) * 100)
+}
 
   return (
     <div>
-      <div className="space-y-3 -mt-6">
-        <div>
-          <h1 className="text-xl font-bold text-orangeButton">
-            Dashboard Overview
+      <div className="space-y-3 ">
+        <div className="border-b border-[#E5E7EB] pb-4">
+          <h1 className="text-2xl font-semibold text-[#111827] flex items-center gap-2">
+            Welcome back, {user.name} 👋
           </h1>
-          <p className="text-gray-500 text-md">
-            Quick stats and recent activity
+          <p className="text-base text-[#6B7280] mt-1">
+            Dashboard Overview
           </p>
-          <div className="mt-2 h-px bg-border" />
         </div>
 
-        <div className="">
-          {/* LEFT */}
+        <div>
           <div className="space-y-3">
-            {/* Visibility */}
-            <div>
-              {/* <h3 className="text-lg font-semibold text-orangeButton my-custom-class mb-2">
-                Visibility & Engagement
-              </h3> */}
+            
+            {/* STATS CARDS */}
+            <div className="w-full">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1">
-                {[
-                  {
-                    label: "Profile Views",
-                    value: dynamicStats.profileViews,
-                    footer: `+${dynamicStats.profileViewsPercentage}% this month`,
-                    icon: PiUsersThreeLight,
-                  },
-                  // {
-                  //   label: "Impressions",
-                  //   value: analyticsData.impressions,
-                  //   footer: `+${analyticsData.impressionsChange}% this month`,
-                  //   icon: TrendingUp,
-                  // },
-                  {
-                    label: "Website Clicks",
-                    value: dynamicStats.websiteClicks,
-                    footer: `+${dynamicStats.websiteClicksPercentage}% this month`,
-                    icon: RiMessage2Line,
-                  },
-                  {
-                    label: "Proposals",
-                    value: dynamicStats.proposals,
-                    footer: `${dynamicStats.proposalResponses} responses`,
-                    icon: FileText,
-                  },
-                  {
-                    label: "Conversion Rate",
-                    value: `${dynamicStats.conversionPercentage}%`,
-                    footer: "Proposal to project",
-                    icon: TrendingUp,
-                  },
-                  // {
-                  //   label: "Invitations",
-                  //   value: analyticsData.projectInvitations,
-                  //   footer: `+${analyticsData.invitationsChange} this month`,
-                  //   icon: UserPlus,
-                  // },
-                ].map((item, i) => {
-                  const Icon = item.icon;
-                  return (
-                    // <div
-                    //   key={i}
-                    //   className="
-                    //     rounded-xl bg-white relative
-                    //     px-2 py-3
-                    //     shadow-[0_6px_22px_rgba(0,0,0,0.08)]
-                    //     flex flex-col gap-1.5
-                    //     max-w-[190px]
-                    //   "
-                    // >
-                    //   <div className="flex items-center justify-between gap-3">
-                    //     <span className="text-xs font-medium my-custom-class leading-sung">
-                    //       {item.label}
-                    //     </span>
-                    //     <div className=" absolute top-2 right-1 h-5 w-5 rounded-full bg-[#eef7fe] flex items-center justify-center">
-                    //       <Icon className="h-3 w-3 text-orangeButton" />
-                    //     </div>
-                    //   </div>
-                    //   <div className="text-[16px] font-semibold leading-tight">
-                    //     {item.value}
-                    //   </div>
-                    //   <p className="text-[10px] text-green-500 mt-auto">
-                    //     {item.footer}
-                    //   </p>
-                    // </div>
-                    <Card className="bg-[#fff] rounded-2xl">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 ">
-                      <CardTitle className="text-sm font-medium my-custom-class text-[#000]">
-                        {item.label}
-                      </CardTitle>
-                      <div className=" h-8 w-8 flex items-center justify-center rounded-full bg-[#EEF7FE]">
-                          <Icon className="h-3 w-3 text-orangeButton" />
+                {/* PROJECTS CARD */}
+                <div className="relative bg-[#F4F2FF] rounded-xl p-5 border-t-4 border-[#7C6EF6] shadow-sm flex flex-col justify-between min-h-[130px]">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-[#E6E1FF] p-3 rounded-lg">
+                        <Folder className="text-[#7C6EF6]" size={20} />
                       </div>
-                    </CardHeader>
-                    <CardContent className="space-y-0 py-0 -mt-6">
-                      <div className="text-2xl font-bold text-[#000]">
-                        {item.value}
+                      <div>
+                        <h3 className="text-gray-700 font-medium text-sm">
+                          Projects
+                        </h3>
+                        <p className="text-xs text-green-600 mt-1">
+                          {dynamicStats.projectsInThisMonth > 0
+                            ? `+${dynamicStats.projectsInThisMonth}`
+                            : "0"}{" "}
+                          new this month
+                        </p>
                       </div>
-                      <p className="text-sm text-green-500 font-normal">
-                        {item.footer}
-                      </p>
-                    </CardContent>
-                  </Card>
-                  );
-                })}
+                    </div>
+
+                    <span className="text-xl font-semibold text-gray-800">
+                      {dynamicStats.activeProjects}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-end mt-4">
+                    <button className="bg-[#7C6EF6] hover:bg-[#6A5BE8] cursor-pointer rounded-[10px] text-white text-sm px-4 py-2 transition" 
+                    onClick={()=>router.push("/agency/dashboard/projects")}>
+                      View Projects →
+                    </button>
+                  </div>
+                </div>
+
+                {/* PROPOSALS CARD */}
+                <div className="relative bg-[#FFF7E9] rounded-xl p-5 border-t-4 border-[#F5B546] shadow-sm flex flex-col justify-between min-h-[130px]">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-[#FFEFD0] p-3 rounded-lg">
+                        <FileText className="text-[#F5B546]" size={20} />
+                      </div>
+                      <div>
+                        <h3 className="text-gray-700 font-medium text-sm">
+                          Proposals
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {dynamicStats.proposalResponses} responses
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="text-xl font-semibold text-gray-800">
+                      {dynamicStats.proposals}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-end mt-4">
+                    <button className="bg-[#F5B546] hover:bg-[#E4A538] text-white text-sm px-4 py-2 rounded-[10px] cursor-pointer transition"
+                    onClick={()=>router.push("/agency/dashboard/proposals")}>
+                      Manage →
+                    </button>
+                  </div>
+                </div>
+
+                {/* LEADS CARD */}
+                <div className="relative bg-[#EEF9F2] rounded-xl p-5 border-t-4 border-[#58B787] shadow-sm flex flex-col justify-between min-h-[130px]">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-[#DDF3E7] p-3 rounded-lg">
+                        <Target className="text-[#58B787]" size={20} />
+                      </div>
+                      <div>
+                        <h3 className="text-gray-700 font-medium text-sm">
+                          Leads
+                        </h3>
+                        <p className="text-xs text-green-600 mt-1">
+                          {dynamicStats.leadsCount > 0
+                            ? `+${dynamicStats.leadsCount}`
+                            : ""}{" "}
+                          new in this month
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="text-xl font-semibold text-gray-800">
+                      {dynamicStats.leadsCount}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-end mt-4">
+                    <button className="bg-[#58B787] hover:bg-[#49A876] rounded-[10px] cursor-pointer text-white text-sm px-4 py-2 transition">
+                      View Leads →
+                    </button>
+                  </div>
+                </div>
+
               </div>
             </div>
 
-            {/* Performance */}
-            {/* <div>
-              <h3 className="text-lg font-semibold text-orangeButton my-custom-class mb-4">
-                Performance Metrics
-              </h3>
+            {/* ACTIVE PROJECTS */}
+            <Card className="rounded-lg bg-white py-2 pl-0">
+              <CardContent className="px-3 py-0">
+                <h1 className="text-[#000] text-lg font-semibold">
+                  Your Active Projects
+                </h1>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1">
-                {[
-                  {
-                    label: "Proposals",
-                    value: dynamicStats.proposals,
-                    footer: `${dynamicStats.proposalResponses} responses`,
-                    icon: FileText,
-                  },
-                  {
-                    label: "Conversion",
-                    value: `${dynamicStats.conversionPercentage}%`,
-                    footer: "Proposal to project",
-                    icon: TrendingUp,
-                  },
-                  {
-                    label: "Leads",
-                    value: dynamicStats.leads,
-                    footer: `+${analyticsData.leadsChange}% this month`,
-                    icon: PiUsersThreeLight,
-                  },
-                  {
-                    label: "Client Rate",
-                    value: `${analyticsData.leadToClientRate}%`,
-                    footer: "Lead to client",
-                    icon: Award,
-                  },
-                ].map((item, i) => {
-                  const Icon = item.icon;
-                  return (
-                    <div
-                      key={i}
-                      className="
-                        rounded-xl bg-white relative
-                        px-2 py-3
-                        shadow-[0_6px_22px_rgba(0,0,0,0.08)]
-                        flex flex-col gap-1.5
-                        max-w-[190px]
-                      
-                      "
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="text-xs font-medium my-custom-class leading-sung">
-                          {item.label}
-                        </span>
-                        <div className="absolute top-2 right-1 h-5 w-5 rounded-full bg-[#eef7fe] flex items-center justify-center">
-                          <Icon className="h-3 w-3 text-orangeButton" />
-                        </div>
-                      </div>
-
-                      <div className="text-[16px] font-semibold leading-tight">
-                        {item.value}
-                      </div>
-
-                      <p className="text-[10px] text-green-500 whitespace-nowrap">
-                        {item.footer}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div> */}
-
-            {/* Active Projects */}
-            <Card className="rounded-2xl  bg-white  pl-0">
-              <CardHeader className="h-8">
-                <CardTitle className="text-lg h-5 text-orangeButton my-custom-class">
-                  Active Projects
-                </CardTitle>
-                <CardDescription className="text-gray-500">
-                  Your current ongoing projects
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {activeProjects.length !== 0 ? (
-                    <div>
-                      {activeProjects.map((project) => (
-                        <div
-                          key={project.id}
-                          className="shadow-md border-1 border-gray-300 py-6 rounded-2xl  mb-4 p-5"
-                        >
-                          <div className="flex justify-between mb-2">
-                            <h4 className="font-bold my-custom-class">
-                              {project.requirement.title}
-                            </h4>
-                            <Badge
-                              className="bg-[#cae5c0] text-green-500"
-                              variant="outline"
-                            >
-                              active
-                            </Badge>
-                          </div>
-                          <div className="flex gap-6 text-sm text-muted-foreground">
-                            <div className="flex items-center gap-1 text-gray-500">
-                              <CircleDollarSign className="h-4 w-4 text-orangeButton"/>
-                              {/* <DollarSign  /> */}
-                              {project.proposedBudget.toLocaleString()}
-                            </div>
-                            <div className="flex items-center gap-1 -mt-1 text-gray-500">
-                              <Calendar className="h-4 w-4 text-orangeButton" />
-                              {project.proposedTimeline}
-                            </div>
-                          </div>
-                          {/* PROGRESS */}
-                          <div className="mt-2">
-                            <div className="flex  justify-between h-5 text-sm mb-1">
-                              <span>
-                                {`progress ${project.milestones.filter((eachItem) => eachItem.completed).length}/${project.milestones.length}`}{" "}
-                              </span>
-                              <span>
-                                {calculateProgress(project.milestones) || 0}%
-                                Complete
-                              </span>
-                            </div>
-                            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                              <div
-                                className="h-full bg-blue-500 rounded-full"
-                                style={{
-                                  width: `${calculateProgress(project.milestones) || 0}%`,
-                                }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center">
-                      <p className="text-gray-500 mt-4 text-xl">
-                        {" "}
-                        No active projects{" "}
-                      </p>
-                    </div>
-                  )}
-                </div>
+                {activeProjects.length !== 0 ? (
+                  <div className="grid md:grid-cols-2 gap-3 mt-3">
+                    {activeProjects.map((project) => (
+                      <ProjectCard
+                        key={project.id}
+                        data={{
+                          id: project.id,
+                          title: project.requirement.title,
+                          amount: project.proposedBudget,
+                          duration: project.proposedTimeline,
+                          category: project.requirement.category,
+                          date: project?.acceptedAt
+                            ? formatDateToShort(project.acceptedAt)
+                            : "N/A",
+                          progress: getCompletionPercentage(project.milestones),
+                        }}
+                        borderColor="#7C6EF6"
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center mt-4">
+                    <p className="text-gray-500 text-xl">
+                      No active projects
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
-          </div>
 
-          {/* RIGHT – Notifications */}
-          {/* <div className="lg:sticky lg:top-6 self-start">
-            <NotificationsWidget
-              notifications={dynamicNotifications}
-              onMarkAsRead={handleMarkNotificationAsRead}
-              onDismiss={() => {}}
-            />
-          </div> */}
+          </div>
         </div>
       </div>
     </div>
-  );
+  )
 }
