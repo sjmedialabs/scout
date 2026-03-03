@@ -1,14 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter, usePathname } from "next/navigation";
 import {
   LogOut,
-  ChevronDown,
   ChevronRight,
   Settings,
-  X, // ✅ Added
+  X,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -18,7 +17,6 @@ interface MenuItem {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   path?: string;
-  children?: MenuItem[];
 }
 
 interface SidebarProps {
@@ -42,15 +40,9 @@ export default function Sidebar({
   const pathname = usePathname();
   const { logout } = useAuth();
 
-  const [expandedSection, setExpandedSection] = useState<string | null>(null);
-
   const handleLogout = async () => {
     await logout();
     router.replace("/login");
-  };
-
-  const toggleSection = (id: string) => {
-    setExpandedSection((prev) => (prev === id ? null : id));
   };
 
   const handleMenuClick = (item: MenuItem) => {
@@ -60,40 +52,17 @@ export default function Sidebar({
     }
   };
 
-  /* Auto expand correct parent based on pathname */
   useEffect(() => {
-    if (!pathname) return;
-
-    menuItems.forEach((section) => {
-      if (section.children) {
-        const isActiveChild = section.children.some(
-          (child) =>
-            child.path &&
-            (pathname === child.path ||
-              pathname.startsWith(child.path))
-        );
-
-        if (isActiveChild) {
-          setExpandedSection(section.id);
-        }
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsCollapsed(false);
       }
-    });
-  }, [pathname, menuItems]);
+    };
 
-  
-  useEffect(() => {
-  const handleResize = () => {
-    if (window.innerWidth < 1024) {
-      setIsCollapsed(false)
-    }
-  }
-
-  // Run once on mount
-  handleResize()
-
-  window.addEventListener("resize", handleResize)
-  return () => window.removeEventListener("resize", handleResize)
-}, [])
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <>
@@ -106,7 +75,9 @@ export default function Sidebar({
 
       <aside
         className={`
-          fixed inset-y-0 left-0 z-40 bg-[#3C3A3E] text-[#FFFFFF] border-r border-border 
+          fixed inset-y-0 left-0 z-40 
+          bg-[#e0dbfa] text-[#000]
+          border-r border-[#e4dff6]
           flex flex-col transition-all duration-300 ease-in-out
           ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
           lg:translate-x-0
@@ -115,30 +86,29 @@ export default function Sidebar({
         `}
       >
         {/* HEADER */}
-        <div className="p-5 border-b border-border flex items-center justify-between">
+        <div className="px-3 py-3.5 border-b border-gray-300 flex items-center justify-between">
           {!isCollapsed && (
             <div>
               <h2 className="text-xl font-bold tracking-tight">
                 Agency Dashboard
               </h2>
-              <p className="text-sm text-[#8B8585] mt-0.5">
+              {/* <p className="text-sm text-gray-600 mt-0.5">
                 Welcome back, {user?.name || "User"}
-              </p>
+              </p> */}
             </div>
           )}
 
-          {/* ✅ Mobile Close OR Desktop Collapse */}
           {isMobileOpen ? (
             <button
               onClick={() => setIsMobileOpen(false)}
-              className="p-2 rounded-lg hover:bg-accent lg:hidden"
+              className="p-2 rounded-lg hover:bg-[#ebe6f8] lg:hidden"
             >
               <X className="h-5 w-5" />
             </button>
           ) : (
             <button
               onClick={() => setIsCollapsed((prev) => !prev)}
-              className="p-2 rounded-lg hover:bg-accent hidden lg:block"
+              className="p-2 rounded-lg hover:bg-[#ebe6f8] hidden lg:block"
             >
               <ChevronRight
                 className={`h-5 w-5 transition-transform ${
@@ -150,70 +120,45 @@ export default function Sidebar({
         </div>
 
         {/* NAVIGATION */}
-        <div className="flex-1 overflow-y-auto [scrollbar-width:none] 
+        <div className="flex-1 overflow-y-auto px-3 py-4  [scrollbar-width:none] 
           [-ms-overflow-style:none]        
-          [&::-webkit-scrollbar]:hidden px-3 py-4">
-          <nav className="space-y-1.5">
-            {menuItems.map((section) => (
-              <div key={section.id}>
+          [&::-webkit-scrollbar]:hidden">
+          <nav className="space-y-2">
+           {menuItems.map((item) => {
+              const pathSegments = pathname?.split("/").filter(Boolean) || [];
+              const lastSegment = pathSegments[pathSegments.length - 1];
+
+              const isDashboard =
+                item.id === "dashboard" &&
+                pathname === "/agency/dashboard";
+
+              const isActive =
+                item.id === lastSegment || isDashboard;
+
+              return (
                 <button
-                  onClick={() => toggleSection(section.id)}
-                  className="w-full flex items-center justify-between 
-                  px-3 py-2.5 text-sm font-medium rounded-lg cursor-pointer text-[#fff]"
+                  key={item.id}
+                  onClick={() => handleMenuClick(item)}
+                  className={`
+                    w-full flex items-center gap-3 px-3 py-2 text-sm
+                    transition-colors cursor-pointer
+                    ${
+                      isActive
+                        ? "bg-[#ebe6f8] border border-[#e4dff6] text-[#000] rounded-[8px]"
+                        : "text-[#000] hover:bg-[#ebe6f8] rounded-[8px]"
+                    }
+                  `}
                 >
-                  <div className="flex items-center gap-3">
-                    <section.icon className="h-4 w-4 shrink-0" />
-                    {!isCollapsed && section.label}
-                  </div>
-
-                  {section.children && !isCollapsed && (
-                    expandedSection === section.id ? (
-                      <ChevronDown className="h-4 w-4" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4" />
-                    )
-                  )}
+                  <item.icon className="h-4 w-4 shrink-0" />
+                  {!isCollapsed && item.label}
                 </button>
-
-                {section.children &&
-                  expandedSection === section.id && (
-                    <div
-                      className={`mt-1 space-y-1 ${
-                        isCollapsed ? "ml-4" : "ml-7"
-                      }`}
-                    >
-                      {section.children.map((item) => {
-                        const isActive =
-                          item.path && pathname === item.path;
-
-                        return (
-                          <button
-                            key={item.id}
-                            onClick={() => handleMenuClick(item)}
-                            className={`
-                              w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg
-                              transition-colors cursor-pointer
-                              ${
-                                isActive
-                                  ? "text-[#F54A0C] font-medium"
-                                  : "text-[#fff]"
-                              }
-                            `}
-                          >
-                            <item.icon className="h-4 w-4 shrink-0" />
-                            {!isCollapsed && item.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-              </div>
-            ))}
+              );
+            })}
           </nav>
         </div>
 
         {/* FOOTER */}
-        <div className="p-4 border-t border-border">
+        <div className="p-4 border-t border-[#e4dff6]">
           <div
             className={`grid gap-2 ${
               isCollapsed
@@ -228,7 +173,7 @@ export default function Sidebar({
                   "/agency/dashboard/account/subscriptions"
                 )
               }
-              className="justify-start bg-[#2C34A1] text-[#fff] hover:bg-[#2C34A1] rounded-full"
+              className="justify-start bg-[#2C34A1] text-white hover:bg-[#2C34A1] rounded-full"
             >
               <Settings className="h-4 w-4 mr-2" />
               {!isCollapsed && "Upgrade Plan"}

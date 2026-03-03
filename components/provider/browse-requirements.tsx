@@ -1,396 +1,314 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { CiCalendar } from "react-icons/ci"
 import { CiFilter } from "react-icons/ci"
-import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { AiOutlineDollar } from "react-icons/ai"
-import { VscSend } from "react-icons/vsc"
 import { Input } from "@/components/ui/input"
-import { FaArrowRightLong } from "react-icons/fa6"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { DollarSign, Calendar, Eye, Lock } from "lucide-react"
 import type { Requirement } from "@/lib/types"
-import { categories } from "@/lib/mock-data"
 import ServiceDropdown from "../select-category-filter"
-import { Unbounded } from "next/font/google"
 
 interface BrowseRequirementsProps {
   requirements: Requirement[]
-  subscriptionTier: string
-  onViewDetails: (requirementId: string) => void
-  onSubmitProposal: (requirementId: string) => void
+  
 }
 
 export function BrowseRequirements({
   requirements,
-  subscriptionTier,
-  onViewDetails,
-  onSubmitProposal,
+  
 }: BrowseRequirementsProps) {
   const router = useRouter()
-  const [searchTerm, setSearchTerm] = useState<Number>()
-  const [locationOpen, setLocationOpen] = useState(false)
-  const [categoryFilter, setCategoryFilter] = useState()
-  // const [ratingFilter, setRatingFilter] = useState("any")
-  const [budgetFilter, setBudgetFilter] = useState("all")
 
-  // const[locationFilter,setLocationFilter]=useState("");
-  const[serviceFilter,setServiceFilter]=useState("all");
-  const[ratingFilter,setRatingFilter]=useState("any");
-  const[filteredRequirements,setFilteredRequirements]=useState<Requirement[]>(requirements)
+  const [searchTerm, setSearchTerm] = useState<number | undefined>()
+  const [serviceFilter, setServiceFilter] = useState("")
+  const [startDate, setStartDate] = useState("")
+  const [endDate, setEndDate] = useState("")
+  const [filteredRequirements, setFilteredRequirements] =
+    useState<Requirement[]>(requirements)
 
-  const handleSearch = () => {
-  console.log("Search triggered with:", {
-    location: searchTerm,
-    service: serviceFilter,
-    rating: ratingFilter,
-  })
-  let tempFilteredRequirements=[...requirements];
-  if(searchTerm){
-    tempFilteredRequirements=tempFilteredRequirements.filter((eachItem)=>eachItem?.budgetMin>searchTerm);
+  const [currentPage, setCurrentPage] = useState(1)
+  const ITEMS_PER_PAGE = 4
+
+  // const handleSearch = () => {
+  //   let tempFilteredRequirements = [...requirements]
+
+  
+  //   if (searchTerm) {
+  //     tempFilteredRequirements = tempFilteredRequirements.filter(
+  //       (eachItem) => eachItem?.budgetMin > searchTerm
+  //     )
+  //   }
+
+  
+  //   if (serviceFilter && serviceFilter.toLowerCase() !== "all") {
+  //     tempFilteredRequirements = tempFilteredRequirements.filter(
+  //       (eachItem) =>
+  //         eachItem.category.toLowerCase() ===
+  //         serviceFilter.toLowerCase()
+  //     )
+  //   }
+
+    
+  //   if (startDate) {
+  //     tempFilteredRequirements = tempFilteredRequirements.filter(
+  //       (eachItem) =>
+  //         new Date(eachItem.createdAt) >= new Date(startDate)
+  //     )
+  //   }
+
+    
+  //   if (endDate) {
+  //     tempFilteredRequirements = tempFilteredRequirements.filter(
+  //       (eachItem) =>
+  //         new Date(eachItem.createdAt) <= new Date(endDate)
+  //     )
+  //   }
+
+  //   setFilteredRequirements(tempFilteredRequirements)
+  //   setCurrentPage(1)
+  // }
+
+  useEffect(()=>{
+    let tempFilteredRequirements = [...requirements]
+
+    // Budget Filter
+    if (searchTerm) {
+      tempFilteredRequirements = tempFilteredRequirements.filter(
+        (eachItem) => eachItem?.budgetMin > searchTerm
+      )
+    }
+
+    // Service Filter
+    if (serviceFilter && serviceFilter.toLowerCase() !== "all") {
+      tempFilteredRequirements = tempFilteredRequirements.filter(
+        (eachItem) =>
+          eachItem.category.toLowerCase() ===
+          serviceFilter.toLowerCase()
+      )
+    }
+
+    // Start Date Filter
+    if (startDate) {
+      tempFilteredRequirements = tempFilteredRequirements.filter(
+        (eachItem) =>
+          new Date(eachItem.createdAt) >= new Date(startDate)
+      )
+    }
+
+    // End Date Filter
+    if (endDate) {
+      tempFilteredRequirements = tempFilteredRequirements.filter(
+        (eachItem) =>
+          new Date(eachItem.createdAt) <= new Date(endDate)
+      )
+    }
+
+    setFilteredRequirements(tempFilteredRequirements)
+    setCurrentPage(1)
+
+  },[serviceFilter,searchTerm,startDate,endDate])
+  const handleClear = () => {
+    setServiceFilter("")
+    setSearchTerm(undefined)
+    setStartDate("")
+    setEndDate("")
+    setFilteredRequirements(requirements)
+    setCurrentPage(1)
   }
-  if(serviceFilter && serviceFilter.toLowerCase()!=="all"){
-    tempFilteredRequirements=tempFilteredRequirements.filter((eachItem)=>eachItem.category.toLowerCase()===serviceFilter.toLowerCase())
+
+  // Pagination Logic
+  const totalPages = Math.ceil(
+    filteredRequirements.length / ITEMS_PER_PAGE
+  )
+
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    return filteredRequirements.slice(
+      startIndex,
+      startIndex + ITEMS_PER_PAGE
+    )
+  }, [filteredRequirements, currentPage])
+
+  const formatDate = (date: string) => {
+    const d = new Date(date)
+    const day = String(d.getDate()).padStart(2, "0")
+    const month = String(d.getMonth() + 1).padStart(2, "0")
+    const year = d.getFullYear()
+    return `${day}/${month}/${year}`
   }
-  setFilteredRequirements(tempFilteredRequirements)
-
-}
-
-  // const filteredRequirements = requirements.filter((req) => {
-  //   const matchesSearch =
-  //     req.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     req.description.toLowerCase().includes(searchTerm.toLowerCase())
-
-  //   const matchesCategory = categoryFilter === "all" || req.category === categoryFilter
-
-  //   const matchesBudget =
-  //     budgetFilter === "all" ||
-  //     (budgetFilter === "low" && req.budgetMax <= 2000) ||
-  //     (budgetFilter === "medium" && req.budgetMax > 2000 && req.budgetMax <= 10000) ||
-  //     (budgetFilter === "high" && req.budgetMax > 10000)
-
-  //   return matchesSearch && matchesCategory && matchesBudget && req.status === "open"
-  // })
-
-  const canViewFullDetails = () => subscriptionTier !== "basic"
 
   const formatBudget = (min: number, max: number) =>
     `$${min.toLocaleString()} - $${max.toLocaleString()}`
 
-  console.log("Receved prop requirements::::",requirements)
-
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 p-2 lg:p-6 bg-[#F9FAFB] min-h-screen">
 
       {/* FILTER BAR */}
-      <div className="border border-gray-200 rounded-4xl px-6 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+  <div className="bg-white p-4 rounded-lg  shadow-sm mb-6 max-w-[95vw] overflow-x-auto">
+  <div className="flex items-center gap-3">
 
-          {/* Location */}
-          <div className="flex flex-col gap-0 mt-0 leading-none">
-            <span className="text-sm font-bold text-[#98A0B4]">
-              Minimum Amount
-            </span>
+    {/* Minimum Budget */}
+    <Input
+      type="number"
+      value={searchTerm}
+      min={1}
+      placeholder="Minimum Budget"
+      onChange={(e) =>
+        setSearchTerm(parseInt(e.target.value))
+      }
+      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-[8px] placeholder:text-gray-400"
+    />
 
-            {/* <Select
-              value={searchTerm}
-              onValueChange={(value) => setSearchTerm(value)}
-            >
-              <SelectTrigger
-                  className="
-                    h-12 rounded-xl border border-gray-300
-                    focus:border-orange-500 focus:ring-0 flex items-center
-                  "
-                >
-                {searchTerm ? (
-                <span className="text-gray-700">{searchTerm}</span>
-              ) : (
-                <span className="text-gray-400 text-xs">Enter City/ State</span>
-              )}
-              </SelectTrigger>
+    {/* Service */}
+    <div>
+      <ServiceDropdown
+      value={serviceFilter}
+      onChange={(value) => setServiceFilter(value)}
+      triggerClassName="h-9 min-w-[150px] -mt-0 max-w-[220px] border border-gray-400 rounded-[8px] text-[#000]"
+    />
+    </div>
 
-              <SelectContent>
-              
-                
-               
-                <div className="p-2">
-                  <Input
-                    placeholder="Enter City/ State"
-                    value={searchTerm}
-                    autoFocus
-                    onKeyDown={(e) => e.stopPropagation()}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="h-9 border border-gray-300 placeholder:text-gray-400 focus:border-orange-500 focus:ring-0"
-                  />
+    {/* Start Date */}
+    <Input
+      type={startDate ? "date" : "text"}
+      placeholder="Filter by Start Date"
+      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-[8px] placeholder:text-gray-400"
+      value={startDate}
+      onFocus={(e) => (e.target.type = "date")}
+      onBlur={(e) => {
+        if (!startDate) e.target.type = "text"
+      }}
+      onChange={(e) => setStartDate(e.target.value)}
+    />
 
-                </div>
+    {/* End Date */}
+    <Input
+      type={endDate ? "date" : "text"}
+      placeholder="Filter by End Date"
+      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-[8px] placeholder:text-gray-400"
+      value={endDate}
+      onFocus={(e) => (e.target.type = "date")}
+      onBlur={(e) => {
+        if (!endDate) e.target.type = "text"
+      }}
+      onChange={(e) => setEndDate(e.target.value)}
+    />
 
-                {[
-                  "Hyderabad",
-                  "Bangalore",
-                  "Chennai",
-                  "Delhi",
-                  "Mumbai",
-                  "Pune",
-                ]
-                  .filter((city) =>
-                    city.toLowerCase().includes(searchTerm.toLowerCase())
-                  )
-                  .map((city) => (
-                    <SelectItem key={city} value={city}>
-                      {city}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>  */}
+    {/* Clear Button */}
+    <Button
+      className="h-[40px] border border-gray-400 rounded-[8px]"
+      onClick={handleClear}
+    >
+      Clear
+    </Button>
 
-            <Input type="number" 
-                value={searchTerm} 
-                min={1}
-                className="
-                    h-12 rounded-xl border border-gray-300
-                    focus:border-orange-500 focus:ring-0 flex items-center placeholder:text-gray-400
-                  "
-                  onChange={(e)=>(setSearchTerm(parseInt(e.target.value)))}
-                  placeholder="Enter Your Project Minimum Amount"
-                  />
-          </div>
+  </div>
+</div>
+      {/* TABLE VIEW */}
+      <div className="border rounded-xl max-w-[95vw] overflow-x-auto bg-white">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-100 text-left">
+            <tr>
+              <th className="p-4">Posted Date</th>
+              <th className="p-4">Title</th>
+              <th className="p-4">Budget Range</th>
+              <th className="p-4">Timeline</th>
+              <th className="p-4">Actions</th>
+            </tr>
+          </thead>
 
-          {/* Technologies / Services */}
-          <div className="flex flex-col gap-0">
-            <span className="text-sm font-bold text-[#98A0B4]">
-              Technologies/Services
-            </span>
-
-            {/* <Select value={serviceFilter} onValueChange={setServiceFilter}>
-              <SelectTrigger
-                className="
-                  h-12 rounded-xl border border-gray-300
-                  focus:border-orange-500 focus:ring-0
-                  flex items-center
-                "
+          <tbody>
+            {paginatedData.map((req) => (
+              <tr
+                key={req._id}
+                className="border-t hover:bg-gray-50"
               >
-                {serviceFilter !== "all" ? (
-                  <span className="text-gray-700">{serviceFilter}</span>
-                ) : (
-                  <span className="text-gray-400 text-xs">All Technologies</span>
-                )}
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Technologies</SelectItem>
-                {categories.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select> */}
+                <td className="p-4">
+                  {formatDate(req.createdAt)}
+                </td>
 
-            <ServiceDropdown
-              value={serviceFilter}
-              onChange={(value)=> setServiceFilter(value)}
-              triggerClassName="
-          h-12 rounded-xl border border-gray-300
-          focus:border-orange-500 focus:ring-0
-          flex items-center
-          
-        "
-              />
+                <td className="p-4 font-medium">
+                  {req.title}
+                </td>
+
+                <td className="p-4">
+                  {formatBudget(
+                    req.budgetMin,
+                    req.budgetMax
+                  )}
+                </td>
+
+                <td className="p-4">
+                  {req.timeline}
+                </td>
+
+                <td className="p-4">
+                  <Button
+                    size="sm"
+                    className=" text-white rounded-[8px] w-[100px] text-xs bg-gradient-to-r from-[#5b5fe0] to-[#2c34a1]"
+                    onClick={() =>
+                      router.push(
+                        `/agency/dashboard/leads/${req._id}`
+                      )
+                    }
+                  >
+                    Submit Proposal
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {paginatedData.length === 0 && (
+          <div className="p-6 text-center text-gray-500">
+            No requirements found.
           </div>
-
-          {/* Minimum Rating */}
-          {/* <div className="flex flex-col gap-2">
-            <span className="text-sm font-bold text-[#98A0B4]">
-              Minimum Rating
-            </span>
-
-            <Select
-              value={ratingFilter}
-              onValueChange={setRatingFilter}
-            >
-              <SelectTrigger
-                className="
-                  h-12 rounded-xl border border-gray-300
-                  focus:border-orange-500 focus:ring-0
-                  flex items-center
-                "
-              >
-                {ratingFilter !== "any" ? (
-                  <span className="text-gray-700">{ratingFilter}+</span>
-                ) : (
-                  <span className="text-gray-400 text-xs">Any Rating</span>
-                )}
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="any">Any Rating</SelectItem>
-                <SelectItem value="4">4+</SelectItem>
-                <SelectItem value="3">3+</SelectItem>
-                <SelectItem value="2">2+</SelectItem>
-                <SelectItem value="1">1+</SelectItem>
-              </SelectContent>
-            </Select>
-          </div> */}
-
-          {/* Search Button */}
-          <div className="flex items-end pt-6 gap-3">
-            <Button className="px-8 py-4 rounded-full bg-orange-600 hover:bg-orange-500 text-white flex gap-2"
-            onClick={handleSearch}>
-              <CiFilter 
-              className="h-4 w-4"
-              />
-              Search
-            </Button>
-            <Button className="px-8 py-4 rounded-full bg-[#2C34A1] hover:bg-[#2C34A1] text-white flex gap-2"
-            onClick={()=>{
-              setServiceFilter("all");
-              setSearchTerm(undefined)
-              setFilteredRequirements(requirements);  // 🔥 THIS IS IMPORTANT
-            }}>
-              
-              Clear
-            </Button>
-          </div>
-
-        </div>
+        )}
       </div>
 
+      {/* PAGINATION */}
+      {totalPages > 1 && (
+        <div className="flex justify-center gap-2 mt-4">
+          <Button
+            size="sm"
+            disabled={currentPage === 1}
+            onClick={() =>
+              setCurrentPage((prev) => prev - 1)
+            }
+          >
+            Prev
+          </Button>
 
-
-      {/* SUBSCRIPTION WARNING */}
-      {subscriptionTier === "basic" && (
-        <Card className="border-yellow-200 bg-yellow-50">
-          <CardContent className="p-4 flex items-center gap-3">
-            <Lock className="h-5 w-5 text-yellow-600" />
-            <div className="text-sm text-yellow-800">
-              Upgrade your plan to view full project details and submit proposals.
-            </div>
-            <Button className="ml-auto">Upgrade Now</Button>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* REQUIREMENTS LIST */}
-      <div className="space-y-6">
-        {filteredRequirements.map((req) => (
-          <Card
-          key={req._id}
-          className="rounded-4xl border border-gray-200 bg-white"
-        >
-          <CardContent className="px-10 pb-8 space-y-7">
-
-            {/* HEADER */}
-            <div className="flex items-start justify-between gap-6">
-              <div className="space-y-2 max-w-[85%]">
-                <h3 className="text-[22px] font-extrabold text-[#2c34a1]">
-                  {req.title}
-                </h3>
-
-                <p className="text-[15px] text-[#898383]">
-                  {canViewFullDetails()
-                    ? req.description
-                    : "Upgrade your subscription to view full project details."}
-                </p>
-              </div>
-
-              {/* Category pill */}
-              <span className="shrink-0 rounded-full bg-[#e0e0e0] px-4 py-2 text-xs font-medium">
-                {req.category}
-              </span>
-            </div>
-
-            {/* META ROW */}
-            <div className="flex items-center gap-10 text-[15px] text-gray-800">
-
-              {/* Budget */}
-              <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-orangeButton">
-                  <AiOutlineDollar className="h-5 w-5 text-white" />
-                </span>
-                <span className="font-extrabold">
-                  {canViewFullDetails()
-                    ? formatBudget(req.budgetMin, req.budgetMax)
-                    : "Budget hidden"} 
-                </span>
-              </div>
-
-              {/* Duration (UI only) */}
-              <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-orangeButton">
-                  <CiCalendar className="h-5 w-5 text-white" />
-                </span>
-                <span className="font-extrabold">{req.timeline}</span>
-              </div>
-
-              {/* Posted Date */}
-              <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-orangeButton">
-                  <VscSend className="h-5 w-5 text-white" />
-                </span>
-                <span className="font-extrabold">
-                  Posted:  {new Date(req.createdAt).toLocaleDateString()}
-                </span>
-              </div>
-
-            </div>
-
-            {/* ACTION BUTTONS */}
-            <div className="flex gap-5 pt-4">
-              {/* <Button
-                className="h-[50px] px-8 font-bold rounded-full bg-[#2c34a1] text-white hover:bg-indigo-700 flex items-center gap-2"
+          {Array.from({ length: totalPages }).map(
+            (_, index) => (
+              <Button
+                key={index}
+                size="sm"
+                variant={
+                  currentPage === index + 1
+                    ? "default"
+                    : "outline"
+                }
                 onClick={() =>
-                  router.push(`/agency/dashboard/project-inquiries/${req._id}`)
+                  setCurrentPage(index + 1)
                 }
               >
-                View Details
-                 <FaArrowRightLong className="text-sm" />
-              </Button> */}
+                {index + 1}
+              </Button>
+            )
+          )}
 
-              <Button
-                  className="h-[50px] px-8 font-bold rounded-full bg-black text-white hover:bg-black/90 flex items-center gap-2"
-                  onClick={() =>
-                  router.push(`/agency/dashboard/project-inquiries/${req._id}`)}
-                >
-                  Submit Proposal
-                  <FaArrowRightLong className="text-sm" />
-                </Button>
-
-              {/* {canViewFullDetails() ? (
-                <Button
-                  className="h-[50px] px-8 font-bold rounded-full bg-black text-white hover:bg-black/90 flex items-center gap-2"
-                  onClick={() => onSubmitProposal(req.id)}
-                >
-                  Submit Proposal
-                  <FaArrowRightLong className="text-sm" />
-                </Button>
-              ) : (
-                <Button
-                  disabled
-                  className="h-[46px] px-8 rounded-full"
-                >
-                  Upgrade to Submit
-                </Button>
-              )} */}
-            </div>
-
-          </CardContent>
-        </Card>
-
-
-
-        ))}
-      </div>
-
-      {/* EMPTY STATE */}
-      {filteredRequirements.length === 0 && (
-        <Card>
-          <CardContent className="p-8 text-center text-muted-foreground">
-            No requirements found matching your filters.
-          </CardContent>
-        </Card>
+          <Button
+            size="sm"
+            disabled={currentPage === totalPages}
+            onClick={() =>
+              setCurrentPage((prev) => prev + 1)
+            }
+          >
+            Next
+          </Button>
+        </div>
       )}
     </div>
   )

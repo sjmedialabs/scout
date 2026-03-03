@@ -1,25 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { LogOut } from "lucide-react";
+import {
+  LogOut,
+  ChevronLeft,
+  ChevronRight,
+  X,
+} from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { usePathname } from "next/navigation";
 import { adminMenu } from "../sidebar-config";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { Settings, ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
 
 interface SidebarProps {
   collapsed: boolean;
-  onToggle: () => void;
+  mobileOpen: boolean;
+  onCollapseToggle: () => void;
+  onMobileToggle: () => void;
 }
 
-
-export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
+export function AdminSidebar({
+  collapsed,
+  mobileOpen,
+  onCollapseToggle,
+  onMobileToggle,
+}: SidebarProps) {
   const pathname = usePathname();
   const current = pathname.split("/")[2];
-  const [open, setOpen] = useState<string[]>(["dashboard"]);
 
   const { logout } = useAuth();
   const router = useRouter();
@@ -27,151 +36,135 @@ export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
   const handleLogout = async () => {
     await logout();
     router.push("/login");
-    // router.replace("/login");
   };
 
-  const toggleSection = (label: string) => {
-    setOpen(prev =>
-      prev.includes(label)
-        ? prev.filter(v => v !== label)
-        : [...prev, label]
-    );
-  };
+  // ✅ Auto reset collapse on mobile
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        // below lg
+        if (collapsed) {
+          onCollapseToggle(); // reset to expanded
+        }
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [collapsed, onCollapseToggle]);
 
   return (
-<>
-    {!collapsed && (
-  <div
-    className="fixed inset-0 bg-black/40 z-40 lg:hidden"
-    onClick={onToggle}
-  />
-)}
-    <aside
+    <>
+      {/* Mobile Overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+          onClick={onMobileToggle}
+        />
+      )}
+
+     <aside
   className={`
     fixed top-0 left-0 h-full z-50
-    bg-sidebarMain text-white border-r
-    flex flex-col justify-between
+    bg-[#e0dbfa] text-[#000] border-r
+    flex flex-col
     transition-all duration-300
 
     ${collapsed ? "w-20" : "w-64"}
 
-    /* Desktop always visible */
     lg:translate-x-0
-
-    /* Mobile & Tablet Drawer Behavior */
-    ${collapsed ? "-translate-x-full lg:translate-x-0" : "translate-x-0"}
+    ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
+    lg:translate-x-0
   `}
 >
-  
-  
-      {/* HEADER (CLICK TO TOGGLE) */}
-      <div className="w-full flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        <button
-          onClick={onToggle}
-          className="w-full p-2 pt-2.5 border-b flex justify-items-start"
-        >
-          {!collapsed && (
-            <div>
-              <h2 className="text-md font-extrabold">Super Admin Dashboard</h2>
-              <p className="text-sm text-white/70">Welcome back</p>
-            </div>
-          )}
-          {collapsed ? (
-            <ChevronRight className="w-5 h-5" />
-          ) : (
-            <ChevronLeft className="w-5 h-5" />
-          )}
-        </button>
-
-        {/* MENU */}
-        <div className="p-3 space-y-4 overflow-y-auto">
-          {adminMenu.map(section => (
-            <div key={section.label}>
-              <button
-                onClick={() => toggleSection(section.label)}
-                className="w-full flex items-center gap-3 hover:text-orangeButton"
-              >
-                <section.icon className="w-5 h-5" />
-                {!collapsed && (
-                  <span className="text-sm font-medium">
-                    {section.label}
-                  </span>
-                )}
-              </button>
-
-              {open.includes(section.label) && (
-                <div className={` mt-2 space-y-1 ${collapsed ? "ml-0" : "ml-8"}`}>
-                  {section.children?.map(item => {
-                    const active = current === item.id;
-                    return (
-                      <Link
-                        key={item.id}
-                        href={`/admin/${item.id}`}
-                        className={`flex items-center gap-2 px-2 py-2 rounded-lg text-sm
-                          ${active
-                            ? "text-orangeButton"
-                            : "hover:text-orangeButton"
-                          }`}
-                      >
-                        <item.icon className="w-4 h-4" />
-                        
-                      {!collapsed && <span>{item.label}</span>}
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* FOOTER */}
-      {/* <div className="w-auto items-center pl-1 mb-3 justify-center"> */}
-        {/* System Settings */}
-        {/* <Button className="bg-blueButton text-white flex-1 flex gap-0 rounded-2xl justify-start">
-          <Settings className="w-4 h-4" />
-          {!collapsed && "System Settings"}
-        </Button> */}
-
-        {/* Logout */}
-        {/* <Button
-          variant="outline"
-          className="flex-1 flex gap-2 justify-between
-           text-white bg-orange-600
-            hover:bg-orange-600 hover:text-white 
-            rounded-2xl border-none active:bg-orange-500
-            active:text-white
-          "
-          onClick={handleLogout}
-        >
-          <LogOut className="w-4 h-4" />
-          {!collapsed && "Logout"}
-        </Button> */}
-
-        {/* FOOTER */}
-<div className="w-full p-2 flex justify-center items-center py-4 -mb-3">
-  <Button
-    variant="outline"
-    className={`
-      flex items-center justify-center gap-2
-      px-5 py-2.5
-      w-full
-      text-white bg-orange-600
-      hover:bg-orange-600 hover:text-white
-      rounded-full border-none
-      active:bg-orange-500
-    `}
-    onClick={handleLogout}
-  >
-    <LogOut className="w-4 h-4" />
+  {/* HEADER (Fixed) */}
+  <div className="p-2 py-4.5 border-b flex justify-between items-center shrink-0">
     {!collapsed && (
-      <span className="text-sm font-medium">Logout</span>
+      <h2 className="text-md font-extrabold text-[#000]">
+        Super Admin Dashboard
+      </h2>
     )}
-  </Button>
-</div>
-      {/* </div> */}
-    </aside>
+
+    {/* Desktop Chevron */}
+    <div className="hidden lg:block">
+      <button onClick={onCollapseToggle}>
+        {collapsed ? (
+          <ChevronRight className="w-5 h-5" />
+        ) : (
+          <ChevronLeft className="w-5 h-5" />
+        )}
+      </button>
+    </div>
+
+    {/* Mobile Close */}
+    <div className="lg:hidden">
+      <button onClick={onMobileToggle}>
+        <X className="w-5 h-5" />
+      </button>
+    </div>
+  </div>
+
+  {/* NAVIGATION (Only This Scrolls) */}
+  <div
+    className="
+      flex-1 overflow-y-auto p-3 space-y-2
+      [scrollbar-width:none]
+      [-ms-overflow-style:none]
+      [&::-webkit-scrollbar]:hidden
+    "
+  >
+    <nav>
+      {adminMenu.map((item) => {
+        const isActive = current === item.id;
+
+        return (
+          <Link
+            key={item.id}
+            href={`/admin/${item.id}`}
+            onClick={() => {
+              if (window.innerWidth < 1024) {
+                onMobileToggle();
+              }
+            }}
+            className={`
+              flex items-center gap-3 px-3 py-2 text-sm
+              ${
+                isActive
+                  ? "bg-[#ebe6f8] border border-[#e4dff6] text-[#000] rounded-[8px]"
+                  : "text-[#000] hover:bg-[#ebe6f8] rounded-[8px]"
+              }
+            `}
+          >
+            <item.icon className="w-4 h-4" />
+            {!collapsed && <span>{item.label}</span>}
+          </Link>
+        );
+      })}
+    </nav>
+  </div>
+
+  {/* FOOTER (Fixed) */}
+  <div className="p-4 border-t border-[#e4dff6] shrink-0">
+    <Button
+      variant="outline"
+      className="
+        flex items-center justify-center gap-2
+        px-5 py-2.5 w-full
+        text-white bg-orange-600
+        hover:bg-orange-600 hover:text-white
+        rounded-full border-none
+        active:bg-orange-500
+      "
+      onClick={handleLogout}
+    >
+      <LogOut className="w-4 h-4" />
+      {!collapsed && (
+        <span className="text-sm font-medium">Logout</span>
+      )}
+    </Button>
+  </div>
+</aside>
     </>
   );
 }

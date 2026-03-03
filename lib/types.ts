@@ -17,6 +17,25 @@ export interface User {
   phone?: string
   avatar?: string
 }
+export interface Lead{
+  _id:string,
+  userId:string,
+  name: string
+  email: string
+  contactNumber: string
+  countryCode: string
+  country: string
+  message: string
+  status: "pending" | "contacted" | "won" | "dropped"
+  projectTitle: string
+  category: string
+  description: string
+  minbudget: string
+  maxbudget: string
+  timeline: string
+  attachmentUrls: string[]
+
+}
 export interface Requirement {
   id: string
   title: string

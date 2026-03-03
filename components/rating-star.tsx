@@ -19,17 +19,17 @@ const RatingStars: React.FC<RatingStarsProps> = ({ rating, reviews }) => {
     <div className="flex items-center gap-1">
       {/* FULL STARS */}
       {Array.from({ length: full }).map((_, i) => (
-        <IoIosStar key={`full-${i}`} size={20} className="text-yellow-500" />
+        <IoIosStar key={`full-${i}`} size={16} className="text-yellow-500" />
       ))}
 
       {/* HALF STAR */}
       {hasHalf && (
-        <IoIosStarHalf size={20} className="text-yellow-500" />
+        <IoIosStarHalf size={16} className="text-yellow-500" />
       )}
 
       {/* EMPTY STARS */}
       {Array.from({ length: empty }).map((_, i) => (
-        <IoIosStar key={`empty-${i}`} size={20} className="text-gray-300" />
+        <IoIosStar key={`empty-${i}`} size={16} className="text-gray-300" />
       ))}
 
       {/* RATING TEXT */}
