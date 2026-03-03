@@ -63,8 +63,10 @@ import type {
 import { useEffect, useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import StarRating from "@/components/ui/star-rating";
-import { MessageSquareText } from "lucide-react";
+import { MessageSquareText,MessageSquareMore,CheckCircle2 } from "lucide-react";
 import RespondToReviewModal from "@/components/reviews/RespondToReviewModal";
+import RatingStars from "@/components/rating-star";
+import { FaCircleUser } from "react-icons/fa6";
 
 const ReviewsPage = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -105,111 +107,163 @@ const ReviewsPage = () => {
       </div>
     );
   }
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "long",
+      day: "2-digit",
+      year: "numeric",
+    });
+  };
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 -mt-5 min-h-screen">
       <div>
-        <h1 className="text-3xl font-bold text-[#F4561C] my-custom-class mb-0">
+        <h1 className="text-xl font-bold text-[#F4561C]  mb-0">
           Client Reviews
         </h1>
-        <p className="text-[#656565] font-medium text-lg">
+        <p className="text-[#656565] font-medium text-md">
           View and respond to client feedback
         </p>
-        <hr className="border-[#707070] mt-5 border-1 w-full" />
+        <hr className="border-[#d1c7c7] mt-2 border-1 w-full" />
       </div>
       {/* REVIEWS LIST */}
-      <div className="space-y-8 sm items-center">
-        {reviews.length !== 0 &&
-          reviews.map((review) => (
-            <Card
-              key={review._id}
-              className="p-8 rounded-[28px] border-slate-300 shadow-none"
-            >
-              {/* TOP ROW */}
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-                <div>
-                  <h3 className="text-lg font-semibold text-[#0E0E0E]">
-                    {review.client.name}
-                  </h3>
-                  <p className="text-sm text-[#9B9B9B]">
-                    {new Date(review.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-
-                {/* Rating badge */}
-                <div className="flex items-center w-fit gap-2 px-3 py-1 border rounded-lg">
-                  <span className="text-sm font-semibold text-[#6B6B6B]">
-                    {review.rating.toFixed(1)}
-                  </span>
-                  <StarRating rating={review.rating} showValue={false} />
-                </div>
-              </div>
-
-              {/* COMMENT */}
-              <p className="text-sm sm:justify-items-center text-[#8B8B8B] leading-relaxed max-w-5xl mb-6">
-                {review.content}
-              </p>
-
-              {/* CATEGORY RATINGS */}
+      {reviews.length !== 0 ? (
+        <div className=" grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {
+            reviews.map((review) => (
               <div
-                className="flex flex-col sm:flex-row 
-                        items-center sm:items-start 
-                        justify-center sm:justify-start 
-                        gap-6 sm:gap-20 mb-6 text-center sm:text-left"
+                key={review._id}
+                className="border  border-gray-200 rounded-3xl p-4 bg-white shadow-sm"
               >
-                <div>
-                  <p className="text-sm text-center font-bold mb-1">Quality</p>
-                  <StarRating
-                    rating={review.qualityRating}
-                    size={16}
-                    showValue={false}
-                  />
+                {/* TOP */}
+                <div className="flex flex-row justify-between gap-6">
+
+                  {/* LEFT CONTENT */}
+                  <div className="flex-1">
+                      <Badge
+                    variant="outline"
+                    className="text-[10px] border-[#DEDEDE] bg-[#EDEDED] rounded-full h-[25px] px-3"
+                  >
+                    {review.project.category}
+                  </Badge>
+
+                    <h3 className="text-lg font-bold">The Review</h3>
+                    
+                    <p className="text-xs text-[#b2b2b2]">
+                      {formatDate(review.createdAt)}
+                    </p>
+
+                    {/* <h4 className="font-semibold mt-3">
+                      Feedback summary
+                    </h4>
+
+                    <p className="text-sm text-[#9c9c9c] mt-1 leading-relaxed">
+                      {review.content}
+                    </p> */}
+                  </div>
+
+                  {/* RIGHT RATING */}
+                  <div className="flex flex-col items-end min-w-[120px]">
+                    <span className="text-2xl font-bold text-[#898383]">
+                      {review.rating || 0}
+                    </span>
+
+                    <RatingStars rating={review.rating || 0} />
+
+                    <p className="text-sm mt-1">
+                      {/* <span className="font-semibold">
+                        {review.rating || 0}
+                      </span>
+                      <span className="text-[#898383]">
+                        {" "}({reviews.length})
+                      </span> */}
+                    </p>
+                  </div>
                 </div>
 
-                <div>
-                  <p className="text-sm text-center font-bold mb-1">Cost</p>
-                  <StarRating
-                    rating={review.costRating}
-                    size={16}
-                    showValue={false}
-                  />
-                </div>
+                {/*Review Content */}
 
                 <div>
-                  <p className="text-sm text-center font-bold mb-1">
-                    Timeliness
-                  </p>
-                  <StarRating
-                    rating={review.scheduleRating}
-                    size={16}
-                    showValue={false}
-                  />
+                    <h4 className="text-lg font-semibold mt-3">
+                      Feedback summary
+                    </h4>
+
+                    <p className="text-sm text-[#9c9c9c]  leading-relaxed">
+                      {review.content}
+                    </p>
+                </div>
+
+                {/* BOTTOM */}
+                <div className="flex flex-col lg:flex-row justify-between mt-6 gap-6">
+
+                  {/* REVIEWER */}
+                  <div className="mt-auto">
+                    {/* <h4 className="font-bold">By</h4> */}
+
+                    
+
+                    <div className="flex items-center gap-2 text-[#bdbdbd] mt-1">
+                      <FaCircleUser className="h-5 w-5" />
+                      <div>
+                        <span className="text-sm font-medium">
+                        {review.client?.name}
+                      </span>
+                      <p className="text-xs text-[#b2b2b2]">
+                      {review.client?.position}
+                      </p> 
+                      </div>
+                    </div>
+                      
+                  </div>
+
+                  {/* META INFO — RESTORED */}
+                  <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-[#9c9c9c]">
+
+                    {/* {review.client?.industry && (
+                      <div className="flex items-center gap-1">
+                        <Building className="h-4 w-4" />
+                        {review.client.industry}
+                      </div>
+                    )} */}
+
+                    {/* {review.client?.location && (
+                      <div className="flex items-center gap-1">
+                        <MapPin className="h-4 w-4" />
+                        {review.client.location}
+                      </div>
+                    )} */}
+
+                    {review.client?.employees && (
+                      <div className="flex items-center gap-1">
+                        <Users className="h-4 w-4" />
+                        {review.client.employees}
+                      </div>
+                    )}
+
+                    {review.client?.reviewType && (
+                      <div className="flex items-center gap-1">
+                        <MessageSquareMore className="h-4 w-4" />
+                        {review.client.reviewType}
+                      </div>
+                    )}
+
+                    {review.client?.verified && (
+                      <div className="flex items-center gap-1 text-green-600">
+                        <CheckCircle2 className="h-4 w-4" />
+                        Verified
+                      </div>
+                    )}
+
+                  </div>
                 </div>
               </div>
-
-              {/* ACTION */}
-              {review.response && Object.keys(review.response).length === 0 && (
-                <div className="flex justify-center sm:justify-start">
-                  <button
-                    onClick={() => {
-                      setSelectedReview(review);
-                      setIsModalOpen(true);
-                    }}
-                    className="flex w-fit items-center gap-2 px-4 py-2 text-sm rounded-full
-                        border border-slate-400 text-[#FF4D00] hover:bg-[#FFF1EB]"
-                  >
-                    <MessageSquareText className="h-4 w-4" />
-                    Respond to Review
-                  </button>
-                </div>
-              )}
-            </Card>
-        ))}
-
-        {reviews.length ===0 && (
-          <p className="text-gray-500 text-center text-xl mt-5">No reviews have been received yet.</p>
-        )}
-        
-      </div>
+          ))
+          }
+          </div>
+      ) : (
+        <div className="text-center mt-20">
+          <p className="text-xl">No Reviews for this provider</p>
+        </div>
+      )}
 
       {/* MODAL */}
       {isModalOpen && selectedReview && (

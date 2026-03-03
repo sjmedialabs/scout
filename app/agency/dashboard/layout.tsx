@@ -192,7 +192,7 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
             </div>
           </div>
 
-        <div className="p-5 md:p-6 lg:p-8">
+        <div className="p-5 md:p-6 lg:p-8 bg-[#f4eefd]">
           {children}
         </div>
 
