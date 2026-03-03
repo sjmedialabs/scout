@@ -503,7 +503,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
             </span>
           )}
         </h1>
-        <p className="text-[#656565] -mt-1 text-xl font-medium my-custom-class">
+        <p className="text-[#656565] -mt-1 text-sm font-medium my-custom-class">
           {selectedRequirement
             ? "Review and manage proposals for the selected requirement"
             : "All proposals received for your projects"}
@@ -640,17 +640,17 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                  {paginatedProposals.map((proposal) => (
                     <Card
                       key={proposal.id}
-                      className="py-0 px-0 rounded-[22px] mb-3"
+                      className="py-0 px-0 rounded-[22px] mb-3 -mt-2"
                     >
-                      <CardContent className="px-0 lg:px-5 py-0 lg:py-6">
+                      <CardContent className="px-0 lg:px-2 py-0 lg:py-2">
                         <div className="flex flex-col lg:flex-row gap-4">
                           
                           {/* Left Image */}
-                          <div className="max-h-[200px] lg:max-h-[300px] max-w-full lg:max-w-[300px] rounded-t-[18px] lg:rounded-[18px] overflow-hidden sm:shrink-0">
+                          <div className="h-[160px] w-full lg:w-[170px] rounded-t-[18px] lg:rounded-[18px] overflow-hidden sm:shrink-0">
                             <img
                               src={proposal?.agency?.coverImage || "/proposal.jpg"}
                               alt={proposal.agency?.name}
-                              className="h-auto lg:h-full w-full object-cover"
+                              className="h-full w-full object-cover"
                             />
                           </div>
 
@@ -665,14 +665,14 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                 <div className="flex items-center gap-2 mb-2">
                                   <Badge
                                     variant="outline"
-                                    className="text-xs border-[#DEDEDE] bg-[#EDEDED] rounded-full h-[30px] px-3"
+                                    className="text-xs border-[#DEDEDE] bg-[#EDEDED] rounded-full h-[20px] px-3"
                                   >
                                     {proposal?.requirement?.title || "Unknown Project"}
                                   </Badge>
                                 </div>
  
                                 <h3
-                                  className="text-2xl font-bold text-[#000] mb-0 cursor-pointer"
+                                  className="text-xl text-[#000] mb-0"
                                   onClick={() =>
                                     handleViewProfile(proposal.providerId)
                                   }
@@ -685,7 +685,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                 </p> */}
 
                                 {/* Rating */}
-                                <div className="flex items-center mt-0 gap-1 text-sm font-medium">
+                                {/* <div className="flex items-center mt-0 gap-1 text-sm font-medium">
                                   <RatingStars
                                     rating={proposal.agency?.rating}
                                     reviews={proposal.agency?.reviewCount}
@@ -697,7 +697,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                     </span>
                                     )
                                   </span>
-                                </div>
+                                </div> */}
                               </div>
 
                               {/* RIGHT COST SECTION */}
@@ -715,7 +715,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                             {/* Description Section */}
                             <div className="space-y-2">
 
-                              {proposal?.coverLetter && (
+                              {/* {proposal?.coverLetter && (
                                 <div>
                                   <h4 className="font-bold text-xl text-[#616161] mb-0">
                                     Cover Letter
@@ -724,13 +724,13 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                     {proposal?.coverLetter}
                                   </p>
                                 </div>
-                              )}
+                              )} */}
 
-                              <div>
-                              <h4 className="font-bold text-xl text-[#616161] mb-0">
+                              <div className="-mt-3">
+                              {/* <h4 className="font-bold text-xl text-[#616161] mb-0">
                                 Proposal Description
-                              </h4>
-                              <p className="text-[#939191] font-normal text-sm line-clamp-2">
+                              </h4> */}
+                              <p className="text-[#939191] font-normal text-sm line-clamp-1">
                                 {proposal.proposalDescription}
                               </p>
                             </div>
@@ -745,7 +745,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                   ).toLocaleDateString()}
                                 </span>
 
-                                <Badge
+                                {/* <Badge
                                   variant={
                                     proposal.status === "accepted"
                                       ? "default"
@@ -759,11 +759,31 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                 >
                                   {proposal.status.charAt(0).toUpperCase() +
                                     proposal.status.slice(1)}
+                                </Badge> */}
+                                <Badge
+                                  className={`rounded-full text-xs font-semibold px-3 py-0 capitalize
+                                    ${
+                                      proposal.status === "accepted"
+                                        ? "bg-green-500 text-white"
+                                        : proposal.status === "shortlisted"
+                                        ? "bg-blue-500 text-white"
+                                        : proposal.status === "rejected"
+                                        ? "bg-red-500 text-white"
+                                        : proposal.status === "negotation"
+                                        ? "bg-yellow-500 text-white"
+                                        : proposal.status === "completed"
+                                        ? "bg-purple-500 text-white"
+                                        : "bg-gray-200 text-gray-700"
+                                    }
+                                  `}
+                                >
+                                  {proposal.status.charAt(0).toUpperCase() +
+                                    proposal.status.slice(1)}
                                 </Badge>
                               </div>
 
                               {/* Buttons */}
-                              <div className="flex items-center justify-between pt-4 border-[#DDDDDD] border-t-2">
+                              <div className="flex items-center justify-between pt-2 border-[#DDDDDD] border-t-2">
                                 <div className="flex flex-wrap gap-2">
 
                                   <Button
@@ -772,7 +792,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                     onClick={() =>
                                       handleViewPortfolio(proposal.agency._id)
                                     }
-                                    className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
+                                    className="bg-[#232a85] rounded-xl text-xs text-white hover:bg-[#232a85] font-bold active:bg-[#2b7fff] active:text-[#fff]"
                                   >
                                     View Profile
                                   </Button>
@@ -783,7 +803,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                     onClick={() =>
                                       router.push(`proposals/${proposal.id}`)
                                     }
-                                    className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
+                                    className="bg-[#232a85] rounded-xl text-xs text-white hover:bg-[#232a85] font-bold active:bg-[#2b7fff] active:text-[#fff]"
                                   >
                                     View Proposal Details
                                   </Button>
@@ -817,7 +837,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                         onClick={() =>
                                           handlNegotation(proposal.id)
                                         }
-                                        className="bg-[#F5A30C] rounded-full text-xs font-bold hover:bg-[#F5A30C] active:bg-[#F5A30C]"
+                                        className="bg-[#232a85] rounded-xl text-xs text-white hover:bg-[#232a85] font-bold active:bg-[#2b7fff] active:text-[#fff]"
                                       >
                                         Negotation
                                       </Button>
@@ -833,7 +853,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                         onClick={() =>
                                           handleAccept(proposal.id)
                                         }
-                                        className="bg-[#39A935] rounded-full text-xs font-bold hover:bg-[#39A935] active:bg-[#39A935]"
+                                        className="bg-[#39A935] rounded-xl text-xs font-bold hover:bg-[#39A935] active:bg-[#39A935]"
                                       >
                                         Accept
                                       </Button>
@@ -849,7 +869,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                         onClick={() =>
                                           handleReject(proposal.id)
                                         }
-                                        className="bg-[#FF0000] rounded-full text-xs font-bold hover:bg-[#FF0000] active:bg-[#FF0000]"
+                                        className="bg-[#FF0000] rounded-xl text-xs font-bold hover:bg-[#FF0000] active:bg-[#FF0000]"
                                       >
                                         Reject
                                       </Button>
