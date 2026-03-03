@@ -54,7 +54,11 @@ export interface IProvider extends Document {
   portfolio: IPortfolioItem[]
   testimonials: ITestimonial[]
   certifications: string[]
-  awards: string[]
+  // awards: string[]
+  awards: {
+  title: string
+  imageUrl: string
+}[]
   socialLinks?: {
     linkedin?: string
     twitter?: string
@@ -77,6 +81,15 @@ export interface IProvider extends Document {
   currentMonthWebsiteClicks?:Number,
   currentMonthKey?:String
 }
+
+const awardSchema = new mongoose.Schema({
+  title: {
+    type: String,
+  },
+  imageUrl: {
+    type: String,
+  },
+})
 
 const PortfolioItemSchema = new Schema({
   title: { type: String, required: true },
@@ -133,7 +146,7 @@ const ProviderSchema = new Schema<IProvider>(
     portfolio: [PortfolioItemSchema],
     testimonials: [TestimonialSchema],
     certifications: [{ type: String }],
-    awards: [{ type: String }],
+    awards: [awardSchema],
     socialLinks: {
       linkedin: { type: String },
       twitter: { type: String },

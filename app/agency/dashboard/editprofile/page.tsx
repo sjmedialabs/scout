@@ -111,8 +111,8 @@ const EditProfile = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
+    <div className="space-y-1">
+      {/* <div>
         <h1 className="text-3xl font-bold text-[#F4561C] my-custom-class mb-0">
           Edit Profile
         </h1>
@@ -120,7 +120,7 @@ const EditProfile = () => {
           Manage your company information and profile details
         </p>
         <hr className="w-full mt-5 border-1 border-[#707070]" />
-      </div>
+      </div> */}
 
       {providerDetails && (
         <CompanyProfileEditor

@@ -17,6 +17,7 @@ interface ImageUploadProps {
   className?: string;
   previewClassName?: string;
   description?: string;
+  isEditable?: boolean; 
 
   /** ✅ NEW */
   maxSizeMB?: number;
@@ -29,6 +30,7 @@ export function ImageUpload({
   onChange,
   className = "",
   previewClassName = "w-32 h-32",
+   isEditable = true,
   description = "Upload an image or provide a URL",
 
   /** ✅ new default props */
@@ -120,6 +122,22 @@ export function ImageUpload({
 
   const isImageType = value ? isImage(value) : false;
 
+
+  if (!isEditable) {
+  return (
+    <div>
+      {value ? (
+        <img
+          src={value}
+          alt="uploaded"
+          className={`rounded-md object-cover ${previewClassName}`}
+        />
+      ) : (
+        <p>No image</p>
+      )}
+    </div>
+  );
+}
   return (
     <div className={`space-y-4 ${className}`}>
       {label && <Label>{label}</Label>}
@@ -149,6 +167,7 @@ export function ImageUpload({
 
           <Button
             type="button"
+            className="hover:bg-[#e0332c]"
             variant="outline"
             size="sm"
             onClick={() => {
@@ -166,7 +185,7 @@ export function ImageUpload({
         value={uploadMethod}
         onValueChange={(v) => setUploadMethod(v as "upload" | "url")}
       >
-        <TabsList className="grid w-full max-w-md grid-cols-2">
+        <TabsList className="grid w-full max-w-md grid-cols-2 border !bg-[#f2f1f6]">
           <TabsTrigger value="upload">
             <Upload className="h-4 w-4 mr-2" />
             Upload File
@@ -183,7 +202,7 @@ export function ImageUpload({
               type="file"
               accept={allowedTypes.join(", ")}
               onChange={handleFileUpload}
-              className="max-w-md"
+              className="max-w-md !bg-[#f2f1f6] border-gray-200 "
               disabled={uploading}
             />
             {uploading && <Loader2 className="h-4 w-4 animate-spin" />}
