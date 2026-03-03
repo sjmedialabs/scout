@@ -151,7 +151,11 @@ export function CompanyProfileEditor({
   const [newTechnology, setNewTechnology] = useState("");
   const [newIndustry, setNewIndustry] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
-  const [newAward, setNewAward] = useState("");
+  // const [newAward, setNewAward] = useState("");
+  const [awardForm, setAwardForm] = useState({
+  title: "",
+  imageUrl: "",
+});
   const [newCertificate, setNewCertificate] = useState("");
   const [portfolioTechnology, setPortfolioTechnology] = useState("");
   const [editPortfolioId, setEditPortfolioId] = useState();
@@ -392,21 +396,40 @@ export function CompanyProfileEditor({
     }));
   };
 
+  // const addAward = () => {
+  //   if (newAward.trim() && !(formData.awards || []).includes(newAward)) {
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       awards: [...(prev.awards || []), newAward],
+  //     }));
+  //     setNewAward("");
+  //   }
+  // };
+
   const addAward = () => {
-    if (newAward.trim() && !(formData.awards || []).includes(newAward)) {
-      setFormData((prev) => ({
-        ...prev,
-        awards: [...(prev.awards || []), newAward],
-      }));
-      setNewAward("");
-    }
-  };
-  const removeAward = (award: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      awards: (prev.awards || []).filter((a: string) => a !== award),
-    }));
-  };
+  if (!awardForm.title.trim() || !awardForm.imageUrl) return;
+
+  setFormData((prev) => ({
+    ...prev,
+    awards: [...(prev.awards || []), awardForm],
+  }));
+
+  setAwardForm({ title: "", imageUrl: "" });
+};
+
+  // const removeAward = (award: string) => {
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     awards: (prev.awards || []).filter((a: string) => a !== award),
+  //   }));
+  // };
+
+  const removeAward = (index: number) => {
+  setFormData((prev) => ({
+    ...prev,
+    awards: prev.awards.filter((_, i) => i !== index),
+  }));
+};
 
   const addCertificate = () => {
     if (
@@ -1685,62 +1708,104 @@ export function CompanyProfileEditor({
       {/*Awards added */}
 
       <TabsContent value="awards">
-  <div>
-    <h1 className="font-inter text-xl text-[#000000] font-normal leading-6">
-      Awards Recieved
-    </h1>
+        <div>
+          <h1 className="font-inter text-xl text-[#000000] font-normal leading-6">
+            Awards Received
+          </h1>
 
-    <p className="font-inter text-sm text-[#000000] font-normal mb-2">
-      Manage the Awards you recieved
-    </p>
+          <p className="font-inter text-sm text-[#000000] font-normal mb-2">
+            Manage the awards your agency has received
+          </p>
 
-    <Card className="bg-[#fff] border border-[#D0D5DD] rounded-[6px] shadow-none">
-      <CardContent className="space-y-4 py-6">
+          <Card className="bg-[#fff] border border-[#D0D5DD] rounded-[6px] shadow-none">
+            <CardContent className="space-y-6 py-6">
 
-        {/* ✅ ALWAYS SHOW ADDED AWARDS */}
-        <div className="flex flex-wrap gap-2">
-          {(formData.awards || []).map((item) => (
-            <Badge
-              key={item}
-              variant="secondary"
-              className="flex items-center bg-[#1C96F4] gap-2"
-            >
-              {item}
+              {/* SHOW AWARDS */}
+              <div className="grid md:grid-cols-2 gap-4">
+                {(formData.awards || []).map((item, index) => (
+                  <div
+                    key={index}
+                    className="relative border rounded-lg p-4 flex gap-4 items-center"
+                  >
+                    <img
+                      src={item.imageUrl}
+                      alt={item.title}
+                      className="w-16 h-16 object-cover rounded-md border"
+                    />
 
-              {/* ✅ REMOVE BUTTON ONLY IN EDIT MODE */}
+                    <div className="flex-1">
+                      <p className="font-medium">{item.title}</p>
+                    </div>
+
+                    {isEditMode && (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removeAward(index)}
+                      >
+                        Delete
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* ADD AWARD FORM */}
               {isEditMode && (
-                <div onClick={() => removeAward(item)}>
-                  <X className="h-3 w-3 cursor-pointer" />
+                <div className="space-y-4 border-t pt-4">
+
+                  {/* Image Upload */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-semibold">
+                      Award Image
+                    </Label>
+
+                    <ImageUpload
+                      value={awardForm.imageUrl}
+                      onChange={(value) =>
+                        setAwardForm((prev) => ({
+                          ...prev,
+                          imageUrl: value,
+                        }))
+                      }
+                      description="Upload award image (PNG, JPG)"
+                      previewClassName="w-24 h-24 border"
+                    />
+                  </div>
+
+                  {/* Award Title */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-semibold">
+                      Award Title
+                    </Label>
+                    <Input
+                      value={awardForm.title}
+                      onChange={(e) =>
+                        setAwardForm((prev) => ({
+                          ...prev,
+                          title: e.target.value,
+                        }))
+                      }
+                      placeholder="Best Design Agency 2025"
+                      className="bg-[#f2f1f6]"
+                    />
+                  </div>
+
+                  <Button
+                    onClick={addAward}
+                    className="bg-[#F54A0C] rounded-full"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Award
+                  </Button>
+
                 </div>
               )}
-            </Badge>
-          ))}
+
+            </CardContent>
+          </Card>
         </div>
-
-        {/* ✅ SHOW INPUT ONLY IN EDIT MODE */}
-        {isEditMode && (
-          <div className="flex gap-2 w-[50%]">
-            <Input
-              type="text"
-              value={newAward}
-              onChange={(e) => setNewAward(e.target.value)}
-              placeholder="Enter award title"
-              className="placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] rounded-[6px]"
-            />
-
-            <Button
-              onClick={addAward}
-              className="bg-green-500 h-[36px] w-[70px] mt-1.5"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
-
-      </CardContent>
-    </Card>
-  </div>
-</TabsContent>
+      </TabsContent>
       {/* <TabsContent value="awards">
         <div className={!isEditMode ? "pointer-events-none opacity-90" : ""}>
       <div className="-mt-5">

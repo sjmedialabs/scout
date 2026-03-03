@@ -186,8 +186,8 @@ export default function ProviderProfilePage({
   const stats = [
     { label: "Year founded", value: providerDetails.foundedYear || "N/A" },
     { label: "Team Size", value: providerDetails.teamSize || 0 },
-    { label: "Projects", value: providerDetails.projectsCompleted || 0 },
-    { label: "Min Project Size", value: providerDetails.minProjectSize || 0 },
+    { label: "Projects Completed", value: providerDetails.projectsCompleted || 0 },
+    { label: "Min Project Size", value: `${providerDetails.minProjectSize}$` || 0 },
     { label: "Hourly rate", value: `${providerDetails.hourlyRate}$/hr` || 0 },
   ];
 
@@ -417,7 +417,7 @@ const topServices = Object.keys(serviceRatings)
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`py-4 capitalize border-b-2 transition
+            className={`py-4 capitalize border-b-2 transition cursor-pointer
               ${
                 activeTab === tab
                   ? "border-[#2C34A1] text-[#2C34A1]"
@@ -440,13 +440,13 @@ const topServices = Object.keys(serviceRatings)
 
           {/* LEFT STATS */}
           <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-[#ECEEF3]">
-            <h1 className="text-2xl font-semibold mb-4 -mt-4">Company Overview</h1>
+            <h1 className="text-lg font-semibold mb-4 -mt-4">Company Overview</h1>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {stats.map((item, i) => (
                 <div
                   key={i}
-                  className="bg-[#e9ecfc] border border-[#ECEEF3] rounded-xl p-4 text-center"
+                  className="bg-[#e9ecfc] w-45 py-2 border border-[#ECEEF3] rounded-xl p-4 text-center"
                 >
                   <p className="font-medium">{item.label}</p>
                   <p className="text-sm text-gray-500">{item.value}</p>
@@ -465,7 +465,7 @@ const topServices = Object.keys(serviceRatings)
               {(providerDetails.technologies || []).map((tech, i) => (
                 <span
                   key={i}
-                  className="px-3 py-2 bg-[#e9ecfc] text-gray-500 rounded-xl text-sm font-medium"
+                  className="px-3 py-2 bg-[#e9ecfc] text-black rounded-xl text-sm font-medium"
                 >
                   {tech}
                 </span>
@@ -480,11 +480,11 @@ const topServices = Object.keys(serviceRatings)
         <div className="grid lg:grid-cols-3 gap-6 -mt-4">
 
           <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-[#ECEEF3]">
-            <h1 className="text-2xl font-semibold mb-4 -mt-4">
+            <h1 className="text-lg font-semibold mb-4 -mt-4">
               Services Offered
             </h1>
 
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3 -mt-2">
               {(providerDetails.services || []).map((service, i) => (
                 <div
                   key={i}
@@ -527,7 +527,12 @@ const topServices = Object.keys(serviceRatings)
 
       {/* ================= PORTFOLIO TAB ================= */}
       {activeTab === "portfolio" && (
-        <div className="grid sm:grid-cols-2 gap-8">
+        <div>
+        <h1 className="text-lg font-semibold mb-4 -mt-4">
+              Our Portfolio
+        </h1>
+        
+        <div className="grid sm:grid-cols-2 gap-8 w-170">
           {(providerDetails.portfolio || []).map((item) => (
             <div
               key={item.id}
@@ -535,7 +540,7 @@ const topServices = Object.keys(serviceRatings)
             >
               <img
                 src={item.image}
-                className="aspect-video w-full object-cover rounded-t-2xl"
+                className=" w-full object-cover rounded-t-2xl"
               />
 
               <div className="p-4">
@@ -546,17 +551,59 @@ const topServices = Object.keys(serviceRatings)
 
                 <div className="flex flex-wrap gap-1">
                   {item.technologies?.map((tech, i) => (
-                    <Badge key={i}>{tech}</Badge>
+                    <Badge 
+                    className="rounded-full bg-[#dbe0f3] text-black"
+                    key={i}>{tech}</Badge>
                   ))}
                 </div>
               </div>
             </div>
           ))}
         </div>
+        </div>
       )}
 
       {/* ================= AWARDS TAB ================= */}
+
       {activeTab === "awards" && (
+        <div>
+        <h1 className="text-lg font-semibold mb-4 -mt-4">
+              Awards
+        </h1>
+  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 w-170">
+
+    {(providerDetails.awards || []).length === 0 && (
+      <div className="col-span-full text-center text-gray-500">
+        No awards available
+      </div>
+    )}
+
+    {(providerDetails.awards || []).map((award, i) => (
+      <div
+        key={i}
+        className="bg-white rounded-2xl border border-[#ECEEF3] shadow-sm hover:shadow-lg transition duration-300"
+      >
+        <div className=" overflow-hidden rounded-t-2xl bg-gray-50 flex items-center justify-center">
+          <img
+            src={award.imageUrl}
+            alt={award.title}
+            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+
+        <div className="p-4 text-center">
+          <h4 className="font-semibold text-sm">
+            {award.title}
+          </h4>
+        </div>
+      </div>
+      
+    ))}
+
+  </div>
+  </div>
+)}
+      {/* {activeTab === "awards" && (
         <div className="bg-white rounded-2xl p-6 border border-[#ECEEF3]">
           <h1 className="text-2xl font-semibold mb-4">Awards</h1>
 
@@ -566,7 +613,7 @@ const topServices = Object.keys(serviceRatings)
             ))}
           </div>
         </div>
-      )}
+      )} */}
 
      
       {/* ================= REVIEWS TAB ================= */}
@@ -576,7 +623,7 @@ const topServices = Object.keys(serviceRatings)
             {/* Filters */}
             <div className="flex flex-col lg:flex-row justify-between gap-4">
               <h2 className="text-2xl font-bold">
-                Creative Design Studios Reviews
+                Reviews
               </h2>
 
               <div className="flex gap-3">
