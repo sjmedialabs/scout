@@ -193,7 +193,7 @@ const ReviewsPage = () => {
                 </div>
 
                 {/* BOTTOM */}
-                <div className="flex flex-col lg:flex-row justify-between mt-6 gap-6">
+                <div className="flex :flex-row justify-between mt-6 gap-6">
 
                   {/* REVIEWER */}
                   <div className="mt-auto">
@@ -215,45 +215,24 @@ const ReviewsPage = () => {
                       
                   </div>
 
-                  {/* META INFO — RESTORED */}
-                  <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-[#9c9c9c]">
-
-                    {/* {review.client?.industry && (
-                      <div className="flex items-center gap-1">
-                        <Building className="h-4 w-4" />
-                        {review.client.industry}
-                      </div>
-                    )} */}
-
-                    {/* {review.client?.location && (
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-4 w-4" />
-                        {review.client.location}
-                      </div>
-                    )} */}
-
-                    {review.client?.employees && (
-                      <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4" />
-                        {review.client.employees}
+                    {/* ACTION */}
+                    {review.response && Object.keys(review.response).length === 0 && (
+                      <div className="flex justify-center sm:justify-start">
+                        <button
+                          onClick={() => {
+                            setSelectedReview(review);
+                            setIsModalOpen(true);
+                          }}
+                          className="flex w-fit items-center gap-1 px-2 cursor-pointer py-1 h-[30px] text-xs text-sm rounded-full
+                              border border-slate-400 text-[#FF4D00] hover:bg-[#FFF1EB]"
+                        >
+                          <MessageSquareText className="h-3 w-3" />
+                          Respond to Review
+                        </button>
                       </div>
                     )}
 
-                    {review.client?.reviewType && (
-                      <div className="flex items-center gap-1">
-                        <MessageSquareMore className="h-4 w-4" />
-                        {review.client.reviewType}
-                      </div>
-                    )}
-
-                    {review.client?.verified && (
-                      <div className="flex items-center gap-1 text-green-600">
-                        <CheckCircle2 className="h-4 w-4" />
-                        Verified
-                      </div>
-                    )}
-
-                  </div>
+                 
                 </div>
               </div>
           ))

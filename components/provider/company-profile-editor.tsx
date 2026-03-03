@@ -582,9 +582,9 @@ export function CompanyProfileEditor({
   };
 
   return (
-      <div className="space-y-1 bg-[#ffffff]">
+      <div className="space-y-1 bg-[#ffffff] -mx-8 -mt-8">
 
-      <div className="flex justify-between items-center -mt-5">
+      <div className="flex justify-between items-center -mt-5 p-3">
         <h1 className="text-2xl font-semibold">Agency Profile</h1>
 
         {!isEditMode ? (
@@ -598,7 +598,7 @@ export function CompanyProfileEditor({
         )}
       </div>
 
-      <Tabs defaultValue="overview" className="w-full">
+      <Tabs defaultValue="overview" className="w-full px-3">
 
         <TabsList className="mb-6 flex flex-wrap gap-2 border bg-[#f2f1f6]">
           <TabsTrigger value="overview">Overview</TabsTrigger>
