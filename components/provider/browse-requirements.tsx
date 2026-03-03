@@ -141,10 +141,10 @@ export function BrowseRequirements({
     `$${min.toLocaleString()} - $${max.toLocaleString()}`
 
   return (
-    <div className="space-y-6 p-2 lg:p-6 bg-[#F9FAFB] min-h-screen">
+    <div className="min-h-screen">
 
       {/* FILTER BAR */}
-  <div className="bg-white p-4 rounded-lg  shadow-sm mb-6 max-w-[95vw] overflow-x-auto">
+  <div className=" mb-3 max-w-[95vw] overflow-x-auto">
   <div className="flex items-center gap-3">
 
     {/* Minimum Budget */}
@@ -196,7 +196,16 @@ export function BrowseRequirements({
 
     {/* Clear Button */}
     <Button
-      className="h-[40px] border border-gray-400 rounded-[8px]"
+       className="
+              h-9 rounded-xl
+              bg-gradient-to-r from-[#6b6ee8] to-[#3c41c6]
+              hover:shadow-[0_0_10px_rgba(99,102,241,0.6)]
+              border border-[#E3E1F3]
+              text-white
+              font-medium
+              shadow-sm
+              
+            "
       onClick={handleClear}
     >
       Clear

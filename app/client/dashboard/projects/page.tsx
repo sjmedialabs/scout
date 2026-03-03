@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect,useRef } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -96,6 +96,7 @@ import { FaArrowRightLong } from "react-icons/fa6";
 import PdfUpload from "@/components/pdfUpload";
 import { categories } from "@/lib/mock-data";
 import { toast } from "@/lib/toast";
+
 import {
   Dialog,
   DialogClose,
@@ -125,9 +126,11 @@ import { useSearchParams } from "next/navigation";
 
 const ProjectsPage = () => {
   const { user, loading } = useAuth();
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
   const searchParams=useSearchParams();
   const status=searchParams.get("status");
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   // const [projects, setProjects] = useState([
   //   {
   //     id: "1",
@@ -241,6 +244,23 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
       loadData(user.id);
     }
   }, [user, loading, router]);
+
+  useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setOpenDropdownId(null);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
 
   const handleCreateProject = () => {
     if (
@@ -768,64 +788,92 @@ const paginatedRequirements = filteredRequirements?.slice(
                       
 
                       {/* Actions */}
-                      <td className="p-4">
-                        <div className="flex gap-2 justify-center flex-wrap">
+                     <td className="p-4 relative">
+                      <div className="flex justify-center" >
 
-                          {/* 🔹 View Proposals */}
-                          {project.status.toLowerCase() !== "closed" &&
-                            project.status.toLowerCase() !== "completed" &&
-                            project.status.toLowerCase() !== "underreview" && (
-                              <div
-                                className="flex items-center gap-1 cursor-pointer"
-                                onClick={() =>
-                                  router.push(
-                                    `/client/dashboard/projects/${project._id}`
-                                  )
-                                }
-                                
-                              >
-                                <Eye size={15} color="#000"/>
-                              </div>
-                            )}
-
-                          {/* 🔹 Edit */}
-                          {(project.status.toLowerCase() === "underreview" ||
-                            project.status.toLowerCase() === "notapproved") && (
-                            <div
-                              
-                              onClick={() => handleEditProject(project)}
-                              className="flex items-center gap-1 cursor-pointer"
-                            >
-                              <SquarePen size={15} />
-                            </div>
-                          )}
-
-                       
-
-                          {/* 🔹 Submit Review */}
-                          {(project.status.toLowerCase() === "closed" ||
-                            project.status.toLowerCase() === "completed") &&
-                            !project?.isReviewed && (
-                              <Button
-                                size="sm"
-                                onClick={() => {
-                                  setReviewSubmissionProjectId(project._id);
-                                  setShowReviewModal(true);
-                                }}
-                                className="bg-gradient-to-r from-[#6b6ee8] to-[#3c41c6] h-[30px] w-[80px] rounded-[8px] text-white text-[10px]"
-                              >
-                                Submit Review
-                              </Button>
-                            )}
+                        {/* Three Dots Button */}
+                        <div
+                          className="cursor-pointer"
+                          onClick={() =>
+                            setOpenDropdownId((prev) =>
+                              prev === project._id ? null : project._id
+                            )
+                          }
+                        >
+                          <MoreHorizontal size={18} />
                         </div>
 
-                        {/* Rejection Message */}
-                        {project.status === "NotApproved" && (
-                          <p className="text-[10px] text-red-500 mt-2">
-                            {project?.notApprovedMsg}
-                          </p>
+                        {/* Dropdown */}
+                        {openDropdownId === project._id && (
+                          <div className="absolute right-6 top-10 bg-white shadow-lg rounded-lg w-48 z-50 border">
+                            
+                            {/* 🔹 View Project Details */}
+                            <div
+                              onClick={() => {
+                                router.push(
+                                  `/client/dashboard/projects/${project._id}/details`
+                                );
+                                setOpenDropdownId(null);
+                              }}
+                              className="px-4 py-2 text-xs hover:bg-gray-100 cursor-pointer"
+                            >
+                              View Requirement Details
+                            </div>
+
+                            {/* 🔹 View Proposals */}
+                                <div
+                                  onClick={() => {
+                                    router.push(
+                                      `/client/dashboard/projects/${project._id}`
+                                    );
+                                    setOpenDropdownId(null);
+                                  }}
+                                  className="px-4 py-2 text-xs hover:bg-gray-100 cursor-pointer"
+                                >
+                                  View Project Details
+                                </div>
+                            
+
+                            {/* 🔹 Edit Project */}
+                            {(project.status.toLowerCase() === "underreview" || project.proposals===0 ||
+                              project.status.toLowerCase() === "notapproved") && (
+                                <div
+                                  onClick={() => {
+                                    handleEditProject(project);
+                                    setOpenDropdownId(null);
+                                  }}
+                                  className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                                >
+                                  Edit Project
+                                </div>
+                              )}
+
+                            {/* 🔹 Submit Review */}
+                            {(project.status.toLowerCase() === "closed" ||
+                              project.status.toLowerCase() === "completed") &&
+                              !project?.isReviewed && (
+                                <div
+                                  onClick={() => {
+                                    setReviewSubmissionProjectId(project._id);
+                                    setShowReviewModal(true);
+                                    setOpenDropdownId(null);
+                                  }}
+                                  className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                                >
+                                  Submit Review
+                                </div>
+                              )}
+                          </div>
                         )}
-                      </td>
+                      </div>
+
+                      {/* Rejection Message */}
+                      {project.status === "NotApproved" && (
+                        <p className="text-[10px] text-red-500 mt-2">
+                          {project?.notApprovedMsg}
+                        </p>
+                      )}
+                    </td>
                     </tr>
                   ))}
                 </tbody>
