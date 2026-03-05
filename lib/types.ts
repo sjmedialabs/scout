@@ -164,6 +164,7 @@ export interface AdminStats {
   totalProjects: number
   totalRevenue: number
   monthlyGrowth: number
+  lifetimeGrowth?: number
 }
 
 export interface ReportedContent {

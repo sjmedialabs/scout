@@ -11,6 +11,7 @@
   --background: oklch(1 0 0); /* #ffffff */
   --blueBackground: #E7F0F8; /*sky blue background color */
   --blueButton: #0e1f36;
+  --hoverBlueButton: #000;
   --orangeButton: #e14426;
   --hoverOrangeButton: #fa3200;
   --sidebarMain: #3C3A3E; /* Dark gray sidebar color */
@@ -169,6 +170,13 @@
 
 .bg-blueButton {
   background-color: var(--blueButton);
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.bg-blueButton:hover {
+  background-color: var(--hoverBlueButton);
+  color: white;
 }
 .bg-orangeButton {
   background-color: var(--orangeButton);
@@ -180,6 +188,7 @@
   background-color: var(--hoverOrangeButton);
   color: white;
 }
+
 .text-blueButton {
   color: var(--blueButton);
 }
