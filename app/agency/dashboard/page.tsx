@@ -396,7 +396,7 @@ const getLeadsInThisMonth = (leads: any[]) => {
 
   if (loading || resLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         Loading...
       </div>
     );
