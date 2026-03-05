@@ -41,8 +41,9 @@ import {
 /* ✅ Flattened Menu Items */
 const menuItems: MenuItem[] = [
   { id: "dashboard", label: "Dashboard", icon: Home, path: "/client/dashboard" },
+   { id: "projects", label: "Projects", icon: Briefcase, path: "/client/dashboard/projects" },
   { id: "proposals", label: "Proposals", icon: MessageSquare, path: "/client/dashboard/proposals" },
-  { id: "projects", label: "Projects", icon: Briefcase, path: "/client/dashboard/projects" },
+ 
   { id: "providers", label: "Find Agencies", icon: Users, path: "/client/dashboard/providers" },
   { id: "messages", label: "Messages", icon: MessageSquare, path: "/client/dashboard/message" },
   { id: "provider-comparison", label: "Provider Comparison", icon: GitCompare, path: "/client/dashboard/provider-comparison" },
@@ -108,12 +109,13 @@ export default function ClientSidebar({
         )}
       >
         {/* Header */}
-        <div className="p-3.5 border-b border-gray-300 bg-[#e0dbfa] flex justify-between items-start">
+        <div className="p-1.5 border-b border-gray-300 bg-[#e0dbfa] flex justify-between items-center">
           {!collapsed && (
             <div>
-              <h2 className="text-xl font-bold text-[#000]">
+              {/* <h2 className="text-xl font-bold text-[#000]">
                 Client Dashboard
-              </h2>
+              </h2> */}
+              <img src="/scoutBlackLogo.png" className="h-[45px] w-[120px]"/>
               {/* <p className="text-sm text-[#8B8585]">
                 Welcome back, {user.name}
               </p> */}
@@ -145,7 +147,7 @@ export default function ClientSidebar({
               onClick={() => setCollapsed(!collapsed)}
               className={`hidden lg:block cursor-pointer ${collapsed?"ml-[15px]":""}`}
             >
-              <PanelLeft className="h-5 w-5 mt-[6px] text-[#8480a8]" />
+              <PanelLeft className="h-5 w-5 mt-[4px] text-[#8480a8]" />
             </button>
 
             <button onClick={onClose} className="lg:hidden">

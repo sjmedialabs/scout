@@ -229,10 +229,10 @@ useEffect(() => {
 
      {
       leadTab==="opted" &&(
-        <div className="p-2 lg:p-6 bg-[#F9FAFB] min-h-screen">
+        <div className="min-h-screen">
 
             {/* 🔹 Filters */}
-            <div className="bg-white p-4 rounded-lg shadow-sm mb-6 max-w-[95vw] overflow-x-auto">
+            <div className=" mb-2 max-w-[95vw] overflow-x-auto">
                   <div className="flex items-center gap-3 ">
 
                       {/* Search */}
@@ -295,7 +295,16 @@ useEffect(() => {
 
                       {/* Clear Button */}
                       <Button
-                      className="h-[40px]  border border-gray-400 rounded-[8px]"
+                       className="
+                        h-9 rounded-xl
+                        bg-gradient-to-r from-[#6b6ee8] to-[#3c41c6]
+                        hover:shadow-[0_0_10px_rgba(99,102,241,0.6)]
+                        border border-[#E3E1F3]
+                        text-white
+                        font-medium
+                        shadow-sm
+                        
+                      "
                       onClick={() => {
                           setSearch("")
                           setStatusFilter("")
@@ -310,7 +319,7 @@ useEffect(() => {
               </div>
 
             {/* 🔹 Table */}
-            <div className="bg-white rounded-lg min-h-screen shadow-sm max-w-[95vw] overflow-x-auto">
+            <div className="bg-white rounded-lg  shadow-sm max-w-[95vw] overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-gray-100 text-gray-700">
                   <tr>

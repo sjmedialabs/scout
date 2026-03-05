@@ -219,13 +219,13 @@ export async function PUT(
         updates.clientResponded = true;
         updates.clientRespondedAt = new Date();
         //for the posted requirement status update
-        if (body.status.toLocaleLowerCase() === "shortlisted") {
-          await Requirement.findByIdAndUpdate(
-            proposal.requirementId,
-            { status: body.status },
-            { new: true },
-          );
-        }
+        // if (body.status.toLocaleLowerCase() === "shortlisted") {
+        //   await Requirement.findByIdAndUpdate(
+        //     proposal.requirementId,
+        //     { status: body.status },
+        //     { new: true },
+        //   );
+        // }
         if (body.status.toLocaleLowerCase() === "accepted") {
           updates.acceptedAt=new Date();
           console.log("----Accepted proposal:::");
