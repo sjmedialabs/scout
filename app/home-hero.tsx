@@ -56,7 +56,7 @@ export function HomeHero({ cms }: HomeHeroProps) {
 
   if (activeButton === "match") {
     router.push(
-      `/search?q=${encodeURIComponent(query)}&type=providers`
+      `/services?q=${query}&type=providers`
     );
   } else {
     router.push(`/browse?q=${encodeURIComponent(query)}`);
@@ -68,7 +68,7 @@ export function HomeHero({ cms }: HomeHeroProps) {
   if (!searchQuery.trim()) return;
 
   router.push(
-      `/search?q=${encodeURIComponent(searchQuery.trim())}&type=providers`
+      `/services?q=${searchQuery.trim()}&type=providers`
     );
 
   // if (activeButton === "match") {

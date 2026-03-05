@@ -40,7 +40,7 @@ export default function ServicesPage() {
   const [teamSizeFilter, setTeamSizeFilter] = useState<string>("");
 
   /* ---------------- PAGINATION ---------------- */
-const ITEMS_PER_PAGE = 3;
+const ITEMS_PER_PAGE = 10;
 const [page, setPage] = useState(1);
 
 const totalPages = Math.ceil(
@@ -187,11 +187,16 @@ const paginatedProviders = filteredProviders.slice(
       </div>
     );
 
+  const openProfileNewTab = (id: string) => {
+  const url = `/provider/${id}`;
+  window.open(url, "_blank", "noopener,noreferrer");
+};
+
   return (
     <div className="w-full min-h-screen bg-transparent">
       <div className="w-full -mt-4">
-     <div className="  border-b mb-2 pb-1 text-xl font-medium">
-      Find Agencies
+     <div className="border-b mb-2 pb-1">
+      <h1 className="font-bold text-2xl">Find Agencies</h1>
       </div>
       {/* ---------------- FILTER BAR ---------------- */}
 
@@ -362,11 +367,11 @@ max-md:text-xs
             {/* DETAILS */}
             <div className="flex-1">
               <div className="flex items-center gap-3 max-md:flex-wrap">
-                <h3 className="text-xl font-semibold">{p.name}</h3>
+                <h3 className="text-lg">{p.name}</h3>
 
                 {p.isVerified && (
-                  <span className="px-3 py-1 rounded-full text-xs text-white bg-gradient-to-r from-[#5fa8ff] to-[#3b82f6]">
-                    ✓ Verified
+                  <span className="px-1 rounded-full text-[10px] text-white bg-gradient-to-r from-[#5fa8ff] to-[#3b82f6]">
+                    Verified
                   </span>
                 )}
               </div>
@@ -376,34 +381,34 @@ max-md:text-xs
               </p>
 
               <div className="flex sm:gap-3 gap-10 text-sm max-md:flex-wrap max-md:gap-x-6 max-md:gap-y-2 text-gray-500 mt-2">
-                <span className="flex items-center gap-1">
-                  <MapPin className="text-orangeButton" size={16}/>
+                <span className="flex items-center text-xs text-gray-400 gap-1">
+                  <MapPin className="text-orangeButton" size={13}/>
                 {p.location || "Not specified"}
                 </span>
-                <span className="flex items-center gap-1">
-                  <BriefcaseBusiness  className="text-orangeButton" size={16}/>
+                <span className="flex items-center text-xs text-gray-400 gap-1">
+                  <BriefcaseBusiness  className="text-orangeButton" size={13}/>
                 {p.projectsCompleted} Projects
                 </span>
-                <span className="flex items-center gap-1">
-                  <Users className="text-orangeButton" size={16}/>
+                <span className="flex items-center text-xs text-gray-400 gap-1">
+                  <Users className="text-orangeButton" size={13}/>
                   {p.teamSize}
                 </span>
               </div>
 
-              <div className="mt-1 font-medium text-gray-700">
-                Starting Price: ${p.hourlyRate}/hr
-              </div>
+              <p className="mt-1 text-gray-400 text-xs">
+                Starting Price: <span className="font-semibold">${p.hourlyRate}/hr</span>
+              </p>
             </div>
 
             {/* ACTIONS */}
-            <div className="flex gap-3 max-md:flex-col-2 max-md:w-full">
+            <div className="flex gap-2 max-md:flex-col-2 max-md:w-full">
 
               {/* CONTACT */}
               <button
                 onClick={()=>handleContact(p)}
                 className="
-                  px-6 py-2 rounded-full text-white text-sm font-semibold
-                  bg-gradient-to-r from-[#6b6ee8] to-[#3c41c6]
+                  px-5 py-0 rounded-full text-white text-xs
+                  bg-[#e0332c] h-[30px]
                   shadow-md transition cursor-pointer
                   hover:shadow-[0_0_10px_rgba(99,102,241,0.6)] 
                 "
@@ -413,23 +418,19 @@ max-md:text-xs
 
               {/* VIEW PROFILE */}
 
-              <a
-                href={`/provider/${p._id || p.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+             
               <button
                 // onClick={()=>router.push(`/provider/${p._id}`)}
                 className="
-                  px-6 py-2 rounded-full text-white text-sm font-semibold
-                  bg-gradient-to-r from-[#5b5fe0] to-[#2c34a1]
+                   px-5 py-0 rounded-full text-white text-xs
+                  bg-[#232a85] 
                   shadow-md transition cursor-pointer
-                  hover:shadow-[0_0_10px_rgba(44,52,161,0.7)]
+                  hover:shadow-[0_0_10px_rgba(99,102,241,0.6)] 
                 "
               >
                 View Profile
               </button>
-              </a>
+              
 
             </div>
           </div>
