@@ -109,13 +109,13 @@ async function getData() {
     const cms = cmsRes.ok ? (await cmsRes.json()).data : null;
 
     const providers = providersRes.ok
-      ? (await providersRes.json()).providers?.slice(0, 3)
+      ? (await providersRes.json()).providers?.slice(0, 4)
       : [];
 
     const projectsData = projectsRes.ok ? await projectsRes.json() : {};
     const projects = (projectsData.requirements || projectsData.data || [])
       .filter((eachItem: any) => eachItem.status.toLowerCase() === "open")
-      .slice(0, 3);
+      .slice(0, 4);
 
     const categories = categoriesRes.ok
       ? (await categoriesRes.json()).data
@@ -326,35 +326,35 @@ const { cms, providers, projects, categories } = data;
               ))}
             </div> */}
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-4 gap-3">
               {projects.map((project: any) => (
                 <div
                   key={project._id}
                   className="rounded-3xl border border-slate-200 bg-white hover:shadow-lg transition-shadow
-      flex flex-col h-full"
+                   flex flex-col h-full"
                 >
                   {/* Image */}
                   <img
                     src={project.image || "/requirements.jpg"}
                     alt={project.title}
-                    className="w-full h-[220px] object-cover rounded-t-3xl"
+                    className="w-full h-[150px] object-cover rounded-t-3xl"
                   />
 
                   {/* Category + Timeline */}
                   <div className="flex items-center justify-between px-6 mt-4">
                     <Badge
                       variant="outline"
-                      className="rounded-full bg-gray-100 text-[11px] font-semibold px-3 py-1"
+                      className="rounded-full bg-gray-100 text-[8px] font-semibold px-2 py-1"
                     >
                       {project.category}
                     </Badge>
-                    <span className="text-sm font-semibold text-blueButton">
+                    <span className="text-xs font-semibold text-blueButton">
                       Timeline - <span className="text-red-500">{project.timeline}</span>
                     </span>
                   </div>
 
                   {/* Title */}
-                  <h3 className="px-6 mt-1 text-lg font-semibold capitalize">
+                  <h3 className="px-6 mt-1 text-md font-semibold capitalize">
                     {project.title}
                   </h3>
 
@@ -367,8 +367,8 @@ const { cms, providers, projects, categories } = data;
 
                   {/* Budget */}
                   <div className="mt-auto">
-                    <div className="px-6 mt-1">
-                      <span className="text-lg font-bold text-blueButton">
+                    <div className="px-6 mt-0">
+                      <span className="text-sm font-bold text-green-500">
                         ${project.budgetMin.toLocaleString()} - $
                         {project.budgetMax.toLocaleString()}
                       </span>
@@ -379,8 +379,8 @@ const { cms, providers, projects, categories } = data;
                       <Link href={`/login?to=requirement-details&id=${project._id}`}>
                         <Button
                           variant="outline"
-                          size="sm"
-                          className="bg-blueButton text-white rounded-full text-xs px-5 py-2"
+                          size="xs"
+                          className="bg-orangeButton text-white rounded-full text-[10px] px-3 py-1"
                         >
                           View Details →
                         </Button>
@@ -430,7 +430,7 @@ const { cms, providers, projects, categories } = data;
                 {cms?.topProvidersSubTitle || "Discover opportunities from businesses lookking for your services"}
               </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-3">
               {[...providers]
                 .sort((a, b) => (b.rating || 0) - (a.rating || 0))
                 .map((provider: any) => (
@@ -440,14 +440,14 @@ const { cms, providers, projects, categories } = data;
                  flex flex-col h-full"
                 >
                   <div className="">
-                    <div className="w-full h-[160px] sm:h-[200px] overflow-hidden rounded-t-3xl">
+                    <div className="w-full h-[160px] sm:h-[150px] overflow-hidden rounded-t-3xl">
                       <img
                         src={provider.coverImage || "/requirements.jpg"}
                         alt=""
                         className="rounded-t-3xl w-full h-full object-cover object-center"
                       />
                     </div>
-                    <div className="flex items-center justify-between mb-2 px-4 sm:px-6 lg:px-8 mt-4">
+                    <div className="flex items-center justify-between mb-2 px-4 sm:px-6 lg:px-4 mt-4">
                       {/* FEATURED & VERIFIED BADGES */}
                       <div className="flex items-center gap-2">
                         {provider.isVerified && (
@@ -490,11 +490,11 @@ const { cms, providers, projects, categories } = data;
                       </div>
                     </div>
 
-                    <h3 className="text-base text-base sm:text-lg px-4 sm:px-6 lg:px-8 font-bold capitalize">
+                    <h3 className="text-base text-base sm:text-lg px-4 sm:px-6 lg:px-4 font-bold capitalize">
                       {provider.name}
                     </h3>
                   </div>
-                  <div className="pb-4 px-4 sm:px-6 lg:px-8 flex flex-col flex-1">
+                  <div className="pb-4 px-4 sm:px-6 lg:px-4 flex flex-col flex-1">
                     <p className="text-sm text-gray-500 mb-0 line-clamp-1">
                         {provider.description}
                       </p>
@@ -507,7 +507,7 @@ const { cms, providers, projects, categories } = data;
                             .map((service: string, idx: number) => (
                               <span
                                 key={idx}
-                                className="bg-gray-100 text-blueButtton px-2 py-1 rounded-full text-xs font-semibold"
+                                className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-[10px] font-semibold"
                               >
                                 {service}
                               </span>
@@ -520,12 +520,12 @@ const { cms, providers, projects, categories } = data;
                       </div>
 
                       {/* VIEW DETAILS BUTTON */}
-                      <div className="mt-auto">
+                      <div className="-mt-1">
                         <Button
                           variant="outline"
-                          size="default"
+                          size="xs"
                           asChild
-                          className="bg-blueButton text-white rounded-full text-xs"
+                          className="bg-orangeButton text-white rounded-full text-[10px] px-3 py-1 hover:bg-[#b62528]"
                         >
                           <Link
                             href={`/provider/${provider.id || provider._id}`}

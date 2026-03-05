@@ -222,12 +222,12 @@ const overflowCategories = mainCategories.slice(5);
         <div
           className={`lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${isAgencyDashboard ? "ml-80" : ""}`}
         >
-          <div className="flex justify-between items-center h-16 gap-4">
+          <div className="flex justify-between items-center h-14 gap-4">
 
              <div className="flex justify-between items-center h-8 xl:mr-30 lg:mr-1">
             <div>
               <Link href="/" className="flex items-center space-x-2">
-                <img src="/scoutlogo.jpeg" alt="" className="h-16" />
+                <img src="/scoutHeaderLogo.png" alt="" className="h-14" />
               </Link>
             </div>
          </div>
@@ -311,7 +311,7 @@ const overflowCategories = mainCategories.slice(5);
                 >
                   <DropdownMenuTrigger asChild>
                     <button
-                      className={`relative pb-4 mt-4 text-[14px] font-bold cursor-pointer transition whitespace-nowrap ${
+                      className={`relative pb-4 mt-4 text-[14px] font-medium cursor-pointer transition whitespace-nowrap ${
                         openMenu === category.slug
                           ? "text-[#F4561C] after:absolute after:left-0 after:-bottom-2 after:h-[2px] after:w-full after:bg-[#F4561C]"
                           : "text-gray-500 hover:text-slate-900"
@@ -353,7 +353,7 @@ const overflowCategories = mainCategories.slice(5);
               <div className="hidden lg:flex gap-4 lg:gap-6 xl:gap-6 2xl:gap-6">
               <Link
                 href="/pricing"
-                className="text-[14px] font-bold text-gray-500  hover:text-slate-900 mt-1"
+                className="text-[14px] font-medium text-gray-500  hover:text-slate-900 mt-1"
               >
                 Pricing
               </Link>
@@ -376,7 +376,7 @@ const overflowCategories = mainCategories.slice(5);
 
                     >
               <DropdownMenuTrigger asChild>
-                <button className="p-1 text-[14px] font-bold text-gray-500 cursor-pointer">
+                <button className="p-1 text-[14px] font-medium text-gray-500 cursor-pointer">
                     {/* <FaBars className="text-red cursor-pointer hover:text-slate-900 h-6 w-6" /> */}
                     More
                   </button> 
@@ -457,7 +457,7 @@ const overflowCategories = mainCategories.slice(5);
             {/* Post a Project Button */}
             <div className="hidden lg:flex flex-row gap-2">
               <Button
-                className="bg-orangeButton hover:bg-none w-35 text-white h-8 rounded-full"
+                className="bg-orangeButton w-35 h-8 rounded-full"
                 asChild
               >
                 <Link
@@ -470,12 +470,45 @@ const overflowCategories = mainCategories.slice(5);
               </Button>
 
                <Button className="bg-orangeButton mr-3  text-white h-8 rounded-full"  onClick={()=>router.push("/browse")}>
-                <SearchIcon/> Projects
+                Find Projects
               </Button>
              
-               <div  onClick={()=>router.push("/login")} className="cursor-pointer">
+               {/* <div  onClick={()=>router.push("/login")} className="cursor-pointer">
                    <CircleUserRound className="h-6 w-6 mt-1" color="#e0332c" />
-               </div>
+               </div> */}
+
+               <div
+                className="relative cursor-pointer"
+                onMouseEnter={() => setOpenMenu("login")}
+                onMouseLeave={() => setOpenMenu(null)}
+              >
+                <CircleUserRound className="h-6 w-6 mt-1" color="#e0332c" />
+
+                {openMenu === "login" && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
+                    <button
+                      onClick={() => router.push("/login?role=client")}
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                    >
+                      Login as Client
+                    </button>
+
+                    <button
+                      onClick={() => router.push("/login?role=agency")}
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                    >
+                      Login as Agency
+                    </button>
+
+                    <button
+                      onClick={() => router.push("/login?role=admin")}
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                    >
+                      Login as Admin
+                    </button>
+                  </div>
+                )}
+              </div>
                
                 
               
@@ -493,9 +526,49 @@ const overflowCategories = mainCategories.slice(5);
               >
                 <Menu size={40} />
               </Button>
-              <div  onClick={()=>router.push("/login")} className="cursor-pointer">
+              {/* <div  onClick={()=>router.push("/login")} className="cursor-pointer">
                    <CircleUserRound className="h-6 w-6 mt-1" color="#f54607" />
-               </div>
+               </div> */}
+
+               <div className="relative cursor-pointer">
+                <div onClick={() => setOpenMenu(openMenu === "login" ? null : "login")}>
+                  <CircleUserRound className="h-6 w-6 mt-1" color="#f54607" />
+                </div>
+
+                {openMenu === "login" && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
+                    <button
+                      onClick={() => {
+                        router.push("/login?role=client");
+                        setOpenMenu(null);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                    >
+                      Login as Client
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        router.push("/login?role=agency");
+                        setOpenMenu(null);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                    >
+                      Login as Agency
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        router.push("/login?role=admin");
+                        setOpenMenu(null);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                    >
+                      Login as Admin
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
