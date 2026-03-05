@@ -27,7 +27,7 @@ import {
   MessageSquare,
   SearchIcon,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { CircleUserIcon } from "lucide-react";
 import { CircleUserRound } from "lucide-react";
@@ -45,6 +45,19 @@ export function Navigation() {
   const [serviceCategories, setServiceCategories] = useState<any[]>([]);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileOpenMenu, setMobileOpenMenu] = useState<string | null>(null);
+
+  const timeoutRef = useRef<any>(null);
+
+    const handleEnter = () => {
+      clearTimeout(timeoutRef.current);
+      setOpenMenu("login");
+    };
+
+    const handleLeave = () => {
+      timeoutRef.current = setTimeout(() => {
+        setOpenMenu(null);
+      }, 400);
+    };
 
 
   const isActive = (slug: string) => {
@@ -479,8 +492,11 @@ const overflowCategories = mainCategories.slice(5);
 
                <div
                 className="relative cursor-pointer"
-                onMouseEnter={() => setOpenMenu("login")}
-                onMouseLeave={() => setOpenMenu(null)}
+                // onMouseEnter={() => setOpenMenu("login")}
+                // onMouseLeave={() => setOpenMenu(null)}
+
+                onMouseEnter={handleEnter}
+                onMouseLeave={handleLeave}
               >
                 <CircleUserRound className="h-6 w-6 mt-1" color="#e0332c" />
 
