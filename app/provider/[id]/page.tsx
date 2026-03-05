@@ -274,7 +274,7 @@ const topServices = Object.keys(serviceRatings)
                     {providerDetails.location}
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
+                {/* <div className="flex items-center gap-2">
                   <img
                     src="/ProviderDetailPageBannerIconBriefCase.png"
                     className="h-5 w-5"
@@ -282,8 +282,8 @@ const topServices = Object.keys(serviceRatings)
                   <span className="text-[#fff] font-semibold text-sm">
                     {providerDetails.projectsCompleted} projects
                   </span>
-                </div>
-                <div className="flex items-center gap-2">
+                </div> */}
+                {/* <div className="flex items-center gap-2">
                   <img
                     src="/ProviderDetailPageBannerIconChatOperational.png"
                     className="h-5 w-5"
@@ -291,7 +291,7 @@ const topServices = Object.keys(serviceRatings)
                   <span className="text-[#fff] font-semibold text-sm">
                     Response: {providerDetails?.responseTime || "2 hrs"}
                   </span>
-                </div>
+                </div> */}
               </div>
               <div className="flex flex-wrap items-center gap-4 text-sm">
                 <div className="flex items-center gap-2">
@@ -334,7 +334,7 @@ const topServices = Object.keys(serviceRatings)
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-white rounded-3xl w-48 mt-2 font-semibold text-white hover:bg-white/10 bg-transparent  active:bg-transparent"
+                    className="border-white rounded-3xl w-51 mt-2 font-semibold text-white hover:bg-white/10 bg-transparent  active:bg-transparent"
                     onClick={(e) => webisteClickHandle(e, id)}
                   >
                     <ExternalLink className="mr-0.5" height={16} width={16} />
@@ -474,11 +474,11 @@ const topServices = Object.keys(serviceRatings)
           {(providerDetails.portfolio || []).map((item) => (
             <div
               key={item.id}
-              className="bg-white rounded-2xl border border-[#ECEEF3] shadow-sm"
+              className="bg-white rounded-2xl border overflow-hidden items-center border-[#ECEEF3] shadow-sm"
             >
               <img
                 src={item.image}
-                className=" w-full object-cover rounded-t-2xl"
+                className=" w-full object-cover rounded-t-2xl hover:scale-105 transition-transform duration-300"
               />
 
               <div className="p-4">
@@ -525,7 +525,7 @@ const topServices = Object.keys(serviceRatings)
           <img
             src={award.imageUrl}
             alt={award.title}
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+            className="w-full object-cover hover:scale-105 transition-transform duration-300"
           />
         </div>
 
