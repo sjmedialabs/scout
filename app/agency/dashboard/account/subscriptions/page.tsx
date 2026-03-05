@@ -92,7 +92,7 @@ setSubscriptions(activePlans);
 }
   
   return (
-    <div className="bg-background">
+    <div className="bg-transparent">
       <div className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
@@ -167,7 +167,7 @@ setSubscriptions(activePlans);
                     setSelectedId(plan._id)}
                   className={[
                    "group relative cursor-pointer transition-all duration-500 ease-out",
-                   "border border-slate-50 bg-neutral-10 shadow-[0_1px_3px_rgb(0,0,0,0.03)]",
+                   "border border-gray-500 bg-neutral-10 shadow-[0_1px_3px_rgb(0,0,0,0.03)]",
                   "hover:-translate-y-1 hover:shadow-xl hover:bg-white",
                   selected ? "bg-zinc-50 ring-1 ring-zinc-200 border-slate-300" : "",
                   + "flex flex-col justify-between h-full",

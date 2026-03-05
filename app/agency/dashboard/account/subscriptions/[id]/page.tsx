@@ -239,7 +239,7 @@ const handlePayment = async () => {
   // const remainingCount = selectedPlan.features.length - visibleFeatures.length
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className=" min-h-screen">
       <div className="px-4 py-10">
       {
         !resLoading && !failed && selectedPlan && (
@@ -355,12 +355,16 @@ const handlePayment = async () => {
                       ${billing==="yearly"?selectedPlan.pricePerYear:selectedPlan.pricePerMonth}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between font-extrabold text-zinc-900">
+                  {
+                    (selectedPlan?.pricePerYear>remainingAmount &&selectedPlan?.pricePerMonth>remainingAmount ) && (
+                      <div className="flex items-center justify-between font-extrabold text-zinc-900">
                     <span>Previous Plan Amount</span>
                     <span>
-                      ${remainingAmount || 0}
+                      ${remainingAmount.toFixed(2) || 0}
                     </span>
                   </div>
+                    )
+                  }
                    <div className="flex items-center justify-between font-extrabold text-zinc-900">
                     <span>Total</span>
                     <span>

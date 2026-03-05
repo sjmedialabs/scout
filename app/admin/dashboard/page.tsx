@@ -149,27 +149,20 @@ export default function DashboardPage() {
 
   const now = new Date();
 
-const usersRegisteredThisMonth = users.filter(user => {
-  const date = new Date(user.createdAt);
-  return (
-    date.getMonth() === now.getMonth() &&
-    date.getFullYear() === now.getFullYear()
-  );
-})
+const sortedUsers = [...users].sort((a, b) => {
+  return new Date(b.createdAt) - new Date(a.createdAt);
+});
 
-const reportsInThisMonth=(reportedContent || []).filter(report => {
-  const date = new Date(report.createdAt);
-  return (
-    date.getMonth() === now.getMonth() &&
-    date.getFullYear() === now.getFullYear()
-  );
-})
+const sortedReports = [...(reportedContent || [])].sort((a, b) => {
+  return new Date(b.createdAt) - new Date(a.createdAt);
+});
 
 if(isLoading){
   return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
+      
     );
 }
 
@@ -241,10 +234,10 @@ if(isLoading){
       </div>
 
       {/* Recent activity  */}
-      <div className="flex flex-col lg:flex-row gap-6 h-full w-full">
-        <RecentUserActivityCard recentUsers={usersRegisteredThisMonth} />
-        <ContentReportsCard reportContent={reportsInThisMonth}/>
-      </div>
+      <div className="flex flex-col lg:flex-row gap-6 w-full items-stretch">
+  <RecentUserActivityCard recentUsers={sortedUsers} />
+  <ContentReportsCard reportContent={sortedReports} />
+</div>
     </div>
   );
 }
@@ -300,10 +293,11 @@ export function DashboardCard({
   )
 }
 
-function RecentUserActivityCard({recentUsers}) {
+function RecentUserActivityCard({ recentUsers }) {
   return (
-    <div className="w-full h-full">
-      <div className="bg-white rounded-2xl shadow-md p-6 pt-2 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+    <div className="w-full flex">
+      <div className="flex flex-col w-full bg-white rounded-2xl shadow-md p-6 pt-2 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+        
         {/* Header */}
         <div className="mb-2">
           <h3 className="text-lg font-bold text-orangeButton">
@@ -315,58 +309,53 @@ function RecentUserActivityCard({recentUsers}) {
         </div>
 
         {/* User List */}
-        <div className="space-y-3">
-          {/* User Item */}
-          {
-            (recentUsers || []).length!==0?
-           <div>
-            {
-              recentUsers.slice(0,3).map((eachItem)=>(
-                 <div className="flex items-center justify-between border mb-3 rounded-xl px-4 py-3">
-                  <div>
-                    <p className="font-semibold text-orangeButton">{eachItem.name}</p>
-                    <p className="text-sm text-gray-500">{eachItem.email}</p>
-                  </div>
-                  <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-green-100 text-green-700">
-                  {eachItem.role}
-                  </span>
+        <div className="space-y-3 flex-1">
+          {(recentUsers || []).length !== 0 ? (
+            recentUsers.slice(0, 3).map((eachItem) => (
+              <div
+                key={eachItem._id}
+                className="flex items-center justify-between border mb-3 rounded-xl px-4 py-3"
+              >
+                <div>
+                  <p className="font-semibold text-orangeButton">
+                    {eachItem.name}
+                  </p>
+                  <p className="text-sm text-gray-500">{eachItem.email}</p>
                 </div>
-              ))
-            }
-           </div>
-            :
-            <div className="text-center ">
-              <p className="text-sm text-gray-500">No users registered in this month</p>
-            </div>
-          }
 
-          
+                <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-green-100 text-green-700">
+                  {eachItem.role.charAt(0).toUpperCase()+eachItem.role.slice(1,)}
+                </span>
+              </div>
+            ))
+          ) : (
+            <div className="text-center flex items-center justify-center flex-1">
+              <p className="text-sm text-gray-500">
+                No users registered in this month
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
-function ContentReportsCard({reportContent}) {
-  const getReportStatusColor = (receivedStatus: string): string => {
-  switch (receivedStatus.toLowerCase()) {
-    case "pending":
-      return "bg-yellow-100 text-yellow-700";
-    case "resolved":
-      return "bg-green-100 text-green-700";
-    default:
-      return "bg-gray-100 text-gray-700";
-  }
-};
+function ContentReportsCard({ reportContent }) {
+  const getReportStatusColor = (receivedStatus) => {
+    switch (receivedStatus.toLowerCase()) {
+      case "pending":
+        return "bg-yellow-100 text-yellow-700";
+      case "resolved":
+        return "bg-green-100 text-green-700";
+      default:
+        return "bg-gray-100 text-gray-700";
+    }
+  };
+
   return (
-    <div className="w-full h-full">
-      <div
-        className="
-          bg-white rounded-2xl p-6 pt-2
-          shadow-md hover:shadow-xl
-          transition-all duration-300 ease-in-out
-          hover:-translate-y-1
-        "
-      >
+    <div className="w-full flex">
+      <div className="flex flex-col w-full bg-white rounded-2xl p-6 pt-2 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+        
         {/* Header */}
         <div className="mb-2">
           <h3 className="text-lg font-bold text-orangeButton">
@@ -378,38 +367,38 @@ function ContentReportsCard({reportContent}) {
         </div>
 
         {/* Report List */}
-        <div className="space-y-3">
-          {/* Item */}
-          {
-            (reportContent || []).length!==0?
-             <div>
-              {
-                reportContent.slice(0,3).map((item)=>(
-                  <div className="flex items-center justify-between border  mb-3 rounded-xl px-4 py-3">
-                    <div>
-                      <p className="font-semibold text-orangeButton">
-                        {item.reason}
-                      </p>
-                      <p className="text-sm text-gray-500">{item.reportedTo.email}</p>
-                    </div>
-                    <span className={`text-xs font-semibold px-3 py-1 rounded-lg ${getReportStatusColor(item.status)}`}>
-                    {item.status}
-                    </span>
-                  </div>
-                ))
-              }
-             </div>
-            :
-            <div className="text-center">
-               <p className="text-gray-500 text-xl">Their is no recent reports in this month </p>
+        <div className="space-y-3 flex-1">
+          {(reportContent || []).length !== 0 ? (
+            reportContent.slice(0, 3).map((item) => (
+              <div
+                key={item._id}
+                className="flex items-center justify-between border mb-3 rounded-xl px-4 py-3"
+              >
+                <div>
+                  <p className="font-semibold text-orangeButton">
+                    {item.reason}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {item.reportedTo.email}
+                  </p>
+                </div>
+
+                <span
+                  className={`text-xs font-semibold px-3 py-1 rounded-lg ${getReportStatusColor(
+                    item.status
+                  )}`}
+                >
+                  {item.status}
+                </span>
+              </div>
+            ))
+          ) : (
+            <div className="text-center flex items-center justify-center flex-1">
+              <p className="text-gray-500 text-sm">
+                There are no reports this month
+              </p>
             </div>
-
-          }
-
-          
-          
-
-          
+          )}
         </div>
       </div>
     </div>

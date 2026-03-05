@@ -68,7 +68,7 @@ export default function NotificationsPage() {
     router.push(redirectionUrl);
   };
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-h-screen">
       {/* Page Header */}
       <div>
         <h1 className="text-3xl font-bold text-orangeButton my-custom-class">
