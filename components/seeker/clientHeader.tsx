@@ -28,8 +28,8 @@ export default function ClientHeader({ user, onMenuClick }: Props) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const[profileDropdownOpen,setProfileDropdownOpen]=useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
+ const notificationRef = useRef<HTMLDivElement>(null);
+const profileRef = useRef<HTMLDivElement>(null);
   const[seekerData,setSeekerData]=useState<any>(null);
 
   console.log("User details in header:::", user);
@@ -60,22 +60,26 @@ export default function ClientHeader({ user, onMenuClick }: Props) {
   },[]);
 
   // 🔹 Close dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setDropdownOpen(false);
-        setProfileDropdownOpen(false);
-      }
-    };
+ useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      notificationRef.current &&
+      !notificationRef.current.contains(event.target as Node)
+    ) {
+      setDropdownOpen(false);
+    }
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    if (
+      profileRef.current &&
+      !profileRef.current.contains(event.target as Node)
+    ) {
+      setProfileDropdownOpen(false);
+    }
+  };
 
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, []);
    const handleMarkNotificationAsRead = async (notificationId: string) => {
       console.log("notification Id recievd:::", notificationId);
       const filteredNotification = notifications.find(
@@ -93,6 +97,7 @@ export default function ClientHeader({ user, onMenuClick }: Props) {
           setNotifications((prev) =>
             prev.filter((eachItem) => eachItem._id !== notificationId),
           );
+          setDropdownOpen(false)
         }
       } catch (error) {
         console.log("Failed to update the status of the notification::", error);
@@ -148,7 +153,7 @@ export default function ClientHeader({ user, onMenuClick }: Props) {
 
         </div>
         {/* Notification symbol */}
-        <div className="relative mt-3  mr-0  " ref={dropdownRef}>
+        <div className="relative mt-3  mr-0  " ref={notificationRef}>
         <button
           onClick={() => setDropdownOpen(!dropdownOpen)}
           className="relative cursor-pointer"
@@ -198,7 +203,7 @@ export default function ClientHeader({ user, onMenuClick }: Props) {
         </div>
 
         {/* Profile Dropdown */}
-        <div className="relative  mr-0 " ref={dropdownRef}>
+        <div className="relative  mr-0 " ref={profileRef}>
           <button
             onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
             className="flex items-center gap-2 cursor-pointer"

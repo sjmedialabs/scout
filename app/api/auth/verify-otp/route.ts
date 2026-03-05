@@ -3,6 +3,7 @@ import { connectToDatabase } from "@/lib/mongodb"
 import User from "@/models/User"
 import Provider from "@/models/Provider"
 import Seeker from "@/models/Seeker"
+import Notification from "@/models/Notification"
 import { generateToken, setAuthCookie, hashPassword } from "@/lib/auth/jwt"
 import nodemailer from "nodemailer"
 
@@ -88,6 +89,18 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    //Notifcation for the superadmin after successfull creation of the user with the otp verification
+    const admin = await User.findOne({ role: "admin" });
+
+      await Notification.create({
+        userId: admin?._id,
+        title: "New User Registered!",
+        message: `A new user (${user.name}) has successfully registered on the platform.`,
+        type: "user_registered",
+        userRole: "admin",
+        sourceId: user._id,
+        linkUrl: "/admin/users"
+      });
   
 
   return NextResponse.json({

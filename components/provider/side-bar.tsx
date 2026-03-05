@@ -124,36 +124,31 @@ export default function Sidebar({
           [-ms-overflow-style:none]        
           [&::-webkit-scrollbar]:hidden">
           <nav className="space-y-2">
-           {menuItems.map((item) => {
-              const pathSegments = pathname?.split("/").filter(Boolean) || [];
-              const lastSegment = pathSegments[pathSegments.length - 1];
+          {menuItems.map((item) => {
+  const isActive =
+    item.path === "/agency/dashboard"
+      ? pathname === item.path
+      : pathname.startsWith(item.path!);
 
-              const isDashboard =
-                item.id === "dashboard" &&
-                pathname === "/agency/dashboard";
-
-              const isActive =
-                item.id === lastSegment || isDashboard;
-
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleMenuClick(item)}
-                  className={`
-                    w-full flex items-center gap-3 px-3 py-2 text-sm
-                    transition-colors cursor-pointer
-                    ${
-                      isActive
-                        ? "bg-[#ebe6f8] border border-[#e4dff6] text-[#000] rounded-[8px]"
-                        : "text-[#000] hover:bg-[#ebe6f8] rounded-[8px]"
-                    }
-                  `}
-                >
-                  <item.icon className="h-4 w-4 shrink-0" />
-                  {!isCollapsed && item.label}
-                </button>
-              );
-            })}
+  return (
+    <button
+      key={item.id}
+      onClick={() => handleMenuClick(item)}
+      className={`
+        w-full flex items-center gap-3 px-3 py-2 text-sm
+        transition-colors cursor-pointer
+        ${
+          isActive
+            ? "bg-[#ebe6f8] border border-[#e4dff6] text-[#000] rounded-[8px]"
+            : "text-[#000] hover:bg-[#ebe6f8] rounded-[8px]"
+        }
+      `}
+    >
+      <item.icon className="h-4 w-4 shrink-0" />
+      {!isCollapsed && item.label}
+    </button>
+  );
+})}
           </nav>
         </div>
 

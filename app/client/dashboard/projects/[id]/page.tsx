@@ -98,8 +98,8 @@ const ProjectDetailPage = () => {
       setProjectDetails(projectData.requirements[0]);
       setProposals(data.proposals);
       setFilteredProposals(data.proposals);
-      if(projectData.requirements[0].status==="Allocated"){
-        const AcceptedProposal=(data.proposals || []).find((eachItem)=>eachItem.status==="accepted")
+      if(projectData.requirements[0].status==="Allocated" ||projectData.requirements[0].status==="Closed" ){
+        const AcceptedProposal=(data.proposals || []).find((eachItem)=>eachItem.status==="accepted" || eachItem.status==="completed")
         console.log("Accepted Proposal is:::::::",AcceptedProposal)
         setAcceptedProposal(AcceptedProposal);
       }
@@ -368,7 +368,7 @@ const textareaClass =
         </div>
       )}
       {
-        (projectDetails || {}).status!=="Allocated" &&(
+       ( (projectDetails || {}).status!=="Allocated" && (projectDetails || {}).status !== "Closed") &&(
           <div>
             {/*header */}
               <div className="flex flex-wrap justify-between items-start">
@@ -577,7 +577,7 @@ const textareaClass =
                                     variant="outline"
                                     size="sm"
                                     onClick={() =>
-                                      router.push(`proposals/${proposal.id}`)
+                                      router.push(`/client/dashboard/proposals/${proposal.id}?from=projects`)
                                     }
                                     className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
                                   >
@@ -736,7 +736,7 @@ const textareaClass =
         )
       }
       {
-          (projectDetails || {}).status === "Allocated" && (
+         ( (projectDetails || {}).status === "Allocated" || (projectDetails || {}).status === "Closed") && (
             <div className="space-y-4">
 
         {/* ===================== TOP SECTION ===================== */}

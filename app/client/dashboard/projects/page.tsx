@@ -118,8 +118,6 @@ const statusOptions = [
   "NotApproved",
   "Open",
   "Closed",
-  "shortlisted",
-  "negotation",
   "Allocated",
 ];
 import { useSearchParams } from "next/navigation";

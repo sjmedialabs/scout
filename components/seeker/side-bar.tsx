@@ -169,8 +169,9 @@ export default function ClientSidebar({
                 onClick={() => handleMenuClick(item)}
                 className={cn(
                   "cursor-pointer flex items-center gap-3 p-3 text-sm rounded-lg text-[#000] w-full",
-                  pathname === item.path
-                    ? "bg-[#ebe6f8] border-1 border-[#e4dff6] text-[#000] rounded-[8px]"
+                  pathname === item.path ||
+                  (item.path !== "/client/dashboard" && pathname.startsWith(item.path!))
+                    ? "bg-[#ebe6f8] border border-[#e4dff6] text-[#000] rounded-[8px]"
                     : "",
                   collapsed ? "justify-center" : ""
                 )}

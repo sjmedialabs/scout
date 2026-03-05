@@ -15,14 +15,14 @@ export interface INotification extends Document {
 
 const NotificationSchema = new Schema<INotification>(
   {
-    // 👇 RECEIVER of the notification
+    //  RECEIVER of the notification
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
 
-    // 👇 USER who caused the event (proposal submitter, agency, etc.)
+    //  USER who caused the event (proposal submitter, agency, etc.)
     triggeredBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
