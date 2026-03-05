@@ -8,6 +8,15 @@ import {
   mockProvider,
   mockReportedContent,
 } from "@/lib/mock-data";
+import {
+  LineChart,
+  Line,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { User } from "@/lib/types";
 import { AlertTriangle, FileText, Users } from "lucide-react";
 import {
@@ -28,6 +37,8 @@ export default function AnalyticsPage() {
   //   mockSubscriptionStats,
   // );
   const [topProviders, setTopProviders] = useState([mockProvider]);
+  const [revenueData, setRevenueData] = useState<any[]>([])
+  const [lifetimeRevenue, setLifetimeRevenue] = useState(0)
   const [isLoading, setIsLoading] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [reportedContent, setReportedContent] = useState(mockReportedContent);
@@ -39,7 +50,8 @@ export default function AnalyticsPage() {
     agenciesCountPercentage: 0,
     pendingApproval:0,
     monthlyRevenue:0,
-    percentageIncrease:0
+    percentageIncrease:0,
+    lifetimeGrowth:0
   });
   const[topCardsStats,setTopCardsStats]=useState({
     totalUsers:0,
@@ -73,6 +85,14 @@ export default function AnalyticsPage() {
          avgRevenuePereUser:0,
          platformGrowthPercentage:0
    })
+
+   const revenueChartData = [
+  { month: "Jan", revenue: 1200 },
+  { month: "Feb", revenue: 3200 },
+  { month: "Mar", revenue: 2800 },
+  { month: "Apr", revenue: userDistribution.monthlyRevenue || 0 },
+];
+
   // const[dynamicSubscriptionStats,setDynamicSubscriptionStats]=useState({
 
   // })
@@ -151,12 +171,42 @@ export default function AnalyticsPage() {
 
         //Monthly payment
 
-        const paymentsData=await paymentRes.json();
-        const payments=paymentsData.data;
+        const paymentsData = await paymentRes.json();
+const payments = paymentsData.data;
 
-        const successfulPayments = payments.filter(
-          (p: any) => p.status === "success"
-        )
+const successfulPayments = payments.filter(
+  (p: any) => p.status === "success"
+);
+
+
+
+// Lifetime revenue
+const totalRevenue = successfulPayments.reduce(
+  (sum: number, p: any) => sum + p.amount,
+  0
+);
+
+setLifetimeRevenue(totalRevenue);
+
+// Monthly chart data
+const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+const revenueMap: Record<number, number> = {};
+
+successfulPayments.forEach((p:any)=>{
+  const date = new Date(p.createdAt);
+  const month = date.getMonth();
+
+  revenueMap[month] = (revenueMap[month] || 0) + p.amount;
+});
+
+const chartData = months.map((m, index)=>({
+  name: m,
+  revenue: revenueMap[index] || 0
+}));
+
+setRevenueData(chartData);
+
         const now = new Date()
 
         const currentYear = now.getFullYear()
@@ -171,6 +221,32 @@ export default function AnalyticsPage() {
           currentYear,
           currentMonth
         )
+
+        // FIRST payment date
+          const firstPaymentDate = new Date(
+            Math.min(...successfulPayments.map((p:any) => new Date(p.createdAt)))
+          )
+
+          // revenue from first month
+          const firstMonthRevenue = getMonthlyRevenue(
+            successfulPayments,
+            firstPaymentDate.getFullYear(),
+            firstPaymentDate.getMonth()
+          )
+
+          // lifetime revenue
+          const lifetimeRevenueValue = successfulPayments.reduce(
+            (sum:number, p:any) => sum + p.amount,
+            0
+          )
+
+          // growth from start till now
+          let lifetimeGrowth = 0
+
+          if (firstMonthRevenue > 0) {
+            lifetimeGrowth =
+              ((lifetimeRevenueValue - firstMonthRevenue) / firstMonthRevenue) * 100
+          }
 
         const lastMonthRevenue = getMonthlyRevenue(
           successfulPayments,
@@ -193,6 +269,7 @@ export default function AnalyticsPage() {
           pendingApproval:providersData.providers.filter((eachItem)=>!eachItem.isVerified).length,
           monthlyRevenue:currentMonthRevenue,
           percentageIncrease:Number(revenueIncreasePercentage.toFixed(2)),
+          lifetimeGrowth:Number(lifetimeGrowth.toFixed(2))
         });
 
         const subscriptionData=await subscriptionRes.json();
@@ -442,6 +519,9 @@ const getARPU = (payments) => {
         stats={userDistribution}
         subscriptionStats={subscriptionStats}
         topProviders={topPerformingAgencies}
+        revenueData={revenueData}
+        lifetimeRevenue={lifetimeRevenue}
+
       />
       {/* Stats Grid */}
       {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
