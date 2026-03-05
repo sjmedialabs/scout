@@ -7,6 +7,7 @@ import { Eye, EyeOff, X } from "lucide-react";
 
 export default function LoginPage() {
   // const [role, setRole] = useState<"agency" | "client" | "admin">("client");
+
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,6 +18,7 @@ export default function LoginPage() {
 
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("to");
+  const selectedRole = searchParams.get("role");
 
   const { login } = useAuth();
   const router = useRouter();
@@ -29,6 +31,13 @@ export default function LoginPage() {
 
   try {
     const user = await login(email, password);
+
+    // Role validation (NEW)
+if (selectedRole && user.role !== selectedRole) {
+  setError(`Above credientials are not registered as ${selectedRole}.`);
+  setLoading(false);
+  return;
+}
 
     // 🔒 Restrict login when coming from requirement "View Details"
     if (redirectTo === "requirement-details" && user.role !== "agency") {

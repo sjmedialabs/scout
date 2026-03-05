@@ -10,8 +10,9 @@
   /* Updated design tokens to match wireframe aesthetic */
   --background: oklch(1 0 0); /* #ffffff */
   --blueBackground: #E7F0F8; /*sky blue background color */
-  --blueButton: #000000;
-  --orangeButton: #e0332c;
+  --blueButton: #0e1f36;
+  --orangeButton: #e14426;
+  --hoverOrangeButton: #fa3200;
   --sidebarMain: #3C3A3E; /* Dark gray sidebar color */
   --foreground: oklch(0.205 0 0); /* #1f2937 */
   --card: oklch(0.985 0 0); /* #f8fafc */
@@ -171,6 +172,13 @@
 }
 .bg-orangeButton {
   background-color: var(--orangeButton);
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.bg-orangeButton:hover {
+  background-color: var(--hoverOrangeButton);
+  color: white;
 }
 .text-blueButton {
   color: var(--blueButton);
