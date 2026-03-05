@@ -24,6 +24,11 @@ export default function ServicesPage() {
   const [visibleCount, setVisibleCount] = useState(9);
   const searchParams = useSearchParams();
   const categoryId = searchParams.get("category") || null;
+  const subCategoryId=searchParams.get("subcategory") || null;
+  const searchTerm=decodeURIComponent(searchParams.get("q") || "");
+  console.log("Search Term is::::",searchTerm)
+
+  
 
   const[resLoading,setResLoading]=useState(false);
 
@@ -54,6 +59,14 @@ export default function ServicesPage() {
 
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
+  const normalize = (str: string) => {
+  return str
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ") // remove special chars like / - etc
+    .replace(/\s+/g, " ") // remove extra spaces
+    .trim();
+};
+
   /* ---------------- FETCH CATEGORIES ---------------- */
   useEffect(() => {
   async function fetchCategories() {
@@ -66,9 +79,12 @@ export default function ServicesPage() {
       const providerRes = await fetch("/api/providers");
       const providerData = await providerRes.json();
 
-      setProviders(providerData.providers || []);
-      setFilteredProviders(providerData.providers.sort((a, b) => b.rating - a.rating) || []);
+      const sortedProviders = [...(providerData.providers || [])].sort(
+  (a, b) => b.rating - a.rating
+);
 
+      setProviders(sortedProviders);
+      setFilteredProviders(sortedProviders);
       if (data.success) {
         let mainCats = data.data.filter((c: any) => c.parent === null);
 
@@ -82,6 +98,7 @@ export default function ServicesPage() {
 
         setCategories(mainCats);
       }
+     
     } catch (error) {
       console.error("Error fetching categories/providers:", error);
     } finally {
@@ -92,43 +109,94 @@ export default function ServicesPage() {
   fetchCategories();
 }, []);
 
+
+
+/* ---------------- HANDLE CATEGORY / SUBCATEGORY FROM QUERY ---------------- */
+useEffect(() => {
+  if (!categories.length || !providers.length) return;
+
+  // CATEGORY SELECTED (old behaviour)
+  if (categoryId && !subCategoryId) {
+    setOpenParent(categoryId);
+    setOpenChild(null);
+    setActiveService(null);
+    setActiveServiceId(null);
+    return;
+  }
+
+  // SERVICE SELECTED (subcategory query)
+  if (subCategoryId) {
+    let foundService: any = null;
+    let parentCategory: any = null;
+    let childCategory: any = null;
+
+    categories.forEach((parent: any) => {
+      parent.children?.forEach((child: any) => {
+        child.items?.forEach((service: any) => {
+          if (service._id === subCategoryId) {
+            foundService = service;
+            parentCategory = parent;
+            childCategory = child;
+          }
+        });
+      });
+    });
+
+    
+    if (foundService) {
+      setOpenParent(parentCategory._id);
+      setOpenChild(childCategory._id);
+      setActiveService(foundService.title);
+      setActiveServiceId(foundService._id);
+
+      // filter providers
+     const filtered = providers.filter((provider: any) =>
+  provider.services?.includes(foundService.title)
+);
+
+setFilteredProviders([...filtered]);
+    }
+  }
+  
+}, [categories, providers, categoryId, subCategoryId]);
+ 
+useEffect(() => {
+ 
+}, [filteredProviders]);
+
  
 
-  /* ---------------- FILTER PROVIDERS based on the selected service ---------------- */
-  // useEffect(() => {
-  //   console.log("Active Service:", activeService);
-  //   if (!activeService) return;
-    
-
-  //   const filtered = providers.filter((provider: any) =>
-  //     provider.services?.includes(activeService.title)
-  //   );
-
-  //   setFilteredProviders(filtered);
-  // }, [activeService, providers]);
-
-
   /* ---------------- FILTER + SORT PROVIDERS ---------------- */
-   useEffect(() => {
+useEffect(() => {
   let updatedProviders = [...providers];
 
-  /* 1️⃣ Filter by Active Service */
-  if (activeService) {
+  /* SEARCH FILTER */
+  if (searchTerm) {
+    const normalizedSearch = normalize(searchTerm);
+
     updatedProviders = updatedProviders.filter((provider: any) =>
-      provider.services?.includes(activeService.title)
+      provider.services?.some((service: string) =>
+        normalize(service).includes(normalizedSearch)
+      )
     );
   }
 
-  /* 2️⃣ Filter by Team Size (NEW LOGIC) */
+  /* SERVICE FILTER */
+  if (activeService) {
+    updatedProviders = updatedProviders.filter((provider: any) =>
+      provider.services?.includes(activeService)
+    );
+  }
+
+  /* TEAM SIZE FILTER */
   if (teamSizeFilter) {
     updatedProviders = updatedProviders.filter(
       (provider: any) => provider.teamSize === teamSizeFilter
     );
   }
 
-  /* 3️⃣ Apply Sorting */
+  /* SORTING */
   updatedProviders.sort((a, b) => {
-
     if (ratingFilter === "high-to-low" && b.rating !== a.rating) {
       return b.rating - a.rating;
     }
@@ -143,10 +211,17 @@ export default function ServicesPage() {
       return a.hourlyRate - b.hourlyRate;
     }
 
-    if (projectFilter === "high-to-low" && b.projectsCompleted !== a.projectsCompleted) {
+    if (
+      projectFilter === "high-to-low" &&
+      b.projectsCompleted !== a.projectsCompleted
+    ) {
       return b.projectsCompleted - a.projectsCompleted;
     }
-    if (projectFilter === "low-to-high" && a.projectsCompleted !== b.projectsCompleted) {
+
+    if (
+      projectFilter === "low-to-high" &&
+      a.projectsCompleted !== b.projectsCompleted
+    ) {
       return a.projectsCompleted - b.projectsCompleted;
     }
 
@@ -154,20 +229,17 @@ export default function ServicesPage() {
   });
 
   setFilteredProviders(updatedProviders);
-
-  setFilteredProviders(updatedProviders);
-setVisibleCount(9);
-
+  setVisibleCount(9);
 }, [
   providers,
   activeService,
+  searchTerm,
   ratingFilter,
   priceFilter,
   projectFilter,
-  teamSizeFilter
+  teamSizeFilter,
 ]);
-  console.log("Filtered Proividers:", filteredProviders)
-
+ 
   const handleContact = (provider: any) => {
     if (!provider.email) return;
     window.location.href = `mailto:${provider.email}?subject=Service Inquiry&body=Hi ${provider.name},%0D%0A%0D%0AI am interested in your services.`;
@@ -181,6 +253,22 @@ setVisibleCount(9);
     );
 
   }
+  const handleServiceClick = (service: any, parentId: string, childId: string) => {
+    console.log("Handle menu click prop service:::",service)
+    console.log("Handle menu click prop parentId::",parentId)
+    console.log("Handle menu click prop childId::",childId)
+  setOpenParent(parentId);
+  setOpenChild(childId);
+
+  setActiveService(service.title);
+  setActiveServiceId(service._id);
+
+  // const filtered = providers.filter((provider: any) =>
+  //   provider.services?.includes(service.title)
+  // );
+
+  // setFilteredProviders(filtered);
+};
 
  return (
   <div className="flex flex-col lg:flex-row w-full min-h-screen bg-white">
@@ -259,9 +347,9 @@ setVisibleCount(9);
                           child.items?.map((item: any) => (
                             <div
                               key={item._id}
+                               
                               onClick={() => {
-                                setActiveService(item);
-                                setActiveServiceId(item._id);
+                                handleServiceClick(item, parent._id, child._id)
                                 setMobileSidebarOpen(false); // ✅ Auto close
                               }}
                               className={`ml-4 mt-4 cursor-pointer p-0 rounded-md
@@ -332,10 +420,7 @@ setVisibleCount(9);
                       child.items?.map((item: any) => (
                         <div
                           key={item._id}
-                          onClick={() => {
-                            setActiveService(item);
-                            setActiveServiceId(item._id);
-                          }}
+                          onClick={() => handleServiceClick(item, parent._id, child._id)}
                           className={`ml-4 mt-1 cursor-pointer p-2 rounded-md
                           ${
                             activeServiceId === item._id
@@ -579,7 +664,7 @@ setVisibleCount(9);
                       <span
                         className="inline-flex items-center rounded-lg bg-[#f2f2f2] border px-3 py-0.5 text-[10px] font-semibold text-slate-700"
                       >
-                        {activeService.title}
+                        {activeService}
                       </span>
                     )}
                   </div>

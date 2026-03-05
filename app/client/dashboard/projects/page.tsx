@@ -730,7 +730,7 @@ const paginatedRequirements = filteredRequirements?.slice(
         {/* projects table */}
         {(filteredRequirements || []).length !== 0 ? (
           <>
-            <div className="overflow-x-auto max-w-[96vw]">
+            <div className="overflow-x-auto max-w-[96vw] pb-14">
               <table className="w-full text-left border-collapse">
                 <thead className="bg-gray-100 text-sm text-gray-600">
                   <tr>
@@ -788,92 +788,93 @@ const paginatedRequirements = filteredRequirements?.slice(
                       
 
                       {/* Actions */}
-                     <td className="p-4 relative">
-                      <div className="flex justify-center" >
+                      <td className="p-4 relative">
+                        <div className="flex justify-center" >
 
-                        {/* Three Dots Button */}
-                        <div
-                          className="cursor-pointer"
-                          onClick={() =>
-                            setOpenDropdownId((prev) =>
-                              prev === project._id ? null : project._id
-                            )
-                          }
-                        >
-                          <MoreHorizontal size={18} />
+                          {/* Three Dots Button */}
+                          <div
+                            className="cursor-pointer"
+                            onClick={() =>
+                              setOpenDropdownId((prev) =>
+                                prev === project._id ? null : project._id
+                              )
+                            }
+                          >
+                            <MoreHorizontal size={18} />
+                          </div>
+
+                          {/* Dropdown */}
+                          {openDropdownId === project._id && (
+                            <div  ref={dropdownRef}
+                                  className="absolute right-6 top-10 bg-white shadow-lg rounded-lg w-48 z-50 border">
+                              
+                              {/* 🔹 View Project Details */}
+                              <div
+                                onClick={() => {
+                                  router.push(
+                                    `/client/dashboard/projects/${project._id}/details`
+                                  );
+                                  setOpenDropdownId(null);
+                                }}
+                                className="px-4 py-2 text-xs hover:bg-gray-100 cursor-pointer"
+                              >
+                                View Requirement Details
+                              </div>
+
+                              {/* 🔹 View Proposals */}
+                                  <div
+                                    onClick={() => {
+                                      router.push(
+                                        `/client/dashboard/projects/${project._id}`
+                                      );
+                                      setOpenDropdownId(null);
+                                    }}
+                                    className="px-4 py-2 text-xs hover:bg-gray-100 cursor-pointer"
+                                  >
+                                    View Project Details
+                                  </div>
+                              
+
+                              {/* 🔹 Edit Project */}
+                              {(project.status.toLowerCase() === "underreview" || project.proposals===0 ||
+                                project.status.toLowerCase() === "notapproved") && (
+                                  <div
+                                    onClick={() => {
+                                      handleEditProject(project);
+                                      setOpenDropdownId(null);
+                                    }}
+                                    className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                                  >
+                                    Edit Project
+                                  </div>
+                                )}
+
+                              {/* 🔹 Submit Review */}
+                              {(project.status.toLowerCase() === "closed" ||
+                                project.status.toLowerCase() === "completed") &&
+                                !project?.isReviewed && (
+                                  <div
+                                    onClick={() => {
+                                      setReviewSubmissionProjectId(project._id);
+                                      setShowReviewModal(true);
+                                      setOpenDropdownId(null);
+                                    }}
+                                    className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                                  >
+                                    Submit Review
+                                  </div>
+                                )}
+                            </div>
+                          )}
                         </div>
 
-                        {/* Dropdown */}
-                        {openDropdownId === project._id && (
-                          <div className="absolute right-6 top-10 bg-white shadow-lg rounded-lg w-48 z-50 border">
-                            
-                            {/* 🔹 View Project Details */}
-                            <div
-                              onClick={() => {
-                                router.push(
-                                  `/client/dashboard/projects/${project._id}/details`
-                                );
-                                setOpenDropdownId(null);
-                              }}
-                              className="px-4 py-2 text-xs hover:bg-gray-100 cursor-pointer"
-                            >
-                              View Requirement Details
-                            </div>
-
-                            {/* 🔹 View Proposals */}
-                                <div
-                                  onClick={() => {
-                                    router.push(
-                                      `/client/dashboard/projects/${project._id}`
-                                    );
-                                    setOpenDropdownId(null);
-                                  }}
-                                  className="px-4 py-2 text-xs hover:bg-gray-100 cursor-pointer"
-                                >
-                                  View Project Details
-                                </div>
-                            
-
-                            {/* 🔹 Edit Project */}
-                            {(project.status.toLowerCase() === "underreview" || project.proposals===0 ||
-                              project.status.toLowerCase() === "notapproved") && (
-                                <div
-                                  onClick={() => {
-                                    handleEditProject(project);
-                                    setOpenDropdownId(null);
-                                  }}
-                                  className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
-                                >
-                                  Edit Project
-                                </div>
-                              )}
-
-                            {/* 🔹 Submit Review */}
-                            {(project.status.toLowerCase() === "closed" ||
-                              project.status.toLowerCase() === "completed") &&
-                              !project?.isReviewed && (
-                                <div
-                                  onClick={() => {
-                                    setReviewSubmissionProjectId(project._id);
-                                    setShowReviewModal(true);
-                                    setOpenDropdownId(null);
-                                  }}
-                                  className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
-                                >
-                                  Submit Review
-                                </div>
-                              )}
-                          </div>
+                        {/* Rejection Message */}
+                        {project.status === "NotApproved" && (
+                          <p className="text-[10px] text-red-500 mt-2">
+                            {project?.notApprovedMsg}
+                          </p>
                         )}
-                      </div>
-
-                      {/* Rejection Message */}
-                      {project.status === "NotApproved" && (
-                        <p className="text-[10px] text-red-500 mt-2">
-                          {project?.notApprovedMsg}
-                        </p>
-                      )}
-                    </td>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
