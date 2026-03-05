@@ -28,7 +28,8 @@ export default function AgencyHeader({ user, onMenuClick }: Props) {
   const router=useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
+const profileRef = useRef<HTMLDivElement>(null);
 
   const[profileDropdownOpen,setProfileDropdownOpen]=useState(false);
 
@@ -61,21 +62,26 @@ export default function AgencyHeader({ user, onMenuClick }: Props) {
   },[]);
 
   // 🔹 Close dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setDropdownOpen(false);
-        setProfileDropdownOpen(false);
-      }
-    };
+ useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      notificationRef.current &&
+      !notificationRef.current.contains(event.target as Node)
+    ) {
+      setDropdownOpen(false);
+    }
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    if (
+      profileRef.current &&
+      !profileRef.current.contains(event.target as Node)
+    ) {
+      setProfileDropdownOpen(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, []);
 
    const handleMarkNotificationAsRead = async (notificationId: string) => {
       console.log("notification Id recievd:::", notificationId);
@@ -94,6 +100,7 @@ export default function AgencyHeader({ user, onMenuClick }: Props) {
           setNotifications((prev) =>
             prev.filter((eachItem) => eachItem._id !== notificationId),
           );
+          setDropdownOpen(false);
         }
       } catch (error) {
         console.log("Failed to update the status of the notification::", error);
@@ -115,7 +122,7 @@ export default function AgencyHeader({ user, onMenuClick }: Props) {
     
          <div className="flex flex-row gap-6">
              {/* Notification Section */}
-              <div className="relative mt-2" ref={dropdownRef}>
+              <div className="relative mt-2" ref={notificationRef}>
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="relative cursor-pointer"
@@ -166,7 +173,7 @@ export default function AgencyHeader({ user, onMenuClick }: Props) {
               </div>
 
               {/* Profile Dropdown */}
-              <div className="relative" ref={dropdownRef}>
+              <div className="relative" ref={profileRef}>
                 <button
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                   className="flex items-center gap-2 cursor-pointer"

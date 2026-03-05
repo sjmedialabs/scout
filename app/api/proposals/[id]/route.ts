@@ -103,6 +103,7 @@ export async function GET(
         milestones: p.milestones,
         status: p.status,
         documentUrl:p.documentUrl,
+        attachments:p.attachments,
 
         createdAt: p.createdAt,
         updatedAt: p.updatedAt,

@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import PdfUpload from "../pdfUpload"
 import { toast } from "@/lib/toast"
+import { ImageUpload } from "../ui/image-upload";
 import ServiceDropdown from "../select-category-filter"
 import { ChevronRight } from "lucide-react"
 import { Send } from "lucide-react"
@@ -112,8 +113,8 @@ export function PostRequirementForm({
         type="button"
         onClick={() =>{
           if(number===2){
-            if(!formData.title.trim() || !formData.description.trim() || !formData.category){
-              toast.error("Title, description and category are required")
+            if(!formData.title.trim() || !formData.description.trim() || !formData.category || !formData.image){
+              toast.error("Title, description,category and image are required")
               return
             }
           }
@@ -241,6 +242,17 @@ console.log("Form Data Url is:::",formData.documentUrl)
                     }))
                   }
                 />
+              </div>
+              <div className="space-y-2">
+
+                <Label className="text-gray-400 font-semibold text-[14px]">Project Image</Label>
+
+                 <ImageUpload
+                    value={formData.image}
+                    onChange={(value) => setFormData({ ...formData, image: value })}
+                    description="Upload your Requirement Image (PNG, JPG) or provide a URL"
+                    previewClassName="w-24 h-24 border"
+                  />
               </div>
             </div>
           )}
@@ -393,6 +405,7 @@ console.log("Form Data Url is:::",formData.documentUrl)
                   }
                 />
               </div>
+              
               <div>
              <Button
                 type="submit"
@@ -451,8 +464,8 @@ console.log("Form Data Url is:::",formData.documentUrl)
                 className="rounded-xl bg-black h-8"
                  onClick={() =>{
                     if(step===1){
-                      if(!formData.title.trim() || !formData.description.trim() || !formData.category){
-                        toast.error("Title, description and category are required")
+                      if(!formData.title.trim() || !formData.description.trim() || !formData.category || !formData.image){
+                        toast.error("Title, description,category and image are required")
                         return
                       }
                     }

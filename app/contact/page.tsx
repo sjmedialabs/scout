@@ -104,7 +104,7 @@ export default function ContactPage() {
 
           <div className="mt-8 w-full max-w-xl rounded-2xl bg-white shadow-[0_0_5px_rgba(0,0,0,0.15)] p-6 overflow-hidden">
             <div className="flex items-center gap-2">
-              <span className="text-3xl font-extrabold">Media Enqueries :</span>
+              <span className="text-lg font-extrabold">Media Enqueries :</span>
               <span className="text-lg text-gray-500">
                 {cms?.contact?.email || "enquiry@scout.com"}
               </span>
@@ -113,7 +113,7 @@ export default function ContactPage() {
             <div className="-mx-6 my-6 border border-t-gray-700  bg-[#707070]" />
 
             <div className="flex items-center gap-2">
-              <span className="text-3xl font-extrabold">Contact Number :</span>
+              <span className="text-lg font-extrabold">Contact Number :</span>
               <span className="text-lg text-gray-500">
                 {cms?.contact?.phone || "+91-9848123456"}{","}
               </span>
@@ -126,20 +126,20 @@ export default function ContactPage() {
 
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-3xl font-extrabold">Email :</span>
+                <span className="text-lg font-extrabold">Email :</span>
                 <span className="text-lg text-gray-500">
                   {cms?.contact?.infoEmail || "info@scout.com"}
                 </span>
               </div>
 
-              <div className="pl-[87px] leading-4 text-lg text-gray-500">
+              {/* <div className="pl-[87px] leading-4 text-lg text-gray-500">
                 {cms?.contact?.supportEmail || "support@scout.com"}
-              </div>
+              </div> */}
             </div>
           </div>
 
           <div className="mt-8">
-            <p className=" text-3xl font-semibold">
+            <p className=" text-lg font-semibold">
               Grow your business by registering with us.
             </p>
             <button

@@ -120,8 +120,8 @@ export default function SubmitProposalPage() {
         proposalDescription: approach,
         coverLetter: coverLetter,
         milestones: milestones.map((eachItem) => ({ title: eachItem.title,description:eachItem.description })),
-        documentUrl: documentUrl
-      };
+        attachments:documentUrls.filter((eachItem:String)=>eachItem.trim().length>0)
+      }; 
 
       console.log("Payload to send:::::::", payload);
       const res = await authFetch("/api/proposals", {
@@ -200,7 +200,7 @@ export default function SubmitProposalPage() {
   const [approach, setApproach] = useState("");
   const [milestones, setMilestones] = useState([{title:"",description:""}]);
   const [coverLetter, setCoverLetter] = useState("");
-  const[documentUrl,setDocumentUrl] = useState("");
+  const[documentUrls,setDocumentUrls] = useState([]);
 
   useEffect(() => {
     if (loading) return; // ⛔ wait until auth finishes
@@ -233,7 +233,7 @@ export default function SubmitProposalPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 min-h-screen">
       {/* PROJECT SUMMARY */}
       <Card className="rounded-[36px] border border-gray-300 bg-white">
         <CardContent className="px-12 py-0 space-y-3">
@@ -513,7 +513,7 @@ export default function SubmitProposalPage() {
               <label className="text-[#98A0B4] text-[14px] font-normal">Proposal Attachment (optional)</label>
               <PdfUpload
                 maxSizeMB={10}
-                onUploadSuccess={(url) => setDocumentUrl(url)}
+                onUploadSuccess={(url) => setDocumentUrls((prev)=>([...prev,url]))}
                 placeholderText="Upload additional documents to support your proposal (PDF)"
               />
               </div>

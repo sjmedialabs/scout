@@ -1,6 +1,6 @@
 "use client"
 
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { useEffect, useState } from "react"
 import { Loader2, File } from "lucide-react"
@@ -26,6 +26,9 @@ countries.registerLocale(en);
 export default function ProposalViewDetailsPage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
+  const searchParams=useSearchParams();
+  const from=searchParams.get("from") || null;
+  console.log("From redirected::::",from)
   const { user, loading } = useAuth()
 
   const [resLoading, setResLoading] = useState(false)
@@ -509,24 +512,30 @@ const handlNegotation=async(proposalId:string)=>{
           </div>
 
           {/* Document */}
-          {proposal.documentUrl && (
-            <a
-              href={proposal.documentUrl}
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-[#475467] hover:text-[#1570EF] transition text-sm"
-            >
-              <File size={18} />
-              <span className="underline">Download Attached Document</span>
-            </a>
+          {proposal.attachments && (
+           <div className="flex flex-row gap-3 flex-wrap mt-2">
+                {
+                  proposal.attachments.map((eachItem,index)=>(
+                     <a
+                      href={eachItem}
+                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-[#475467] hover:text-[#1570EF] transition text-sm"
+                    >
+                      <File size={18} />
+                      <span className="underline">Attachment {index+1}</span>
+                    </a>
+                  ))
+                }
+            </div>
           )}
 
           {/* Action Buttons */}
           <div className="flex flex-col border-t border-gray-400 sm:flex-row  justify-between items-center gap-4 mt-3 pt-0">
-            <a className="flex flex-row items-center mt-3 cursor-pointer gap-1" href="/client/dashboard/proposals">
+            <a className="flex flex-row items-center mt-3 cursor-pointer gap-1" href={from?"/client/dashboard/projects":"/client/dashboard/proposals"}>
               <ChevronLeft  size={20} className="text-gray-400"/>
-              <span className="text-xs underline text-gray-400">Back to proposals</span>
+              <span className="text-xs underline text-gray-400">{from?"Back to projects":"Back to proposals"}</span>
             </a>
             {/* Buttons */}
               <div className="flex items-center justify-between pt-4 ">

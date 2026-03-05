@@ -38,14 +38,14 @@ export default function HelpCenterPage() {
                <aside className="space-y-6 text-sm text-gray-700">
 
                     <div>
-                      <h3 className="font-semibold text-xl text-gray-900 mb-2">About Scout</h3>
+                      <h3 className=" text-xl text-gray-900 mb-2">About Scout</h3>
                       <hr />
                     </div>
 
                     <div>
-                      <h3 className="font-semibold text-xl text-gray-900 mb-3">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-3">
                         {cms?.helpCenter?.leftSideTitle || "For Service Provider"}
-                      </h3>
+                      </h4>
 
                       <ul className="space-y-2">
 
@@ -55,7 +55,7 @@ export default function HelpCenterPage() {
                               {
                                 cms?.helpCenter?.leftSidePoints.map((item:any,index)=>(
                                   <li key={index} className="mb-4">
-                                      <Link href={`${item.urlToRedirect}`} className="font-medium hover:underline">
+                                      <Link href={`${item.urlToRedirect}`} className="text-sm hover:underline">
                                        {item.title}
                                       </Link>
                                   </li>
