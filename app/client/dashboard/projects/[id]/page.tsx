@@ -921,20 +921,32 @@ const textareaClass =
             </div>
           </div>
 
-          {/* Document */}
-          {acceptedProposal.documentUrl && (
-            <a
-              href={acceptedProposal.documentUrl}
+          {/* Attachments */}
+    {acceptedProposal.attachments && acceptedProposal.attachments.length > 0 && (
+      <div className="space-y-2 mt-3">
+        <label className="text-sm font-semibold mb-1 text-[#667085]">
+          Attachments
+        </label>
+
+        <div className="flex flex-row items-center flex-wrap gap-2">
+          {acceptedProposal.attachments.map((url: string, index: number) => (
+           <div>
+             <a
+              key={index}
+              href={url}
               download
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-[#475467] hover:text-[#1570EF] transition text-sm"
             >
               <File size={18} />
-              <span className="underline">Download Attached Document</span>
+              <span className="underline">Attachement {index + 1}</span>
             </a>
-          )}
-
+           </div>
+          ))}
+        </div>
+      </div>
+    )}
           {/* Action Buttons */}
           <div className="flex flex-col border-t border-gray-400 sm:flex-row  justify-between items-center gap-4 mt-3  pt-0">
             <a className="flex flex-row items-center mt-3  cursor-pointer gap-1" href="/client/dashboard/projects">

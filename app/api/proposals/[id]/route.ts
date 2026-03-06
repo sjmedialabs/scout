@@ -47,7 +47,7 @@ export async function GET(
       .populate({
         path: "requirementId",
         select:
-          "title category description budgetMin budgetMax timeline documentUrl status createdAt",
+          "title category description budgetMin budgetMax timeline documentUrl status createdAt  attachmentUrls",
       })
       .lean();
 
@@ -72,6 +72,20 @@ export async function GET(
       .lean();
 
     const providerMap = new Map(providers.map((p) => [p.userId.toString(), p]));
+
+
+    //  Fetch clients
+        const clientUserIds = [
+          ...new Set(proposals.map((p) => p.clientId?.toString())),
+        ];
+    
+        const clients = await Seeker.find({
+          userId: { $in: clientUserIds },
+        })
+          .select("userId companyName phoneNumber countryCode country image")
+          .lean();
+    
+        const clientMap = new Map(clients.map((c) => [c.userId.toString(), c]));
 
     // ✅ Mark proposals as viewed if client
     
@@ -117,11 +131,13 @@ export async function GET(
           budgetMin: p.requirementId.budgetMin,
           budgetMax: p.requirementId.budgetMax,
           timeline: p.requirementId.timeline,
-          documentUrl: p.requirementId.documentUrl,
+          attachmentUrls:p.requirementId.attachmentUrls,
+           
         },
 
-        // ✅ Provider details (joined manually)
+        //  Provider details (joined manually)
         agency: providerMap.get(p.agencyId.toString()) || null,
+        client: clientMap.get(p.clientId?.toString()) || null,
       })),
     });
   } catch (error) {
@@ -146,7 +162,7 @@ export async function PUT(
       );
     }
 
-    await connectToDatabase();
+    await connectToDatabase(); 
 
     const { id } = await params;
 

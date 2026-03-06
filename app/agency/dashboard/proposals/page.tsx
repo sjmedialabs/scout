@@ -44,9 +44,13 @@ import { Loader2 } from "lucide-react";
 import { setTimeout } from "timers/promises";
 import { useRouter } from "next/navigation";
 import { authFetch } from "@/lib/auth-fetch";
+const filterOptions= ["all","pending", "viewed", "shortlisted", "accepted", "rejected","negotation","completed"]
 
 const ProposalsPage = () => {
   const [proposals, setProposals] = useState<Proposal[]>([]);
+  const[filteredProposals,setFilteredProposals]=useState<Proposal[]>([]);
+  const[statusFilter,setStatusFilter]=useState("");
+
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
   const router = useRouter();
@@ -183,6 +187,7 @@ const ProposalsPage = () => {
       });
 
       setProposals(list);
+      setFilteredProposals(list);
     } catch (err) {
       setFailed(true);
     } finally {
@@ -193,6 +198,14 @@ const ProposalsPage = () => {
   useEffect(() => {
     loadData();
   }, []);
+  useEffect(()=>{
+     if(statusFilter==="all"){
+      setFilteredProposals(proposals)
+     }
+     else{
+      setFilteredProposals(proposals.filter((eachItem)=>eachItem.status===statusFilter))
+     }
+  },[statusFilter])
 
   if (loading) {
     return (
@@ -282,21 +295,25 @@ const ProposalsPage = () => {
       console.error("Proposal not found");
     }
   };
+  
   return (
     <div className="space-y-6">
       {/* HEADER */}
-      <div>
-        <h1 className="text-[20px] font-semibold text-orangeButton my-custom-class">
+      <div className="flex flex-row justify-between items-center">
+       <div>
+         <h1 className="text-[20px] font-semibold text-orangeButton my-custom-class">
           My Proposals
         </h1>
         <p className="text-[13px] text-gray-500 my-custom-class">
           Track all proposals you've submitted to clients
         </p>
+       </div>
+
       </div>
 
       {/* STATS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {/* Total Submissions */}
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      
         <div className="relative rounded-2xl bg-white pr-14 p-4 shadow-md border border-gray-100">
           <div className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#eef7fe]">
             <FileText className="h-4 w-4 text-orangeButton" />
@@ -315,7 +332,7 @@ const ProposalsPage = () => {
           </p>
         </div>
 
-        {/* Client Responses */}
+       
         <div className="relative rounded-2xl bg-white pr-12 p-5 shadow-md border border-gray-100">
           <div className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#eef7fe]">
             <MessageSquare className="h-4 w-4 text-orangeButton" />
@@ -334,7 +351,7 @@ const ProposalsPage = () => {
           </p>
         </div>
 
-        {/* Conversations */}
+       
         <div className="relative rounded-2xl bg-white pr-12 p-5 shadow-md border border-gray-100">
           <div className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#eef7fe]">
             <Users className="h-4 w-4 text-orangeButton" />
@@ -353,7 +370,7 @@ const ProposalsPage = () => {
           </p>
         </div>
 
-        {/* Accepted */}
+       
         <div className="relative rounded-2xl bg-white pr-10 p-5 shadow-md border border-gray-100">
           <div className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#eef7fe]">
             <Award className="h-4 w-4 text-orangeButton" />
@@ -372,7 +389,7 @@ const ProposalsPage = () => {
           </p>
         </div>
 
-        {/* Total Value */}
+       
         <div className="relative rounded-2xl bg-white p-5 shadow-md border border-gray-100">
           <div className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#eef7fe]">
             <DollarSign className="h-4 w-4 text-orangeButton" />
@@ -393,10 +410,10 @@ const ProposalsPage = () => {
             Proposed project value
           </p>
         </div>
-      </div>
+      </div> */}
 
       {/* FUNNEL */}
-      <Card className="rounded-2xl border border-gray-200 bg-white">
+      {/* <Card className="rounded-2xl border border-gray-200 bg-white">
         <CardHeader className="pb-6">
           <CardTitle className="text-[15px] h-4 font-semibold">
             Proposal to Conversation Funnel
@@ -441,7 +458,7 @@ const ProposalsPage = () => {
             ],
           ].map(([label, count, pct, color], i) => (
             <div key={i} className="space-y-2">
-              {/* Label + Value Row */}
+             
               <div className="flex items-center justify-between">
                 <span className="text-[12px] font-bold my-custom-class h-1 text-gray-900">
                   {label}
@@ -451,7 +468,6 @@ const ProposalsPage = () => {
                 </span>
               </div>
 
-              {/* Progress Bar */}
               <div className="h-[8px] w-full rounded-full bg-gray-100 overflow-hidden">
                 <div
                   className={`h-full rounded-full ${color}`}
@@ -461,26 +477,45 @@ const ProposalsPage = () => {
             </div>
           ))}
         </CardContent>
-      </Card>
+      </Card> */}
 
       {/* PROPOSALS LIST */}
       <Card className="rounded-2xl pt-2border bg-white border-gray-200">
-        <CardHeader>
-          <CardTitle className="text-[15px] h-3 font-semibold">
-            All Proposals
-          </CardTitle>
-          <CardDescription className="text-[13px] h-2 text-gray-500">
-            View and manage your submitted proposals
-          </CardDescription>
-        </CardHeader>
+        
+        <div className="flex flex-row justify-between px-5">
+
+            {/* <div>
+              <h3 className="text-[15px] font-semibold"> All Proposals</h3>
+              <p className="text-[13px]  text-gray-500">View and manage your submitted proposals</p>
+            </div> */}
+
+          {/*Filter */}
+          <div className="min-w-[150px] lg:min-w-0">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full h-[35px] border mt-0.5 data-[placeholder]:text-gray-400 cursor-pointer border-[#D0D5DD] rounded-lg px-3 py-2 text-sm focus:outline-none">
+                <SelectValue placeholder="Select Status" />
+              </SelectTrigger>
+
+              <SelectContent>
+                {filterOptions.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        
 
         <CardContent className="space-y-4">
-          {proposals.length === 0 ? (
+          {filteredProposals.length === 0 ? (
             <p className="text-center text-gray-500 text-[14px] py-6">
-              No Proposals yet
+              No Proposals for the above filter criteria
             </p>
           ) : (
-            proposals.map((proposal) => (
+            filteredProposals.map((proposal) => (
               <Card
                 key={proposal.id}
                 className="rounded-2xl border p-1 border-gray-200 bg-white shadow-sm"
