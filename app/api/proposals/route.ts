@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
       Proposal.countDocuments(query),
     ]);
 
-    // 🔹 Fetch agencies
+    //  Fetch agencies
     const agencyUserIds = [
       ...new Set(proposals.map((p) => p.agencyId?.toString())),
     ];
@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
 
     const agencyMap = new Map(agencies.map((a) => [a.userId.toString(), a]));
 
-    // 🔹 Fetch clients
+    //  Fetch clients
     const clientUserIds = [
       ...new Set(proposals.map((p) => p.clientId?.toString())),
     ];

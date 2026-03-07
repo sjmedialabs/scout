@@ -4,6 +4,7 @@ import Requirement from "@/models/Requirement"
 import { getCurrentUser } from "@/lib/auth/jwt"   // <-- IMPORTANT
 import { error } from "console"
 import mongoose from "mongoose"
+import Seeker from "@/models/Seeker";
 
 // GET Requirements
 
@@ -58,14 +59,32 @@ export async function GET(
     query.budgetMin = { $lte: maxBudget }
     query.budgetMax = { $gte: minBudget }
 
-    const requirements = await Requirement.find(query)
-      .sort({ createdAt: -1 })
-      .lean()
+ const requirements = await Requirement.find(query)
+  .sort({ createdAt: -1 })
+  .lean();
 
-    return NextResponse.json({
-      success: true,
-      requirements,
-    })
+// Fetch clients
+const clientUserIds = [
+  ...new Set(requirements.map((p) => p.clientId?.toString())),
+];
+
+const clients = await Seeker.find({
+  userId: { $in: clientUserIds },
+})
+  .select("userId companyName phoneNumber countryCode country image")
+  .lean();
+
+const clientMap = new Map(clients.map((c) => [c.userId.toString(), c]));
+
+// Attach client to each requirement
+requirements.forEach((p) => {
+  p.client = clientMap.get(p.clientId?.toString()) || null;
+});
+
+return NextResponse.json({
+  success: true,
+  requirements,
+});
   } catch (error) {
     console.error(error)
     return NextResponse.json(
