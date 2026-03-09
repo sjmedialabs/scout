@@ -442,7 +442,8 @@ const { cms, providers, projects, categories } = data;
                   <div className="">
                     <div className="w-full h-[160px] sm:h-[150px] overflow-hidden rounded-t-3xl">
                       <img
-                        src={provider.coverImage || "/requirements.jpg"}
+                        // src={provider.coverImage || "/requirements.jpg"}
+                        src={`${provider.coverImage || "/requirements.jpg"}?v=${provider.updatedAt || Date.now()}`}
                         alt=""
                         className="rounded-t-3xl w-full h-full object-cover object-center"
                       />
