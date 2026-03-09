@@ -18,6 +18,7 @@ import { authFetch } from "@/lib/auth-fetch";
 import { BsArrowLeft } from "react-icons/bs";
 import { File } from "lucide-react";
 import PdfUpload from "@/components/pdfUpload";
+import ProposalHeader from "@/components/provider/proposalDetailHeader";
 import {
   Select,
   SelectTrigger,
@@ -53,9 +54,11 @@ export default function SubmitProposalPage() {
 
         setFailed(false);
         setRequirement(data.requirements[0]);
-        console.log("proposals data:::::", proposalData.proposals);
+
+        console.log("Requirement details::::",data.requirements[0])
+      
        const proposalsCount=(proposalData.proposals || []).filter((eachItem)=>id===eachItem.requirement.id && eachItem.agency.userId===user?.id)
-       console.log("The propossaal count is::::",proposalsCount)
+     
         setShowForm(proposalsCount.length === 0)
 
         // setProposals(proposalData.proposals.filter((eachItem)=>id===eachItem.requirement.id && eachItem.agencyId===user?.id))
@@ -235,84 +238,21 @@ export default function SubmitProposalPage() {
   return (
     <div className="space-y-8 min-h-screen">
       {/* PROJECT SUMMARY */}
-      <Card className="rounded-[36px] border border-gray-300 bg-white">
-        <CardContent className="px-12 py-0 space-y-3">
-          {/* Heading */}
-          <div className="space-y-0 flex flex-wrap justify-between">
-            <div>
-              <p className="text-[20px] font-extrabold text-black ">
-                 Submitting Proposal For
-              </p>
-
-                <h1 className="text-[28px] mb-0 font-extrabold text-orange-600 ">
-                  {requirement.title}
-                </h1>
-            </div>
-            <div>
-               <Button className="bg-[#000] rounded-full hover:bg-[#000] text-[#fff] w-[100px]" onClick={()=>router.push("/agency/dashboard/leads/")}>
-                  <BsArrowLeft color="#fff"  height={4} width={4}/>
-                   Back
-               </Button>
-            </div>
-          </div>
-
-          {/* Meta row */}
-          <div className="flex flex-wrap items-center mt-0   gap-8 text-[16px]">
-            {/* Category */}
-            <span className="rounded-md leading-none bg-gray-100 px-3 py-1 text-[14px] font-medium text-gray-500">
-              {requirement.category}
-            </span>
-
-            {/* Budget */}
-            <span className="text-gray-900">
-              <span className="font-semibold">Budget:</span>{" "}
-              <span className="text-gray-500">
-                ${requirement.budgetMin} – ${requirement.budgetMax}
-              </span>
-            </span>
-
-            {/* Timeline */}
-            <span className="text-gray-900">
-              <span className="font-semibold">Timeline:</span>{" "}
-              <span className="text-gray-500">{requirement.timeline}</span>
-            </span>
-          </div>
-
-          {/* Description */}
-          <div className="flex flex-row gap-0 ">
-            <p className="max-w-full text-[14px] leading-5 text-gray-500">
-            {requirement.description}
-          </p>
-          
-          </div>
-         {
-          requirement?.attachmentUrls?.length > 0 && (
-           <div className="flex flex-row gap-4">
-             {
-              requirement.attachmentUrls.map((url,index)=>(
-                <a key={index}
-              href={url}
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center cursor-pointer gap-0 -mt-1 text-gray-500"
-            >
-              <File height={20} width={20} />
-              Attachment {index + 1}
-            </a>
-              ))
-             }
-           </div>
-          )
-        }
-
-        </CardContent>
-      </Card>
+      <div className="mt-2">
+        <ProposalHeader
+          proposal={{requirement:requirement,
+                      client:requirement?.client,
+          }}
+          buttonText="Back to leads"
+          buttonUrl="/agency/dashboard/leads?from=direct"
+        />
+        </div>
+    
 
       {/* PROPOSAL FORM */}
       {showForm ? (
-        <Card className="rounded-[36px] border border-gray-300 bg-white">
-          <CardContent className="px-12 py-4 space-y-4">
+        <Card className="rounded-[36px] border border-gray-300 bg-white mt-0">
+          <CardContent className="px-6 py-2 space-y-4">
             {/* COST + TIMELINE */}
             <div className="grid grid-cols-1 h-18 md:grid-cols-2 gap-10">
               {/* Proposed Cost */}
@@ -345,57 +285,57 @@ export default function SubmitProposalPage() {
 
               {/* Estimated Timeline */}
                <div className="space-y-2">
-  <label className="text-[15px] font-bold text-[#98A0B4]">
-    Estimated Timeline
-  </label>
+              <label className="text-[15px] font-bold text-[#98A0B4]">
+                Estimated Timeline
+              </label>
 
-  <div className="flex gap-2">
-    {/* Number Input */}
-    <Input
-      type="number"
-      value={timelineValue}
-      onChange={(e) => {
-        const value = e.target.value;
-        setTimelineValue(value);
+              <div className="flex gap-2">
+                {/* Number Input */}
+                <Input
+                  type="number"
+                  value={timelineValue}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setTimelineValue(value);
 
-        setTimeline(`${value} ${timelineUnit}`);
+                    setTimeline(`${value} ${timelineUnit}`);
 
-        if (errors.timeline || errors.form) {
-          setErrors({ ...errors, timeline: false, form: false });
-        }
-      }}
-      placeholder="Enter value"
-      className={`
-        h-10 rounded-xl text-[16px] placeholder:text-[12px] placeholder:text-[#98A0B4]
-        ${errors.timeline ? "border-red-500" : "border-gray-200"}
-      `}
-    />
+                    if (errors.timeline || errors.form) {
+                      setErrors({ ...errors, timeline: false, form: false });
+                    }
+                  }}
+                  placeholder="Enter value"
+                  className={`
+                    h-10 rounded-xl text-[16px] placeholder:text-[12px] placeholder:text-[#98A0B4]
+                    ${errors.timeline ? "border-red-500" : "border-gray-200"}
+                  `}
+                />
 
-    {/* ShadCN Select */}
-    <Select
-      value={timelineUnit}
-      onValueChange={(unit) => {
-        setTimelineUnit(unit);
-        setTimeline(`${timelineValue} ${unit}`);
-      }}
-    >
-      <SelectTrigger className="h-10 w-[140px] rounded-xl border-gray-200 text-[14px]">
-        <SelectValue placeholder="Select Unit" />
-      </SelectTrigger>
+                {/* ShadCN Select */}
+                <Select
+                  value={timelineUnit}
+                  onValueChange={(unit) => {
+                    setTimelineUnit(unit);
+                    setTimeline(`${timelineValue} ${unit}`);
+                  }}
+                >
+                  <SelectTrigger className="h-10 w-[140px] rounded-xl border-gray-200 text-[14px]">
+                    <SelectValue placeholder="Select Unit" />
+                  </SelectTrigger>
 
-      <SelectContent>
-        <SelectItem value="Days">Days</SelectItem>
-        <SelectItem value="Weeks">Weeks</SelectItem>
-        <SelectItem value="Months">Months</SelectItem>
-        <SelectItem value="Years">Years</SelectItem>
-      </SelectContent>
-    </Select>
-  </div>
+                  <SelectContent>
+                    <SelectItem value="Days">Days</SelectItem>
+                    <SelectItem value="Weeks">Weeks</SelectItem>
+                    <SelectItem value="Months">Months</SelectItem>
+                    <SelectItem value="Years">Years</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-  <p className="text-[12px] text-gray-300">
-    Client expectation: {requirement.timeline}
-  </p>
-</div>
+              <p className="text-[12px] text-gray-300">
+                Client expectation: {requirement.timeline}
+              </p>
+            </div>
             </div>
 
             {/* WORK APPROACH */}

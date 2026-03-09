@@ -42,11 +42,15 @@ import { useState,useEffect,useMemo,useRef } from "react"
 import { Lead,Requirement } from "@/lib/types"
 import { authFetch } from "@/lib/auth-fetch"
 import { BrowseRequirements } from "@/components/provider/browse-requirements";
+import { useSearchParams } from "next/navigation"
 
 const LeadGenerationPage = () => {
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from");
+
   const [leadTab, setLeadTab] = useState<
       "opted"  | "direct"
-    >("opted");
+    >(from || "opted");
   const [requirements, setRequirements] = useState<Requirement[]>([]);
   const [leads, setLeads] = useState<Lead[]>([])
   const [loading, setLoading] = useState(false)
