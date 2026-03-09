@@ -4,7 +4,7 @@ import type React from "react";
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth-context";
-import { useRouter } from "next/navigation";
+import { useRouter, } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -142,6 +142,32 @@ const ProposalPage = () => {
     null,
   );
 
+//   const handleMessageAgency = (proposal: any) => {
+//   router.push(
+//     `/client/dashboard/message?clientId=${user?.id}&agencyId=${proposal?.agency?.userId}`
+//   );
+// };
+
+const handleMessageAgency = async (proposal: any) => {
+  try {
+    const res = await authFetch(`/api/chat/conversation`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ proposalId: proposal.id }),
+    });
+
+    const data = await res.json();
+
+    router.push(
+      `/client/dashboard/message?conversationId=${data.conversationId}&agencyId=${proposal?.agency?.userId}`
+    );
+
+  } catch (error) {
+    console.log("Failed to start conversation", error);
+  }
+};
   
    const [filterStatus, setFilterStatus] = useState<string>("");
    const[projectTitles,setProjectTitles]=useState([]);
@@ -784,7 +810,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
 
                               {/* Buttons */}
                               <div className="flex items-center justify-between pt-2 border-[#DDDDDD] border-t-2">
-                                <div className="flex flex-wrap gap-2">
+                                <div className="flex flex-wrap gap-1">
 
                                   <Button
                                     variant="outline"
@@ -808,6 +834,15 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                     View Proposal Details
                                   </Button>
 
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleMessageAgency(proposal)}
+                                    className="bg-[#232a85] rounded-xl text-xs text-white hover:bg-[#232a85] font-bold active:bg-[#2b7fff] active:text-[#fff]"
+                                  >
+                                    Message Agency
+                                  </Button>
+
                                   {/* Shortlist */}
                                   {proposal.status !== "shortlisted" &&
                                     proposal.status !== "accepted" &&
@@ -819,7 +854,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                         onClick={() =>
                                           handleShortlist(proposal.id)
                                         }
-                                        className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
+                                        className="bg-[#232a85] rounded-xl text-xs text-white hover:bg-[#232a85] font-bold active:bg-[#2b7fff] active:text-[#fff]"
                                       >
                                         Shortlist
                                       </Button>

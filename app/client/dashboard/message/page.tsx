@@ -31,7 +31,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import clsx from "clsx";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { authFetch } from "@/lib/auth-fetch";
 import { io } from "socket.io-client"
@@ -149,6 +149,8 @@ export default function MessagesPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
 
+  const searchParams = useSearchParams();
+  const agencyId = searchParams.get("agencyId");
   const [dynamicConversation, setDynamicConversation] = useState<
     Conversation[]
   >([]);
@@ -171,6 +173,27 @@ const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
 const [deletingId, setDeletingId] = useState<string | null>(null);
+
+const conversationIdFromUrl = searchParams.get("conversationId");
+
+const formatDateLabel = (dateString: string) => {
+  const msgDate = new Date(dateString);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  const isToday = msgDate.toDateString() === today.toDateString();
+  const isYesterday = msgDate.toDateString() === yesterday.toDateString();
+
+  if (isToday) return "Today";
+  if (isYesterday) return "Yesterday";
+
+  return msgDate.toLocaleDateString([], {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
 
         useEffect(() => {
       if (socketRef.current) return
@@ -215,13 +238,34 @@ const [deletingId, setDeletingId] = useState<string | null>(null);
       setTotalUnreadMessagesCount(totalUnreadCount);
 
       // FIX: Pass the specific ID and the data directly
+      // if (allConversations.length > 0) {
+      //   const firstConv = allConversations[0];
+      //   // Set the active state immediately with the object we already have
+      //   setDynamicActiveConversation(firstConv);
+      //   // Fetch messages for this specific ID
+      //   await fetchMessages(firstConv.conversationId);
+      // }
+
       if (allConversations.length > 0) {
-        const firstConv = allConversations[0];
-        // Set the active state immediately with the object we already have
-        setDynamicActiveConversation(firstConv);
-        // Fetch messages for this specific ID
-        await fetchMessages(firstConv.conversationId);
-      }
+
+  // if URL has conversationId open that
+  if (conversationIdFromUrl) {
+    const found = allConversations.find(
+      (c: any) => c.conversationId === conversationIdFromUrl
+    );
+
+    if (found) {
+      setDynamicActiveConversation(found);
+      await fetchMessages(found.conversationId);
+      return;
+    }
+  }
+
+  // otherwise open first chat
+  const firstConv = allConversations[0];
+  setDynamicActiveConversation(firstConv);
+  await fetchMessages(firstConv.conversationId);
+}
     } catch (err) {
       console.log(err);
       setFailed(true);
@@ -246,6 +290,31 @@ const [deletingId, setDeletingId] = useState<string | null>(null);
 
   return () => window.removeEventListener("resize", checkScreen);
 }, []);
+
+useEffect(() => {
+  if (!conversationIdFromUrl) return;
+
+  const foundConversation = dynamicConversation.find(
+    (c: any) => c.conversationId === conversationIdFromUrl
+  );
+
+  if (foundConversation) {
+    setDynamicActiveConversation(foundConversation);
+    fetchMessages(foundConversation.conversationId);
+  }
+}, [conversationIdFromUrl, dynamicConversation]);
+
+// useEffect(() => {
+//   if (!conversationIdFromUrl) return;
+
+//   const foundConversation = dynamicConversation.find(
+//     (c: any) => c.conversationId === conversationIdFromUrl
+//   );
+
+//   if (foundConversation) {
+//     handleClickedConversation(foundConversation.conversationId);
+//   }
+// }, [conversationIdFromUrl, dynamicConversation]);
 
 useEffect(() => {
   const saved = localStorage.getItem("chatFavorites");
@@ -474,6 +543,7 @@ const handler = (payload: any) => {
 
   // Updated click handler
   const handleClickedConversation = async (recievdId: string) => {
+    router.push(`/client/dashboard/message?conversationId=${recievdId}`);
     const found = dynamicConversation.find(
       (c: any) => c.conversationId === recievdId,
     );
@@ -893,7 +963,7 @@ const toggleFavorite = (conversationId: string) => {
               <div className="flex-1 px-6 py-0 space-y-5 overflow-y-auto max-h-[55vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 {!chatLaoding && (dynamicMessages || []).length !== 0 ? (
                   <div>
-                    {dynamicMessages.map((msg: Message) => (
+                    {/* {dynamicMessages.map((msg: Message) => (
                       <div
                         key={msg._id}
                         className={clsx(
@@ -947,7 +1017,79 @@ const toggleFavorite = (conversationId: string) => {
                           </div>
                         </div>
                       </div>
-                    ))}
+                    ))} */}
+                    {dynamicMessages.map((msg: Message, index) => {
+                    const currentDate = new Date(msg.createdAt).toDateString();
+                    const prevDate =
+                      index > 0
+                        ? new Date(dynamicMessages[index - 1].createdAt).toDateString()
+                        : null;
+
+                    const showDateDivider = currentDate !== prevDate;
+
+                    return (
+                      <div key={msg._id}>
+                        
+                        {/* DATE DIVIDER */}
+                        {showDateDivider && (
+                          <div className="flex justify-center my-4">
+                            <span className="bg-gray-200 text-gray-600 text-xs px-3 py-1 rounded-full">
+                              {formatDateLabel(msg.createdAt)}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* MESSAGE */}
+                        <div
+                          className={clsx(
+                            "flex",
+                            msg.senderId === user?.id ? "justify-end" : "justify-start"
+                          )}
+                        >
+                          <div className="max-w-[70%]">
+                            
+                            <div
+                              className={clsx(
+                                "rounded-2xl px-4 py-3 text-sm",
+                                msg.senderId === user?.id ? "bg-blue-100" : "bg-gray-100"
+                              )}
+                            >
+                              {msg.attachments?.length > 0 && (
+                                <div onClick={() => handleDownload(msg.attachments[0])}>
+                                  {msg.messageType?.toLowerCase() === "image" ? (
+                                    <img
+                                      src={msg.attachments[0]}
+                                      className="rounded-lg max-h-40"
+                                    />
+                                  ) : (
+                                    <div className="flex items-center gap-2 text-xs w-[40px] h-[40px] bg-white p-2 rounded-lg">
+                                      <FileText className="h-10 w-10" />
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+
+                              {msg.content}
+                            </div>
+
+                            <div className="flex items-center justify-end gap-1 text-[10px] text-gray-400 mt-1">
+                              {msg.senderId === user?.id && (
+                                <div>
+                                  {msg.isRead ? (
+                                    <CheckCheck color="blue" size={16} />
+                                  ) : (
+                                    <Check size={16} />
+                                  )}
+                                </div>
+                              )}
+                              {formatedTime(msg.createdAt)}
+                            </div>
+
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                   </div>
                 ) : (
                   <div className="text-center">

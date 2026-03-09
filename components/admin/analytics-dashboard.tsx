@@ -6,6 +6,8 @@ import { Progress } from "@/components/ui/progress"
 import type { AdminStats, SubscriptionStats, Provider } from "@/lib/types"
 import { Star } from "lucide-react"
 import { useState } from "react"
+import Link from "next/link"
+import { Button } from "../ui/button"
 import {
   PieChart,
   Pie,
@@ -50,18 +52,12 @@ interface AnalyticsDashboardProps {
   const getSubscriptionName = (receivedId: string) => {
   const plan = subscriptionStats.find(
     (item) => item.planId === receivedId
-  )
+  );
 
-  return plan ? plan.planName : "Free Trial"
-}
+  return plan ? plan.planName : "Free Trial";
+};
 
   const COLORS = ["#3B82F6", "#1E40AF"]
-
-  const [dateFilter, setDateFilter] = useState("all");
-const [customRange, setCustomRange] = useState({
-  start: null,
-  end: null,
-});
 
   return (
     <div className="space-y-6">
@@ -69,12 +65,17 @@ const [customRange, setCustomRange] = useState({
         {/* User Distribution */}
         <Card className="rounded-2xl shadow-md pt-3 bg-white  hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
           <CardHeader>
-            <CardTitle className="text-xl -mb-2 font-bold text-orangeButton">User Distribution</CardTitle>
-            <CardDescription className="text-gray-500 text-sm">Breakdown of user types on the platform</CardDescription>
+            <CardTitle className="text-md -mb-4 font-bold ">User Distribution</CardTitle>
+            {/* <CardDescription className="text-gray-500 text-sm">Breakdown of user types on the platform</CardDescription> */}
           </CardHeader>
 
-          <CardContent className="flex items-center gap-6">
-            <div className="w-40 h-40 min-w-[160px]">
+          <CardContent className=" flex flex-col items-center justify-center">
+            {stats.clientsCount === 0 && stats.agenciesCount === 0 ? (
+              <div className="flex items-center justify-center h-[160px] text-gray-400 text-sm">
+                No Data
+              </div>
+            ) : (
+            <div className="w-40 h-40 flex items-center justify-center">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -95,8 +96,9 @@ const [customRange, setCustomRange] = useState({
                 </PieChart>
               </ResponsiveContainer>
             </div>
+            )}
 
-            <div className="space-y-2 text-sm">
+            <div className="flex text-xs gap-5 ">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
                 Clients {stats.clientsCount} ({stats.clientsCountPercentage}%)
@@ -133,9 +135,9 @@ const [customRange, setCustomRange] = useState({
 
 
         {/* Revenue Overview */}
-        <Card className="rounded-2xl shadow-md bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+        <Card className="rounded-2xl shadow-md pt-3 bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
   <CardHeader>
-    <CardTitle className="text-xl font-bold text-orangeButton">
+    <CardTitle className="text-md font-bold ">
       Revenue Overview
     </CardTitle>
   </CardHeader>
@@ -201,8 +203,8 @@ const [customRange, setCustomRange] = useState({
         {/* Subscription Stats */}
         <Card className="rounded-2xl pt-3 shadow-md bg-white  hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
           <CardHeader>
-            <CardTitle className="text-xl -mb-2 font-bold text-orangeButton">Subscription Breakdown</CardTitle>
-            <CardDescription className="text-gray-500 text-sm">Revenue breakdown by subscription tier</CardDescription>
+            <CardTitle className="text-md -mb-2 font-bold ">Subscription Breakdown</CardTitle>
+            {/* <CardDescription className="text-gray-500 text-sm">Revenue breakdown by subscription tier</CardDescription> */}
           </CardHeader>
 
           <CardContent className="space-y-4">
@@ -286,20 +288,81 @@ const [customRange, setCustomRange] = useState({
      
       {/* Top Providers */}
       <Card className="bg-white rounded-2xl pt-3">
-        <CardHeader className="-mb-4">
-          <CardTitle className="text-xl font-bold -mb-2 text-orangeButton">
+        <CardHeader className="-mb-4 flex items-center justify-between">
+          <CardTitle className="text-md font-bold -mb-2 ">
             Top Performing Agencies
             </CardTitle>
-          <CardDescription className="text-gray-500 text-sm">
+            
+            <Link
+              href="/admin/subscribers/all-subscribers"
+              className="text-sm font-medium text-blue-600 hover:underline"
+            >
+              View All
+            </Link>
+          {/* <CardDescription className="text-gray-500 text-sm">
             Highest rated and most active agencies
-            </CardDescription>
+            </CardDescription> */}
         </CardHeader>
         <CardContent>
-          <div className="space-y-1">
+
+          {/* Header */}
+<div className="grid grid-cols-4 text-sm font-semibold text-gray-500 border-b pb-2 mb-2">
+  <div>Agency</div>
+  <div className="text-center">Services</div>
+  <div className="text-center">Rating</div>
+  <div className="text-right">Revenue</div>
+</div>
+
+{topProviders.map((provider, index) => (
+  <div
+    key={provider._id || provider.id}
+    className="grid grid-cols-4 items-center py-3 border-b"
+  >
+
+    {/* Agency */}
+    <div className="flex items-center gap-3">
+      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold">
+        {provider.name?.charAt(0)}
+      </div>
+
+      <div>
+        <div className="font-semibold">{provider.name}</div>
+        <div className="text-xs text-gray-500">{provider.location}</div>
+      </div>
+    </div>
+
+    {/* Services */}
+    <div className="text-center">
+      {provider.services?.length || 0}
+    </div>
+
+    {/* Rating */}
+    <div className="flex items-center justify-center gap-1">
+      {[...Array(5)].map((_, i) => (
+        <Star
+          key={i}
+          className={`h-4 w-4 ${
+            i < Math.round(provider.rating)
+              ? "fill-yellow-400 text-yellow-400"
+              : "text-gray-300"
+          }`}
+        />
+      ))}
+      <span className="ml-1">{provider.rating?.toFixed(1)}</span>
+    </div>
+
+    {/* Revenue */}
+    <div className="text-right font-semibold">
+      ${(provider.revenue || 0).toLocaleString()}
+    </div>
+
+  </div>
+))}
+          {/* <div className="space-y-1">
             {topProviders.map((provider, index) => (
               <div 
-              key={provider.id} 
-              className="grid grid-cols-[1.5fr_1fr_1fr] items-center justify-between p-4 border rounded-2xl shadow-sm">
+              key={provider._id || provider.id} 
+              className="grid grid-cols-4 items-center justify-between p-4 border rounded-2xl shadow-sm">
                 <div className="flex items-center gap-4 w-50">
                   <div className="w-6 h-6 text-xs bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold">
                     {index + 1}
@@ -330,17 +393,20 @@ const [customRange, setCustomRange] = useState({
                     <div className="text-sm text-muted-foreground">
                       {provider.services.length} services
                     </div>
+                    <div className="text-sm font-semibold text-green-600">
+                      ${provider.revenue?.toLocaleString() || 0}
+                    </div>
                   </div>
                 <div className="flex">
                   <div className="flex gap-2 ">
                     {provider.isVerified && <Badge className="rounded-full bg-[#1C96F4]">Verified</Badge>}
                     {/* {provider.isFeatured && <Badge className="bg-[#39A935] rounded-lg">Featured</Badge>} */}
-                    {provider?.subscriptionDetails.subscriptionPlanId?<Badge className="bg-[#EA7E1F] rounded-full">{getSubscriptionName(provider?.subscriptionDetails.subscriptionPlanId)}</Badge>:<Badge className="bg-[#EA7E1F] rounded-full">Free Trail</Badge>}
+                    {/* {provider?.subscriptionDetails.subscriptionPlanId?<Badge className="bg-[#EA7E1F] rounded-full">{getSubscriptionName(provider?.subscriptionDetails.subscriptionPlanId)}</Badge>:<Badge className="bg-[#EA7E1F] rounded-full">Free Trail</Badge>}
                   </div>
                 </div>
               </div>
             ))}
-          </div>
+          </div> */}
         </CardContent>
       </Card>
       </div>
