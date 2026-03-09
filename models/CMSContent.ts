@@ -20,6 +20,7 @@ export interface ICMSContent extends Document {
   homeBannerSubtitle?: string
   homeWorkSection?: Array<{ title: string; description: string; image: string }>
   homeServicesCategories?: string[]
+  homeBannerQuickSearchTags?: string[]
   homeServiceTitle?:string
   homeServiceSubTitle?:string
   recentRequirementTitle?:string
@@ -104,6 +105,7 @@ const CMSContentSchema = new Schema<ICMSContent>(
     homeBannerSubtitle: { type: String },
     homeWorkSection: { type: [{ title: String, description: String, image: String }], default: [] },
     homeServicesCategories: { type: [String], default: [] },
+    homeBannerQuickSearchTags: { type: [String], default: [] },
    homeServiceTitle:{type:String},
    homeServiceSubTitle:{type:String},
    recentRequirementTitle:{type:String},

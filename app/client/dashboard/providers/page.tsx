@@ -374,7 +374,7 @@ max-md:text-xs
         </div>
 
       {/* ---------------- PROVIDER LIST ---------------- */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 mr-3 md:mr-0 md:grid-cols-2 lg:grid-cols-3 gap-3 ">
 
         {paginatedProviders.map((p:any)=>(
           // <div
