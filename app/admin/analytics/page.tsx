@@ -31,12 +31,16 @@ import { authFetch } from "@/lib/auth-fetch";
 import { FaAws } from "react-icons/fa";
 
 export default function AnalyticsPage() {
+
+  const [filter, setFilter] = useState("all")
+  const [dateRange, setDateRange] = useState({ start: null, end: null })
   
   const [stats, setStats] = useState(mockAdminStats);
   // const [subscriptionStats, setSubscriptionStats] = useState(
   //   mockSubscriptionStats,
   // );
-  const [topProviders, setTopProviders] = useState([mockProvider]);
+  // const [topProviders, setTopProviders] = useState([mockProvider]);
+  const [topProviders, setTopProviders] = useState<Provider[]>([]);
   const [revenueData, setRevenueData] = useState<any[]>([])
   const [lifetimeRevenue, setLifetimeRevenue] = useState(0)
   const [isLoading, setIsLoading] = useState(false);
@@ -86,18 +90,60 @@ export default function AnalyticsPage() {
          platformGrowthPercentage:0
    })
 
-   const revenueChartData = [
-  { month: "Jan", revenue: 1200 },
-  { month: "Feb", revenue: 3200 },
-  { month: "Mar", revenue: 2800 },
-  { month: "Apr", revenue: userDistribution.monthlyRevenue || 0 },
-];
-
   // const[dynamicSubscriptionStats,setDynamicSubscriptionStats]=useState({
 
   // })
 
   const[reports,setReports]=useState([]);
+
+ const getFilterRange = () => {
+  const now = new Date()
+
+  if (filter === "today") {
+    const start = new Date()
+    start.setHours(0,0,0,0)
+    return { start, end: new Date() }
+  }
+
+  if (filter === "week") {
+    const start = new Date()
+    start.setDate(now.getDate() - 7)
+    return { start, end: new Date() }
+  }
+
+  if (filter === "month") {
+    return {
+      start: new Date(now.getFullYear(), now.getMonth(), 1),
+      end: new Date()
+    }
+  }
+
+  if (filter === "year") {
+    return {
+      start: new Date(now.getFullYear(), 0, 1),
+      end: new Date()
+    }
+  }
+
+  if (filter === "custom") {
+    return dateRange
+  }
+
+  return null
+}
+
+const filterByDate = (data:any[]) => {
+  const range = getFilterRange()
+
+  if (!range) return data
+
+  return data.filter((item:any)=>{
+    const date = new Date(item.createdAt)
+
+    return date >= new Date(range.start) &&
+           date <= new Date(range.end)
+  })
+}
 
 
   useEffect(() => {
@@ -125,8 +171,11 @@ export default function AnalyticsPage() {
           authFetch("/api/reported-content")
         ]);
         const usersData = await usersRes.json();
-        let totalUsers = usersData.users.length;
-        let clientCounts = usersData.users.filter(
+        const filteredUsers = filterByDate(usersData.users)
+        // let totalUsers = usersData.users.length;
+        let totalUsers = filteredUsers.length;
+        // let clientCounts = usersData.users.filter(
+        let clientCounts = filteredUsers.filter(
           (eachItem) => eachItem.role === "client",
         ).length;
         let clientsCountPercentage =
@@ -160,52 +209,148 @@ export default function AnalyticsPage() {
         const providersData = await providersRes.json();
         const providers = providersData.providers || [];
 
-        const topThreePerformers = providers
-          .filter((p) => typeof p.rating === "number") // optional safety
-          .sort((a, b) => b.rating - a.rating) // highest rating first
-          .slice(0, 3);
+        // const topThreePerformers = providers
+        //   .filter((p) => typeof p.rating === "number") // optional safety
+        //   .sort((a, b) => b.rating - a.rating) // highest rating first
+        //   .slice(0, 3);
 
-        console.log("top performers::::::", topThreePerformers);
-        setTopPerformingAgencies(topThreePerformers);
         setRequirements(requirementsData.requirements);
 
         //Monthly payment
 
         const paymentsData = await paymentRes.json();
-const payments = paymentsData.data;
+          const payments = paymentsData.data;
 
-const successfulPayments = payments.filter(
-  (p: any) => p.status === "success"
-);
+          const filteredPayments = filterByDate(payments)
 
+          const range = getFilterRange()
 
+            // let filteredPayments = payments
 
-// Lifetime revenue
-const totalRevenue = successfulPayments.reduce(
-  (sum: number, p: any) => sum + p.amount,
-  0
-);
+            // if (range) {
+            //   filteredPayments = payments.filter((p:any) => {
+            //     const date = new Date(p.createdAt)
 
-setLifetimeRevenue(totalRevenue);
+            //     return date >= new Date(range.start) &&
+            //           date <= new Date(range.end)
+            //   })
+            // }
 
-// Monthly chart data
-const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+          const successfulPayments = filteredPayments.filter(
+            (p: any) => p.status === "success"
+          );
 
-const revenueMap: Record<number, number> = {};
+          // provider revenue map
+           const providerRevenueMap: Record<string, number> = {};
 
-successfulPayments.forEach((p:any)=>{
-  const date = new Date(p.createdAt);
-  const month = date.getMonth();
+            // group payments by userId (agency user)
+            successfulPayments.forEach((payment: any) => {
+              const userId = payment.userId?.toString();
 
-  revenueMap[month] = (revenueMap[month] || 0) + p.amount;
-});
+              if (!providerRevenueMap[userId]) {
+                providerRevenueMap[userId] = 0;
+              }
 
-const chartData = months.map((m, index)=>({
-  name: m,
-  revenue: revenueMap[index] || 0
-}));
+              providerRevenueMap[userId] += payment.amount;
+            });
 
-setRevenueData(chartData);
+            // attach revenue to providers using provider.userId
+            const providersWithRevenue = providers.map((provider: any) => ({
+              ...provider,
+              revenue: providerRevenueMap[provider.userId?.toString()] || 0
+            }));
+
+            // top 3 agencies
+            const topThreePerformers = providersWithRevenue
+              // .filter((p) => typeof p.rating === "number")
+              .sort((a, b) => b.rating - a.rating)
+              .slice(0, 3);
+
+            setTopPerformingAgencies(topThreePerformers);
+
+          // Lifetime revenue
+          const totalRevenue = successfulPayments.reduce(
+            (sum: number, p: any) => sum + p.amount,
+            0
+          );
+
+          setLifetimeRevenue(totalRevenue);
+
+          // // Monthly chart data
+          // const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+          // const revenueMap: Record<number, number> = {};
+
+          // successfulPayments.forEach((p:any)=>{
+          //   const date = new Date(p.createdAt);
+          //   const month = date.getMonth();
+
+          //   revenueMap[month] = (revenueMap[month] || 0) + p.amount;
+          // });
+
+          // const chartData = months.map((m, index)=>({
+          //   name: m,
+          //   revenue: revenueMap[index] || 0
+          // }));
+
+          // setRevenueData(chartData);
+
+          let chartData: any[] = []
+
+          // TODAY → hourly chart
+          if (filter === "today") {
+
+            const hourlyMap: Record<number, number> = {}
+
+            successfulPayments.forEach((p:any)=>{
+              const hour = new Date(p.createdAt).getHours()
+              hourlyMap[hour] = (hourlyMap[hour] || 0) + p.amount
+            })
+
+            chartData = Array.from({ length: 24 }, (_, i) => ({
+              name: `${i}:00`,
+              revenue: hourlyMap[i] || 0
+            }))
+
+          }
+
+          // WEEK / MONTH / CUSTOM → daily chart
+          else if (filter === "week" || filter === "month" || filter === "custom") {
+
+            const dailyMap: Record<string, number> = {}
+
+            successfulPayments.forEach((p:any)=>{
+              const day = new Date(p.createdAt).toLocaleDateString()
+
+              dailyMap[day] = (dailyMap[day] || 0) + p.amount
+            })
+
+            chartData = Object.entries(dailyMap).map(([day,value])=>({
+              name: day,
+              revenue: value
+            }))
+
+          }
+
+          // YEAR / ALL → monthly chart
+          else {
+
+            const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+            const revenueMap: Record<number, number> = {}
+
+            successfulPayments.forEach((p:any)=>{
+              const month = new Date(p.createdAt).getMonth()
+              revenueMap[month] = (revenueMap[month] || 0) + p.amount
+            })
+
+            chartData = months.map((m,index)=>({
+              name: m,
+              revenue: revenueMap[index] || 0
+            }))
+
+          }
+
+          setRevenueData(chartData)
 
         const now = new Date()
 
@@ -273,16 +418,20 @@ setRevenueData(chartData);
         });
 
         const subscriptionData=await subscriptionRes.json();
-        const users = usersData.users;                 // all users
+        // const users = usersData.users;                 // all users
         const plans = subscriptionData;  // available plans
 
-        const totalRegisteredUsers = users.length;
+        const users = filteredUsers;
+        const totalRegisteredUsers = filteredUsers.length;
+
+        // const totalRegisteredUsers = users.length;
 
         const planCountMap: Record<string, number> = {};
         let freeTrialCount = 0;
 
         // Step 1: classify users
-        users.forEach((user: any) => {
+        // users.forEach((user: any) => {
+        filteredUsers.forEach((user: any) => {
           if (user.subscriptionPlanId) {
             const planId = user.subscriptionPlanId._id;
             planCountMap[planId] = (planCountMap[planId] || 0) + 1;
@@ -328,8 +477,8 @@ setRevenueData(chartData);
           });
 
           //botom cards stats
-          const currentMRR = getCurrentMonthMRR(payments)
-          const arpu = getARPU(payments)
+          const currentMRR = getCurrentMonthMRR(filteredPayments)
+          const arpu = getARPU(filteredPayments)
           const growth=lastMonthRevenue>0?((currentMonthRevenue- lastMonthRevenue) /lastMonthRevenue) * 100:0
           setBottomCardStats({
             monthlyRecurringRevenue:currentMRR,
@@ -342,7 +491,8 @@ setRevenueData(chartData);
           setReports(reportsData.reports.filter((item)=>item.status==="pending"));
 
          
-          const usersAddedThisMonth = usersData.users.filter((user) => {
+          // const usersAddedThisMonth = usersData.users.filter((user) => {
+          const usersAddedThisMonth = filteredUsers.filter((user) => {
         const createdDate = new Date(user.createdAt);
 
         return (
@@ -351,7 +501,7 @@ setRevenueData(chartData);
         );
       }).length;
 
-      let clientsAddedThisMonth = usersData.users.filter((eachItem) => {
+      let clientsAddedThisMonth = filteredUsers.filter((eachItem) => {
         if (eachItem.role !== "client") return false;
 
         const createdDate = new Date(eachItem.createdAt);
@@ -362,7 +512,7 @@ setRevenueData(chartData);
         );
       }).length;
 
-      let agenciesAddedThisMonth = usersData.users.filter((eachItem) => {
+      let agenciesAddedThisMonth = filteredUsers.filter((eachItem) => {
         if (eachItem.role !== "agency") return false;
 
         const createdDate = new Date(eachItem.createdAt);
@@ -394,7 +544,7 @@ setRevenueData(chartData);
     }
 
     fetchDashboardData();
-  }, []);
+  }, [filter, dateRange]);
 
   const pendingReports = reportedContent.filter(
     (r) => r.status === "pending",
@@ -463,14 +613,62 @@ const getARPU = (payments) => {
 
   return (
     <div className="space-y-6 -mt-5">
-      <div className="border-b pb-2">
-      <h1 className="text-2xl font-bold -mb-1 text-orangeButton">
-        Analytics Overview
-      </h1>
-      <p className="text-gray-500 text-md">
-        Key platform insights and performance metrics
-      </p>
+      <div className="border-b pb-2 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold -mb-1 text-orangeButton">
+            Analytics Overview
+          </h1>
+          <p className="text-gray-500 text-md">
+            Key platform insights and performance metrics
+          </p>
+        </div>
+
+        {/* Filter */}
+        <div className="flex items-center gap-2">
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="border rounded-lg px-3 py-2 text-sm bg-white shadow-sm"
+          >
+            <option value="all">All Time</option>
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+            <option value="year">This Year</option>
+            <option value="custom">Custom Range</option>
+          </select>
+        </div>
       </div>
+
+      {filter === "custom" && (
+  <div className="flex items-center gap-2 mt-3">
+    <input
+      type="date"
+      value={dateRange.start ? dateRange.start.toISOString().split("T")[0] : ""}
+      onChange={(e) =>
+        setDateRange((prev) => ({
+          ...prev,
+          start: new Date(e.target.value),
+        }))
+      }
+      className="border rounded-md px-3 py-2 text-sm"
+    />
+
+    <span className="text-gray-500">to</span>
+
+    <input
+      type="date"
+      value={dateRange.end ? dateRange.end.toISOString().split("T")[0] : ""}
+      onChange={(e) =>
+        setDateRange((prev) => ({
+          ...prev,
+          end: new Date(e.target.value),
+        }))
+      }
+      className="border rounded-md px-3 py-2 text-sm"
+    />
+  </div>
+)}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -480,7 +678,7 @@ const getARPU = (payments) => {
           icon={<Users className="h-4 w-4 text-orangeButton" />}
           gradient="from-blue-100 to-blue-200"
           value={topCardsStats.totalUsers}
-          helper={`${topCardsStats.usersAddedInthisMonth}  this month`}
+          helper={`+${topCardsStats.usersAddedInthisMonth}  added this month`}
         />
 
         {/* Active Projects */}
@@ -489,7 +687,7 @@ const getARPU = (payments) => {
           icon={<FileText className="h-4 w-4 text-orangeButton" />}
           gradient="from-green-100 to-green-200"
           value={topCardsStats.totalClients}
-          helper={`${topCardsStats.clientsAddedInThisMonth} this month`}
+          helper={`+${topCardsStats.clientsAddedInThisMonth} added this month`}
         />
 
         {/* Pending Reports */}
@@ -498,7 +696,7 @@ const getARPU = (payments) => {
           icon={<AlertTriangle className="h-4 w-4 text-orangeButton" />}
           gradient="from-orange-100 to-orange-200"
           value={topCardsStats.totalAgencies}
-          helper={`${topCardsStats.agenciesAddedInThisMonth} this month`}
+          helper={`+${topCardsStats.agenciesAddedInThisMonth} added this month`}
         />
 
         {/* Monthly Revenue */}
