@@ -116,7 +116,7 @@ const profileRef = useRef<HTMLDivElement>(null);
 
 
   return (
-    <header className="flex items-center justify-between p-2 px-[23px] mb-0 border-b border-border bg-[#f4eefd] ">
+    <header className="flex items-center justify-between p-2 px-[23px] mb-0 border-b border-border bg-[#fff] ">
       
       {/* 🔹 Left Section */}
       <div className="flex items-center gap-3">

@@ -109,13 +109,13 @@ export default function ClientSidebar({
         )}
       >
         {/* Header */}
-        <div className="p-1.5 border-b border-gray-300 bg-[#e0dbfa] flex justify-between items-center">
+        <div className="p-1.5 border-b border-gray-300 bg-[#3C3A3E] flex justify-between items-center">
           {!collapsed && (
             <div>
               {/* <h2 className="text-xl font-bold text-[#000]">
                 Client Dashboard
               </h2> */}
-              <img src="/scoutBlackLogo.png" className="h-[45px] w-[120px]"/>
+              <img src="/scoutFooterLogo.png" className="h-[45px] w-[120px]"/>
               {/* <p className="text-sm text-[#8B8585]">
                 Welcome back, {user.name}
               </p> */}
@@ -157,7 +157,7 @@ export default function ClientSidebar({
         </div>
 
         {/* Menu */}
-        <div className="flex-1 overflow-y-auto p-4 bg-[#e0dbfa] 
+        <div className="flex-1 overflow-y-auto p-4 bg-[#3C3A3E] 
           [scrollbar-width:none] 
           [-ms-overflow-style:none]        
           [&::-webkit-scrollbar]:hidden"
@@ -168,10 +168,10 @@ export default function ClientSidebar({
                 key={item.id}
                 onClick={() => handleMenuClick(item)}
                 className={cn(
-                  "cursor-pointer flex items-center gap-3 p-3 text-sm rounded-lg text-[#000] w-full",
+                  "cursor-pointer flex items-center gap-3 p-3 text-sm rounded-lg text-[#fff] w-full",
                   pathname === item.path ||
                   (item.path !== "/client/dashboard" && pathname.startsWith(item.path!))
-                    ? "bg-[#ebe6f8] border border-[#e4dff6] text-[#000] rounded-[8px]"
+                    ? " text-[#F54A0C] rounded-[8px]"
                     : "",
                   collapsed ? "justify-center" : ""
                 )}
@@ -184,7 +184,7 @@ export default function ClientSidebar({
         </div>
 
         {/* Footer */}
-        <div className="p-4 bg-[#e0dbfa] flex flex-col gap-2">
+        <div className="p-4 bg-[#3C3A3E] flex flex-col gap-2">
           {/* <Button
             size="sm"
             className={cn(

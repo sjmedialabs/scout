@@ -886,9 +886,9 @@ const paginatedRequirements = filteredRequirements?.slice(
             >
               <div className="px-4 md:px-6 py-3">
                 <div className="flex justify-between items-start mb-3">
-                  <Badge className="bg-[#F54A0C] text-xs rounded-full">
+                  {/* <Badge className="bg-[#F54A0C] text-xs rounded-full">
                     {project.proposals} proposals recieved
-                  </Badge>
+                  </Badge> */}
                   <Badge
                     className={`text-xs rounded-full ${getBgColor(project.status)}`}
                     // variant={
@@ -988,6 +988,9 @@ const paginatedRequirements = filteredRequirements?.slice(
                         View Requirement
                         {/* <FaArrowRightLong className="h-1 w-1" color="#fff" /> */}
                       </Button>
+                      <Badge className="bg-[#F54A0C] text-xs rounded-full">
+                    {project.proposals} proposals recieved
+                  </Badge>
                   </div>
                   
                   {(project.status.toLowerCase() === "underreview" ||

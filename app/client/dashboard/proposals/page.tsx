@@ -503,7 +503,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
       </div>
     );
   }
-  if (failed || !proposals) {
+  if (failed) {
     return (
       <div className="flex flex-col justify-center items-center text-center min-h-100">
         <h1 className="text-center font-semibold">
@@ -522,12 +522,12 @@ console.log("Filtered Proposals:::::::",filteredProposals)
     <div className="space-y-3 -mt-5">
       <div>
         <h1 className="text-2xl font-bold my-custom-class text-[#F4561C]">
-          Proposals <span className="text-[#656565] text-[18px]">({proposals.length})</span> 
-          {selectedRequirementProposals[0]?.requirement?.title && (
+          Proposals <span className="text-[#656565] text-[18px]">({filteredProposals?.length || 0})</span> 
+          {/* {selectedRequirementProposals[0]?.requirement?.title && (
             <span className="text-[#656565] font-normal text-sm">
               {` (for  ${selectedRequirementProposals[0].requirement?.title} )`}
             </span>
-          )}
+          )} */}
         </h1>
         <p className="text-[#656565] -mt-1 text-sm font-medium my-custom-class">
           {selectedRequirement
