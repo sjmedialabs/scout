@@ -533,7 +533,14 @@ const handlNegotation=async(proposalId:string)=>{
 
           {/* Action Buttons */}
           <div className="flex flex-col border-t border-gray-400 sm:flex-row  justify-between items-center gap-4 mt-3 pt-0">
-            <a className="flex flex-row items-center mt-3 cursor-pointer gap-1" href={from?"/client/dashboard/projects":"/client/dashboard/proposals"}>
+            <a className="flex flex-row items-center mt-3 cursor-pointer gap-1"
+              onClick={() => {
+                if (from) {
+                  router.back(); // goes to previous page
+                } else {
+                  router.push("/client/dashboard/proposals");
+                }
+              }}>
               <ChevronLeft  size={20} className="text-gray-400"/>
               <span className="text-xs underline text-gray-400">{from?"Back to projects":"Back to proposals"}</span>
             </a>

@@ -502,7 +502,7 @@ const ProviderComparisonPage = () => {
                 Select Vendors to Compare
               </CardTitle>
               <CardDescription className="text-sm lg:text-md text-[#333333] font-normal my-custom-class">
-                Choose up to 4 vendors to compare their ratings and proposals
+                Choose up to 3 vendors to compare their ratings and proposals
               </CardDescription>
             </div>
             <div>

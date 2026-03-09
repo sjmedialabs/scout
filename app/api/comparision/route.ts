@@ -44,11 +44,11 @@ export async function POST(req: NextRequest) {
     // ✅ Limit: Max 4 vendors per client
     const comparisonCount = await Comparision.countDocuments({ clientId });
 
-    if (comparisonCount >= 4) {
+    if (comparisonCount >= 3) {
       return NextResponse.json(
         {
           success: false,
-          message: "You can compare only up to 4 vendors",
+          message: "You can compare only up to 3 vendors",
         },
         { status: 400 },
       );

@@ -41,7 +41,7 @@ import {
 /* ✅ Flattened Menu Items */
 const menuItems: MenuItem[] = [
   { id: "dashboard", label: "Dashboard", icon: Home, path: "/client/dashboard" },
-   { id: "projects", label: "Projects", icon: Briefcase, path: "/client/dashboard/projects" },
+   { id: "projects", label: "My Projects", icon: Briefcase, path: "/client/dashboard/projects" },
   { id: "proposals", label: "Proposals", icon: MessageSquare, path: "/client/dashboard/proposals" },
  
   { id: "providers", label: "Find Agencies", icon: Users, path: "/client/dashboard/providers" },
