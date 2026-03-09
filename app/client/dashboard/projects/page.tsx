@@ -617,7 +617,7 @@ const paginatedRequirements = filteredRequirements?.slice(
               placeholder="Search projects..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full h-[35px] mt-0.5 placeholder:text-gray-300 placeholder:text-sm border border-[#D0D5DD] rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none"
+              className="w-full h-[35px] mt-0.5 placeholder:text-gray-500 placeholder:text-sm border border-[#D0D5DD] rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none"
             />
             <svg
               className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
@@ -637,7 +637,7 @@ const paginatedRequirements = filteredRequirements?.slice(
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
               className={`w-full h-[35px] border mt-0.5 border-[#D0D5DD] rounded-lg px-3 py-2 text-sm focus:outline-none ${
-                !selectedStatus ? "text-gray-300" : "text-black"
+                !selectedStatus ? "text-gray-500" : "text-black"
               }`}
             >
               <option value="" disabled hidden>
@@ -674,7 +674,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                 if (!startDate) setStartInputType("text");
               }}
               onChange={(e) => setStartDate(e.target.value)}
-              className="placeholder:text-gray-300 placeholder:text-sm w-[80px] xl:w-full -mt-0.5 h-[35px] border border-[#D0D5DD] rounded-lg p-2  text-sm focus:outline-none"
+              className="placeholder:text-gray-500 placeholder:text-sm w-[80px] xl:w-full -mt-0.5 h-[35px] border border-[#D0D5DD] rounded-lg p-2  text-sm focus:outline-none"
             />
           </div>
 
@@ -690,7 +690,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                 if (!endDate) setEndInputType("text");
               }}
               onChange={(e) => setEndDate(e.target.value)}
-              className="placeholder:text-gray-300 placeholder:text-sm w-[80px] xl:w-full -mt-0.5 h-[35px] border border-[#D0D5DD] rounded-lg  p-2 text-sm focus:outline-none"
+              className="placeholder:text-gray-500 placeholder:text-sm w-[80px] xl:w-full -mt-0.5 h-[35px] border border-[#D0D5DD] rounded-lg  p-2 text-sm focus:outline-none"
             />
           </div>
 
@@ -728,7 +728,7 @@ const paginatedRequirements = filteredRequirements?.slice(
         {/* projects table */}
         {(filteredRequirements || []).length !== 0 ? (
           <>
-            <div className="overflow-x-auto max-w-[96vw] pb-14">
+            {/* <div className="overflow-x-auto max-w-[96vw] pb-14">
               <table className="w-full text-left border-collapse">
                 <thead className="bg-gray-100 text-sm text-gray-600">
                   <tr>
@@ -747,30 +747,30 @@ const paginatedRequirements = filteredRequirements?.slice(
                   {paginatedRequirements?.map((project) => (
                     <tr key={project._id} className="border-t text-sm">
 
-                      {/* Created */}
+                    
                       <td className="p-4 text-xs">
                         {new Date(project.createdAt)
                           .toISOString()
                           .split("T")[0]}
                       </td>
 
-                      {/* Title */}
+                      
                       <td className="p-4 text-xs font-semibold text-[#2C34A1]">
                         {project.title}
                       </td>
 
-                      {/* Budget */}
+                    
                       <td className="p-4 text-xs">
                         $ {project.budgetMin} - $ {project.budgetMax}
                       </td>
 
-                      {/* Category */}
+                      
                       <td className="p-4 text-xs">{project.category}</td>
 
-                      {/* Proposals */}
+                      
                       <td className="p-4 text-xs">{project.proposals}</td>
 
-                      {/* Status */}
+                    
                       <td className="p-4 text-xs">
                         <span
                           className={`px-3 py-1 text-xs rounded-full ${getBgColor(
@@ -785,11 +785,11 @@ const paginatedRequirements = filteredRequirements?.slice(
 
                       
 
-                      {/* Actions */}
+                      
                       <td className="p-4 relative">
                         <div className="flex justify-center" >
 
-                          {/* Three Dots Button */}
+                         
                           <div
                             className="cursor-pointer"
                             onClick={() =>
@@ -801,12 +801,12 @@ const paginatedRequirements = filteredRequirements?.slice(
                             <MoreHorizontal size={18} />
                           </div>
 
-                          {/* Dropdown */}
+                         
                           {openDropdownId === project._id && (
                             <div  ref={dropdownRef}
                                   className="absolute right-6 top-10 bg-white shadow-lg rounded-lg w-48 z-50 border">
                               
-                              {/* 🔹 View Project Details */}
+                              
                               <div
                                 onClick={() => {
                                   router.push(
@@ -819,7 +819,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                                 View Requirement Details
                               </div>
 
-                              {/* 🔹 View Proposals */}
+                             
                                   <div
                                     onClick={() => {
                                       router.push(
@@ -833,7 +833,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                                   </div>
                               
 
-                              {/* 🔹 Edit Project */}
+                            
                               {(project.status.toLowerCase() === "underreview" || project.proposals===0 ||
                                 project.status.toLowerCase() === "notapproved") && (
                                   <div
@@ -847,7 +847,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                                   </div>
                                 )}
 
-                              {/* 🔹 Submit Review */}
+                             
                               {(project.status.toLowerCase() === "closed" ||
                                 project.status.toLowerCase() === "completed") &&
                                 !project?.isReviewed && (
@@ -866,7 +866,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                           )}
                         </div>
 
-                        {/* Rejection Message */}
+                      
                         {project.status === "NotApproved" && (
                           <p className="text-[10px] text-red-500 mt-2">
                             {project?.notApprovedMsg}
@@ -877,10 +877,160 @@ const paginatedRequirements = filteredRequirements?.slice(
                   ))}
                 </tbody>
               </table>
+            </div> */}
+            <div className="px-4 max-h-[60vh] xl:max-h-[55vh] overflow-y-auto">
+              {paginatedRequirements?.map((project) => (
+            <div
+              key={project._id}
+              className="border-1 px-0 bg-[#fafafa] border-[#CFCACA] rounded-2xl mb-2"
+            >
+              <div className="px-4 md:px-6 py-3">
+                <div className="flex justify-between items-start mb-3">
+                  <Badge className="bg-[#F54A0C] text-xs rounded-full">
+                    {project.proposals} proposals recieved
+                  </Badge>
+                  <Badge
+                    className={`text-xs rounded-full ${getBgColor(project.status)}`}
+                    // variant={
+                    //   project.status === "Completed"
+                    //     ? "default"
+                    //     : project.status === "In Progress"
+                    //       ? "secondary"
+                    //       : "outline"
+                    // }
+                  >
+                    {project.status}
+                  </Badge>
+                </div>
+                <div className="flex justify-between items-start mb-">
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold mb-2 text-[#2C34A1] cursor-pointer" onClick={()=>router.push(`/client/dashboard/projects/${project._id}`)}>
+                      {project.title}
+                    </h3>
+                    <p className="text-sm line-clamp-2 text-[#898383] font-normal mb-3">
+                      {project.description}
+                    </p>
+                    <div className="flex items-center gap-4 text-sm flex-wrap text-muted-foreground">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                        <HiCurrencyDollar color="#F54A0C" className="h-8 w-8" />
+                        <span className="text-[14px] font-bold text-[#000]">{`$ ${project.budgetMin} - $ ${project.budgetMax}`}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2 ">
+                        <div className="bg-[#F54A0C] rounded-[50%] flex justify-center items-center h-6 w-6">
+                          <GoTag color="#fff" className="h-4 w-4" />
+                        </div>
+                        <span className="text-[14px] font-bold text-[#000]">
+                          {project.category}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2 ">
+                        <div className="bg-[#F54A0C] rounded-[50%] flex justify-center items-center h-6 w-6">
+                          <CiCalendar
+                            color="#ffffff"
+                            className="h-4 w-4 font-bold"
+                          />
+                        </div>
+                        <span className="text-[14px] font-bold text-[#000]">
+                          Created :{" "}
+                          {
+                            new Date(project.createdAt)
+                              .toISOString()
+                              .split("T")[0]
+                          }
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {/* <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleEditProject(project)}>
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDeleteProject(project.id)}>
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu> */}
+                  </div>
+                </div>
+                {/*Action buttons */}
+                <div className="flex justify-between items-center flex-wrap">
+                  
+                  
+                 <div className="flex justify-start flex-wrap gap-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          router.push(`/client/dashboard/projects/${project._id}`)
+                        }
+                        className="bg-[#2C34A1] text-xs rounded-full text-[#fff]  hover:bg-[#2C34A1] h-[30px]"
+                      >
+                        View Project Details
+                        {/* <FaArrowRightLong className="h-1 w-1" color="#fff" /> */}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          router.push( `/client/dashboard/projects/${project._id}/details`)
+                        }
+                        className="bg-orangeButton text-xs rounded-full h-[30px]"
+                      >
+                        View Requirement
+                        {/* <FaArrowRightLong className="h-1 w-1" color="#fff" /> */}
+                      </Button>
+                  </div>
+                  
+                  {(project.status.toLowerCase() === "underreview" ||
+                    project.status.toLowerCase() === "notapproved") &&
+                    (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditProject(project)}
+                        className="bg-[#000] text-sm rounded-full text-[#fff]  hover:bg-[#000] w-[100px] h-[40px]"
+                      >
+                        Edit
+                      </Button>
+                    )}
+                  {(project.status.toLowerCase() === "closed" ||
+                    project.status.toLowerCase() === "completed") &&
+                    !project?.isReviewed && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setReviewSubmissionProjectId(project._id);
+                          setShowReviewModal(true);
+                        }}
+                        className="bg-[#00C951] text-xs rounded-full text-[#fff]  hover:bg-[#00C951] w-[140px]  h-[30px]"
+                      >
+                        Submit Review
+                      </Button>
+                    )}
+                </div>
+                
+                {
+              (project.status==="NotApproved") && (
+                <p className="teext-md text-red-500 mt-5">{project?.notApprovedMsg}</p>
+              )
+              }
+              </div>
+            </div>
+          ))}
             </div>
 
             {/* Pagination */}
-            <div className="flex flex-wrap justify-center items-center gap-2 mt-6 mb-4">
+            <div className="flex flex-wrap justify-center items-center gap-2 mt-3 mb-4">
 
               {/* Prev Button */}
               <Button

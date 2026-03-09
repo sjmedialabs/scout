@@ -24,7 +24,7 @@ const RatingStars: React.FC<RatingStarsProps> = ({ rating, reviews }) => {
 
       {/* HALF STAR */}
       {hasHalf && (
-        <IoIosStarHalf size={20} className="text-yellow-500" />
+        <IoIosStarHalf size={12} className="text-yellow-500" />
       )}
 
       {/* EMPTY STARS */}
