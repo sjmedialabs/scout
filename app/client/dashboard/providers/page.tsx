@@ -15,8 +15,11 @@ import {
 } from "@/components/ui/select";
 import RatingStars from "@/components/rating-star";
 import ServiceDropdown from "@/components/select-category-filter";
+import { authFetch } from "@/lib/auth-fetch";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function ServicesPage() {
+  const { user, loading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const categoryId = searchParams.get("category") || null;
@@ -63,9 +66,8 @@ const paginatedProviders = filteredProviders.slice(
   ];
 
   /* ---------------- FETCH DATA ---------------- */
-  useEffect(() => {
-    async function fetchData() {
-      try {
+  const loadData = async () => {
+    try {
         setResLoading(true);
 
         const res = await fetch("/api/service-categories");
@@ -73,6 +75,8 @@ const paginatedProviders = filteredProviders.slice(
 
         const providerRes = await fetch("/api/providers");
         const providerData = await providerRes.json();
+
+        console.log('Provider Data is::::',providerData);
 
         // setProviders(providerData.providers || []);
         // setFilteredProviders(
@@ -98,10 +102,18 @@ const paginatedProviders = filteredProviders.slice(
       } finally {
         setResLoading(false);
       }
-    }
-
-    fetchData();
+  }
+  useEffect(() => {
+     loadData()
   }, []);
+   useEffect(() => {
+        if (!loading && (!user || user.role !== "client")) {
+          router.push("/login");
+        }
+        if (user && !loading) {
+          loadData();
+        }
+      }, [user, loading, router]);
 
   /* ---------------- FILTER + SORT ---------------- */
   useEffect(() => {
@@ -179,6 +191,31 @@ const paginatedProviders = filteredProviders.slice(
     if (!provider.email) return;
     window.location.href = `mailto:${provider.email}?subject=Service Inquiry&body=Hi ${provider.name},%0D%0A%0D%0AI am interested in your services.`;
   };
+   const handleViewProfile = async (providerId: string) => {
+    // open profile page
+    window.open(`/provider/${providerId}`, "_blank");
+  };
+   const handleMessage = async(agencyId:string) => {
+          console.log("The recieved Agency Id is::",agencyId)
+          console.log("The recieved Client Id is::",user.id)
+          try{
+            const conRes=await authFetch(`/api/chat/conversation`,{
+                    method:"POST",
+                    headers:{
+                      "Content-Type":"application/json"
+                    },
+                    body:JSON.stringify({agencyId,clientId:user?.id})
+        
+                  })
+            const data=await conRes.json();
+            console.log("Chat response is:::",data);
+            if(conRes.ok){
+              router.push(`/client/dashboard/message?conversationId=${data.conversationId}&agencyId=${agencyId}`)
+            }
+          }catch(error){
+            console.log("Failed to create the conversation:::",error)
+          }
+    };
 
   if (resLoading)
     return (
@@ -337,103 +374,232 @@ max-md:text-xs
         </div>
 
       {/* ---------------- PROVIDER LIST ---------------- */}
-      <div className="space-y-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
 
         {paginatedProviders.map((p:any)=>(
-          <div
-            key={p._id}
-            // className="flex items-center gap-6 rounded-2xl bg-[#fbf5fc] border p-2 pl-3 pt-2 shadow-sm"
-            className="
-              flex items-center gap-6 rounded-2xl bg-[#fbf5fc]
-              border p-2 pl-3 pt-2 shadow-sm
+          // <div
+          //   key={p._id}
+            
+          //   className="
+          //     flex items-center gap-6 rounded-2xl bg-[#fbf5fc]
+          //     border p-2 pl-3 pt-2 shadow-sm
               
-              max-md:flex-col
-              max-md:items-start
-              max-md:gap-1
-              "
-              >
+          //     max-md:flex-col
+          //     max-md:items-start
+          //     max-md:gap-1
+          //     "
+          //     >
 
-            {/* IMAGE */}
-            <img
-              src={p.coverImage || "/uploads/15ac2d8f-31f9-48ac-aadd-b67ba9f4d860-Artificial-intelligence-platforms-copy.jpg"}
-              // className="w-[130px] h-[100px] rounded-xl object-cover"
-              className="
-                w-[130px] h-[100px] rounded-xl object-cover
-                max-md:w-full
-                max-md:h-[180px]
-                "
-            />
+            
+          //   <img
+          //     src={p.coverImage || "/uploads/15ac2d8f-31f9-48ac-aadd-b67ba9f4d860-Artificial-intelligence-platforms-copy.jpg"}
+            
+          //     className="
+          //       w-[130px] h-[100px] rounded-xl object-cover
+          //       max-md:w-full
+          //       max-md:h-[180px]
+          //       "
+          //   />
 
-            {/* DETAILS */}
-            <div className="flex-1">
-              <div className="flex items-center gap-3 max-md:flex-wrap">
-                <h3 className="text-lg">{p.name}</h3>
+        
+          //   <div className="flex-1">
+          //     <div className="flex items-center gap-3 max-md:flex-wrap">
+          //       <h3 className="text-lg">{p.name}</h3>
 
-                {p.isVerified && (
-                  <span className="px-1 rounded-full text-[10px] text-white bg-gradient-to-r from-[#5fa8ff] to-[#3b82f6]">
-                    Verified
-                  </span>
-                )}
-              </div>
+          //       {p.isVerified && (
+          //         <span className="px-1 rounded-full text-[10px] text-white bg-gradient-to-r from-[#5fa8ff] to-[#3b82f6]">
+          //           Verified
+          //         </span>
+          //       )}
+          //     </div>
 
-              <p className="text-gray-400 text-sm mt-0 line-clamp-2">
-                {p.description}
-              </p>
+          //     <p className="text-gray-400 text-sm mt-0 line-clamp-2">
+              
+          //     </p>
 
-              <div className="flex sm:gap-3 gap-10 text-sm max-md:flex-wrap max-md:gap-x-6 max-md:gap-y-2 text-gray-500 mt-2">
-                <span className="flex items-center text-xs text-gray-400 gap-1">
-                  <MapPin className="text-orangeButton" size={13}/>
-                {p.location || "Not specified"}
-                </span>
-                <span className="flex items-center text-xs text-gray-400 gap-1">
-                  <BriefcaseBusiness  className="text-orangeButton" size={13}/>
-                {p.projectsCompleted} Projects
-                </span>
-                <span className="flex items-center text-xs text-gray-400 gap-1">
-                  <Users className="text-orangeButton" size={13}/>
-                  {p.teamSize}
-                </span>
-              </div>
+          //     <div className="flex sm:gap-3 gap-10 text-sm max-md:flex-wrap max-md:gap-x-6 max-md:gap-y-2 text-gray-500 mt-2">
+          //       <span className="flex items-center text-xs text-gray-400 gap-1">
+          //         <MapPin className="text-orangeButton" size={13}/>
+          //       {p.location || "Not specified"}
+          //       </span>
+          //       <span className="flex items-center text-xs text-gray-400 gap-1">
+          //         <BriefcaseBusiness  className="text-orangeButton" size={13}/>
+          //       {p.projectsCompleted} Projects
+          //       </span>
+          //       <span className="flex items-center text-xs text-gray-400 gap-1">
+          //         <Users className="text-orangeButton" size={13}/>
+          //         {p.teamSize}
+          //       </span>
+          //     </div>
 
-              <p className="mt-1 text-gray-400 text-xs">
-                Starting Price: <span className="font-semibold">${p.hourlyRate}/hr</span>
-              </p>
-            </div>
+          //     <p className="mt-1 text-gray-400 text-xs">
+          //       Starting Price: <span className="font-semibold">${p.hourlyRate}/hr</span>
+          //     </p>
+          //   </div>
 
-            {/* ACTIONS */}
-            <div className="flex gap-2 max-md:flex-col-2 max-md:w-full">
+            
+          //   <div className="flex gap-2 max-md:flex-col-2 max-md:w-full">
 
-              {/* CONTACT */}
-              <button
-                onClick={()=>handleContact(p)}
-                className="
-                  px-5 py-0 rounded-full text-white text-xs
-                  bg-[#e0332c] h-[30px]
-                  shadow-md transition cursor-pointer
-                  hover:shadow-[0_0_10px_rgba(99,102,241,0.6)] 
-                "
-              >
-                Contact
-              </button>
+            
+          //     <button
+          //       onClick={()=>handleContact(p)}
+          //       className="
+          //         px-5 py-0 rounded-full text-white text-xs
+          //         bg-[#e0332c] h-[30px]
+          //         shadow-md transition cursor-pointer
+          //         hover:shadow-[0_0_10px_rgba(99,102,241,0.6)] 
+          //       "
+          //     >
+          //       Contact
+          //     </button>
 
-              {/* VIEW PROFILE */}
+              
 
              
-              <button
-                // onClick={()=>router.push(`/provider/${p._id}`)}
-                className="
-                   px-5 py-0 rounded-full text-white text-xs
-                  bg-[#232a85] 
-                  shadow-md transition cursor-pointer
-                  hover:shadow-[0_0_10px_rgba(99,102,241,0.6)] 
-                "
-              >
-                View Profile
-              </button>
+          //     <button
+              
+          //       className="
+          //          px-5 py-0 rounded-full text-white text-xs
+          //         bg-[#232a85] 
+          //         shadow-md transition cursor-pointer
+          //         hover:shadow-[0_0_10px_rgba(99,102,241,0.6)] 
+          //       "
+          //     >
+          //       View Profile
+          //     </button>
               
 
+          //   </div>
+          // </div>
+          <div className="overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:shadow-md flex flex-col h-full" key={p.id}>
+
+                {/* Image */}
+                <div className="aspect-[16/9] w-full overflow-hidden">
+                  <img
+                    src={
+                      p?.coverImage ||
+                      "/uploads/15ac2d8f-31f9-48ac-aadd-b67ba9f4d860-Artificial-intelligence-platforms-copy.jpg"
+                    }
+                    alt={p.name}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+
+                <div className="flex flex-col flex-1 p-4 justify-between">
+
+                  {/* Verified + Rating */}
+                  <div className="relative flex items-center -mt-1 h-2">
+
+                    {/* LEFT — Verified */}
+                    <div className="absolute left-0">
+                      {p.isVerified && (
+                        <span className="inline-flex items-center rounded-lg border font-bold px-2 py-0 text-[10px] text-green-500 bg-white">
+                          Verified
+                        </span>
+                      )}
+                    </div>
+
+                    {/* RIGHT — Rating */}
+                    <div className="absolute right-0 flex items-center gap-1.5">
+                      <div className="flex items-center gap-0.5">
+                        <RatingStars rating={p.rating} />
+                      </div>
+
+                      <span className="text-xs font-semibold text-[#0E0E0E]">
+                        {p.rating.toFixed(1)}
+                      </span>
+                    </div>
+
+                  </div>
+
+                  {/* Title + Description */}
+                  <div className="py-3">
+                    <h3
+                      className="text-md font-bold text-[#0E0E0E] leading-tight"
+                      
+                    >
+                      {p.name}
+                    </h3>
+
+                    {/* <p
+                      className="text-[10px] font-semibold text-[#adb0b3] mt-0"
+                      style={{ fontFamily: "CabinetGrotesk2" }}
+                    >
+                      {p.description}
+                    </p> */}
+                  </div>
+
+                  {/* Tags */}
+                  <div className="flex flex-wrap py-0 -mt-2">
+                    {activeService && (
+                      <span
+                        className="inline-flex items-center rounded-lg bg-[#f2f2f2] border px-3 py-0.5 text-[10px] font-semibold text-slate-700"
+                      >
+                        {activeService}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Info Row */}
+                  <div className=" grid-cols-3 text-[10px] font-semibold text-[#616161] mt-1">
+                    <div className="inline-flex items-center mr-6 gap-1">
+                      <img
+                        src="/Location_Icon.jpg"
+                        alt="Location"
+                        className="h-3 w-3 object-contain"
+                      />
+                      {p.location || "Not specified"}
+                    </div>
+
+                    <div className="inline-flex items-center mr-6 gap-1">
+                      <img
+                        src="/Projects_Icon.jpg"
+                        alt="Projects"
+                        className="h-3 w-3 object-contain"
+                      />
+                      {p.projectsCompleted} projects
+                    </div>
+
+                    <div className="inline-flex items-center gap-1">
+                      <Users className="h-3 w-3 text-orangeButton" />
+                      {p.teamSize || "Not specified"}
+                    </div>
+                  </div>
+
+                  {/* Rate */}
+                  <div className="text-xs text-[#616161] font-bold py-1">
+                    Starting Price:
+                    <span className="ml-1 text-gray-400">{p.hourlyRate}/hr</span>
+                  </div>
+
+                  {/* Buttons */}
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <button
+                      // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#e0332c] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
+                      className="flex-1 border border-transparent cursor-pointer rounded-xl 
+                      bg-[#e0332c] py-1 text-[10px] font-bold text-white
+                       duration-700 ease-out
+                      hover:bg-white hover:text-black hover:border-black transition-colors"
+                     onClick={() =>
+                        handleViewProfile(p.id)
+                      }
+                    >
+                      View Profile
+                    </button>
+
+                    <button
+                      // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#000000] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
+                      className="flex-1 border border-transparent cursor-pointer rounded-xl 
+                      bg-black py-1 text-[10px] font-bold text-white
+                       duration-700 ease-out
+                      hover:bg-white hover:text-black hover:border-black transition-colors"
+                      onClick={() => handleMessage(p.userId)}
+                    >
+                      Contact
+                    </button>
+                  </div>
+                </div>
             </div>
-          </div>
         ))}
       </div>
 
