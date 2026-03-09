@@ -111,7 +111,7 @@ const ProjectDetailPage = () => {
     }
   };
   useEffect(() => {
-    loadData();
+    loadData(); 
   }, []);
   const getBgColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -439,17 +439,29 @@ const textareaClass =
                       className="py-0 px-0 rounded-[22px] mb-3"
                     >
                       <CardContent className="px-0 lg:px-5 py-0 lg:py-6">
-                        <div className="flex flex-col lg:flex-row gap-4">
+                        <div className="flex flex-col lg:flex-row items-stretch gap-4">
                           
                           {/* Left Image */}
-                          <div className="max-h-[200px] lg:max-h-[300px] max-w-full lg:max-w-[300px] rounded-t-[18px] lg:rounded-[18px] overflow-hidden sm:shrink-0">
-                            <img
-                              src={proposal?.agency?.coverImage || "/proposal.jpg"}
-                              alt={proposal.agency?.name}
-                              className="h-auto lg:h-full w-full object-cover"
-                            />
-                          </div>
+        
+                          <div className="
+                              relative 
+                              max-h-[200px] lg:max-h-none
+                              w-full lg:w-[300px] 
+                              flex-shrink-0 
+                              rounded-t-[18px] lg:rounded-[18px]
+                              overflow-hidden 
+                              bg-gray-200
 
+                              aspect-[4/3]          
+                              lg:aspect-auto      
+                            ">
+                              <img
+                                src={proposal?.agency?.coverImage || "/proposal.jpg"}
+                                alt={proposal.agency?.name}
+                                className="absolute inset-0 w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                            </div>
                           {/* Right Side Content */}
                           <div className="flex-1 px-3 py-2 lg:py-0 lg:pr-5">
 
@@ -497,7 +509,7 @@ const textareaClass =
                               </div>
 
                               {/* RIGHT COST SECTION */}
-                              <div className="md:text-right shrink-0">
+                              <div className=" shrink-0">
                                 <div className="text-md font-bold text-[#39A935]">
                                   <span className="text-[#000]">Proposed Budget:</span> <span className="text-md"> ${proposal.proposedBudget.toLocaleString()}</span> 
                                 </div>
@@ -511,7 +523,7 @@ const textareaClass =
                             {/* Description Section */}
                             <div className="space-y-2">
 
-                              {proposal?.coverLetter && (
+                              {/* {proposal?.coverLetter && (
                                 <div>
                                   <h4 className="font-bold text-xl text-[#616161] mb-0">
                                     Cover Letter
@@ -520,7 +532,7 @@ const textareaClass =
                                     {proposal?.coverLetter}
                                   </p>
                                 </div>
-                              )}
+                              )} */}
 
                               <div>
                               <h4 className="font-bold text-xl text-[#616161] mb-0">
@@ -540,26 +552,31 @@ const textareaClass =
                                     proposal.updatedAt
                                   ).toLocaleDateString()}
                                 </span>
-
-                                <Badge
-                                  variant={
-                                    proposal.status === "accepted"
-                                      ? "default"
-                                      : proposal.status === "shortlisted"
-                                      ? "secondary"
-                                      : proposal.status === "rejected"
-                                      ? "destructive"
-                                      : "outline"
-                                  }
-                                  className="border-[#DEDEDE] bg-[#EDEDED] rounded-full text-xs text-[#000]"
+           
+                                 <Badge
+                                  className={`rounded-full text-xs font-semibold px-3 py-0 capitalize
+                                    ${
+                                      proposal.status === "accepted"
+                                        ? "bg-green-500 text-white"
+                                        : proposal.status === "shortlisted"
+                                        ? "bg-blue-500 text-white"
+                                        : proposal.status === "rejected"
+                                        ? "bg-red-500 text-white"
+                                        : proposal.status === "negotation"
+                                        ? "bg-yellow-500 text-white"
+                                        : proposal.status === "completed"
+                                        ? "bg-purple-500 text-white"
+                                        : "bg-gray-200 text-gray-700"
+                                    }
+                                  `}
                                 >
-                                  {proposal.status.charAt(0).toUpperCase() +
-                                    proposal.status.slice(1)}
+                                    {proposal.status.charAt(0).toUpperCase() +
+                                      proposal.status.slice(1)}
                                 </Badge>
                               </div>
 
                               {/* Buttons */}
-                              <div className="flex items-center justify-between pt-4 border-[#DDDDDD] border-t-2">
+                              <div className="flex items-center mt-auto justify-between pt-4 border-[#DDDDDD] border-t-2">
                                 <div className="flex flex-wrap gap-2">
 
                                   <Button
@@ -657,7 +674,7 @@ const textareaClass =
                           </div>
                         </div>
                       </CardContent>
-                    </Card>
+                     </Card>
                       ))}
                        {/* ---------------- PAGINATION ---------------- */}
                         {totalPages > 1 && (

@@ -111,7 +111,7 @@ export function HomeHero({ cms }: HomeHeroProps) {
           <div className="space-y-2 w-full max-w-md sm:max-w-xl md:max-w-2xl mb-2 mx-auto bg-white-50">
             <div className="relative flex items-center w-full gap-2">
               <Input
-                placeholder="Discover Agencies by Service"
+                placeholder="Discover Agencies by Services"
                 className="flex-1 h-[50px]   text-white placeholder:text-gray-400 place border-slate-300 bg-white/20 backdrop-blur-md shadow-inner rounded-full px-4 sm:px-6 text-sm sm:text-base"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}

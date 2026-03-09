@@ -16,48 +16,83 @@ export async function POST(request: NextRequest) {
 
     await connectToDatabase()
 
-    const { proposalId } = await request.json()
+    const { proposalId, agencyId, clientId } = await request.json()
 
-    if (!mongoose.Types.ObjectId.isValid(proposalId)) {
-      return NextResponse.json({ error: "Invalid proposalId" }, { status: 400 })
+    let conversation
+
+    //CASE 1: If proposalId exists (existing functionality)
+    if (proposalId) {
+      if (!mongoose.Types.ObjectId.isValid(proposalId)) {
+        return NextResponse.json({ error: "Invalid proposalId" }, { status: 400 })
+      }
+
+      const proposal = await Proposal.findById(proposalId)
+
+      if (!proposal) {
+        return NextResponse.json(
+          { error: "Proposal not allowed for conversation" },
+          { status: 403 }
+        )
+      }
+
+      const participants = [
+        proposal.clientId.toString(),
+        proposal.agencyId.toString(),
+      ].sort()
+
+      conversation = await Conversation.findOne({ participants })
+
+      if (!conversation) {
+        conversation = await Conversation.create({
+          participants,
+          proposalIds: [proposal._id],
+          projectIds: [proposal.requirementId],
+          unreadCount: {
+            [proposal.clientId.toString()]: 0,
+            [proposal.agencyId.toString()]: 0,
+          },
+        })
+      } else {
+        if (!conversation.proposalIds.some((id) => id.equals(proposal._id))) {
+          conversation.proposalIds.push(proposal._id)
+          conversation.projectIds.push(proposal.requirementId)
+          await conversation.save()
+        }
+      }
     }
 
-    const proposal = await Proposal.findById(proposalId)
-    if (
-  !proposal
-) {
-  return NextResponse.json(
-    { error: "Proposal not allowed for conversation" },
-    { status: 403 }
-  )
-}
-
-
-    // ✅ SORT participants (CRITICAL)
-    const participants = [
-      proposal.clientId.toString(),
-      proposal.agencyId.toString(),
-    ].sort()
-
-    let conversation = await Conversation.findOne({ participants })
-
-    if (!conversation) {
-      conversation = await Conversation.create({
-        participants,
-        proposalIds: [proposal._id],
-        projectIds: [proposal.requirementId],
-        unreadCount: {
-          [proposal.clientId.toString()]: 0,
-          [proposal.agencyId.toString()]: 0,
-        },
-      })
-    } else {
-      // ✅ Attach proposal if not already linked
-      if (!conversation.proposalIds.some(id => id.equals(proposal._id))) {
-        conversation.proposalIds.push(proposal._id)
-        conversation.projectIds.push(proposal.requirementId)
-        await conversation.save()
+    // CASE 2: If proposalId NOT provided → use agencyId + clientId
+    else if (agencyId && clientId) {
+      if (
+        !mongoose.Types.ObjectId.isValid(agencyId) ||
+        !mongoose.Types.ObjectId.isValid(clientId)
+      ) {
+        return NextResponse.json(
+          { error: "Invalid agencyId or clientId" },
+          { status: 400 }
+        )
       }
+
+      const participants = [clientId.toString(), agencyId.toString()].sort()
+
+      conversation = await Conversation.findOne({ participants })
+
+      if (!conversation) {
+        conversation = await Conversation.create({
+          participants,
+          proposalIds: [],
+          projectIds: [],
+          unreadCount: {
+            [clientId.toString()]: 0,
+            [agencyId.toString()]: 0,
+          },
+        })
+      }
+    } else {
+      return NextResponse.json(
+        { error: "proposalId or (agencyId and clientId) required" },
+        { status: 400 }
+      )
     }
 
     return NextResponse.json({ conversationId: conversation._id })
