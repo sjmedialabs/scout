@@ -115,7 +115,7 @@ import ServiceDropdown from "@/components/select-category-filter";
 const statusOptions = [
   "All",
   "UnderReview",
-  "NotApproved",
+  "Rejected",
   "Open",
   "Closed",
   "Allocated",
@@ -587,7 +587,7 @@ const paginatedRequirements = filteredRequirements?.slice(
   }
 
   return (
-    <div className="space-y-2 -mt-4">
+    <div className="space-y-2">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center ">
         <div>
           <h1 className="text-xl font-bold text-[#182142]  leading-6">
@@ -606,9 +606,9 @@ const paginatedRequirements = filteredRequirements?.slice(
         </Button>
       </div>
 
-      <div className="w-full bg-white border rounded-xl max-w-[96vw] overflow-x-auto mr-2 md:mr-0  mb-3">
+      <div className="w-full rounded-xl max-w-[96vw] overflow-x-auto">
         {/* search filters section*/}
-        <div className="flex flex-row p-2 lg:p-0 lg:py-4 lg:px-1 xl:px-4 gap-1 xl:gap-3 items-center max-w-[96vw] lg:max-w-full overflow-x-auto">
+        <div className="flex flex-row p-2 lg:p-0 lg:py-4 lg:px-0 xl:px-0 gap-1 xl:gap-3 items-center max-w-[96vw] lg:max-w-full overflow-x-auto">
 
           {/*  Search */}
           <div className="relative min-w-[150px] lg:min-w-0">
@@ -633,23 +633,27 @@ const paginatedRequirements = filteredRequirements?.slice(
 
           {/*  Status Filter */}
           <div className="min-w-[150px] lg:min-w-0">
-          <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className={`w-full h-[35px] border mt-0.5 border-[#D0D5DD] rounded-lg px-3 py-2 text-sm focus:outline-none ${
+         <Select
+            value={selectedStatus}
+            onValueChange={(value) => setSelectedStatus(value)}
+          >
+            <SelectTrigger
+              className={`w-full h-[35px] mt-0.5 border data-[placeholder]:text-gray-500 border-[#D0D5DD] rounded-lg px-3 text-sm focus:outline-none ${
                 !selectedStatus ? "text-gray-500" : "text-black"
               }`}
             >
-              <option value="" disabled hidden>
-                Select Status
-              </option>
+              <SelectValue placeholder="Select Status" />
+            </SelectTrigger>
 
-              {statusOptions.map((status) => (
-                <option key={status} value={status} className="text-[#000]">
-                  {status}
-                </option>
-              ))}
-            </select>
+            <SelectContent>
+              <SelectItem value="All">All</SelectItem>
+              <SelectItem value="UnderReview">UnderReview</SelectItem>
+              <SelectItem value="NotApproved">Rejected</SelectItem>
+              <SelectItem value="Open">Open</SelectItem>
+              <SelectItem value="Closed">Closed</SelectItem>
+              <SelectItem value="Allocated">Allocated</SelectItem>
+            </SelectContent>
+          </Select>
           </div>
 
           {/* Category Filter */}
@@ -878,13 +882,13 @@ const paginatedRequirements = filteredRequirements?.slice(
                 </tbody>
               </table>
             </div> */}
-            <div className="px-4 ">
+            <div className="px-0 ">
               {paginatedRequirements?.map((project) => (
             <div
               key={project._id}
               className="border-1 px-0 bg-[#fafafa] border-[#CFCACA] rounded-2xl mb-2"
             >
-              <div className="px-4 md:px-6 py-3">
+              <div className="px-4 md:px-4 py-3">
                 <div className="flex justify-between items-start -mb-2">
                   {/* <Badge className="bg-[#F54A0C] text-xs rounded-full">
                     {project.proposals} proposals recieved
@@ -977,7 +981,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                         className="bg-[#2C34A1] text-xs rounded-full text-[#fff]  hover:bg-[#2C34A1] h-[30px]"
                       >
                         {/* {project.proposals} proposals recieved */}
-                        {`View ${project.proposals>1?"Proposals":"Proposal"} (${project.proposals})`}
+                        {`${(project.status.toLowerCase()==="allocated" || project.status.toLowerCase()==="closed")?"View Status":`View ${project.proposals>1?"Proposals":"Proposal"} (${project.proposals})`}`}
                         {/* <FaArrowRightLong className="h-1 w-1" color="#fff" /> */}
                       </Button>
                       <Button

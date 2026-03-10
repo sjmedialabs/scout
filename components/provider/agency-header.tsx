@@ -118,7 +118,7 @@ const profileRef = useRef<HTMLDivElement>(null);
   } 
 
   return (
-  <header className="flex  items-center justify-end p-3 ml-auto border-border bg-transparent">
+  <header className="flex  items-center justify-end px-4 ml-auto border-border bg-transparent">
     
          <div className="flex flex-row gap-6">
              {/* Notification Section */}

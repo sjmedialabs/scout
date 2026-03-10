@@ -240,24 +240,21 @@ const paginatedProviders = filteredProviders.slice(
 <div className="flex sm:gap-2 gap-4 mb-6 overflow-x-auto max-w-[96vw] w-full">
 
   {/* CATEGORY */}
-  <div className="min-w-[120px]">
+  <div className="lg:min-w-[170px]">
   <ServiceDropdown
     value={selectedCategory}
     onChange={(v) => setSelectedCategory(v)}
     placeholder="Category"
-    triggerClassName="
-      h-11 rounded-xl
-      bg-[#F3F1FA]
-      border border-[#E3E1F3]
-      text-gray-500
-      px-4 text-sm
-      shadow-sm -mt-0
-      
-      max-md:h-9
-max-md:px-2
-max-md:text-xs
-    "
-    triggerSpanClassName="text-gray-500 text-sm"
+   triggerClassName="
+             mt-0
+             rounded-xl
+             max-h-[30px]
+            bg-[#F3F1FA] cursor-pointer
+            border border-[#E3E1F3]
+            text-[#3A3A55]
+           
+          "
+    triggerSpanClassName="text-gray-500 text-xs"
     hoverClassName="bg-blue-50 text-[#3c41c6] hover:bg-blue-100"
   />
   </div>
@@ -286,18 +283,19 @@ max-md:text-xs
   ].map((f, i) => (
     <Select key={i} value={f.value} onValueChange={f.set}>
         <SelectTrigger
-  className="
-    h-11 rounded-xl
-    bg-[#F3F1FA] cursor-pointer
-    border border-[#E3E1F3]
-    text-[#3A3A55]
-    px-3 text-sm
-    data-[placeholder]:text-gray-500
-    shadow-sm
-    [&>span]:flex
-    [&>span]:items-center
-    [&>span]:gap-1.5
-  "
+ className="
+             rounded-xl
+             max-h-[30px]
+            bg-[#F3F1FA] cursor-pointer
+            border border-[#E3E1F3]
+            text-[#3A3A55]
+            px-3 text-xs
+            data-[placeholder]:text-gray-500
+            shadow-sm
+            [&>span]:flex
+            [&>span]:items-center
+            [&>span]:gap-1.5
+          "
 >
   <span>
     {f.icon}
@@ -314,15 +312,16 @@ max-md:text-xs
 
   
      <Select
-  value={teamSizeFilter}
-  onValueChange={(value) => setTeamSizeFilter(value)}>
+      value={teamSizeFilter}
+      onValueChange={(value) => setTeamSizeFilter(value)}>
         <SelectTrigger
           className="
-            h-11 rounded-xl
+             rounded-xl
+             max-h-[30px]
             bg-[#F3F1FA] cursor-pointer
             border border-[#E3E1F3]
             text-[#3A3A55]
-            px-3 text-sm
+            px-3 text-xs
             data-[placeholder]:text-gray-500
             shadow-sm
             [&>span]:flex
@@ -359,17 +358,11 @@ max-md:text-xs
               setTeamSizeFilter("");
             }}
             className="
-              h-9 rounded-xl
-              bg-gradient-to-r from-[#6b6ee8] to-[#3c41c6]
-              hover:shadow-[0_0_10px_rgba(99,102,241,0.6)]
-              border border-[#E3E1F3]
-              text-white
-              font-medium
-              shadow-sm
-              
+             btn-blackButton
+              h-[30px]
             "
           >
-            Clear Filters
+            Clear
           </Button>
         </div>
 
@@ -518,7 +511,7 @@ max-md:text-xs
                       className="text-md font-bold text-[#0E0E0E] leading-tight"
                       
                     >
-                      {p.name}
+                      {p.name.charAt(0).toUpperCase()+p.name.slice(1)}
                     </h3>
 
                     {/* <p
@@ -541,8 +534,8 @@ max-md:text-xs
                   </div>
 
                   {/* Info Row */}
-                  <div className=" grid-cols-3 text-[8px] font-semibold text-[#616161] mt-1">
-                    <div className="inline-flex items-center mr-6 gap-1">
+                  <div className=" flex flex-row items-center text-[9px] font-semibold text-[#616161] justify-between mt-1">
+                    <div className="inline-flex items-center  gap-1">
                       <img
                         src="/Location_Icon.jpg"
                         alt="Location"
@@ -552,7 +545,7 @@ max-md:text-xs
                       {`${p?.location==="Not specified"?"N/A":(p?.location || "N/A")}`}
                     </div>
 
-                    <div className="inline-flex items-center mr-6 gap-1">
+                    <div className="inline-flex items-center  gap-1">
                       <img
                         src="/Projects_Icon.jpg"
                         alt="Projects"
@@ -561,11 +554,15 @@ max-md:text-xs
                       {p.projectsCompleted} projects
                     </div>
 
-                    <div className="inline-flex items-center gap-1">
+                    {/* <div className="inline-flex items-center gap-1">
+                      <Users className="h-3 w-3 text-orangeButton" />
+                      {`${p?.teamSize==="Not specified"?"N/A":(p?.teamSize || "N/A")}`}
+                    </div> */}
+                  </div>
+                  <div className="inline-flex mt-1 text-[9px] items-center font-semibold text-[#616161] gap-1">
                       <Users className="h-3 w-3 text-orangeButton" />
                       {`${p?.teamSize==="Not specified"?"N/A":(p?.teamSize || "N/A")}`}
                     </div>
-                  </div>
 
                   {/* Rate */}
                   <div className="text-xs text-[#616161] font-bold py-1">

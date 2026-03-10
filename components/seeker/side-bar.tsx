@@ -157,7 +157,7 @@ export default function ClientSidebar({
         </div>
 
         {/* Menu */}
-        <div className="flex-1 overflow-y-auto p-4 bg-[#3C3A3E] 
+        <div className="flex-1 overflow-y-auto py-4 px-0.5 bg-[#3C3A3E] 
           [scrollbar-width:none] 
           [-ms-overflow-style:none]        
           [&::-webkit-scrollbar]:hidden"
@@ -168,7 +168,7 @@ export default function ClientSidebar({
                 key={item.id}
                 onClick={() => handleMenuClick(item)}
                 className={cn(
-                  "cursor-pointer flex items-center gap-3 p-3 text-sm rounded-lg text-[#fff] w-full",
+                  "cursor-pointer flex items-center gap-1 p-3 text-sm rounded-lg text-[#fff] w-full",
                   pathname === item.path ||
                   (item.path !== "/client/dashboard" && pathname.startsWith(item.path!))
                     ? " text-[#F54A0C] rounded-[8px]"
@@ -205,7 +205,7 @@ export default function ClientSidebar({
             size="sm"
             onClick={handleLogout}
             className={cn(
-              "rounded-2xl bg-orangeButton text-[#fff] border-none flex items-center justify-center",
+              " primary-button flex items-center justify-center",
               collapsed ? "w-12 h-12 p-0" : "w-full"
             )}
           >

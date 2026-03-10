@@ -86,7 +86,7 @@ export default function Sidebar({
         `}
       >
         {/* HEADER */}
-        <div className="px-3 py-3.5 border-b border-gray-300 flex items-center justify-between">
+        <div className="px-1 py-3.5 border-b border-gray-300 flex items-center justify-between">
           {!isCollapsed && (
             <div>
               {/* <h2 className="text-xl font-bold tracking-tight">
@@ -121,7 +121,7 @@ export default function Sidebar({
         </div>
 
         {/* NAVIGATION */}
-        <div className="flex-1 overflow-y-auto px-3 py-4  [scrollbar-width:none] 
+        <div className="flex-1 overflow-y-auto px-1 py-4  [scrollbar-width:none] 
           [-ms-overflow-style:none]        
           [&::-webkit-scrollbar]:hidden">
           <nav className="space-y-2">
@@ -154,7 +154,7 @@ export default function Sidebar({
         </div>
 
         {/* FOOTER */}
-        <div className="p-2 border-t border-[#e4dff6]">
+        <div className="py-2 px-2 border-t border-[#e4dff6]">
           <div
             className={`flex gap-2 ${
               isCollapsed
