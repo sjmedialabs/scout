@@ -657,7 +657,7 @@ const paginatedRequirements = filteredRequirements?.slice(
           </div>
 
           {/* Category Filter */}
-          <div className="min-w-[150px] lg:min-w-0">
+          <div className="min-w-[150px] lg:min-w-[150px]">
             <ServiceDropdown
               value={selectedCategory}
               onChange={(value) => setSelectedCategory(value)}
