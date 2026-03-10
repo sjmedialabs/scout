@@ -298,6 +298,41 @@ export async function PUT(
       if (body.rating) {
         updates.rating = body.rating;
       }
+
+      // Client milestone approval or request revision
+      if (body.milestoneApproval && typeof body.milestoneApproval.milestoneIndex === "number") {
+        const { milestoneIndex, action } = body.milestoneApproval;
+        const raw = proposal.milestones;
+        const milestones = Array.isArray(raw)
+          ? raw.map((m: any) => (typeof m?.toObject === "function" ? m.toObject() : { ...m }))
+          : [];
+        if (milestoneIndex >= 0 && milestoneIndex < milestones.length && (action === "approve" || action === "request_revision")) {
+          const m = milestones[milestoneIndex];
+          if (action === "approve") {
+            m.completed = true;
+            m.approvalStatus = "approved";
+          } else {
+            m.approvalStatus = "revision_requested";
+          }
+          updates.milestones = milestones;
+
+          if (action === "request_revision") {
+            const projectClient = await Requirement.findById(proposal.requirementId).lean();
+            const seekerName = seeker?.companyName || seeker?.name || "Client";
+            const milestoneTitle = m.title || `Milestone ${milestoneIndex + 1}`;
+            await Notification.create({
+              userId: proposal.agencyId,
+              triggeredBy: user.userId,
+              title: "Revision requested",
+              message: `${seekerName} requested a revision for the milestone "${milestoneTitle}" on project "${projectClient?.title || "Project"}".`,
+              type: "revision_requested",
+              userRole: "client",
+              linkUrl: `/agency/dashboard/proposals`,
+              sourceId: proposal._id,
+            });
+          }
+        }
+      }
     }
 
     // Admin can update anything

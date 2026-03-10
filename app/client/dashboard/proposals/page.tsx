@@ -96,6 +96,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -161,7 +162,7 @@ const handleMessageAgency = async (proposal: any) => {
     const data = await res.json();
 
     router.push(
-      `/client/dashboard/message?conversationId=${data.conversationId}&agencyId=${proposal?.agency?.userId}`
+      `/client/dashboard/chat?conversationId=${data.conversationId}&agencyId=${proposal?.agency?.userId}`
     );
 
   } catch (error) {
@@ -197,6 +198,14 @@ const handleMessageAgency = async (proposal: any) => {
       status:"success",
       msg:""
     })
+
+  // Accept / Reject confirmation (for main proposals list)
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean
+    proposalId: string | null
+    action: "accept" | "reject" | null
+  }>({ open: false, proposalId: null, action: null })
+  const [confirmLoading, setConfirmLoading] = useState(false)
 
   const LoadData = async (userId: string) => {
     setResponseLoading(true);
@@ -271,62 +280,62 @@ const handleMessageAgency = async (proposal: any) => {
       // );
     } catch (error) {
       console.log("failed to update the  status", error);
-      alert("Staus failed to shortlist the proposal");
+      alert("Status failed to shortlist the proposal.");
     }
   };
 
   const handleAccept = async (proposalId: string) => {
-    console.log("Entered to accept fun:::", proposalId);
     try {
       const response = await authFetch(`/api/proposals/${proposalId}`, {
         method: "PUT",
         body: JSON.stringify({ status: "accepted" }),
-        credentials: "include" 
+        credentials: "include",
       });
-      // console.log(
-      //   "Shortlist action response::::",
-      //   await response.json,
-      //   proposalId,
-      // );
-      if(!response.ok) throw new Error()
-      
-      //create a conversation between the agency and client and send the message
-       //chat concersation start api
-            const conRes=await authFetch(`/api/chat/conversation`,{
-              method:"POST",
-              headers:{
-                "Content-Type":"application/json"
-              },
-              body:JSON.stringify({proposalId})
-  
-            })
-            const convData=await conRes.json();
 
-            const negotatiteProposal=(proposals || []).find((eachItem:any)=>eachItem.id===proposalId)
-            
-            const messRes=await authFetch(`/api/chat/message`,{
-              method:"POST",
-              headers:{
-                "Content-Type":"application/json"
-              },
-              body:JSON.stringify({
-                conversationId:convData.conversationId,
-                senderType:"SEEKER",
-                receiverId:negotatiteProposal?.agency?.userId,
-                content:`Congratulations your proposal is accepted for the ${negotatiteProposal?.requirement.title} and project is allocated to you please stay in touch`,
-                messageType:"TEXT"
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData?.error || "Failed to accept proposal");
+      }
 
-              })})
+      const accepted = (proposals || []).find((p: any) => p.id === proposalId);
 
-      // setProposals((prev) =>
-      //   prev.map((p) =>
-      //     p.id === proposalId ? { ...p, status: "accepted" as const } : p,
-      //   ),
-      // );
-      await LoadData();
+      // Optional: create conversation and send acceptance message (don't block redirect on failure)
+      try {
+        const conRes = await authFetch(`/api/chat/conversation`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ proposalId }),
+        });
+        const convData = await conRes.json();
+        if (convData?.conversationId && accepted?.agency?.userId) {
+          await authFetch(`/api/chat/message`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              conversationId: convData.conversationId,
+              senderType: "SEEKER",
+              receiverId: accepted.agency.userId,
+              content: `Congratulations your proposal is accepted for the ${accepted?.requirement?.title || "the project"} and project is allocated to you. Please stay in touch.`,
+              messageType: "TEXT",
+            }),
+          });
+        }
+      } catch (chatErr) {
+        console.warn("Chat/conversation step failed (proposal was still accepted):", chatErr);
+      }
+
+      const requirementId =
+        accepted?.requirement?._id || accepted?.requirement?.id || accepted?.requirementId;
+
+      if (requirementId) {
+        router.push(`/client/dashboard/projects/${requirementId}`);
+      } else if (user?.id) {
+        await LoadData(user.id);
+      }
     } catch (error) {
-      console.log("failed to update the  status", error);
-      alert("Staus failed to shortlist the proposal");
+      console.error("Failed to accept proposal:", error);
+      const message = error instanceof Error ? error.message : "Failed to accept the proposal.";
+      alert(message);
     }
   };
 
@@ -335,22 +344,31 @@ const handleMessageAgency = async (proposal: any) => {
       const response = await authFetch(`/api/proposals/${proposalId}`, {
         method: "PUT",
         body: JSON.stringify({ status: "rejected" }),
-        credentials: "include" 
+        credentials: "include",
       });
-      // console.log(
-      //   "Shortlist action response::::",
-      //   await response.json,
-      //   proposalId,
-      // );
-      // setProposals((prev) =>
-      //   prev.map((p) =>
-      //     p.id === proposalId ? { ...p, status: "rejected" as const } : p,
-      //   ),
-      // );
-      await LoadData()
+      if (!response.ok) throw new Error("Failed to reject proposal");
+      if (user?.id) await LoadData(user.id);
     } catch (error) {
-      console.log("failed to update the  status", error);
-      alert("Staus failed to shortlist the proposal");
+      console.error("Failed to reject proposal:", error);
+      alert(error instanceof Error ? error.message : "Failed to reject the proposal.");
+    }
+  };
+
+  const handleConfirmAcceptReject = async () => {
+    if (!confirmDialog.proposalId || !confirmDialog.action) {
+      setConfirmDialog({ open: false, proposalId: null, action: null })
+      return
+    }
+    setConfirmLoading(true)
+    try {
+      if (confirmDialog.action === "accept") {
+        await handleAccept(confirmDialog.proposalId)
+      } else {
+        await handleReject(confirmDialog.proposalId)
+      }
+      setConfirmDialog({ open: false, proposalId: null, action: null })
+    } finally {
+      setConfirmLoading(false)
     }
   };
 
@@ -421,7 +439,7 @@ const handleMessageAgency = async (proposal: any) => {
             console.log("Conversation Started")
         }catch(error){
           console.log("failed to update the  status",error)
-          alert("Staus failed to shortlist the proposal")
+          alert("Status failed to shortlist the proposal.")
         }
       }
   const handleSendMessage=async()=>{
@@ -840,7 +858,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                     onClick={() => handleMessageAgency(proposal)}
                                      className="bg-[#e6e8ec] rounded-xl text-xs text-[#000] hover:text-[#000] rounded-full hover:bg-[#e6e8ec] font-bold active:bg-[#e6e8ec] active:text-[#000]"
                                   >
-                                    Message Agency
+                                    Chat
                                   </Button>
 
                                   {/* Shortlist */}
@@ -886,7 +904,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                         variant="default"
                                         size="sm"
                                         onClick={() =>
-                                          handleAccept(proposal.id)
+                                          setConfirmDialog({ open: true, proposalId: proposal.id, action: "accept" })
                                         }
                                         className="bg-[#39A935]  rounded-full text-xs font-bold hover:bg-[#39A935] active:bg-[#39A935]"
                                       >
@@ -902,7 +920,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                         variant="destructive"
                                         size="sm"
                                         onClick={() =>
-                                          handleReject(proposal.id)
+                                          setConfirmDialog({ open: true, proposalId: proposal.id, action: "reject" })
                                         }
                                         className="bg-[#FF0000] rounded-full text-xs font-bold hover:bg-[#FF0000] active:bg-[#FF0000]"
                                       >
@@ -998,6 +1016,46 @@ console.log("Filtered Proposals:::::::",filteredProposals)
           )}
         </CardContent>
       </Card>
+
+          {/* Accept / Reject confirmation modal */}
+          <Dialog
+            open={confirmDialog.open}
+            onOpenChange={(open) =>
+              !confirmLoading && setConfirmDialog((prev) => ({ ...prev, open }))
+            }
+          >
+            <DialogContent className="rounded-2xl max-w-md">
+              <DialogHeader>
+                <DialogTitle>
+                  {confirmDialog.action === "accept"
+                    ? "Are you sure you want to accept this proposal?"
+                    : "Are you sure you want to reject this proposal?"}
+                </DialogTitle>
+                <DialogDescription>
+                  {confirmDialog.action === "accept"
+                    ? "The agency will be notified and you will be redirected to the project tracking page."
+                    : "This action cannot be undone. The agency will be notified."}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex gap-2 justify-end pt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setConfirmDialog({ open: false, proposalId: null, action: null })}
+                  disabled={confirmLoading}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleConfirmAcceptReject}
+                  disabled={confirmLoading}
+                  className={confirmDialog.action === "reject" ? "bg-[#FF0000] hover:bg-[#FF0000]" : ""}
+                >
+                  {confirmLoading ? "Please wait..." : "Yes, Continue"}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
           {/*Negotaatiion Modal */}
 
            {showNegotationModal && (

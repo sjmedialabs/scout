@@ -36,11 +36,19 @@ export interface IProposal extends Document {
 }
 
 const MilestoneSchema = new Schema({
-  title: { type: String},
+  title: { type: String },
   description: { type: String },
-  amount: { type: Number},
-  duration: { type: String},
+  amount: { type: Number },
+  duration: { type: String },
   completed: { type: Boolean, default: false },
+  // Agency seeks approval; client approves or requests revision
+  approvalStatus: {
+    type: String,
+    enum: ["pending", "waiting_approval", "approved", "revision_requested"],
+    default: "pending",
+  },
+  deliverableUrl: { type: String },
+  deliverableDocuments: [{ type: String }],
 })
 
 const ProposalSchema = new Schema<IProposal>(

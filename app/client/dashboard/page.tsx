@@ -820,6 +820,51 @@ export default function ClientDashboard() {
     return `$${min.toLocaleString()} - $${max.toLocaleString()}`
   }
 
+  // High-level proposal stats for summary cards
+  const totalProjects = requirements.length
+  const totalProposalsReceived = proposals.length
+  const totalShortlistedProposals = proposals.filter(
+    (p: any) => (p.status || "").toLowerCase() === "shortlisted",
+  ).length
+  const totalAcceptedProposals = proposals.filter(
+    (p: any) => (p.status || "").toLowerCase() === "accepted",
+  ).length
+
+  // Normalize ID to string for consistent matching (API may return ObjectId or string)
+  const toId = (v: any) => (v == null ? "" : String(v))
+
+  // Per-project proposal breakdown for "Projects Overview" — match proposals by requirement id (API returns requirement.id, not requirementId)
+  const projectsOverviewAll = (requirements || []).map((req: any) => {
+    const requirementId = toId(req._id ?? req.id)
+    const relatedProposals = (proposals || []).filter((p: any) => {
+      const pRid = toId(p.requirement?.id ?? p.requirementId)
+      return pRid && requirementId && pRid === requirementId
+    })
+
+    const countByStatus = (status: string) =>
+      relatedProposals.filter(
+        (p: any) => (p.status || "").toLowerCase() === status,
+      ).length
+
+    return {
+      id: requirementId,
+      title: req.title,
+      status: req.status,
+      counts: {
+        total: relatedProposals.length,
+        shortlisted: countByStatus("shortlisted"),
+        accepted: countByStatus("accepted"),
+        pending: countByStatus("pending"),
+        negotiation: countByStatus("negotation"), // backend spelling
+        rejected: countByStatus("rejected"),
+      },
+    }
+  })
+
+  // Show max 10 projects on dashboard; rest via "View All"
+  const PROJECTS_OVERVIEW_LIMIT = 10
+  const projectsOverview = projectsOverviewAll.slice(0, PROJECTS_OVERVIEW_LIMIT)
+  const hasMoreProjects = projectsOverviewAll.length > PROJECTS_OVERVIEW_LIMIT
 
   return (
     <div className="flex h-full">
@@ -837,143 +882,210 @@ export default function ClientDashboard() {
             </p>
           </div>
 
-          {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            <Card className="bg-[#fff] rounded-2xl">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 ">
-                <CardTitle className="text-sm font-medium my-custom-class text-[#000]">
-                  Agency Matches
-                </CardTitle>
-                <div className=" h-8 w-8 flex items-center justify-center rounded-full bg-[#EEF7FE]">
-                  <Users className="h-4 w-4" color="#F54A0C" />
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-0 py-0 -mt-3">
-                <div className="text-2xl font-bold text-[#000]">
-                  {statsValues.matchedVendors}
-                </div>
-                <p className="text-sm text-green-500 font-normal">
-                  Agencies matched to projects
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-[#fff] rounded-2xl">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                <CardTitle className="text-sm font-medium my-custom-class text-[#000]">
-                  Proposal Count
-                </CardTitle>
-                <div className=" h-8 w-8 flex items-center justify-center rounded-full bg-[#EEF7FE]">
-                  <FaFileAlt className="h-4 w-4" color="#F54A0C" />
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-0 py-0 -mt-3">
-                <div className="text-2xl font-bold text-[#000]">
-                  {statsValues.proposalCount}
-                </div>
-                <p className="text-sm text-green-500 font-normal my-custom-class">
-                  Agencies submitted proposals
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-[#fff] rounded-2xl">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                <CardTitle className="text-sm font-medium my-custom-class text-[#000]">
-                  Shortlisted Agencies
-                </CardTitle>
-                <div className=" h-8 w-8 flex items-center justify-center rounded-full bg-[#EEF7FE]">
-                  <BiHeartCircle className="h-4 w-4" color="#F54A0C" />
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-0 py-0 -mt-3">
-                <div className="text-2xl font-bold">
-                  {statsValues.shorlistedVendors}
-                </div>
-                <p className="text-sm text-green-500 font-normal my-custom-class">
-                  Agencies shortlisted
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-[#fff]">
+          {/* Summary cards row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            <Card className="bg-white rounded-2xl shadow-sm border border-[#E5E7EB]">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium my-custom-class text-[#000]">
-                  Avg Proposal
+                <CardTitle className="text-sm font-semibold text-[#111827]">
+                  Total Projects
                 </CardTitle>
-                <div className=" h-8 w-8 flex items-center justify-center rounded-full bg-[#EEF7FE]">
-                  <BiDollarCircle className="h-4 w-4" color="#F54A0C" />
-                </div>
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  ${statsValues.avgProposalAmount.toLocaleString()}
+              <CardContent className="space-y-1">
+                <div className="text-2xl font-bold text-[#111827]">
+                  {totalProjects}
                 </div>
-                <p className="text-xs text-[#F4561C] font-normal my-custom-class">
-                  Average proposal amount
+                <p className="text-xs text-[#6B7280]">
+                  Projects posted by you
                 </p>
+                <Button
+                  variant="outline"
+                  className="mt-3 h-8 px-3 text-xs rounded-full border-[#E5E7EB] text-[#111827]"
+                  onClick={() => router.push("/client/dashboard/projects")}
+                >
+                  Total Projects →
+                </Button>
               </CardContent>
             </Card>
-          </div> */}
 
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-              {/* Card 1 */}
-              <StatCard
-                title="Agencies Matches"
-                subtitle="Agencies matched to projects"
-                count={statsValues.matchedVendors}
-                buttonText="Agencies Matches"
-                icon={<Users className="h-3 w-3" color="#fff" />}
-                accentColor="#3B82F6"
-                gradientFrom="#3B82F6"
-                gradientTo="#60A5FA"
-                iconBg="#3B82F6"
-                linkUrl="/client/dashboard/providers"
-              />
+            <Card className="bg-white rounded-2xl shadow-sm border border-[#E5E7EB]">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-semibold text-[#111827]">
+                  Total Proposals Received
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-1">
+                <div className="text-2xl font-bold text-[#111827]">
+                  {totalProposalsReceived}
+                </div>
+                <p className="text-xs text-[#6B7280]">
+                  Agency proposals received so far
+                </p>
+                <Button
+                  variant="outline"
+                  className="mt-3 h-8 px-3 text-xs rounded-full border-[#E5E7EB] text-[#111827]"
+                  onClick={() => router.push("/client/dashboard/proposals")}
+                >
+                  Total Proposals →
+                </Button>
+              </CardContent>
+            </Card>
 
-              {/* Card 2 */}
-              <StatCard
-                title="Proposals Recieved"
-                subtitle="Agencies submitted proposals"
-                count= {statsValues.proposalCount}
-                buttonText="Proposals Recieved"
-                icon={ <FaFileAlt className="h-3 w-3" color="#fff" />}
-                accentColor="#F59E0B"
-                gradientFrom="#F59E0B"
-                gradientTo="#FBBF24"
-                iconBg="#F59E0B"
-                linkUrl="/client/dashboard/proposals"
-              />
+            <Card className="bg-white rounded-2xl shadow-sm border border-[#E5E7EB]">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-semibold text-[#111827]">
+                  Proposals Shortlisted
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-1">
+                <div className="text-2xl font-bold text-[#111827]">
+                  {totalShortlistedProposals}
+                </div>
+                <p className="text-xs text-[#6B7280]">
+                  Agency proposals shortlisted
+                </p>
+                <Button
+                  variant="outline"
+                  className="mt-3 h-8 px-3 text-xs rounded-full border-[#E5E7EB] text-[#111827]"
+                  onClick={() =>
+                    router.push("/client/dashboard/proposals?status=shortlisted")
+                  }
+                >
+                  Proposals Shortlisted →
+                </Button>
+              </CardContent>
+            </Card>
 
-              {/* Card 3 */}
-              <StatCard
-                title="Shortlisted Agencies"
-                subtitle="Compare and choose the best fit"
-                count={statsValues.shorlistedVendors}
-                buttonText="Shortlisted Agencies"
-                icon={<Heart className="h-3 w-3" color="#fff"/>}
-                accentColor="#EF4444"
-                gradientFrom="#EF4444"
-                gradientTo="#F87171"
-                iconBg="#EF4444"
-                linkUrl="/client/dashboard/wishlist"
-              />
+            <Card className="bg-white rounded-2xl shadow-sm border border-[#E5E7EB]">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-semibold text-[#111827]">
+                  Proposals Accepted
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-1">
+                <div className="text-2xl font-bold text-[#111827]">
+                  {totalAcceptedProposals}
+                </div>
+                <p className="text-xs text-[#6B7280]">
+                  Proposals accepted &amp; completed
+                </p>
+                <Button
+                  variant="outline"
+                  className="mt-3 h-8 px-3 text-xs rounded-full border-[#E5E7EB] text-[#111827]"
+                  onClick={() =>
+                    router.push("/client/dashboard/proposals?status=accepted")
+                  }
+                >
+                  Proposals Accepted →
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
 
-              {/* Card 4 */}
-              <StatCard
-                title="Closed Projects"
-                subtitle="Work completed and delivered"
-                count={statsValues.closedProjectsCount}
-                buttonText="Closed Projects"
-                icon={<DollarSign className="h-3 w-3" color="#fff" />}
-                accentColor="#10B981"
-                gradientFrom="#10B981"
-                gradientTo="#34D399"
-                iconBg="#10B981"
-                linkUrl={`/client/dashboard/projects?status=closed`}
-              />
+          {/* Projects overview list — max 10 here, rest via View All */}
+          <div className="mt-8 space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-[#111827]">
+                Projects Overview
+                {hasMoreProjects && (
+                  <span className="ml-2 text-sm font-normal text-[#6B7280]">
+                    (showing {PROJECTS_OVERVIEW_LIMIT} of {projectsOverviewAll.length})
+                  </span>
+                )}
+              </h2>
+              <Button
+                variant="ghost"
+                className="h-8 px-3 text-xs md:text-sm text-[#2563EB]"
+                onClick={() => router.push("/client/dashboard/projects")}
+              >
+                View All →
+              </Button>
             </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              {projectsOverview.map((project) => (
+                <Card
+                  key={project.id}
+                  className="bg-white rounded-2xl border border-[#E5E7EB]"
+                >
+                  <CardContent className="py-4 px-4 md:px-6">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-sm md:text-base font-semibold text-[#111827]">
+                            {project.title}
+                          </h3>
+                          <span
+                            className={`text-[10px] md:text-xs px-2.5 py-1 rounded-full capitalize ${getStatusColor(
+                              project.status || "",
+                            )}`}
+                          >
+                            {project.status || "Draft"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <Button
+                        variant="outline"
+                        className="self-start md:self-auto h-8 px-3 text-[11px] md:text-xs rounded-full border-[#E5E7EB] text-[#4B5563]"
+                        onClick={() => handleViewProposals(project.id)}
+                      >
+                        View All →
+                      </Button>
+                    </div>
+
+                    <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-3 text-[10px] md:text-xs">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[#6B7280]">Total Proposals</span>
+                        <span className="inline-flex items-center justify-center rounded-full bg-[#EEF2FF] text-[#4F46E5] px-2 py-1 font-semibold">
+                          {project.counts.total}
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[#6B7280]">Shortlisted</span>
+                        <span className="inline-flex items-center justify-center rounded-full bg-[#ECFEFF] text-[#0891B2] px-2 py-1 font-semibold">
+                          {project.counts.shortlisted}
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[#6B7280]">Accepted</span>
+                        <span className="inline-flex items-center justify-center rounded-full bg-[#DCFCE7] text-[#16A34A] px-2 py-1 font-semibold">
+                          {project.counts.accepted}
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[#6B7280]">Pending</span>
+                        <span className="inline-flex items-center justify-center rounded-full bg-[#FFFBEB] text-[#D97706] px-2 py-1 font-semibold">
+                          {project.counts.pending}
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[#6B7280]">Negotiate</span>
+                        <span className="inline-flex items-center justify-center rounded-full bg-[#FEF3C7] text-[#B45309] px-2 py-1 font-semibold">
+                          {project.counts.negotiation}
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[#6B7280]">Rejected</span>
+                        <span className="inline-flex items-center justify-center rounded-full bg-[#F3F4F6] text-[#6B7280] px-2 py-1 font-semibold">
+                          {project.counts.rejected}
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+
+              {projectsOverview.length === 0 && (
+                <p className="text-sm text-[#6B7280]">
+                  No projects posted yet. Create your first requirement to see
+                  insights here.
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Other analytics sections */}
+          <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* <Card className="bg-[#fff] rounded-2xl">
               <CardHeader className="px-3 md:px-6">
                 <CardTitle className="font-bold text-[#F4561C] text-lg md:text-xl leading-4 my-custom-class">

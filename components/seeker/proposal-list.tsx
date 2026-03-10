@@ -39,26 +39,54 @@ export function ProposalList({
     open: false,
     proposalId: "",
   })
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean
+    proposalId: string
+    action: "accept" | "reject" | null
+  }>({
+    open: false,
+    proposalId: "",
+    action: null,
+  })
   useEffect(()=>{
 
   },[])
 
   const handleReject = (proposalId: string) => {
-    onReject(proposalId)
-    setRejectedCount((prev) => prev + 1)
-
-    // Show next proposal if available
-    const remainingProposals = proposals.filter((p) => !visibleProposals.find((vp) => vp.id === p.id))
-    if (remainingProposals.length > 0) {
-      setVisibleProposals((prev) => [...prev.filter((p) => p.id !== proposalId), remainingProposals[0]])
-    } else {
-      setVisibleProposals((prev) => prev.filter((p) => p.id !== proposalId))
-    }
+    setConfirmDialog({ open: true, proposalId, action: "reject" })
   }
 
   const handleAccept = (proposalId: string) => {
-    onAccept(proposalId)
-    setNegotiationDialog({ open: true, proposalId })
+    setConfirmDialog({ open: true, proposalId, action: "accept" })
+  }
+
+  const handleConfirm = () => {
+    if (!confirmDialog.proposalId || !confirmDialog.action) {
+      setConfirmDialog({ open: false, proposalId: "", action: null })
+      return
+    }
+
+    if (confirmDialog.action === "accept") {
+      onAccept(confirmDialog.proposalId)
+      setNegotiationDialog({ open: true, proposalId: confirmDialog.proposalId })
+    }
+
+    if (confirmDialog.action === "reject") {
+      onReject(confirmDialog.proposalId)
+      setRejectedCount((prev) => prev + 1)
+
+      const remainingProposals = proposals.filter((p) => !visibleProposals.find((vp) => vp.id === p.id))
+      if (remainingProposals.length > 0) {
+        setVisibleProposals((prev) => [
+          ...prev.filter((p) => p.id !== confirmDialog.proposalId),
+          remainingProposals[0],
+        ])
+      } else {
+        setVisibleProposals((prev) => prev.filter((p) => p.id !== confirmDialog.proposalId))
+      }
+    }
+
+    setConfirmDialog({ open: false, proposalId: "", action: null })
   }
 
   const handleRequestRevision = () => {
@@ -224,6 +252,40 @@ export function ProposalList({
                 Cancel
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Accept / Reject confirmation dialog */}
+      <Dialog
+        open={confirmDialog.open}
+        onOpenChange={(open) =>
+          setConfirmDialog({
+            open,
+            proposalId: open ? confirmDialog.proposalId : "",
+            action: open ? confirmDialog.action : null,
+          })
+        }
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {confirmDialog.action === "accept"
+                ? "Are you sure you want to accept this proposal?"
+                : "Are you sure you want to reject this proposal?"}
+            </DialogTitle>
+            <DialogDescription>
+              This action will update the proposal status for this project.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-2 justify-end">
+            <Button onClick={handleConfirm}>Yes, Continue</Button>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmDialog({ open: false, proposalId: "", action: null })}
+            >
+              Cancel
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

@@ -7,3 +7,6 @@ package-lock.json
 .env.local
 .env.production
 pnpm-lock.yaml
+
+# pnpm store (cache) - never commit
+.pnpm-store
