@@ -632,11 +632,11 @@ const paginatedRequirements = filteredRequirements?.slice(
           </div>
 
           {/*  Status Filter */}
-          <div className="min-w-[150px] lg:min-w-0">
-          <select
+          <div className="min-w-[170px] lg:min-w-[150px]">
+          {/* <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className={`w-full h-[35px] border mt-0.5 border-[#D0D5DD] rounded-lg px-3 py-2 text-sm focus:outline-none ${
+              className={`w-full h-[35px] border mt-0.5 border-[#D0D5DD] rounded-lg px-3 pl-1 py-2 text-sm focus:outline-none ${
                 !selectedStatus ? "text-gray-500" : "text-black"
               }`}
             >
@@ -649,11 +649,27 @@ const paginatedRequirements = filteredRequirements?.slice(
                   {status}
                 </option>
               ))}
-            </select>
+            </select> */}
+            <Select
+              value={selectedStatus}
+              onValueChange={(value) => setSelectedStatus(value)}
+            >
+              <SelectTrigger className="h-[35px] border mt-0.5 data-[placeholder]:text-gray-500 border-[#D0D5DD] rounded-lg text-sm">
+                <SelectValue placeholder="Select Status" />
+              </SelectTrigger>
+
+              <SelectContent>
+                {statusOptions.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Category Filter */}
-          <div className="min-w-[150px] lg:min-w-0">
+          <div className="min-w-[150px] lg:min-w-[150px]">
             <ServiceDropdown
               value={selectedCategory}
               onChange={(value) => setSelectedCategory(value)}
@@ -704,7 +720,7 @@ const paginatedRequirements = filteredRequirements?.slice(
           setEndDate("");
           setEndInputType("text");
         }}>
-          clear 
+          Clear 
         </Button>
           </div>
 

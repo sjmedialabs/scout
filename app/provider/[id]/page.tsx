@@ -42,7 +42,7 @@ import {
 } from "@/components/ui/select";
 import { mockProviders } from "@/lib/mock-data";
 import RatingStars from "@/components/rating-star";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { authFetch } from "@/lib/auth-fetch";
 import ContactProviderModal from "@/components/leadPopupForm";
 
@@ -64,6 +64,12 @@ export default function ProviderProfilePage({
   const [filteredReviews, setFilteredReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
+
+  const overviewRef = useRef(null);
+  const servicesRef = useRef(null);
+  const portfolioRef = useRef(null);
+  const awardsRef = useRef(null);
+  const reviewsRef = useRef(null);
   
   useEffect(() => {
     loadData();
@@ -148,6 +154,42 @@ export default function ProviderProfilePage({
     setFilteredReviews(tempFilteredReviews);
   }, [serviceFilter, sortByFilter, reviews]);
 
+  useEffect(() => {
+  const handleScroll = () => {
+    const sections = [
+      { id: "overview", ref: overviewRef },
+      { id: "services", ref: servicesRef },
+      { id: "portfolio", ref: portfolioRef },
+      { id: "awards", ref: awardsRef },
+      { id: "reviews", ref: reviewsRef },
+    ];
+
+    const scrollPosition = window.scrollY + 150;
+
+    for (const section of sections) {
+      const element = section.ref.current;
+      if (!element) continue;
+
+      const offsetTop = element.offsetTop;
+      const offsetHeight = element.offsetHeight;
+
+      if (
+        scrollPosition >= offsetTop &&
+        scrollPosition < offsetTop + offsetHeight
+      ) {
+        setActiveTab(section.id);
+        break;
+      }
+    }
+  };
+
+  window.addEventListener("scroll", handleScroll);
+
+  return () => {
+    window.removeEventListener("scroll", handleScroll);
+  };
+}, []);
+
   const webisteClickHandle = async (e, id) => {
     e.preventDefault();
     console.log(providerDetails.websiteClicks + 1);
@@ -219,10 +261,38 @@ const topServices = Object.keys(serviceRatings)
   "#FACC15", // yellow
 ];
 
+const scrollToSection = (section) => {
+  const refs = {
+    overview: overviewRef,
+    services: servicesRef,
+    portfolio: portfolioRef,
+    awards: awardsRef,
+    reviews: reviewsRef,
+  };
+
+  const target = refs[section]?.current;
+
+  if (target) {
+    // target.scrollIntoView({
+    //   behavior: "smooth",
+    //   block: "start",
+    // });
+    const yOffset = -90; // height of tabs area
+const y =
+  target.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+window.scrollTo({
+  top: y,
+  behavior: "smooth",
+});
+  }
+  setActiveTab(section);
+};
+
 
   return (
     <>
-    <div className="min-h-screen mt-0 bg-[#fff]">
+    <div className="min-h-screen mt-0 bg-white">
       {/* Hero Section */}
       <div
         className="text-white py-10 pb-10"
@@ -348,14 +418,14 @@ const topServices = Object.keys(serviceRatings)
       </div>
 
       {/* ================= TABS ================= */}
-      <div className="bg-[#7fa5c2]">
-    <div className="bg-white border-b border-[#E5E7EB] rounded-t-2xl">
+      <div className="bg-[#7fa5c2] sticky top-0 z-50">
+    <div className=" bg-white -pt-1 border-b border-[#E5E7EB] rounded-t-2xl">
       <div className="max-w-7xl mx-auto px-10 flex gap-10 font-medium text-[16px]">
         {["overview","services","portfolio","awards","reviews"].map(tab => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`py-4 capitalize border-b-2 transition cursor-pointer
+            onClick={() => scrollToSection(tab)}
+            className={`py-3 capitalize border-b-2 transition cursor-pointer
               ${
                 activeTab === tab
                   ? "border-[#2C34A1] text-[#2C34A1]"
@@ -370,21 +440,23 @@ const topServices = Object.keys(serviceRatings)
     </div>
 
     {/* ================= CONTENT ================= */}
-    <div className="max-w-7xl mx-auto px-10 py-8">
+    <div className="max-w-7xl mx-auto px-10 py-8 space-y-8">
 
       {/* ================= OVERVIEW TAB ================= */}
-      {activeTab === "overview" && (
-        <div className="grid lg:grid-cols-3 gap-6 -mt-4">
+      
+        <div 
+        ref={overviewRef}
+        className=" gap-6 -mt-4 scroll-mt-40">
 
           {/* LEFT STATS */}
           <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-[#ECEEF3]">
             <h1 className="text-lg font-semibold mb-4 -mt-4">Company Overview</h1>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {stats.map((item, i) => (
                 <div
                   key={i}
-                  className="bg-[#e9ecfc] w-45 py-2 border border-[#ECEEF3] rounded-xl p-4 text-center"
+                  className="bg-[#e9ecfc] w-50 py-2 border border-[#ECEEF3] rounded-xl p-4 text-center"
                 >
                   <p className="font-medium">{item.label}</p>
                   <p className="text-sm text-gray-500">{item.value}</p>
@@ -394,7 +466,7 @@ const topServices = Object.keys(serviceRatings)
           </div>
 
           {/* RIGHT TECHNOLOGIES */}
-          <div className="bg-white rounded-2xl p-6 border border-[#ECEEF3]">
+          {/* <div className="bg-white rounded-2xl p-6 border border-[#ECEEF3]">
             <h1 className="text-lg font-semibold mb-4 -mt-4">
               Technologies Offered
             </h1>
@@ -409,13 +481,15 @@ const topServices = Object.keys(serviceRatings)
                 </span>
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
-      )}
+      
 
       {/* ================= SERVICES TAB ================= */}
-      {activeTab === "services" && (
-        <div className="grid lg:grid-cols-3 gap-6 -mt-4">
+      
+        <div 
+        ref={servicesRef}
+        className="grid lg:grid-cols-3 gap-6 -mt-4 scroll-mt-40">
 
           <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-[#ECEEF3]">
             <h1 className="text-lg font-semibold mb-4 -mt-4">
@@ -451,7 +525,7 @@ const topServices = Object.keys(serviceRatings)
                   {topServices.map((_, index) => (
                     <Cell 
                     key={`cell-${index}`}
-    fill=           {SERVICE_COLORS[index % SERVICE_COLORS.length]}
+                    fill= {SERVICE_COLORS[index % SERVICE_COLORS.length]}
                     />
                   ))}
                 </Pie>
@@ -461,12 +535,12 @@ const topServices = Object.keys(serviceRatings)
             </ResponsiveContainer>
           </div>
         </div>
-      )}
+      
 
       {/* ================= PORTFOLIO TAB ================= */}
-      {activeTab === "portfolio" && (
-        <div>
-        <h1 className="text-lg font-semibold mb-4 -mt-4">
+      
+        <div ref={portfolioRef}>
+        <h1 className="text-lg font-semibold mb-4 -mt-4 scroll-mt-40">
               Our Portfolio
         </h1>
         
@@ -474,14 +548,16 @@ const topServices = Object.keys(serviceRatings)
           {(providerDetails.portfolio || []).map((item) => (
             <div
               key={item.id}
-              className="bg-white rounded-2xl border overflow-hidden items-center border-[#ECEEF3] shadow-sm"
+              className="bg-white flex flex-col justify-between rounded-2xl border  overflow-hidden items-center border-[#ECEEF3] shadow-sm"
             >
+              <div className="h-[160px] w-full overflow-hidden">
               <img
                 src={item.image}
-                className=" w-full object-cover rounded-t-2xl hover:scale-105 transition-transform duration-300"
+                className=" w-full h-[160px] object-cover rounded-t-2xl hover:scale-105 transition-transform duration-300"
               />
+              </div>
 
-              <div className="p-4">
+              <div className="px-4 py-2 w-full">
                 <h4 className="font-semibold">{item.title}</h4>
                 <p className="text-sm text-gray-500 mb-2">
                   {item.description}
@@ -499,13 +575,13 @@ const topServices = Object.keys(serviceRatings)
           ))}
         </div>
         </div>
-      )}
+      
 
       {/* ================= AWARDS TAB ================= */}
 
-      {activeTab === "awards" && (
-        <div>
-        <h1 className="text-lg font-semibold mb-4 -mt-4">
+      
+        <div ref={awardsRef}>
+        <h1 className="text-lg font-semibold mb-4 -mt-4 scroll-mt-40">
               Awards
         </h1>
   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 w-170">
@@ -540,7 +616,7 @@ const topServices = Object.keys(serviceRatings)
 
   </div>
   </div>
-)}
+
       {/* {activeTab === "awards" && (
         <div className="bg-white rounded-2xl p-6 border border-[#ECEEF3]">
           <h1 className="text-2xl font-semibold mb-4">Awards</h1>
@@ -555,12 +631,14 @@ const topServices = Object.keys(serviceRatings)
 
      
       {/* ================= REVIEWS TAB ================= */}
-        {activeTab === "reviews" && (
-          <div className="space-y-6 mt-6">
+        
+          <div 
+          ref={reviewsRef}
+          className="space-y-2 mt-6 scroll-mt-40">
 
             {/* Filters */}
             <div className="flex flex-col lg:flex-row justify-between gap-4">
-              <h2 className="text-2xl font-bold">
+              <h2 className="text-lg font-bold">
                 Reviews
               </h2>
 
@@ -715,8 +793,6 @@ const topServices = Object.keys(serviceRatings)
               </div>
             )}
           </div>
-        )}
-
     </div>
   </div>
   </>
