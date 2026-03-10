@@ -231,7 +231,7 @@ const paginatedProviders = filteredProviders.slice(
 
   return (
     <div className="w-full min-h-screen bg-transparent">
-      <div className="w-full -mt-4">
+      <div className="w-full ">
      <div className="border-b mb-2 pb-1">
       <h1 className="font-bold text-2xl">Find Agencies</h1>
       </div>
@@ -374,7 +374,7 @@ max-md:text-xs
         </div>
 
       {/* ---------------- PROVIDER LIST ---------------- */}
-      <div className="grid grid-cols-1 mr-3 md:mr-0 md:grid-cols-2 lg:grid-cols-3 gap-3 ">
+      <div className="grid grid-cols-1 mr-3 md:mr-0 md:grid-cols-2 lg:grid-cols-4 gap-3 ">
 
         {paginatedProviders.map((p:any)=>(
           // <div
@@ -541,14 +541,15 @@ max-md:text-xs
                   </div>
 
                   {/* Info Row */}
-                  <div className=" grid-cols-3 text-[10px] font-semibold text-[#616161] mt-1">
+                  <div className=" grid-cols-3 text-[8px] font-semibold text-[#616161] mt-1">
                     <div className="inline-flex items-center mr-6 gap-1">
                       <img
                         src="/Location_Icon.jpg"
                         alt="Location"
                         className="h-3 w-3 object-contain"
                       />
-                      {p.location || "Not specified"}
+                      {/* {p?.location || "N/A"} */}
+                      {`${p?.location==="Not specified"?"N/A":(p?.location || "N/A")}`}
                     </div>
 
                     <div className="inline-flex items-center mr-6 gap-1">
@@ -562,7 +563,7 @@ max-md:text-xs
 
                     <div className="inline-flex items-center gap-1">
                       <Users className="h-3 w-3 text-orangeButton" />
-                      {p.teamSize || "Not specified"}
+                      {`${p?.teamSize==="Not specified"?"N/A":(p?.teamSize || "N/A")}`}
                     </div>
                   </div>
 
@@ -576,10 +577,7 @@ max-md:text-xs
                   <div className="flex flex-wrap gap-2 pt-1">
                     <button
                       // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#e0332c] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
-                      className="flex-1 border border-transparent cursor-pointer rounded-xl 
-                      bg-[#e0332c] py-1 text-[10px] font-bold text-white
-                       duration-700 ease-out
-                      hover:bg-white hover:text-black hover:border-black transition-colors"
+                      className="primary-button w-[100px] h-[30px]"
                      onClick={() =>
                         handleViewProfile(p.id)
                       }
@@ -589,10 +587,7 @@ max-md:text-xs
 
                     <button
                       // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#000000] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
-                      className="flex-1 border border-transparent cursor-pointer rounded-xl 
-                      bg-black py-1 text-[10px] font-bold text-white
-                       duration-700 ease-out
-                      hover:bg-white hover:text-black hover:border-black transition-colors"
+                      className="btn-blackButton w-[100px] h-[30px]"
                       onClick={() => handleMessage(p.userId)}
                     >
                       Contact

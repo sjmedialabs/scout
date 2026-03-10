@@ -549,7 +549,7 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
 });
 
   const [currentPage, setCurrentPage] = useState(1);
-const requirementsPerPage = 5; // 🔹 control this value
+const requirementsPerPage = 10; // 🔹 control this value
 
 const totalPages = Math.ceil(
   (filteredRequirements?.length || 0) / requirementsPerPage
@@ -599,7 +599,7 @@ const paginatedRequirements = filteredRequirements?.slice(
         </div>
         <Button
           onClick={() => router.push("/client/dashboard/post-requirement")}
-          className="bg-gradient-to-r from-[#6b6ee8] to-[#3c41c6] h-[35px] text-xs mt-2 md:mt-0 rounded-full "
+          className="bg-orangeButton h-[35px] text-xs mt-2 md:mt-0 rounded-full "
         >
           <Plus className="h-4 w-4" />
           Add New Project
@@ -711,7 +711,7 @@ const paginatedRequirements = filteredRequirements?.slice(
           </div>
 
           <div>
-            <Button className="bg-gradient-to-r from-[#6b6ee8] to-[#3c41c6] rounded-[8px] h-[30px] w-[60px] mt-0" onClick={()=>{
+            <Button className="bg-[#000] rounded-full h-[30px] w-[60px] mt-0" onClick={()=>{
           setSearchTerm("");
          setSelectedStatus(""); // fixed
           setSelectedCategory("");
@@ -894,51 +894,53 @@ const paginatedRequirements = filteredRequirements?.slice(
                 </tbody>
               </table>
             </div> */}
-            <div className="px-4 max-h-[60vh] xl:max-h-[55vh] overflow-y-auto">
+            <div className="px-4 ">
               {paginatedRequirements?.map((project) => (
             <div
               key={project._id}
               className="border-1 px-0 bg-[#fafafa] border-[#CFCACA] rounded-2xl mb-2"
             >
               <div className="px-4 md:px-6 py-3">
-                <div className="flex justify-between items-start mb-3">
+                <div className="flex justify-between items-start -mb-2">
                   {/* <Badge className="bg-[#F54A0C] text-xs rounded-full">
                     {project.proposals} proposals recieved
                   </Badge> */}
+                  
+                   <h3 className="text-xl font-bold mb-2 text-[#2C34A1] cursor-pointer" onClick={()=>router.push(`/client/dashboard/projects/${project._id}`)}>
+                      {project.title}
+                    </h3>
                   <Badge
                     className={`text-xs rounded-full ${getBgColor(project.status)}`}
-                    // variant={
-                    //   project.status === "Completed"
-                    //     ? "default"
-                    //     : project.status === "In Progress"
-                    //       ? "secondary"
-                    //       : "outline"
-                    // }
                   >
                     {project.status}
                   </Badge>
+                  
                 </div>
-                <div className="flex justify-between items-start mb-">
+                <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold mb-2 text-[#2C34A1] cursor-pointer" onClick={()=>router.push(`/client/dashboard/projects/${project._id}`)}>
-                      {project.title}
-                    </h3>
-                    <p className="text-sm line-clamp-2 text-[#898383] font-normal mb-3">
+                    <p className="text-sm line-clamp-2 text-[#898383] font-normal mb-0">
                       {project.description}
                     </p>
+                   <Badge
+                    variant="outline"
+                    className="text-xs border-[#DEDEDE] bg-[#EDEDED] rounded-full h-[20px] px-3 mb-2"
+                  >
+                    {project?.category || "Unknown Project"}
+                  </Badge>
+                   
                     <div className="flex items-center gap-4 text-sm flex-wrap text-muted-foreground">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                         <HiCurrencyDollar color="#F54A0C" className="h-8 w-8" />
                         <span className="text-[14px] font-bold text-[#000]">{`$ ${project.budgetMin} - $ ${project.budgetMax}`}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2 ">
+                      {/* <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2 ">
                         <div className="bg-[#F54A0C] rounded-[50%] flex justify-center items-center h-6 w-6">
                           <GoTag color="#fff" className="h-4 w-4" />
                         </div>
                         <span className="text-[14px] font-bold text-[#000]">
                           {project.category}
                         </span>
-                      </div>
+                      </div> */}
                       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2 ">
                         <div className="bg-[#F54A0C] rounded-[50%] flex justify-center items-center h-6 w-6">
                           <CiCalendar
@@ -990,7 +992,8 @@ const paginatedRequirements = filteredRequirements?.slice(
                         }
                         className="bg-[#2C34A1] text-xs rounded-full text-[#fff]  hover:bg-[#2C34A1] h-[30px]"
                       >
-                        View Project Details
+                        {/* {project.proposals} proposals recieved */}
+                        {`View ${project.proposals>1?"Proposals":"Proposal"} (${project.proposals})`}
                         {/* <FaArrowRightLong className="h-1 w-1" color="#fff" /> */}
                       </Button>
                       <Button
@@ -999,14 +1002,14 @@ const paginatedRequirements = filteredRequirements?.slice(
                         onClick={() =>
                           router.push( `/client/dashboard/projects/${project._id}/details`)
                         }
-                        className="bg-orangeButton text-xs rounded-full h-[30px]"
+                        className="bg-[#000] text-[#fff] hover:bg-gray-800 text-xs rounded-full h-[30px]"
                       >
                         View Requirement
                         {/* <FaArrowRightLong className="h-1 w-1" color="#fff" /> */}
                       </Button>
-                      <Badge className="bg-[#F54A0C] text-xs rounded-full">
-                    {project.proposals} proposals recieved
-                  </Badge>
+                      {/* <Badge className="bg-[#F54A0C] text-xs rounded-full">
+                        {project.proposals} proposals recieved
+                      </Badge> */}
                   </div>
                   
                   {(project.status.toLowerCase() === "underreview" ||
