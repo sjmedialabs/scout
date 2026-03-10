@@ -648,10 +648,10 @@ const toggleFavorite = (conversationId: string) => {
   console.log("Filtered Conversatoions are::::::", filteredDynamicConversation);
 
   return (
-  <div className="space-y-2 -mt-2 ">
+  <div className="space-y-2 ">
     {/* Header */}
     {/* <div>
-      <h1 className="text-xl lg:text-3xl font-bold text-orangeButton my-custum-class">
+      <h1 className="text-xl lg:text-3xl font-bold text-orangeButton">
         Messages
       </h1>
       <p className="text-gray-500 text-md lg:text-xl">
@@ -663,9 +663,9 @@ const toggleFavorite = (conversationId: string) => {
 
       {/* ================= LEFT SIDEBAR ================= */}
       {(!isMobile || !isMobileChatOpen) && (
-        <Card className="rounded-2xl p-4 min-h-[90vh]  bg-white">
+        <Card className="rounded-2xl p-3 min-h-[85vh]  bg-white">
           <div className="h-5 flex justify-between items-center">
-            <h3 className="font-semibold text-2xl mb-3">
+            <h3 className="font-semibold text-2xl">
               Messages{" "}
               <span className="ml-1 text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full">
                 {totalUnreadMessagesCount}
@@ -777,56 +777,56 @@ const toggleFavorite = (conversationId: string) => {
                   </div>
 
                   {/* ACTION BUTTONS (Edit Mode Only) */}
-{editMode && (
-  <div className="flex items-center gap-3 ml-2">
+                  {editMode && (
+                    <div className="flex items-center gap-3 ml-2">
 
-    {/* Favorite */}
-    {/* <button
-      onClick={() => toggleFavorite(c.conversationId)}
-      className="text-yellow-500 hover:scale-110 transition"
-    >
-      {favorites.includes(c.conversationId) ? "⭐" : "☆"}
-    </button> */}
-    {/* <button
-  onClick={(e) => {
-    e.stopPropagation();
-    toggleFavorite(c.conversationId);
-  }}
-  className="text-yellow-500 hover:scale-110 transition"
->
-  {favorites.includes(c.conversationId) ? "⭐" : "☆"}
-</button> */}
+                      {/* Favorite */}
+                      {/* <button
+                        onClick={() => toggleFavorite(c.conversationId)}
+                        className="text-yellow-500 hover:scale-110 transition"
+                      >
+                        {favorites.includes(c.conversationId) ? "⭐" : "☆"}
+                      </button> */}
+                      {/* <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(c.conversationId);
+                    }}
+                    className="text-yellow-500 hover:scale-110 transition"
+                  >
+                    {favorites.includes(c.conversationId) ? "⭐" : "☆"}
+                  </button> */}
 
-    {/* Delete */}
-    {/* <button
-      onClick={() =>
-        handleDeleteConversation(c.conversationId)
-      }
-      className="text-red-500 hover:scale-110 transition"
-    >
-      {deletingId === c.conversationId ? (
-        <span className="text-xs">...</span>
-      ) : (
-        <Trash2 className="h-4 w-4" />
-      )}
-    </button> */}
+                      {/* Delete */}
+                      {/* <button
+                        onClick={() =>
+                          handleDeleteConversation(c.conversationId)
+                        }
+                        className="text-red-500 hover:scale-110 transition"
+                      >
+                        {deletingId === c.conversationId ? (
+                          <span className="text-xs">...</span>
+                        ) : (
+                          <Trash2 className="h-4 w-4" />
+                        )}
+                      </button> */}
 
-    <button
-  onClick={(e) => {
-    e.stopPropagation();
-    handleDeleteConversation(c.conversationId);
-  }}
-  className="text-red-500 hover:scale-110 transition"
->
-  {deletingId === c.conversationId ? (
-    <span className="text-xs">...</span>
-  ) : (
-    <Trash2 className="h-4 w-4" />
-  )}
-</button>
+                      <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteConversation(c.conversationId);
+                    }}
+                    className="text-red-500 hover:scale-110 transition"
+                  >
+                    {deletingId === c.conversationId ? (
+                      <span className="text-xs">...</span>
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
+                  </button>
 
-  </div>
-)}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -846,10 +846,10 @@ const toggleFavorite = (conversationId: string) => {
           {!resLoading &&
           !failed &&
           dynamicActiveConversation ? (
-            <Card className="rounded-2xl px-0 py-0  flex flex-col justify-between bg-white border-0 shadow-none">
+            <Card className="rounded-2xl min-h-[85vh] px-0  py-0  flex flex-col justify-between bg-white border-0 shadow-none">
 
               {/* Chat Header */}
-              <div className="flex items-start flex-wrap justify-between bg-[#f9f9f9] px-6 py-2 border-b">
+              <div className="flex items-start flex-wrap justify-between bg-[#f9f9f9] px-3 py-1 border-b">
                 <div className="flex items-center gap-3">
 
                   {/* Mobile Back Button */}
@@ -890,7 +890,7 @@ const toggleFavorite = (conversationId: string) => {
               </div>
 
               {/* Chat Messages */}
-              <div className="flex-1 px-6 py-0 space-y-5 overflow-y-auto max-h-[55vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <div className="flex-1 px-3 -mt-15 -mb-15 overflow-y-auto max-h-[68vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 {!chatLaoding && (dynamicMessages || []).length !== 0 ? (
                   <div>
                     {dynamicMessages.map((msg: Message) => (
@@ -906,7 +906,7 @@ const toggleFavorite = (conversationId: string) => {
                         <div className="max-w-[70%]">
                           <div
                             className={clsx(
-                              "rounded-2xl px-4 py-3 text-sm",
+                              "rounded-2xl px-4 py-2 text-xs",
                               msg.sender === "me"
                                 ? "bg-blue-100"
                                 : "bg-gray-100",
@@ -965,7 +965,7 @@ const toggleFavorite = (conversationId: string) => {
               </div>
 
               {/* Message Input */}
-              <div className="px-6 py-0 border-t mb-[20px]">
+              <div className="px-6 py-0 border-t ">
                 <div className="mb-2">
                   {uploading && <span>Uploading...</span>}
                   {uplodedUrl.url && (
@@ -989,7 +989,7 @@ const toggleFavorite = (conversationId: string) => {
                   )}
                 </div>
 
-                <div className="flex items-center gap-3 bg-gray-50 rounded-full px-4 py-2">
+                <div className="flex items-center gap-3 bg-gray-50 rounded-full px-2 py-0">
                   <Paperclip
                     className="h-5 w-5 text-blue-600 cursor-pointer"
                     onClick={() => fileInputRef.current?.click()}
