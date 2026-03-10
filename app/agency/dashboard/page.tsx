@@ -79,7 +79,8 @@ import {
   Proposal,
 } from "@/lib/types";
 import { Hand } from "lucide-react";
-import StatCard from "@/components/provider/dashboardCardAgency";
+// import StatCard from "@/components/provider/dashboardCardAgency";
+import StatCard from "@/components/seeker/dashboardCard";
 import { Folder } from "lucide-react"
 import ProjectCard from "@/components/provider/activeProjectCard";
 
@@ -107,142 +108,6 @@ export default function AgencyDashboard() {
     useState<Requirement | null>(null);
   const [showProposalForm, setShowProposalForm] = useState(false);
 
- 
-
-  const [selectedConversation, setSelectedConversation] =
-    useState<string>("john-doe");
-  const [newMessage, setNewMessage] = useState("");
-  const [conversations, setConversations] = useState([
-    {
-      id: "john-doe",
-      name: "John Doe",
-      initials: "JD",
-      message: "Thanks for the proposal. When can we start?",
-      time: "2m ago",
-      project: "E-commerce",
-      unread: true,
-      color: "bg-blue-500",
-      messages: [
-        {
-          id: "1",
-          sender: "client",
-          content:
-            "Hi! I'm interested in your e-commerce development services. Could you provide a quote for a full online store?",
-          timestamp: "Yesterday, 2:30 PM",
-          avatar: "JD",
-        },
-        {
-          id: "2",
-          sender: "agency",
-          content:
-            "Hello John! Thanks for reaching out. I'd be happy to help with your e-commerce project. Could you share more details about your requirements?",
-          timestamp: "Yesterday, 3:00 PM",
-          avatar: "S",
-        },
-        {
-          id: "3",
-          sender: "client",
-          content:
-            "I need a store with about 200 products, payment integration, inventory management, and mobile-responsive design. What would be your timeline and pricing?",
-          timestamp: "Yesterday, 4:15 PM",
-          avatar: "JD",
-        },
-        {
-          id: "4",
-          sender: "agency",
-          content:
-            "Perfect! Based on your requirements, I can provide a comprehensive solution. I'll send you a detailed proposal with timeline and pricing within 24 hours.",
-          timestamp: "Yesterday, 5:30 PM",
-          avatar: "S",
-        },
-        {
-          id: "5",
-          sender: "client",
-          content: "Thanks for the proposal. When can we start?",
-          timestamp: "2 minutes ago",
-          avatar: "JD",
-        },
-      ],
-    },
-    {
-      id: "sarah-wilson",
-      name: "Sarah Wilson",
-      initials: "SW",
-      message: "Could you provide more details about the timeline?",
-      time: "1h ago",
-      project: "Mobile App",
-      unread: true,
-      color: "bg-purple-500",
-      messages: [
-        {
-          id: "1",
-          sender: "client",
-          content: "Could you provide more details about the timeline?",
-          timestamp: "1 hour ago",
-          avatar: "SW",
-        },
-      ],
-    },
-    {
-      id: "tech-startup",
-      name: "Tech Startup Inc",
-      initials: "TS",
-      message: "We're interested in your web development services",
-      time: "3h ago",
-      project: "Web Development",
-      unread: false,
-      color: "bg-orange-500",
-      messages: [
-        {
-          id: "1",
-          sender: "client",
-          content: "We're interested in your web development services",
-          timestamp: "3 hours ago",
-          avatar: "TS",
-        },
-      ],
-    },
-    {
-      id: "marketing-pro",
-      name: "Marketing Pro",
-      initials: "MP",
-      message: "The design looks great! Let's proceed.",
-      time: "1d ago",
-      project: "Branding",
-      unread: false,
-      color: "bg-green-500",
-      messages: [
-        {
-          id: "1",
-          sender: "client",
-          content: "The design looks great! Let's proceed.",
-          timestamp: "1 day ago",
-          avatar: "MP",
-        },
-      ],
-    },
-    {
-      id: "david-chen",
-      name: "David Chen",
-      initials: "DC",
-      message: "Can we schedule a call to discuss the project?",
-      time: "2d ago",
-      project: "Consulting",
-      unread: true,
-      color: "bg-red-500",
-      messages: [
-        {
-          id: "1",
-          sender: "client",
-          content: "Can we schedule a call to discuss the project?",
-          timestamp: "2 days ago",
-          avatar: "DC",
-        },
-      ],
-    },
-  ]);
-
-  
   const [dynamicStats, setDynamicStats] = useState({
     activeProjects: 0,
     projectsInThisMonth: 0,
@@ -454,11 +319,11 @@ const getCompletionPercentage = (
   return (
     <div>
       <div className="space-y-3 ">
-        <div className="border-b border-[#E5E7EB] pb-4">
+        <div className="border-b border-[#E5E7EB] pb-2">
           <h1 className="text-2xl font-semibold text-[#111827] flex items-center gap-2">
             Welcome back, {user.name} 👋
           </h1>
-          <p className="text-base text-[#6B7280] mt-1">
+          <p className="text-base text-[#6B7280] ">
             Dashboard Overview
           </p>
         </div>
@@ -471,7 +336,7 @@ const getCompletionPercentage = (
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 
                 {/* PROJECTS CARD */}
-                <div className="relative bg-[#F4F2FF] rounded-xl p-5 border-t-4 border-[#7C6EF6] shadow-sm flex flex-col justify-between min-h-[130px]">
+                <div className="relative rounded-xl px-4 py-4 shadow-sm flex flex-col justify-between min-h-[130px]">
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-3">
                       <div className="bg-[#E6E1FF] p-3 rounded-lg">
@@ -495,16 +360,30 @@ const getCompletionPercentage = (
                     </span>
                   </div>
 
-                  <div className="flex justify-end mt-4">
-                    <button className="bg-[#7C6EF6] hover:bg-[#6A5BE8] cursor-pointer rounded-[10px] text-white text-sm px-4 py-2 transition" 
+                  <div className="flex justify-end">
+                    <button className="bg-[#3C3A3E] hover:bg-[#000] h-[30px] w-[120px] cursor-pointer rounded-full text-white text-xs transition" 
                     onClick={()=>router.push("/agency/dashboard/projects")}>
                       View Projects →
                     </button>
                   </div>
                 </div>
-
-                {/* PROPOSALS CARD */}
-                <div className="relative bg-[#FFF7E9] rounded-xl p-5 border-t-4 border-[#F5B546] shadow-sm flex flex-col justify-between min-h-[130px]">
+                  {/* <StatCard
+                    title="Projects"
+                    subtitle={`${dynamicStats.projectsInThisMonth > 0
+                            ? `+${dynamicStats.projectsInThisMonth}`
+                            : "0"}
+                          new this month`}
+                    count={dynamicStats.activeProjects.toString()}
+                    buttonText="View Projects"
+                    icon={<Users className="h-3 w-3" color="#fff" />}
+                    accentColor="#3B82F6"
+                    gradientFrom="#3B82F6"
+                    gradientTo="#60A5FA"
+                    iconBg="#3B82F6"
+                    linkUrl="/agency/dashboard/projects"
+                  />
+                 */}
+                <div className="stats-card">
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-3">
                       <div className="bg-[#FFEFD0] p-3 rounded-lg">
@@ -526,15 +405,15 @@ const getCompletionPercentage = (
                   </div>
 
                   <div className="flex justify-end mt-4">
-                    <button className="bg-[#F5B546] hover:bg-[#E4A538] text-white text-sm px-4 py-2 rounded-[10px] cursor-pointer transition"
+                    <button className="bg-[#3C3A3E] hover:bg-[#000] h-[30px] w-[120px] cursor-pointer rounded-full text-white text-xs transition" 
                     onClick={()=>router.push("/agency/dashboard/proposals")}>
-                      Manage →
+                      View Proposals →
                     </button>
                   </div>
                 </div>
 
                 {/* LEADS CARD */}
-                <div className="relative bg-[#EEF9F2] rounded-xl p-5 border-t-4 border-[#58B787] shadow-sm flex flex-col justify-between min-h-[130px]">
+                <div className="stats-card">
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-3">
                       <div className="bg-[#DDF3E7] p-3 rounded-lg">
@@ -547,7 +426,7 @@ const getCompletionPercentage = (
                         <p className="text-xs text-green-600 mt-1">
                           {dynamicStats.leadsCount > 0
                             ? `+${dynamicStats.leadsCount}`
-                            : ""}{" "}
+                            : "0"}{" "}
                           new in this month
                         </p>
                       </div>
@@ -559,7 +438,8 @@ const getCompletionPercentage = (
                   </div>
 
                   <div className="flex justify-end mt-4">
-                    <button className="bg-[#58B787] hover:bg-[#49A876] rounded-[10px] cursor-pointer text-white text-sm px-4 py-2 transition">
+                    <button className="bg-[#3C3A3E] hover:bg-[#000] h-[30px] w-[120px] cursor-pointer rounded-full text-white text-xs transition"
+                    onClick={()=>router.push("/agency/dashboard/leads")} >
                       View Leads →
                     </button>
                   </div>
@@ -569,14 +449,13 @@ const getCompletionPercentage = (
             </div>
 
             {/* ACTIVE PROJECTS */}
-            <Card className="rounded-lg bg-white py-2 pl-0">
-              <CardContent className="px-3 py-0">
+           
                 <h1 className="text-[#000] text-lg font-semibold">
-                  Your Active Projects
+                 Active Projects
                 </h1>
 
                 {activeProjects.length !== 0 ? (
-                  <div className="grid md:grid-cols-2 gap-3 mt-3">
+                  <div className="grid md:grid-cols-2 gap-3 mt-1">
                     {activeProjects.map((project) => (
                       <ProjectCard
                         key={project.id}
@@ -602,8 +481,7 @@ const getCompletionPercentage = (
                     </p>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              
 
           </div>
         </div>

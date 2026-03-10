@@ -26,15 +26,15 @@ export default function ProjectCard({
   return (
     <div
       key={data.id}
-      className="rounded-2xl p-3 shadow-sm transition hover:shadow-md bg-[#f5f2fd]"
-      style={{ borderTop: `4px solid ${borderColor}` }}
+      className="rounded-2xl p-3 shadow-sm border-1 border-gray-200 transition hover:shadow-md"
+      
     >
       {/* Top Section */}
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-[#F54A0C] flex items-center justify-center text-[#fff] font-semibold text-md">
+          {/* <div className="h-8 w-8 rounded-full bg-[#F54A0C] flex items-center justify-center text-[#fff] font-semibold text-md">
             {data.title.charAt(0)}
-          </div>
+          </div> */}
 
           <div>
             <h3 className="font-semibold text-gray-800 text-base">
@@ -57,35 +57,35 @@ export default function ProjectCard({
         {/* Left Column */}
         <div className="space-y-4 pr-4 border-r border-gray-200">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-full bg-[#F54A0C]">
-                <DollarSign size={14} className="text-[#fff]"/>
+            <div className="flex flex-row justify-center items-center h-5 w-5 rounded-full bg-[#F54A0C]">
+                <DollarSign size={10} className="text-[#fff]"/>
               
             </div>
-            <span>{data.amount}</span>
+            <span className="text-xs">{data.amount}</span>
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-full bg-[#F54A0C] shrink-0">
-              <span className="text-orange-500 text-xs"><Tag size={14} className="text-[#fff]"/></span>
+            <div className="flex flex-row justify-center items-center h-5 w-5 rounded-full bg-[#F54A0C]">
+              <span className="text-orange-500 text-xs"><Tag size={10} className="text-[#fff]"/></span>
             </div>
-            <span>{data.category}</span>
+            <span className="text-xs">{data.category}</span>
           </div>
         </div>
 
         {/* Right Column */}
         <div className="space-y-4 pl-4">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-full bg-[#F54A0C]">
-              <Clock size={14} className="text-[#fff]" />
+            <div className="flex flex-row justify-center items-center h-5 w-5 rounded-full bg-[#F54A0C]">
+              <Clock size={10} className="text-[#fff]" />
             </div>
-            <span>{data.duration}</span>
+            <span className="text-xs">{data.duration}</span>
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-full bg-[#F54A0C]">
-              <CalendarDays size={14} className="text-[#fff]" />
+            <div className="flex flex-row justify-center items-center h-5 w-5 rounded-full bg-[#F54A0C]">
+              <CalendarDays size={10} className="text-[#fff]" />
             </div>
-            <span>{data.date}</span>
+            <span className="text-xs">{data.date}</span>
           </div>
         </div>
       </div>
@@ -100,7 +100,7 @@ export default function ProjectCard({
 
         <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#6366F1] transition-all duration-500 rounded-full"
+            className="h-full bg-[#F4561C] transition-all duration-500 rounded-full"
             style={{ width: `${data.progress}%` }}
           />
         </div>
@@ -109,9 +109,7 @@ export default function ProjectCard({
       {/* Button */}
       <button
         onClick={()=>router.push("/agency/dashboard/projects")}
-        className="mt-3 px-6 py-2 cursor-pointer rounded-full text-sm font-medium text-white 
-                   bg-gradient-to-r from-indigo-500 to-indigo-600 
-                   hover:opacity-90 transition"
+        className="bg-[#3C3A3E] mt-2 hover:bg-[#000] h-[30px] w-[120px] cursor-pointer rounded-full text-white text-xs transition" 
       >
         View Project →
       </button>

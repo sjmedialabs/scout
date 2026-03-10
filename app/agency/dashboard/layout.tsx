@@ -187,12 +187,12 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
               ${isCollapsed ? "left-20" : "left-60"}
             `}
           >
-            <div className="w-full px-5 flex items-center">
+            <div className="w-full px-0 flex items-center">
               <AgencyHeader user={user} />
             </div>
           </div>
 
-        <div className="p-5 md:p-6 lg:p-8 bg-[#fff]">
+        <div className="px-6 py-3 bg-[#fff]">
           {children}
         </div>
 

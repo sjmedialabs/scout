@@ -869,7 +869,7 @@ export default function ClientDashboard() {
   return (
     <div className="flex h-full">
       {/* Left Sidebar */}
-
+ 
       {/* Main Content */}
       <div className="flex-1  overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none]  [&::-webkit-scrollbar]:hidden">
         <div className="space-y-2">
