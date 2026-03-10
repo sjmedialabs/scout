@@ -76,22 +76,23 @@ export default function Sidebar({
       <aside
         className={`
           fixed inset-y-0 left-0 z-40 
-          bg-[#e0dbfa] text-[#000]
+          bg-[#3C3A3E] text-[#fff]
           border-r border-[#e4dff6]
           flex flex-col transition-all duration-300 ease-in-out
           ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
           lg:translate-x-0
-          ${isCollapsed ? "lg:w-20" : "lg:w-80"}
-          w-80 
+          ${isCollapsed ? "lg:w-20" : "lg:w-60"}
+          w-60 
         `}
       >
         {/* HEADER */}
         <div className="px-3 py-3.5 border-b border-gray-300 flex items-center justify-between">
           {!isCollapsed && (
             <div>
-              <h2 className="text-xl font-bold tracking-tight">
+              {/* <h2 className="text-xl font-bold tracking-tight">
                 Agency Dashboard
-              </h2>
+              </h2> */}
+              <img src="/scoutFooterLogo.png" className="h-[45px] w-[120px]"/>
               {/* <p className="text-sm text-gray-600 mt-0.5">
                 Welcome back, {user?.name || "User"}
               </p> */}
@@ -101,14 +102,14 @@ export default function Sidebar({
           {isMobileOpen ? (
             <button
               onClick={() => setIsMobileOpen(false)}
-              className="p-2 rounded-lg hover:bg-[#ebe6f8] lg:hidden"
+              className="p-2 rounded-lg hover:bg-[#3C3A3E] lg:hidden"
             >
               <X className="h-5 w-5" />
             </button>
           ) : (
             <button
               onClick={() => setIsCollapsed((prev) => !prev)}
-              className="p-2 rounded-lg hover:bg-[#ebe6f8] hidden lg:block"
+              className="p-2 rounded-lg hover:bg-[#3C3A3E] hidden lg:block"
             >
               <ChevronRight
                 className={`h-5 w-5 transition-transform ${
@@ -139,8 +140,8 @@ export default function Sidebar({
         transition-colors cursor-pointer
         ${
           isActive
-            ? "bg-[#ebe6f8] border border-[#e4dff6] text-[#000] rounded-[8px]"
-            : "text-[#000] hover:bg-[#ebe6f8] rounded-[8px]"
+            ? "text-[#F54A0C] rounded-[8px]"
+            : "text-[#fff] rounded-[8px]"
         }
       `}
     >
@@ -153,12 +154,12 @@ export default function Sidebar({
         </div>
 
         {/* FOOTER */}
-        <div className="p-4 border-t border-[#e4dff6]">
+        <div className="p-2 border-t border-[#e4dff6]">
           <div
-            className={`grid gap-2 ${
+            className={`flex gap-2 ${
               isCollapsed
-                ? "grid-cols-1 place-items-center"
-                : "grid-cols-2"
+                ? "flex-col"
+                : "flex-row justify-between items-center "
             }`}
           >
             <Button
@@ -168,9 +169,9 @@ export default function Sidebar({
                   "/agency/dashboard/account/subscriptions"
                 )
               }
-              className="justify-start bg-[#2C34A1] text-white hover:bg-[#2C34A1] rounded-full"
+              className={`justify-start bg-[#2C34A1]  text-white text-xs hover:bg-[#2C34A1] rounded-full ${isCollapsed&&"w-fit"}`}
             >
-              <Settings className="h-4 w-4 mr-2" />
+              <Settings className="h-4 w-4 " />
               {!isCollapsed && "Upgrade Plan"}
             </Button>
 
@@ -178,9 +179,9 @@ export default function Sidebar({
               size="sm"
               variant="destructive"
               onClick={handleLogout}
-              className="justify-start rounded-full bg-[#F54A0C]"
+              className={`justify-start  rounded-full text-xs bg-[#F54A0C] ${isCollapsed&&"w-fit"}`}
             >
-              <LogOut className="h-4 w-4 mr-2" />
+              <LogOut className="h-4 w-4" />
               {!isCollapsed && "Logout"}
             </Button>
           </div>

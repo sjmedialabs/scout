@@ -304,6 +304,26 @@ const ProjectDetailPage = () => {
   const handleViewPortfolio=(proposalId:string)=>{
     window.open(`/provider/${proposalId}`, "_blank");
   }
+  const handleMessageAgency = async (proposal: any) => {
+    try {
+      const res = await authFetch(`/api/chat/conversation`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ proposalId: proposal.id }),
+      });
+  
+      const data = await res.json();
+  
+      router.push(
+        `/client/dashboard/message?conversationId=${data.conversationId}&agencyId=${proposal?.agency?.userId}`
+      );
+  
+    } catch (error) {
+      console.log("Failed to start conversation", error);
+    }
+  };
 
   // if (loading) {
   //     return (
@@ -438,7 +458,7 @@ const textareaClass =
                       key={proposal.id}
                       className="py-0 px-0 rounded-[22px] mb-3"
                     >
-                      <CardContent className="px-0 lg:px-5 py-0 lg:py-6">
+                      <CardContent className="px-0 lg:px-3 py-0 lg:py-3">
                         <div className="flex flex-col lg:flex-row items-stretch gap-4">
                           
                           {/* Left Image */}
@@ -470,30 +490,33 @@ const textareaClass =
                               
                               {/* LEFT CONTENT */}
                               <div className="flex-1 pr-6">
-                                <div className="flex items-center gap-2 mb-2">
+                                <div className="flex items-center gap-2 mb-1">
                                   <Badge
                                     variant="outline"
-                                    className="text-xs border-[#DEDEDE] bg-[#EDEDED] rounded-full h-[30px] px-3"
+                                    className="text-xs border-[#DEDEDE] bg-[#EDEDED] rounded-full h-[25px] px-3"
                                   >
                                     {proposal?.requirement?.title || "Unknown Project"}
                                   </Badge>
                                 </div>
  
                                 <h3
-                                  className="text-2xl font-bold text-[#000] mb-0 cursor-pointer"
+                                  className="text-xl font-bold text-[#000] mb-0 cursor-pointer"
                                   // onClick={() =>
                                   //   handleViewProfile(proposal.providerId)
                                   // }
                                 >
                                   {proposal.agency?.name}
                                 </h3>
+                                 <p className="text-[#939191] font-normal text-xs line-clamp-2">
+                                {proposal.proposalDescription}
+                              </p>
 
                                 {/* <p className="text-sm ml-1 -mt-1 text-[#939191] font-normal">
                                   {proposal.agency?.name}
                                 </p> */}
 
                                 {/* Rating */}
-                                <div className="flex items-center mt-0 gap-1 text-sm font-medium">
+                                {/* <div className="flex items-center mt-0 gap-1 text-sm font-medium">
                                   <RatingStars
                                     rating={proposal.agency?.rating}
                                     reviews={proposal.agency?.reviewCount}
@@ -505,7 +528,7 @@ const textareaClass =
                                     </span>
                                     )
                                   </span>
-                                </div>
+                                </div> */}
                               </div>
 
                               {/* RIGHT COST SECTION */}
@@ -521,7 +544,7 @@ const textareaClass =
                             </div>
 
                             {/* Description Section */}
-                            <div className="space-y-2">
+                            <div className="space-y-0">
 
                               {/* {proposal?.coverLetter && (
                                 <div>
@@ -535,12 +558,12 @@ const textareaClass =
                               )} */}
 
                               <div>
-                              <h4 className="font-bold text-xl text-[#616161] mb-0">
+                              {/* <h4 className="font-bold text-xl text-[#616161] mb-0">
                                 Proposal Description
                               </h4>
-                              <p className="text-[#939191] font-normal text-sm line-clamp-2">
+                              <p className="text-[#939191] font-normal text-xs line-clamp-2">
                                 {proposal.proposalDescription}
-                              </p>
+                              </p> */}
                             </div>
 
 
@@ -599,6 +622,15 @@ const textareaClass =
                                     className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
                                   >
                                     View Proposal Details
+                                  </Button>
+
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                   onClick={() => handleMessageAgency(proposal)}
+                                    className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
+                                  >
+                                    Message Agency
                                   </Button>
 
                                   {/* Shortlist */}

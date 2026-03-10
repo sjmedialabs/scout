@@ -141,7 +141,7 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
     <div className="min-h-screen flex flex-col lg:flex-row bg-background">
 
       {/* MOBILE TOP BAR */}
-      <header className="lg:hidden fixed top-0  left-0 bg-[#f4eefd] right-0 h-14  border-b z-40 flex items-center justify-between px-0">
+      <header className="lg:hidden fixed top-0  left-0 bg-[#fff] right-0 h-14  border-b z-40 flex items-center justify-between px-0">
 
         <div className="flex items-center gap-3 ml-3">
           <button
@@ -174,7 +174,7 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
         className={`
           flex-1 transition-all duration-300
           pt-14 lg:pt-16
-          ${isCollapsed ? "lg:ml-20" : "lg:ml-80"}
+          ${isCollapsed ? "lg:ml-20" : "lg:ml-60"}
         `}
       >
 
@@ -182,9 +182,9 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
        {/*  Desktop Fixed Header */}
           <div
             className={`
-              hidden lg:flex fixed top-0 right-0 h-16 bg-[#f4eefd] border-b z-40
+              hidden lg:flex fixed top-0 right-0 h-16 bg-[#fff] border-b z-40
               transition-all duration-300
-              ${isCollapsed ? "left-20" : "left-80"}
+              ${isCollapsed ? "left-20" : "left-60"}
             `}
           >
             <div className="w-full px-5 flex items-center">
@@ -192,7 +192,7 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
             </div>
           </div>
 
-        <div className="p-5 md:p-6 lg:p-8 bg-[#f4eefd]">
+        <div className="p-5 md:p-6 lg:p-8 bg-[#fff]">
           {children}
         </div>
 
