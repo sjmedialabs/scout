@@ -826,9 +826,9 @@ export default function ClientDashboard() {
       {/* Left Sidebar */}
 
       {/* Main Content */}
-      <div className="flex-1 -mt-4 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none]  [&::-webkit-scrollbar]:hidden">
+      <div className="flex-1  overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none]  [&::-webkit-scrollbar]:hidden">
         <div className="space-y-2">
-          <div className="border-b border-[#E5E7EB] pb-4">
+          <div className="border-b border-[#E5E7EB] pb-2">
             <h1 className="text-2xl font-semibold text-[#111827] flex items-center gap-2">
               Welcome back, {user.name} 👋
             </h1>

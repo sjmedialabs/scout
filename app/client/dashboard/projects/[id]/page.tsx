@@ -62,7 +62,7 @@ const ProjectDetailPage = () => {
   })
 
    /* ---------------- PAGINATION ---------------- */
-          const ITEMS_PER_PAGE = 2;
+          const ITEMS_PER_PAGE = 10;
           const [page, setPage] = useState(1);
   
           const totalPages = Math.ceil(
@@ -367,7 +367,7 @@ const textareaClass =
   };
 
   return (
-    <div className="space-6 ">
+    <div className="">
       
       {loading && (
         <div className="min-h-screen flex items-center justify-center">
@@ -391,35 +391,35 @@ const textareaClass =
        ( (projectDetails || {}).status!=="Allocated" && (projectDetails || {}).status !== "Closed") &&(
           <div>
             {/*header */}
-              <div className="flex flex-wrap justify-between items-start">
-              <div>
-                <h1 className="text-xl lg:text-3xl font-bold text-[#F4561C] my-custom-class">
-                  Project Details
-                  {proposals.length > 0 && (
-                    <span className="text-sm lg:text-[24px] font-normal text-[#656565]">
-                      {" "}
-                      for {proposals[0].requirement.title}
-                    </span>
-                  )}
-                </h1>
-                <p className="text-sm lg:text-lg font-normal text-[#656565] my-custom-class ">
-                  Review and manage proposals received for this project
-                </p>
-              </div>
-              <div>
-                <Button
-                  className="bg-[#000] rounded-full h-[30px] mb-3 w-[120px] text-xs lg:text-sm lg:h-[40px] lg:w-[160px]"
-                  onClick={() => router.push("/client/dashboard/projects")}
-                >
-                  <MoveLeft className="h-4 w-4 " />Back to
-                  Projects
-                </Button>
-              </div>
-              </div>
-            {(proposals || []).length > 0 && (
+              <div className="flex flex-wrap flex-row justify-between items-center">
                 <div>
-                  <div className="px-2" >
-                    <Select
+                  <h1 className="text-xl lg:text-2xl font-bold text-[#F4561C] ">
+                    Proposals
+                    {proposals.length > 0 && (
+                      <span className="text-sm lg:text-xl font-normal text-[#656565]">
+                        {" "}
+                        for {proposals[0].requirement.title}
+                      </span>
+                    )}
+                  </h1>
+                  <p className="text-sm lg:text-sm font-normal text-[#656565] ">
+                    Review and manage proposals received for this project
+                  </p>
+                </div>
+                <div className="flex flex-row gap-2 items-center">
+                  <div>
+                    <Button
+                    variant="outline"
+                    size={"xs"}
+                    className="BackButton"
+                    onClick={() => router.push("/client/dashboard/projects")}
+                  >
+                    {/* <MoveLeft className="h-4 w-4 " /> */}
+                    Back to Projects
+                  </Button>
+                  </div>
+                   <div>
+                        <Select
                       onValueChange={(value) => setFilterStatus(value)}
                       value={filterStatus}
                     >
@@ -428,14 +428,16 @@ const textareaClass =
                         border-2
                         border-[#b2b2b2]
                         cursor-pointer
-                        rounded-[8px]
+                        rounded-full
                         shadow-none
                         focus:ring-0
-                        mb-3 
-                        max-w-[160px]
+                      
                         
-                        h-11 
-                        text-sm
+                        max-w-[160px]
+                        max-h-[25px]
+                        
+                       
+                        text-xs
                         data-[placeholder]:text-[#98A0B4]
                       `}
                       >
@@ -451,6 +453,13 @@ const textareaClass =
                         
                       </SelectContent>
                     </Select>
+                    </div>
+                </div>
+              </div>
+            {(proposals || []).length > 0 && (
+                <div>
+                  <div className="px-0 mt-3" >
+                   
                     {filteredProposals.length > 0 ? (
                      <>
                      { (paginatedProposals || []).map((proposal) => (
@@ -458,30 +467,18 @@ const textareaClass =
                       key={proposal.id}
                       className="py-0 px-0 rounded-[22px] mb-3"
                     >
-                      <CardContent className="px-0 lg:px-3 py-0 lg:py-3">
-                        <div className="flex flex-col lg:flex-row items-stretch gap-4">
+                      <CardContent className="px-0 lg:px-2 py-0 lg:py-2">
+                        <div className="flex flex-col lg:flex-row items-stretch gap-1">
                           
                           {/* Left Image */}
         
-                          <div className="
-                              relative 
-                              max-h-[200px] lg:max-h-none
-                              w-full lg:w-[300px] 
-                              flex-shrink-0 
-                              rounded-t-[18px] lg:rounded-[18px]
-                              overflow-hidden 
-                              bg-gray-200
-
-                              aspect-[4/3]          
-                              lg:aspect-auto      
-                            ">
-                              <img
-                                src={proposal?.agency?.coverImage || "/proposal.jpg"}
-                                alt={proposal.agency?.name}
-                                className="absolute inset-0 w-full h-full object-cover"
-                                loading="lazy"
-                              />
-                            </div>
+                           <div className="h-[160px] w-full lg:w-[170px] rounded-t-[18px] lg:rounded-[18px] overflow-hidden sm:shrink-0">
+                            <img
+                              src={proposal?.agency?.coverImage || "/proposal.jpg"}
+                              alt={proposal.agency?.name}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
                           {/* Right Side Content */}
                           <div className="flex-1 px-3 py-2 lg:py-0 lg:pr-5">
 
@@ -569,12 +566,16 @@ const textareaClass =
 
                               {/* Status Section */}
                               <div className="flex items-center mt-2 mb-3 gap-2">
-                                <span className="text-sm text-[#000000] font-noormal">
+                                {/* <span className="text-sm text-[#000000] font-noormal">
                                   Submitted on :{" "}
                                   {new Date(
                                     proposal.updatedAt
                                   ).toLocaleDateString()}
-                                </span>
+                                </span> */}
+
+                                 <span className="text-[#000] text-[12px] font-semibold"> Submitted on :</span> <span className="text-xs text-gray-500"> {new Date(
+                                    proposal.createdAt
+                                  ).toLocaleDateString()}</span> 
            
                                  <Badge
                                   className={`rounded-full text-xs font-semibold px-3 py-0 capitalize

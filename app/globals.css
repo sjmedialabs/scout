@@ -167,6 +167,21 @@
 .bg-blueBackground {
   background-color: var(--blueBackground);
 }
+.BackButton {
+  background-color: transparent;
+  color: #000;
+  border: 1px solid #232a85;
+  border-radius: 9999px; /* rounded-full */
+  height: 25px;
+  width: 110px;
+   /* mb-3 = 0.75rem = 12px */
+  font-size: 12px; /* text-xs */
+}
+
+.BackButton:hover {
+  background-color: transparent;
+}
+
 
 .bg-blueButton {
   background-color: var(--blueButton);
@@ -176,6 +191,16 @@
 
 .bg-blueButton:hover {
   background-color: var(--hoverBlueButton);
+  color: white;
+}
+
+.secondary-button{
+  background-color: var(--blueButton);
+  color: white;
+  transition: all 0.2s ease;
+}
+.secondary-button:hover{
+   background-color: var(--hoverBlueButton);
   color: white;
 }
 .bg-orangeButton {
@@ -189,6 +214,31 @@
   color: white;
 }
 
+.btn-blackButton{
+  background-color: #3C3A3E;
+  color: white;
+  transition: all 0.2s ease;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 9999px;
+}
+.btn-blackButton:hover{
+   background-color: #000;
+   color: white;
+}
+
+.primary-button{
+   background-color: var(--orangeButton);
+  color: white;
+  transition: all 0.2s ease;
+  font-size: 12px;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+.primary-button:hover{
+  background-color: var(--hoverOrangeButton);
+  color: white;
+}
 .text-blueButton {
   color: var(--blueButton);
 }

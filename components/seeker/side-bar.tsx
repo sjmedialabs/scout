@@ -115,7 +115,7 @@ export default function ClientSidebar({
               {/* <h2 className="text-xl font-bold text-[#000]">
                 Client Dashboard
               </h2> */}
-              <img src="/scoutFooterLogo.png" className="h-[45px] w-[120px]"/>
+              <img src="/scoutFooterLogo.png" className="h-[45px] w-[120px] cursor-pointer" onClick={()=>(router.push("/client/dashboard"))}/>
               {/* <p className="text-sm text-[#8B8585]">
                 Welcome back, {user.name}
               </p> */}

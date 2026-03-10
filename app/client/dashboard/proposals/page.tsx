@@ -175,7 +175,7 @@ const handleMessageAgency = async (proposal: any) => {
    const[filteredProposals,setFilteredProposals]=useState<Proposal[]>([]);
 
    /* ---------------- PAGINATION ---------------- */
-        const ITEMS_PER_PAGE = 2;
+        const ITEMS_PER_PAGE = 10;
         const [page, setPage] = useState(1);
 
         const totalPages = Math.ceil(
@@ -519,21 +519,88 @@ console.log("Filtered Proposals:::::::",filteredProposals)
     );
   }
   return (
-    <div className="space-y-3 -mt-5">
-      <div>
-        <h1 className="text-2xl font-bold my-custom-class text-[#F4561C]">
+    <div className="">
+      <div className="flex flex-row justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold my-custom-class text-[#F4561C]">
           Proposals <span className="text-[#656565] text-[18px]">({filteredProposals?.length || 0})</span> 
-          {/* {selectedRequirementProposals[0]?.requirement?.title && (
-            <span className="text-[#656565] font-normal text-sm">
-              {` (for  ${selectedRequirementProposals[0].requirement?.title} )`}
-            </span>
-          )} */}
         </h1>
-        <p className="text-[#656565] -mt-1 text-sm font-medium my-custom-class">
+        <p className="text-[#656565]  text-sm font-medium my-custom-class">
           {selectedRequirement
             ? "Review and manage proposals for the selected requirement"
             : "All proposals received for your projects"}
         </p>
+        </div>
+        <div className="flex flex-row gap-2 items-center">
+            <div className="">
+              {/* <p className="text-md text-gray-500 ml-2">Proposal Status</p> */}
+              <Select
+                onValueChange={(value) => setFilterStatus(value)}
+                value={filterStatus}
+              >
+                <SelectTrigger
+                       className={`
+              border-2
+              border-[#b2b2b2]
+              cursor-pointer
+              rounded-full
+              max-h-[25px]
+              shadow-none
+              focus:ring-0
+              
+              px-3
+            
+              text-xs
+              data-[placeholder]:text-[#98A0B4]
+            `}
+                >
+                  <SelectValue placeholder="Filter by Status" />
+                </SelectTrigger>
+      
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="shortlisted">Shortlisted</SelectItem>
+                  <SelectItem value="negotation">Negotiation</SelectItem>
+                  <SelectItem value="accepted">Accepted</SelectItem>
+                  <SelectItem value="rejected">Rejected</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="">
+                {/* <p className="text-md text-gray-500 ml-2">Select Project</p> */}
+              <Select
+                onValueChange={(value) => setProjectFilter(value)}
+                value={projectFilter}
+              >
+                <SelectTrigger
+                  className={`
+              border-2
+              border-[#b2b2b2]
+              cursor-pointer
+              rounded-full
+              max-h-[25px]
+              shadow-none
+              focus:ring-0
+              
+              px-3
+            
+              text-xs
+              data-[placeholder]:text-[#98A0B4]
+            `}
+                >
+                  <SelectValue placeholder="Filter by Project" />
+                </SelectTrigger>
+      
+                <SelectContent className=" mr-[40px] max-h-[300px]">
+                  {
+                    (projectTitles || []).map((eachItem,index)=>(<SelectItem value={eachItem} key={index}>{eachItem}</SelectItem>))
+                  }
+                </SelectContent>
+              </Select>
+            </div>
+            </div>
       </div>
 
       {/* <div className="flex gap-4 -mt-1 h-[40px] w-fit  justify-center items-center font-bold text-sm text-[#000] bg-[#E6EDF5] rounded-full">
@@ -571,84 +638,12 @@ console.log("Filtered Proposals:::::::",filteredProposals)
               onRequestRevision={handleRequestRevision}
             />
           ) : (
-            <div className="space-y-0">
-              {/*Filterss block */}
-              {
-                (projectTitles.length>=1) && (
-                  <div className="flex flex-row  gap-4 overflow-x-auto mx-1 lg:mx-0">
-                    <div className="mb-2 md:mb-0">
-                      {/* <p className="text-md text-gray-500 ml-2">Proposal Status</p> */}
-                      <Select
-                        onValueChange={(value) => setFilterStatus(value)}
-                        value={filterStatus}
-                      >
-                        <SelectTrigger
-                        className={`
-                      border-2
-                      border-[#b2b2b2]
-                      cursor-pointer
-                      rounded-[8px]
-                      shadow-none
-                      focus:ring-0
-                      
-                      px-3
-                      h-11 
-                      text-sm
-                      data-[placeholder]:text-[#98A0B4]
-                    `}
-                        >
-                          <SelectValue placeholder="Filter by Status" />
-                        </SelectTrigger>
-              
-                        <SelectContent>
-                          <SelectItem value="all">All</SelectItem>
-                          <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="shortlisted">Shortlisted</SelectItem>
-                          <SelectItem value="negotation">Negotiation</SelectItem>
-                          <SelectItem value="accepted">Accepted</SelectItem>
-                          <SelectItem value="rejected">Rejected</SelectItem>
-                          <SelectItem value="completed">Completed</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="mb-2 md:mb-0">
-                       {/* <p className="text-md text-gray-500 ml-2">Select Project</p> */}
-                      <Select
-                        onValueChange={(value) => setProjectFilter(value)}
-                        value={projectFilter}
-                      >
-                        <SelectTrigger
-                          className={`
-                      border-2
-                      border-[#b2b2b2]
-                      cursor-pointer
-                      rounded-[8px]
-                      shadow-none
-                      focus:ring-0
-                      
-                      px-3
-                      h-11 
-                      text-sm
-                      data-[placeholder]:text-[#98A0B4]
-                    `}
-                        >
-                          <SelectValue placeholder="Filter by Project" />
-                        </SelectTrigger>
-              
-                        <SelectContent className=" mr-[40px] max-h-[300px]">
-                          {
-                            (projectTitles || []).map((eachItem,index)=>(<SelectItem value={eachItem} key={index}>{eachItem}</SelectItem>))
-                          }
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                )
-              }
-              <div className="sm:pr-2">
+            <div className="">
+             
+              <div className="mt-3">
                 {filteredProposals.length > 0 ? (
                 <div>
-                  <div className="space-y-4 mb-4">
+                  <div className="">
                     {/* <div className="flex justify-between items-center mt-0">
                       <h3 className="text-lg font-semibold my-custom-class tracking-tight">
                         Proposals Received
@@ -666,7 +661,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                  {paginatedProposals.map((proposal) => (
                     <Card
                       key={proposal.id}
-                      className="py-0 px-0 rounded-[22px] mb-3 -mt-2"
+                      className="py-0 px-0 rounded-[22px] mb-3"
                     >
                       <CardContent className="px-0 lg:px-2 py-0 lg:py-2">
                         <div className="flex flex-col lg:flex-row gap-4">
@@ -703,7 +698,8 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                     handleViewProfile(proposal.providerId)
                                   }
                                 >
-                                  {proposal.agency?.name}
+                                  {proposal.agency?.name.charAt(0).toUpperCase() +
+                                    proposal.agency?.name.slice(1)}
                                 </h3>
 
                                 {/* <p className="text-sm ml-1 -mt-1 text-[#939191] font-normal">
@@ -764,12 +760,16 @@ console.log("Filtered Proposals:::::::",filteredProposals)
 
                               {/* Status Section */}
                               <div className="flex items-center mt-2 mb-3 gap-2">
-                                <span className="text-sm text-[#000000] font-noormal">
+                                {/* <span className="text-sm text-[#000000] font-noormal">
                                   Submitted on :{" "}
                                   {new Date(
                                     proposal.updatedAt
                                   ).toLocaleDateString()}
-                                </span>
+                                </span> */}
+                                 <span className="text-[#000] text-[12px] font-semibold"> Submitted on :</span> <span className="text-xs text-gray-500"> {new Date(
+                                    proposal.createdAt
+                                  ).toLocaleDateString()}</span> 
+           
 
                                 {/* <Badge
                                   variant={
@@ -818,7 +818,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                     onClick={() =>
                                       handleViewPortfolio(proposal.agency._id)
                                     }
-                                    className="bg-[#232a85] rounded-xl text-xs text-white hover:bg-[#232a85] font-bold active:bg-[#2b7fff] active:text-[#fff]"
+                                    className="bg-[#e6e8ec] rounded-xl text-xs text-[#000] hover:text-[#000] rounded-full hover:bg-[#e6e8ec] font-bold active:bg-[#e6e8ec] active:text-[#000]"
                                   >
                                     View Profile
                                   </Button>
@@ -829,7 +829,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                     onClick={() =>
                                       router.push(`proposals/${proposal.id}`)
                                     }
-                                    className="bg-[#232a85] rounded-xl text-xs text-white hover:bg-[#232a85] font-bold active:bg-[#2b7fff] active:text-[#fff]"
+                                    className="bg-[#e6e8ec] rounded-xl text-xs text-[#000] hover:text-[#000] rounded-full hover:bg-[#e6e8ec] font-bold active:bg-[#e6e8ec] active:text-[#000]"
                                   >
                                     View Proposal Details
                                   </Button>
@@ -838,7 +838,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                     variant="outline"
                                     size="sm"
                                     onClick={() => handleMessageAgency(proposal)}
-                                    className="bg-[#232a85] rounded-xl text-xs text-white hover:bg-[#232a85] font-bold active:bg-[#2b7fff] active:text-[#fff]"
+                                     className="bg-[#e6e8ec] rounded-xl text-xs text-[#000] hover:text-[#000] rounded-full hover:bg-[#e6e8ec] font-bold active:bg-[#e6e8ec] active:text-[#000]"
                                   >
                                     Message Agency
                                   </Button>
@@ -854,7 +854,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                         onClick={() =>
                                           handleShortlist(proposal.id)
                                         }
-                                        className="bg-[#232a85] rounded-xl text-xs text-white hover:bg-[#232a85] font-bold active:bg-[#2b7fff] active:text-[#fff]"
+                                        className="bg-[#e6e8ec] rounded-xl text-xs text-[#000] hover:text-[#000] rounded-full hover:bg-[#e6e8ec] font-bold active:bg-[#e6e8ec] active:text-[#000]"
                                       >
                                         Shortlist
                                       </Button>
@@ -872,7 +872,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                         onClick={() =>
                                           handlNegotation(proposal.id)
                                         }
-                                        className="bg-[#232a85] rounded-xl text-xs text-white hover:bg-[#232a85] font-bold active:bg-[#2b7fff] active:text-[#fff]"
+                                         className="bg-[#e6e8ec] rounded-xl text-xs text-[#000] hover:text-[#000] rounded-full hover:bg-[#e6e8ec] font-bold active:bg-[#e6e8ec] active:text-[#000]"
                                       >
                                         Negotation
                                       </Button>
@@ -888,7 +888,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                         onClick={() =>
                                           handleAccept(proposal.id)
                                         }
-                                        className="bg-[#39A935] rounded-xl text-xs font-bold hover:bg-[#39A935] active:bg-[#39A935]"
+                                        className="bg-[#39A935]  rounded-full text-xs font-bold hover:bg-[#39A935] active:bg-[#39A935]"
                                       >
                                         Accept
                                       </Button>
@@ -904,7 +904,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                         onClick={() =>
                                           handleReject(proposal.id)
                                         }
-                                        className="bg-[#FF0000] rounded-xl text-xs font-bold hover:bg-[#FF0000] active:bg-[#FF0000]"
+                                        className="bg-[#FF0000] rounded-full text-xs font-bold hover:bg-[#FF0000] active:bg-[#FF0000]"
                                       >
                                         Reject
                                       </Button>

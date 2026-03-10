@@ -43,7 +43,7 @@ export default function ClientDashboardLayout({
             />
 
             {/* Main */}
-            <main className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#fff]">
+            <main className="flex-1 overflow-y-auto px-6 py-3 bg-[#fff]">
               {children}
             </main>
           </div>

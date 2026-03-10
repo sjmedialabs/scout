@@ -549,7 +549,7 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
 });
 
   const [currentPage, setCurrentPage] = useState(1);
-const requirementsPerPage = 5; // 🔹 control this value
+const requirementsPerPage = 10; // 🔹 control this value
 
 const totalPages = Math.ceil(
   (filteredRequirements?.length || 0) / requirementsPerPage
@@ -599,7 +599,7 @@ const paginatedRequirements = filteredRequirements?.slice(
         </div>
         <Button
           onClick={() => router.push("/client/dashboard/post-requirement")}
-          className="bg-gradient-to-r from-[#6b6ee8] to-[#3c41c6] h-[35px] text-xs mt-2 md:mt-0 rounded-full "
+          className="bg-orangeButton h-[35px] text-xs mt-2 md:mt-0 rounded-full "
         >
           <Plus className="h-4 w-4" />
           Add New Project
@@ -695,7 +695,7 @@ const paginatedRequirements = filteredRequirements?.slice(
           </div>
 
           <div>
-            <Button className="bg-gradient-to-r from-[#6b6ee8] to-[#3c41c6] rounded-[8px] h-[30px] w-[60px] mt-0" onClick={()=>{
+            <Button className="bg-[#000] rounded-full h-[30px] w-[60px] mt-0" onClick={()=>{
           setSearchTerm("");
          setSelectedStatus(""); // fixed
           setSelectedCategory("");
@@ -704,7 +704,7 @@ const paginatedRequirements = filteredRequirements?.slice(
           setEndDate("");
           setEndInputType("text");
         }}>
-          clear 
+          Clear 
         </Button>
           </div>
 
@@ -878,7 +878,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                 </tbody>
               </table>
             </div> */}
-            <div className="px-4 max-h-[60vh] xl:max-h-[55vh] overflow-y-auto">
+            <div className="px-4 ">
               {paginatedRequirements?.map((project) => (
             <div
               key={project._id}
@@ -986,7 +986,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                         onClick={() =>
                           router.push( `/client/dashboard/projects/${project._id}/details`)
                         }
-                        className="bg-orangeButton text-xs rounded-full h-[30px]"
+                        className="bg-[#000] text-[#fff] hover:bg-gray-800 text-xs rounded-full h-[30px]"
                       >
                         View Requirement
                         {/* <FaArrowRightLong className="h-1 w-1" color="#fff" /> */}
