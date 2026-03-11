@@ -366,8 +366,14 @@ const paginatedCompletedProjects = dynamicCompletedProjects.slice(
                                 setSelectedProject(project)
                                 setMilestonesDraft(
                                   project.milestones.map((m: any) => ({
-                                    ...m,
+                                    title: m.title,
+                                    description: m.description,
+                                    amount: m.amount,
+                                    duration: m.duration,
                                     completed: m.completed ?? false,
+                                    approvalStatus: m.approvalStatus || "pending",
+                                    deliverableUrl: m.deliverableUrl,
+                                    deliverableDocuments: m.deliverableDocuments || [],
                                   })),
                                 )
                                 setIsProgressModalOpen(true)
@@ -395,36 +401,69 @@ const paginatedCompletedProjects = dynamicCompletedProjects.slice(
                             {milestonesDraft.map((m, index) => (
                               <div
                                 key={index}
-                                className="flex items-center gap-3 border rounded-xl p-3"
+                                className="flex flex-col gap-2 border rounded-xl p-3"
                               >
-                                <Checkbox
-                                  checked={m.completed}
-                                  onCheckedChange={(checked) => {
-                                    const updated = [...milestonesDraft];
-
-                                    // If user is trying to CHECK the milestone
-                                    if (checked) {
-                                      // If not first milestone
-                                      if (index > 0 && !updated[index - 1].completed) {
+                                <div className="flex items-center gap-3">
+                                  <Checkbox
+                                    checked={m.completed}
+                                    onCheckedChange={(checked) => {
+                                      const updated = [...milestonesDraft];
+                                      if (checked && index > 0 && !updated[index - 1].completed) {
                                         alert("Please complete the previous milestone first.");
-                                        return; // ❌ Prevent checking
+                                        return;
                                       }
-                                    }
-
-                                    // Allow unchecking anytime (optional behavior)
-                                    updated[index].completed = Boolean(checked);
-                                    setMilestonesDraft(updated);
-                                  }}
-                                  className="border-1 border-[#000] cursor-pointer"
-                                />
-
-                                <span
-                                  className={`text-sm  ${
-                                    m.completed ? "line-through text-gray-400" : ""
-                                  }`}
-                                >
-                                  {m.title}
-                                </span>
+                                      updated[index] = { ...updated[index], completed: Boolean(checked) };
+                                      setMilestonesDraft(updated);
+                                    }}
+                                    className="border-1 border-[#000] cursor-pointer"
+                                  />
+                                  <span
+                                    className={`text-sm flex-1 ${
+                                      m.completed ? "line-through text-gray-400" : ""
+                                    }`}
+                                  >
+                                    {m.title}
+                                  </span>
+                                  {!m.completed && m.approvalStatus !== "approved" && (
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="outline"
+                                      className="rounded-full text-xs h-7"
+                                      onClick={() => {
+                                        const updated = [...milestonesDraft];
+                                        updated[index] = {
+                                          ...updated[index],
+                                          approvalStatus: "waiting_approval",
+                                        };
+                                        setMilestonesDraft(updated);
+                                      }}
+                                    >
+                                      {m.approvalStatus === "waiting_approval" ? "Waiting approval" : "Seek approval"}
+                                    </Button>
+                                  )}
+                                </div>
+                                {(m.approvalStatus === "waiting_approval" || m.approvalStatus === "revision_requested") && (
+                                  <span className="text-xs text-[#667085] ml-6">
+                                    {m.approvalStatus === "revision_requested" ? "Client requested revision" : "Sent for client approval"}
+                                  </span>
+                                )}
+                                {!m.completed && (
+                                  <div className="ml-6 flex flex-col gap-1">
+                                    <label className="text-xs text-[#667085]">Deliverable link (optional)</label>
+                                    <input
+                                      type="url"
+                                      placeholder="https://..."
+                                      className="rounded-lg border border-[#E4E7EC] px-2 py-1.5 text-sm"
+                                      value={m.deliverableUrl || ""}
+                                      onChange={(e) => {
+                                        const updated = [...milestonesDraft];
+                                        updated[index] = { ...updated[index], deliverableUrl: e.target.value || undefined };
+                                        setMilestonesDraft(updated);
+                                      }}
+                                    />
+                                  </div>
+                                )}
                               </div>
                             ))}
                           </div>

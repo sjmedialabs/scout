@@ -115,7 +115,7 @@ const ReviewsPage = () => {
     });
   };
   return (
-    <div className="space-y-6 -mt-5 min-h-screen">
+    <div className="space-y-4">
       <div>
         <h1 className="text-xl font-bold text-[#F4561C]  mb-0">
           Client Reviews
@@ -132,7 +132,7 @@ const ReviewsPage = () => {
             reviews.map((review) => (
               <div
                 key={review._id}
-                className="border  border-gray-200 rounded-3xl p-4 bg-white shadow-sm"
+                className="border  border-gray-200 rounded-3xl p-3 bg-white shadow-sm"
               >
                 {/* TOP */}
                 <div className="flex flex-row justify-between gap-6">
@@ -141,12 +141,12 @@ const ReviewsPage = () => {
                   <div className="flex-1">
                       <Badge
                     variant="outline"
-                    className="text-[10px] border-[#DEDEDE] bg-[#EDEDED] rounded-full h-[25px] px-3"
+                    className="text-[10px] border-[#DEDEDE] mb-1 bg-[#EDEDED] rounded-full h-[25px] px-3"
                   >
                     {review.project.category}
                   </Badge>
 
-                    <h3 className="text-lg font-bold">The Review</h3>
+                    {/* <h3 className="text-lg font-bold">The Review</h3> */}
                     
                     <p className="text-xs text-[#b2b2b2]">
                       {formatDate(review.createdAt)}
@@ -169,7 +169,7 @@ const ReviewsPage = () => {
 
                     <RatingStars rating={review.rating || 0} />
 
-                    <p className="text-sm mt-1">
+                    <p className="text-sm">
                       {/* <span className="font-semibold">
                         {review.rating || 0}
                       </span>
@@ -183,31 +183,34 @@ const ReviewsPage = () => {
                 {/*Review Content */}
 
                 <div>
-                    <h4 className="text-lg font-semibold mt-3">
+                    <h4 className="text-lg font-semibold">
                       Feedback summary
                     </h4>
 
-                    <p className="text-sm text-[#9c9c9c]  leading-relaxed">
+                    <p className="text-sm text-[#9c9c9c] ">
                       {review.content}
                     </p>
                 </div>
 
                 {/* BOTTOM */}
-                <div className="flex :flex-row justify-between mt-6 gap-6">
+                <div className="flex :flex-row justify-between gap-6">
 
                   {/* REVIEWER */}
-                  <div className="mt-auto">
+                  <div className="">
                     {/* <h4 className="font-bold">By</h4> */}
 
                     
 
-                    <div className="flex items-center gap-2 text-[#bdbdbd] mt-1">
-                      <FaCircleUser className="h-5 w-5" />
+                    <div className=" text-[#bdbdbd] mt-1">
+                      {/* <FaCircleUser className="h-5 w-5" /> */}
                       <div>
+                        <div className="flex gap-2">
+                          <FaCircleUser className="h-5 w-5" />
                         <span className="text-sm font-medium">
                         {review.client?.name}
                       </span>
-                      <p className="text-xs text-[#b2b2b2]">
+                      </div>
+                      <p className="text-xs pl-7 text-[#b2b2b2]">
                       {review.client?.position}
                       </p> 
                       </div>

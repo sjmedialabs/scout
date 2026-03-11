@@ -297,17 +297,33 @@ const ProposalsPage = () => {
   };
   
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       {/* HEADER */}
       <div className="flex flex-row justify-between items-center">
        <div>
-         <h1 className="text-[20px] font-semibold text-orangeButton my-custom-class">
+         <h1 className="text-[20px] font-semibold text-orangeButton ">
           My Proposals
         </h1>
-        <p className="text-[13px] text-gray-500 my-custom-class">
+        <p className="text-[13px] text-gray-500 ">
           Track all proposals you've submitted to clients
         </p>
        </div>
+       {/*Filter */}
+          <div className="min-w-[150px] lg:min-w-0">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full h-[35px] border mt-0.5 data-[placeholder]:text-gray-400 cursor-pointer border-[#D0D5DD] rounded-lg px-3 py-2 text-sm focus:outline-none">
+                <SelectValue placeholder="Select Status" />
+              </SelectTrigger>
+
+              <SelectContent>
+                {filterOptions.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
       </div>
 
@@ -319,15 +335,15 @@ const ProposalsPage = () => {
             <FileText className="h-4 w-4 text-orangeButton" />
           </div>
 
-          <p className="text-[12px] font-semibold h-8 leading-[1.3] my-custom-class">
+          <p className="text-[12px] font-semibold h-8 leading-[1.3] ">
             Total Submissions
           </p>
 
-          <h3 className="mt-2 text-[22px] h-6 font-semibold my-custom-class">
+          <h3 className="mt-2 text-[22px] h-6 font-semibold ">
             {stats.submissions}
           </h3>
 
-          <p className="mt-1 text-[10px] my-custom-class">
+          <p className="mt-1 text-[10px]">
             +{stats.lastWeekSubmissions} from last week
           </p>
         </div>
@@ -338,15 +354,15 @@ const ProposalsPage = () => {
             <MessageSquare className="h-4 w-4 text-orangeButton" />
           </div>
 
-          <p className="text-[12px] font-semibold h-8 leading-[1.3] my-custom-class">
+          <p className="text-[12px] font-semibold h-8 leading-[1.3] ">
             Client Responses
           </p>
 
-          <h3 className="mt-2 text-[22px] h-6 font-semibold my-custom-class">
+          <h3 className="mt-2 text-[22px] h-6 font-semibold">
             {stats.clientResponse}
           </h3>
 
-          <p className="mt-1 text-[10px] my-custom-class">
+          <p className="mt-1 text-[10px] ">
             {stats.clientResponsePercentage}% response rate
           </p>
         </div>
@@ -357,15 +373,15 @@ const ProposalsPage = () => {
             <Users className="h-4 w-4 text-orangeButton" />
           </div>
 
-          <p className="text-[12px] font-semibold h-8 leading-[1.3] my-custom-class">
+          <p className="text-[12px] font-semibold h-8 leading-[1.3]">
             Conversations
           </p>
 
-          <h3 className="mt-2 text-[22px] h-6 font-semibold my-custom-class">
+          <h3 className="mt-2 text-[22px] h-6 font-semibold ">
             {stats.activeConversations}
           </h3>
 
-          <p className="mt-1 text-[10px] my-custom-class">
+          <p className="mt-1 text-[10px] ">
             {stats.activeConversationsPercentage}% conversion rate
           </p>
         </div>
@@ -376,15 +392,15 @@ const ProposalsPage = () => {
             <Award className="h-4 w-4 text-orangeButton" />
           </div>
 
-          <p className="text-[12px] font-semibold h-8 leading-[1.3] my-custom-class">
+          <p className="text-[12px] font-semibold h-8 leading-[1.3] ">
             Accepted
           </p>
 
-          <h3 className="mt-2 text-[22px] h-6 font-semibold my-custom-class">
+          <h3 className="mt-2 text-[22px] h-6 font-semibold">
             {stats.accepted}
           </h3>
 
-          <p className="mt-1 text-[10px] my-custom-class">
+          <p className="mt-1 text-[10px] ">
             {stats.acceptedPercentage}% acceptance rate
           </p>
         </div>
@@ -395,18 +411,18 @@ const ProposalsPage = () => {
             <DollarSign className="h-4 w-4 text-orangeButton" />
           </div>
 
-          <p className="text-[12px] font-semibold h-8 leading-[1.3] my-custom-class">
+          <p className="text-[12px] font-semibold h-8 leading-[1.3] ">
             Total Value
           </p>
 
-          <h3 className="mt-2 text-[22px] h-6 font-semibold my-custom-class">
+          <h3 className="mt-2 text-[22px] h-6 font-semibold ">
             $
             {stats.totalValue > 1000
               ? `${(stats.totalValue / 1000).toFixed(0)}K`
               : stats.totalValue}
           </h3>
 
-          <p className="mt-1 text-[10px] my-custom-class">
+          <p className="mt-1 text-[10px] ">
             Proposed project value
           </p>
         </div>
@@ -460,7 +476,7 @@ const ProposalsPage = () => {
             <div key={i} className="space-y-2">
              
               <div className="flex items-center justify-between">
-                <span className="text-[12px] font-bold my-custom-class h-1 text-gray-900">
+                <span className="text-[12px] font-bold  h-1 text-gray-900">
                   {label}
                 </span>
                 <span className="text-[12px] text-gray-500">
@@ -480,9 +496,9 @@ const ProposalsPage = () => {
       </Card> */}
 
       {/* PROPOSALS LIST */}
-      <Card className="rounded-2xl pt-2border bg-white border-gray-200">
+      <Card className="rounded-2xl pt-0  bg-white border-none shadow-none">
         
-        <div className="flex flex-row justify-between px-5">
+        {/* <div className="flex flex-row justify-between px-1"> */}
 
             {/* <div>
               <h3 className="text-[15px] font-semibold"> All Proposals</h3>
@@ -490,7 +506,7 @@ const ProposalsPage = () => {
             </div> */}
 
           {/*Filter */}
-          <div className="min-w-[150px] lg:min-w-0">
+          {/* <div className="min-w-[150px] lg:min-w-0">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-full h-[35px] border mt-0.5 data-[placeholder]:text-gray-400 cursor-pointer border-[#D0D5DD] rounded-lg px-3 py-2 text-sm focus:outline-none">
                 <SelectValue placeholder="Select Status" />
@@ -505,11 +521,11 @@ const ProposalsPage = () => {
               </SelectContent>
             </Select>
           </div>
-        </div>
+        </div> */}
 
         
 
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3  px-1">
           {filteredProposals.length === 0 ? (
             <p className="text-center text-gray-500 text-[14px] py-6">
               No Proposals for the above filter criteria
@@ -518,9 +534,9 @@ const ProposalsPage = () => {
             filteredProposals.map((proposal) => (
               <Card
                 key={proposal.id}
-                className="rounded-2xl border p-1 border-gray-200 bg-white shadow-sm"
+                className="rounded-2xl border py-0 border-gray-200 bg-white shadow-sm"
               >
-                <CardContent className="p-4 space-y-3">
+                <CardContent className="p-2 space-y-3">
                   <div className="flex flex-col md:flex-row md:justify-between gap-4">
                     {/* LEFT */}
                     <div>
