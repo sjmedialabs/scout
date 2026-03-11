@@ -936,7 +936,7 @@ const textareaClass =
                   : apiStatus === "revision_requested"
                     ? "Revision Requested"
                     : apiStatus === "waiting_approval"
-                      ? "Waiting Approval"
+                      ? "Waiting Approval" 
                       : "Pending";
               const isActionable =
                 !milestone?.completed &&
@@ -998,7 +998,7 @@ const textareaClass =
                       </div>
                     )}
                   </div>
-                  {isActionable && (
+                  {(milestone.approvalStatus=== "waiting_approval" || milestone.approvalStatus==="revision_requested") && (
                     <div className="flex gap-2 shrink-0">
                       <Button
                         size="sm"

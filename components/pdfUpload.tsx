@@ -6,12 +6,14 @@ interface PdfUploadProps {
   maxSizeMB?: number;
   onUploadSuccess: (fileUrl: string) => void;
   placeholderText?: string;
+  uploadId?:string
 }
 
 export default function PdfUpload({
   maxSizeMB = 5,
   onUploadSuccess,
   placeholderText = "Upload Project Brief, wireframes, or reference materials (PDF / JPG / PNG)",
+  uploadId="file-input"
 }: PdfUploadProps) {
 
   const [files, setFiles] = useState<
@@ -121,12 +123,12 @@ export default function PdfUpload({
         accept="application/pdf,image/jpeg,image/png"
         onChange={handleFileChange}
         className="hidden"
-        id="pdf-upload"
+        id={uploadId}
       />
 
       {/* Button */}
       <label
-        htmlFor="pdf-upload"
+        htmlFor={uploadId}
         className="inline-block px-4 py-2 bg-[#D1E9FC] text-[#000] text-[12px] rounded-xl border-[#D0D5DD] font-semibold cursor-pointer"
       >
         Choose Files
