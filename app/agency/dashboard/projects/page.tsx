@@ -181,13 +181,13 @@ const paginatedCompletedProjects = dynamicCompletedProjects.slice(
   }
 
   return (
-    <div className="space-y-3 -mt-3">
+    <div className="space-y-3">
       {/* HEADER */}
       <div>
-        <h1 className="text-[26px] font-bold text-orangeButton h-8 my-custom-class">
+        <h1 className="text-xl font-bold text-orangeButton h-6 my-custom-class">
           My Projects
         </h1>
-        <p className="text-gray-500 text-[18px] my-custom-class">
+        <p className="text-gray-500 text-md my-custom-class">
           Manage your active projects and direct invitations
         </p>
       </div>
@@ -222,7 +222,7 @@ const paginatedCompletedProjects = dynamicCompletedProjects.slice(
                     {paginatedActiveProjects.map((project) => (
                       <Card
                         key={project.id}
-                        className="rounded-2xl h-[100%] p-3 shadow-sm transition hover:shadow-md bg-[#f5f2fd]"
+                        className="rounded-2xl h-[100%] p-1 shadow-sm transition hover:shadow-md bg-white"
                       >
                         <CardContent className="p-3">
 
@@ -341,7 +341,7 @@ const paginatedCompletedProjects = dynamicCompletedProjects.slice(
                           {/* Buttons */}
                           <div className="mt-4 flex flex-wrap gap-3">
                             <Button
-                              className="rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 text-white h-[30px] w-[130px] text-xs"
+                              className="btn-blackButton h-[30px]"
                               onClick={() => handleMessageClient(project)}
                             >
                               <MessageSquare className="h-3 w-3" />
@@ -350,7 +350,7 @@ const paginatedCompletedProjects = dynamicCompletedProjects.slice(
 
                             <Button
                               variant="outline"
-                              className="rounded-full h-[30px] w-[120px] text-xs"
+                              className="h-[30px] primary-button"
                               onClick={() =>
                                 router.push(`/agency/dashboard/proposals/${project.id}`)
                               }
@@ -361,7 +361,7 @@ const paginatedCompletedProjects = dynamicCompletedProjects.slice(
 
                             <Button
                               variant="outline"
-                              className="rounded-full h-[30px] w-[130px] text-xs"
+                              className="btn-blackButton h-[30px]"
                               onClick={() => {
                                 setSelectedProject(project)
                                 setMilestonesDraft(
@@ -542,7 +542,7 @@ const paginatedCompletedProjects = dynamicCompletedProjects.slice(
                 {paginatedCompletedProjects.map((project) => (
                   <Card
                     key={project.id}
-                    className="rounded-2xl h-[100%] p-3 shadow-sm transition hover:shadow-md bg-[#f5f2fd]"
+                    className="rounded-2xl h-[100%] p-3 shadow-sm transition hover:shadow-md bg-white"
                   >
                     <CardContent className="p-3">
 

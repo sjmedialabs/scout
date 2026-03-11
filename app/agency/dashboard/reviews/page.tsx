@@ -117,7 +117,7 @@ const ReviewsPage = () => {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-bold text-[#F4561C]  mb-0">
+        <h1 className="text-xl font-bold text-orangeButton  mb-0">
           Client Reviews
         </h1>
         <p className="text-[#656565] font-medium text-md">

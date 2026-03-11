@@ -10,8 +10,8 @@
   /* Updated design tokens to match wireframe aesthetic */
   --background: oklch(1 0 0); /* #ffffff */
   --blueBackground: #E7F0F8; /*sky blue background color */
-  --blueButton: #0e1f36;
-  --hoverBlueButton: #000;
+  --blueButton: #2c34a1;
+  --hoverBlueButton: #232A8F;
   --orangeButton: #e14426;
   --hoverOrangeButton: #fa3200;
   --sidebarMain: #3C3A3E; /* Dark gray sidebar color */

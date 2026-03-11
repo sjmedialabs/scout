@@ -84,7 +84,7 @@ useEffect(() => {
 }, [])
   
 
-  const leadsPerPage = 5
+  const leadsPerPage = 10
 
   // 🔹 Fetch
   const loadData = async () => {
@@ -204,16 +204,16 @@ useEffect(() => {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-orangeButton my-custom-class h-6 mb-1">
+      <div className="mb-3">
+        <h1 className="text-xl font-bold text-orangeButton h-6">
           Lead Management
         </h1>
-        <p className="text-gray-500 text-sm">
+        <p className="text-gray-500 text-md">
           Track and manage qualified leads attributed to Spark platform
         </p>
       </div>
       {/* TABS */}
-      <div className="inline-flex bg-[#e6edf5] rounded-full p-1 gap-1">
+      <div className="inline-flex bg-[#e6edf5] rounded-full p-1 gap-1 mb-3">
         {["opted", "direct"].map((tab) => (
           <button
             key={tab}
@@ -242,7 +242,7 @@ useEffect(() => {
                       {/* Search */}
                       <Input
                       placeholder="Search name or email..."
-                      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-[8px] placeholder:text-gray-400"
+                      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-full placeholder:text-gray-400"
                       value={search}
                       onChange={(e) => {
                           setSearch(e.target.value)
@@ -259,7 +259,7 @@ useEffect(() => {
                       }}
                       
                       >
-                      <SelectTrigger className="h-9 min-w-[150px] max-w-[220px] data-[placeholder]:text-gray-400 border border-gray-400 rounded-[8px]  text-[#000]">
+                      <SelectTrigger className="h-9 min-w-[150px] max-w-[220px] data-[placeholder]:text-gray-400 border border-gray-400 rounded-full text-[#000]">
                           <SelectValue placeholder="Filter by Status" />
                       </SelectTrigger>
                       <SelectContent>
@@ -275,7 +275,7 @@ useEffect(() => {
                       <Input
                       type={startDate ? "date" : "text"}
                       placeholder="Filter by Start Date"
-                      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-[8px] placeholder:text-gray-400"
+                      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-full placeholder:text-gray-400"
                       value={startDate}
                       onFocus={(e) => (e.target.type = "date")}
                       onBlur={(e) => {
@@ -288,7 +288,7 @@ useEffect(() => {
                       <Input
                       type={endDate ? "date" : "text"}
                       placeholder="Filter by End Date"
-                      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-[8px] placeholder:text-gray-400"
+                      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-full placeholder:text-gray-400"
                       value={endDate}
                       onFocus={(e) => (e.target.type = "date")}
                       onBlur={(e) => {
@@ -300,13 +300,7 @@ useEffect(() => {
                       {/* Clear Button */}
                       <Button
                        className="
-                        h-9 rounded-xl
-                        bg-gradient-to-r from-[#6b6ee8] to-[#3c41c6]
-                        hover:shadow-[0_0_10px_rgba(99,102,241,0.6)]
-                        border border-[#E3E1F3]
-                        text-white
-                        font-medium
-                        shadow-sm
+                        h-9 btn-blackButton rounded-xl
                         
                       "
                       onClick={() => {
@@ -323,7 +317,7 @@ useEffect(() => {
               </div>
 
             {/* 🔹 Table */}
-            <div className="bg-white rounded-lg  shadow-sm max-w-[95vw] overflow-x-auto">
+            <div className="bg-white rounded-lg  shadow-sm max-w-[95vw] overflow-x-auto overflow-y-visible">
               <table className="w-full text-sm">
                 <thead className="bg-gray-100 text-gray-700">
                   <tr>
@@ -390,7 +384,7 @@ useEffect(() => {
 
                               {openDropdown === lead._id && (
                                 <div
-                                  className="absolute right-0 top-6 w-32 bg-white border rounded-md shadow-md z-50"
+                                className="fixed right-6 mt-2 w-32 bg-white border rounded-md shadow-md z-50"
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   {lead.status === "pending" && (

@@ -93,14 +93,14 @@ setSubscriptions(activePlans);
   
   return (
     <div className="bg-transparent">
-      <div className="py-8 px-4">
+      <div className="">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-8">
-            <p className="text-1xl font-thin text-orange-400 mb-1">
+          <div className="text-center">
+            <p className="text-xl font-bold text-orangeButton mb-1">
               Choose Your Plan
             </p>
-            <p className="text-xl text-muted-foreground text-balance text-center max-w-xl mx-auto leading-tight">
+            <p className="text-md text-muted-foreground text-balance text-center max-w-xl mx-auto leading-tight">
               Select the perfect plan for your business needs.<br/> Upgrade or downgrade at any time.
             </p>
           </div>
@@ -109,7 +109,7 @@ setSubscriptions(activePlans);
 
          {/* Monthly and Annually Toggle*/} 
         <div
-        className="mt-2 mb-10 flex items-center justify-center gap-3 sm:flex-row sm:gap-4">
+        className="mt-2 mb-4 flex items-center justify-center gap-3 sm:flex-row sm:gap-4">
            <span
               className={`text-lg font-bold transition-colors  ${
                 isAnnual ? "text-slate-500" : "text-slate-900"
@@ -168,9 +168,9 @@ setSubscriptions(activePlans);
                   className={[
                    "group relative cursor-pointer transition-all duration-500 ease-out",
                    "border border-gray-500 bg-neutral-10 shadow-[0_1px_3px_rgb(0,0,0,0.03)]",
-                  "hover:-translate-y-1 hover:shadow-xl hover:bg-white",
+                  "hover:-translate-y-1 py-3 hover:shadow-xl hover:bg-white",
                   selected ? "bg-zinc-50 ring-1 ring-zinc-200 border-slate-300" : "",
-                  + "flex flex-col justify-between h-full",
+                  + "flex flex-col justify-between h-full ",
                  ].join(" ")}
                 >
                   {/* {{false && plan.popular && (
@@ -183,14 +183,14 @@ setSubscriptions(activePlans);
                   )}} */}
 
                 <div>
-                  <CardHeader className="text-left pb-4">
-                    <CardTitle className="text-3xl font-semibold tracking-tight text-zinc-900"
+                  <CardHeader className="text-left pb-2 ">
+                    <CardTitle className="text-xl font-semibold tracking-tight text-zinc-900"
                     style={{ fontFamily: 'sans-serif'}}>
                       {plan.title}
                       </CardTitle>
 
-                    <div className="mt-2 flex items-baseline gap-1">
-                      <span className="text-4xl font-semibold tracking-tight text-zinc-900"
+                    <div className=" flex items-baseline gap-1">
+                      <span className="text-xl font-semibold tracking-tight text-zinc-900"
                       style={{ fontFamily: "sans-serif" }}
                       >
                         ${isAnnual? plan.pricePerYear: plan.pricePerMonth}
@@ -201,7 +201,7 @@ setSubscriptions(activePlans);
                       </span>
                     </div>
 
-                    <CardDescription className="mt-1 text-[15px] text-zinc-400 leading-relaxed"
+                    <CardDescription className=" text-[14px] text-zinc-400 leading-relaxed"
                     style={{ fontFamily: "sans-serif" }}
                     >
                       {plan.description}
@@ -209,16 +209,16 @@ setSubscriptions(activePlans);
                   </CardHeader>
 
                   <CardContent>
-                    <ul className="space-y-4 mb-8">
+                    <ul className="space-y-4 mb-2">
                       { (plan.features || []).map(
                           (feature, index) => (
                         <li key={index} className="flex items-start gap-3">
                            <span className="grid place-items-center h-7 w-7 rounded-full bg-blue-100 flex-shrink-0">
-                             <span className="text-orange-500 text-[16px] font-extrabold leading-none translate-y-[1px]">
+                             <span className="text-orange-500 text-[12px] font-extrabold leading-none translate-y-[1px]">
                                 🗸
                              </span>
                            </span>
-                          <span className="text-[16px] text-zinc-700 leading-relaxed"
+                          <span className="text-[12px] text-zinc-700 leading-relaxed"
                           style={{ fontFamily: "sans-serif" }}
                           >{feature}</span>
                         </li>
@@ -227,7 +227,7 @@ setSubscriptions(activePlans);
                   </CardContent>
                 </div>     
 
-                  <div className="px-6 pb-6 mt-auto">
+                  <div className="px-6 pb-2 mt-auto">
                     <Button
                       onClick={() => setSelectedId(plan._id)}
                       className={[
