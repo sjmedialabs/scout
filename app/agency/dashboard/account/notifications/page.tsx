@@ -68,13 +68,13 @@ export default function NotificationsPage() {
     router.push(redirectionUrl);
   };
   return (
-    <div className="space-y-6 min-h-screen">
+    <div className="space-y-3 min-h-screen">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold text-orangeButton my-custom-class">
+        <h1 className="text-xl font-bold text-orangeButton ">
           Notifications
         </h1>
-        <p className="text-lg text-gray-500">
+        <p className="text-md text-gray-500">
           Configure your notification settings
         </p>
       </div>
@@ -82,13 +82,13 @@ export default function NotificationsPage() {
       {/* Notifications Card */}
       {!resLoading && !failed && dynamicNotifications.length !== 0 ? (
         <Card className="rounded-xl bg-[#f7f7f7]">
-          <CardHeader>
-            <CardTitle className="text-xl my-custom-class font-semibold">
+          <CardHeader className="px-4 -mt-3">
+            <CardTitle className="text-xl  font-semibold">
               Notifications
             </CardTitle>
           </CardHeader>
 
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-2 px-4 -mt-4 ">
             {dynamicNotifications.map((item) => (
               <div
                 key={item._id}
@@ -127,12 +127,12 @@ export default function NotificationsPage() {
                 {/* Right */}
                 <Button
                   variant="secondary"
-                  className="rounded-xl text-sm text-black font-medium bg-[#f7f7f7]"
+                  className="btn-blackButton h-[30px] w-[40px]"
                   onClick={() =>
                     handleMarkNotificationAsRead(item._id, item.linkUrl)
                   }
                 >
-                  {"view"}
+                  {"View"}
                 </Button>
               </div>
             ))}

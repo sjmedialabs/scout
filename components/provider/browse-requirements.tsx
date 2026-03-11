@@ -27,7 +27,7 @@ export function BrowseRequirements({
     useState<Requirement[]>(requirements)
 
   const [currentPage, setCurrentPage] = useState(1)
-  const ITEMS_PER_PAGE = 4
+  const ITEMS_PER_PAGE = 10
 
   // const handleSearch = () => {
   //   let tempFilteredRequirements = [...requirements]
@@ -156,7 +156,7 @@ export function BrowseRequirements({
       onChange={(e) =>
         setSearchTerm(parseInt(e.target.value))
       }
-      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-[8px] placeholder:text-gray-400"
+      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-full placeholder:text-[#6a7282]"
     />
 
     {/* Service */}
@@ -164,7 +164,8 @@ export function BrowseRequirements({
       <ServiceDropdown
       value={serviceFilter}
       onChange={(value) => setServiceFilter(value)}
-      triggerClassName="h-9 min-w-[150px] -mt-0 max-w-[220px] border border-gray-400 rounded-[8px] text-[#000]"
+      triggerClassName="h-9 min-w-[150px]  mt-0 max-w-[220px] border border-gray-400 rounded-full text-gray-400"
+      triggerSpanClassName="text-sm text-gray-400"
     />
     </div>
 
@@ -172,7 +173,7 @@ export function BrowseRequirements({
     <Input
       type={startDate ? "date" : "text"}
       placeholder="Filter by Start Date"
-      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-[8px] placeholder:text-gray-400"
+      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-full placeholder:text-[#6a7282]"
       value={startDate}
       onFocus={(e) => (e.target.type = "date")}
       onBlur={(e) => {
@@ -185,7 +186,7 @@ export function BrowseRequirements({
     <Input
       type={endDate ? "date" : "text"}
       placeholder="Filter by End Date"
-      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-[8px] placeholder:text-gray-400"
+      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-full placeholder:text-[#6a7282]"
       value={endDate}
       onFocus={(e) => (e.target.type = "date")}
       onBlur={(e) => {
@@ -197,13 +198,7 @@ export function BrowseRequirements({
     {/* Clear Button */}
     <Button
        className="
-              h-9 rounded-xl
-              bg-gradient-to-r from-[#6b6ee8] to-[#3c41c6]
-              hover:shadow-[0_0_10px_rgba(99,102,241,0.6)]
-              border border-[#E3E1F3]
-              text-white
-              font-medium
-              shadow-sm
+              h-9 btn-blackButton
               
             "
       onClick={handleClear}
@@ -254,7 +249,7 @@ export function BrowseRequirements({
                 <td className="p-4">
                   <Button
                     size="sm"
-                    className=" text-white rounded-[8px] w-[100px] text-xs bg-gradient-to-r from-[#5b5fe0] to-[#2c34a1]"
+                    className=" primary-button"
                     onClick={() =>
                       router.push(
                         `/agency/dashboard/leads/${req._id}`

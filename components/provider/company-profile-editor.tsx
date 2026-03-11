@@ -582,35 +582,37 @@ export function CompanyProfileEditor({
   };
 
   return (
-      <div className="space-y-1 bg-[#ffffff] -mx-8 -mt-8">
+      <div className="space-y-1 bg-[#ffffff] -mx-4 mt-1">
 
-      <div className="flex justify-between items-center -mt-5 p-3">
-        <h1 className="text-2xl font-semibold">Agency Profile</h1>
+      <div className="flex justify-between items-center pb-1 -mt-5 p-3">
+        <h1 className="text-xl text-orangeButton font-semibold">
+          Agency Profile
+          </h1>
 
         {!isEditMode ? (
-          <Button onClick={() => setIsEditMode(true)}>
+          <Button className="btn-blackButton h-[30px]" onClick={() => setIsEditMode(true)}>
             Edit Profile
           </Button>
         ) : (
-          <Button onClick={handleSave}>
+          <Button className="btn-blackButton h-[30px]" onClick={handleSave}>
             Save Changes
           </Button>
         )}
       </div>
 
-      <Tabs defaultValue="overview" className="w-full px-3">
+      <Tabs defaultValue="overview" className="w-full px-3 rounded-xl">
 
-        <TabsList className="mb-6 flex flex-wrap gap-2 border bg-[#f2f1f6]">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="services">Services</TabsTrigger>
-          <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
-          <TabsTrigger value="awards">Awards</TabsTrigger>
+        <TabsList className="mb-6 flex flex-wrap gap-2 border rounded-xl bg-[#f2f1f6]">
+          <TabsTrigger className="rounded-xl" value="overview">Overview</TabsTrigger>
+          <TabsTrigger className="rounded-xl" value="services">Services</TabsTrigger>
+          <TabsTrigger className="rounded-xl" value="portfolio">Portfolio</TabsTrigger>
+          <TabsTrigger className="rounded-xl" value="awards">Awards</TabsTrigger>
         </TabsList>
 
       <TabsContent value="overview">
         <div className={!isEditMode ? "pointer-events-none opacity-90" : ""}>
       {/* Company Information */}
-      <div className="space-y-0 border p-1 -mt-5 ">
+      <div className="space-y-0 border rounded-xl p-2 -mt-3 ">
         {/*comapny loago and coverimage */}
 
         <div className="grid grid-cols-1 max-h-[50vh] overflow-y-auto md:grid-cols-2 gap-5 mt-0 mb-3">
@@ -1394,7 +1396,7 @@ export function CompanyProfileEditor({
             <div className="flex flex-row gap-2">
               <Button
                 onClick={() => setShowPortfolioForm(true)}
-                className="bg-[#000] hover:bg-[#000] w-[120px] rounded-full text-[12px]"
+                className="h-[30px] btn-blackButton"
               >
                 <Plus className="h-4 w-4" />
                 Add Project
@@ -1404,11 +1406,11 @@ export function CompanyProfileEditor({
             )}
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-2">
           {isEditMode && showPortfolioForm && (
-            <div className="pt-6 space-y-4">
+            <div className=" space-y-2">
               {/*project image */}
-              <div className="space-y-2">
+              <div className="space-y-2 -mt-6">
                 <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
                   Project Image
                 </Label>
@@ -1562,7 +1564,7 @@ export function CompanyProfileEditor({
 
                   <Button
                     onClick={addPorfolioTech}
-                    className="bg-[#F54A0C] h-[36px] w-[70px] mt-1.5"
+                    className="bg-[#F54A0C] rounded-xl h-[36px] w-[70px] mt-1.5"
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
@@ -1572,14 +1574,14 @@ export function CompanyProfileEditor({
               <div className="flex gap-2">
                 <Button
                   onClick={addPortfolioItem}
-                  className="bg-[#FF0000] hover:bg-[#FF0000] rounded-full"
+                  className="primary-button h-[30px]"
                 >
                   {editPortfolioId ? "Update" : "Add Project"}
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => setShowPortfolioForm(false)}
-                  className="bg-[#000] hover:bg-[#000] text-[#fff] rounded-full"
+                  className="btn-blackButton h-[30px]"
                 >
                   Cancel
                 </Button>
@@ -1638,13 +1640,13 @@ export function CompanyProfileEditor({
                         {isEditMode && (
                   <div className="flex justify-between">
                     <Button
-                      className="bg-[#F54A0C] h-[30px] w-[80px] rounded-xl"
+                      className="bg-red-500 hover:bg-red-700 h-[30px] w-[80px] rounded-full"
                       onClick={() => removePortfolioItem(item.id)}
                     >
                       Delete
                     </Button>
                     <Button
-                      className="bg-[#39761E] h-[30px] w-[80px] rounded-xl"
+                      className="btn-blackButton h-[30px]"
                       onClick={() => editPortfolioItem(item.id)}
                     >
                       Edit
@@ -1742,6 +1744,7 @@ export function CompanyProfileEditor({
                         variant="destructive"
                         size="sm"
                         onClick={() => removeAward(index)}
+                        className="rounded-full bg-red-500 hover:bg-red-700 h-[30px]"
                       >
                         Delete
                       </Button>
@@ -1793,7 +1796,7 @@ export function CompanyProfileEditor({
 
                   <Button
                     onClick={addAward}
-                    className="bg-[#F54A0C] rounded-full"
+                    className="primary-button h-[30px]"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Award

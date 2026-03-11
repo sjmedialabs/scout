@@ -301,17 +301,17 @@ const ProposalsPage = () => {
       {/* HEADER */}
       <div className="flex flex-row justify-between items-center">
        <div>
-         <h1 className="text-[20px] font-semibold text-orangeButton ">
+         <h1 className="text-xl font-semibold text-orangeButton ">
           My Proposals
         </h1>
-        <p className="text-[13px] text-gray-500 ">
+        <p className="text-md text-gray-500 ">
           Track all proposals you've submitted to clients
         </p>
        </div>
        {/*Filter */}
           <div className="min-w-[150px] lg:min-w-0">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full h-[35px] border mt-0.5 data-[placeholder]:text-gray-400 cursor-pointer border-[#D0D5DD] rounded-lg px-3 py-2 text-sm focus:outline-none">
+              <SelectTrigger className="w-full h-[35px] border mt-0.5 data-[placeholder]:text-gray-400 cursor-pointer border-[#D0D5DD] rounded-xl px-3 py-2 text-sm focus:outline-none">
                 <SelectValue placeholder="Select Status" />
               </SelectTrigger>
 
@@ -580,12 +580,13 @@ const ProposalsPage = () => {
                             <FileText className="h-3 w-3 text-white" />
                           </div>
                           <span className="text-[13px] font-semibold text-black">
-                            Submitted{" "}
+                            Submitted on: <span className="text-gray-500">{" "}
                             {proposal.createdAt
                               ? new Date(
                                   proposal.createdAt,
                                 ).toLocaleDateString()
                               : "N/A"}
+                              </span>
                           </span>
                         </div>
                       </div>
@@ -614,13 +615,13 @@ const ProposalsPage = () => {
                     {/* RIGHT */}
                     <div className="flex flex-row md:flex-col gap-2 items-start md:items-end">
                       {proposal.requirement?.category && (
-                        <Badge className="text-[11px] px-3 py-2 rounded-full bg-[#e0e0e0] text-black">
+                        <Badge className="text-[11px] px-3 py-1 rounded-full bg-[#e0e0e0] text-black">
                           {proposal.requirement.category}
                         </Badge>
                       )}
 
                       <Badge
-                        className={`text-[11px] px-4 py-2 rounded-full font-medium capitalize ${getStatusBadgeClass(
+                        className={`text-[11px] px-4 py-1 rounded-full font-medium capitalize ${getStatusBadgeClass(
                           proposal.status,
                         )}`}
                       >
@@ -633,7 +634,7 @@ const ProposalsPage = () => {
                   <div className="flex flex-wrap gap-3 mt-3">
                     {/* View Details – ALWAYS */}
                     <Button
-                      className="h-10 px-6 rounded-full bg-[#2C34A1] text-white hover:bg-[#232A8F]"
+                      className="h-8 px-6 rounded-full bg-blueButton hover:bg-blueButton"
                       onClick={() =>
                         router.push(
                           `/agency/dashboard/proposals/${proposal.id}`,
@@ -645,12 +646,12 @@ const ProposalsPage = () => {
 
                     {/* Conditional Second Button */}
                     {proposal.hasConversation ? (
-                      <Button className="h-10 px-6 rounded-full bg-black text-white hover:bg-black/90">
+                      <Button className="h-8 px-6 btn-blackButton">
                         View Conversation →
                       </Button>
                     ) : proposal.status === "pending" ? (
                       <Button
-                        className="h-10 px-6 rounded-full bg-black text-white hover:bg-black/90"
+                        className="h-8 px-6 btn-blackButton"
                         onClick={() => handleEditProposal(proposal.id)}
                       >
                         Edit Proposal →

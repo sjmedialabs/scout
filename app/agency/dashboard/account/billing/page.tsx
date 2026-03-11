@@ -220,13 +220,13 @@ const formatDate=(dateString: string)=> {
     }
     
   return (
-    <div className="space-y-8">
+    <div className="space-y-3">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-orangeButton my-custom-class">
+        <h1 className="text-xl font-bold text-orangeButton ">
           Billing & Subscription
         </h1>
-        <p className="text-lg text-gray-500">
+        <p className="text-md text-gray-500">
           Manage your subscription and billing details
         </p>
       </div>
@@ -237,14 +237,14 @@ const formatDate=(dateString: string)=> {
         <Card className="rounded-xl bg-white py-2">
           <CardHeader className="flex mt-0 flex-row items-start justify-between">
             <div>
-              <CardTitle className="text-orangeButton h-6 my-custom-class text-lg">
+              <CardTitle className="text-orangeButton h-6 text-lg">
                 Contact Details:
               </CardTitle>
               <p className="text-xs text-gray-500">
                 Who should we contact if necessary?
               </p>
             </div>
-            <Button className="rounded-xl" variant="outline" size="sm" onClick={()=>setShowModel(true)}>
+            <Button className="btn-blackButton" variant="outline" size="sm" onClick={()=>setShowModel(true)}>
               Update/Edit
             </Button>
           </CardHeader>
@@ -275,15 +275,15 @@ const formatDate=(dateString: string)=> {
           {isExpired&&<span className="text-red-500 text-sm">{`Your plan is expired take a new plan (or) renew plan`}</span>}
           <Card className="rounded-2xl bg-white py-2">
             <CardHeader className="flex flex-row items-center justify-between">
-              <div className="h-10">
-                <CardTitle className="text-orangeButton h-6 my-custom-class text-lg">
+              <div className="h-8">
+                <CardTitle className="text-orangeButton h-6 text-lg">
                   Plan: {subscriptionDetails?.title} 
                 </CardTitle>
                 <p className="text-xs text-gray-500 leading-tight">
                   Take your portfolio to next level with more features
                 </p>
               </div>
-              <Button className="rounded-xl" variant="outline" size="sm" onClick={()=>router.push("/agency/dashboard/account/subscriptions")}>
+              <Button className="btn-blackButton" variant="outline" size="sm" onClick={()=>router.push("/agency/dashboard/account/subscriptions")}>
                 Upgrade Plan
               </Button>
             </CardHeader>
@@ -297,7 +297,7 @@ const formatDate=(dateString: string)=> {
           <Card className="rounded-2xl bg-white py-2">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Card Details</CardTitle>
-              <Button className="rounded-xl" variant="outline" size="sm">
+              <Button className="btn-blackButton" variant="outline" size="sm">
                 Update
               </Button>
             </CardHeader>
@@ -323,14 +323,14 @@ const formatDate=(dateString: string)=> {
 
       {/* Billing History */}
       <div>
-        <h2 className="text-xl font-semibold text-orangeButton my-custom-class">
+        <h2 className="text-xl font-semibold text-orangeButton ">
           Billing History
         </h2>
-        <p className="text-sm text-gray-500 mb-4">
-          Summery on the payment history for the subscription plan on the Applications
+        <p className="text-md text-gray-500 mb-4">
+          Summary on the payment history for the subscription plan on the Applications
         </p>
 
-        <Card className="rounded-2xl overflow-hidden">
+        <Card className="rounded-2xl overflow-hidden p-0">
           <CardContent className="p-0">
             <table className="w-full text-sm">
               <thead className="bg-gray-100 text-gray-600">

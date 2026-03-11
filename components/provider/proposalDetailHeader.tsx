@@ -42,7 +42,7 @@ export default function ProposalHeader({
         </h1>
 
         <Button
-          className="bg-orangeButton rounded-full h-[30px] mb-3 w-[140px] text-xs lg:text-sm lg:h-[40px] lg:w-[160px]"
+          className="BackButton"
           onClick={() => router.push(buttonUrl)}
         >
           <MoveLeft className="h-4 w-4" />

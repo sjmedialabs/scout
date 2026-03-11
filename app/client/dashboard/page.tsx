@@ -834,7 +834,11 @@ export default function ClientDashboard() {
   const toId = (v: any) => (v == null ? "" : String(v))
 
   // Per-project proposal breakdown for "Projects Overview" — match proposals by requirement id (API returns requirement.id, not requirementId)
-  const projectsOverviewAll = (requirements || []).map((req: any) => {
+  // const projectsOverviewAll = (requirements || []).map((req: any) => {
+  const projectsOverviewAll = (requirements || [])
+  .filter((req: any) => (req.status || "").toLowerCase() !== "closed")
+  .map((req: any) => {
+    
     const requirementId = toId(req._id ?? req.id)
     const relatedProposals = (proposals || []).filter((p: any) => {
       const pRid = toId(p.requirement?.id ?? p.requirementId)
@@ -883,23 +887,23 @@ export default function ClientDashboard() {
           </div>
 
           {/* Summary cards row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
             <Card className="bg-white rounded-2xl shadow-sm border border-[#E5E7EB]">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardHeader className="flex flex-row -mt-3 items-center justify-between space-y-0">
                 <CardTitle className="text-sm font-semibold text-[#111827]">
                   Total Projects
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-1">
+              <CardContent className="space-y-0 -mt-4 -mb-3">
                 <div className="text-2xl font-bold text-[#111827]">
                   {totalProjects}
                 </div>
-                <p className="text-xs text-[#6B7280]">
+                <p className="text-xs text-[#6B7280] pb-2">
                   Projects posted by you
                 </p>
                 <Button
                   variant="outline"
-                  className="mt-3 h-8 px-3 text-xs rounded-full border-[#E5E7EB] text-[#111827]"
+                  className="btn-blackButton h-[30px]"
                   onClick={() => router.push("/client/dashboard/projects")}
                 >
                   Total Projects →
@@ -908,21 +912,21 @@ export default function ClientDashboard() {
             </Card>
 
             <Card className="bg-white rounded-2xl shadow-sm border border-[#E5E7EB]">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardHeader className="flex -mt-3 flex-row items-center justify-between space-y-0 ">
                 <CardTitle className="text-sm font-semibold text-[#111827]">
                   Total Proposals Received
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-1">
+              <CardContent className="space-y-0 -mt-4 -mb-3">
                 <div className="text-2xl font-bold text-[#111827]">
                   {totalProposalsReceived}
                 </div>
-                <p className="text-xs text-[#6B7280]">
+                <p className="text-xs text-[#6B7280] pb-2">
                   Agency proposals received so far
                 </p>
                 <Button
                   variant="outline"
-                  className="mt-3 h-8 px-3 text-xs rounded-full border-[#E5E7EB] text-[#111827]"
+                  className="btn-blackButton h-[30px]"
                   onClick={() => router.push("/client/dashboard/proposals")}
                 >
                   Total Proposals →
@@ -931,21 +935,21 @@ export default function ClientDashboard() {
             </Card>
 
             <Card className="bg-white rounded-2xl shadow-sm border border-[#E5E7EB]">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardHeader className="flex -mt-3 flex-row items-center justify-between space-y-0">
                 <CardTitle className="text-sm font-semibold text-[#111827]">
                   Proposals Shortlisted
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-1">
+              <CardContent className="space-y-0 -mt-4 -mb-3">
                 <div className="text-2xl font-bold text-[#111827]">
                   {totalShortlistedProposals}
                 </div>
-                <p className="text-xs text-[#6B7280]">
+                <p className="text-xs text-[#6B7280] pb-2">
                   Agency proposals shortlisted
                 </p>
                 <Button
                   variant="outline"
-                  className="mt-3 h-8 px-3 text-xs rounded-full border-[#E5E7EB] text-[#111827]"
+                  className="btn-blackButton h-[30px]"
                   onClick={() =>
                     router.push("/client/dashboard/proposals?status=shortlisted")
                   }
@@ -955,22 +959,22 @@ export default function ClientDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="bg-white rounded-2xl shadow-sm border border-[#E5E7EB]">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <Card className="bg-white rounded-2xl shadow-sm border border-[#E5E7EB] ">
+              <CardHeader className="flex flex-row -mt-3 items-center justify-between space-y-0">
                 <CardTitle className="text-sm font-semibold text-[#111827]">
                   Proposals Accepted
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-1">
+              <CardContent className="space-y-0 -mt-4 -mb-3">
                 <div className="text-2xl font-bold text-[#111827]">
                   {totalAcceptedProposals}
                 </div>
-                <p className="text-xs text-[#6B7280]">
+                <p className="text-xs text-[#6B7280] pb-2">
                   Proposals accepted &amp; completed
                 </p>
                 <Button
                   variant="outline"
-                  className="mt-3 h-8 px-3 text-xs rounded-full border-[#E5E7EB] text-[#111827]"
+                  className="btn-blackButton h-[30px]"
                   onClick={() =>
                     router.push("/client/dashboard/proposals?status=accepted")
                   }
@@ -982,7 +986,7 @@ export default function ClientDashboard() {
           </div>
 
           {/* Projects overview list — max 10 here, rest via View All */}
-          <div className="mt-8 space-y-4">
+          <div className="mt-1 space-y-2">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-[#111827]">
                 Projects Overview
@@ -994,7 +998,7 @@ export default function ClientDashboard() {
               </h2>
               <Button
                 variant="ghost"
-                className="h-8 px-3 text-xs md:text-sm text-[#2563EB]"
+                className="h-8 px-3 primary-button"
                 onClick={() => router.push("/client/dashboard/projects")}
               >
                 View All →
@@ -1026,10 +1030,15 @@ export default function ClientDashboard() {
 
                       <Button
                         variant="outline"
-                        className="self-start md:self-auto h-8 px-3 text-[11px] md:text-xs rounded-full border-[#E5E7EB] text-[#4B5563]"
-                        onClick={() => handleViewProposals(project.id)}
+                        className="primary-button h-[30px]"
+                        // onClick={() => handleViewProposals(project.id)}
+                        onClick={() =>
+                             router.push(`/client/dashboard/projects/${project.id}`)
+                          }
                       >
-                        View All →
+                        {`${(project.status.toLowerCase()==="allocated" || project.status.toLowerCase()==="closed")
+                        ? "View Status"
+                        : `View ${project.counts.total > 1 ? "Proposals" : "Proposal"}`}`}
                       </Button>
                     </div>
 

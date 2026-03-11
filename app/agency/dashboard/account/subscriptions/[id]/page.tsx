@@ -153,7 +153,7 @@ console.log("calling")
 
   if(resLoading){
      return(
-      <div className="min-h-screen flex items-center justify-center">
+      <div className=" flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
         )
@@ -239,43 +239,43 @@ const handlePayment = async () => {
   // const remainingCount = selectedPlan.features.length - visibleFeatures.length
 
   return (
-    <div className=" min-h-screen">
-      <div className="px-4 py-10">
+    <div>
+      <div className="px-4 ">
       {
         !resLoading && !failed && selectedPlan && (
-            <div className="max-w-5xl mx-auto">
+            <div className="max-w-7xl mx-auto">
 
           {/* Header */}
-          <div className="text-center mb-10">
-            <p className="text-orange-500 text-sm font-medium mb-2">
+          <div className="text-center">
+            <p className="text-orangeButton text-xl font-bold">
               Subscribe to {selectedPlan.title}
             </p>
-            <h1 className="text-2xl sm:text-2xl font-medium">
+            <h1 className="text-md font-medium">
               Complet your subscription to unlock all {selectedPlan.title} features
             </h1>
           </div>
 
           {/* Order Summary Card*/}
           <div className="flex justify-center">
-            <Card className="w-full max-w-md rounded-2xl shadow-md border border-slate-200 bg-white">
-              <CardContent className="p-5 pt-2 space-y-6">
+            <Card className="w-full max-w-md rounded-2xl mt-2 shadow-md border border-slate-200 bg-white">
+              <CardContent className="p-3 space-y-2 py-1">
 
                 <div className="flex items-center h-0 justify-between">
-                  <h2 className="text-orangeButton font-extrabold text-lg">
+                  <h2 className="text-orangeButton font-bold text-lg">
                     Order Summary
                   </h2>
                 </div>
 
                 {/* Plan Row */}
-                <div className="flex items-center pt-7 justify-between border-b pb-4">
+                <div className="flex items-center justify-between border-b pb-4">
                   {/* Left */}
-                  <p className="font-extrabold text-zinc-900">
+                  <p className="font-bold text-zinc-900">
                     {selectedPlan.title} Plan
                   </p>
 
                   {/* Right */}
                   <div className="flex items-center gap-3">
-                    <p className="font-extrabold text-zinc-900">
+                    <p className="font-bold text-zinc-900">
                       ${billing==="yearly"?selectedPlan.pricePerYear:selectedPlan.pricePerMonth}/{billing==="yearly"?"yearly":"monthly"}
                     </p>
                     <Link
@@ -296,7 +296,7 @@ const handlePayment = async () => {
 
                 {/* Features */}
                 <div>
-                  <p className="font-extrabold text-md mb-3">
+                  <p className="font-bold text-md mb-3">
                     What's included:
                   </p>
                   <ul className="space-y-3">
@@ -349,7 +349,7 @@ const handlePayment = async () => {
 
                 {/* Total*/}
                 <div className="border-t pt-4">
-                  <div className="flex items-center justify-between font-extrabold text-zinc-900">
+                  <div className="flex items-center justify-between font-bold text-zinc-900">
                     <span>Price Plan</span>
                     <span>
                       ${billing==="yearly"?selectedPlan.pricePerYear:selectedPlan.pricePerMonth}
@@ -357,7 +357,7 @@ const handlePayment = async () => {
                   </div>
                   {
                     (selectedPlan?.pricePerYear>remainingAmount &&selectedPlan?.pricePerMonth>remainingAmount ) && (
-                      <div className="flex items-center justify-between font-extrabold text-zinc-900">
+                      <div className="flex items-center justify-between font-bold text-zinc-900">
                     <span>Previous Plan Amount</span>
                     <span>
                       ${remainingAmount.toFixed(2) || 0}
@@ -365,7 +365,7 @@ const handlePayment = async () => {
                   </div>
                     )
                   }
-                   <div className="flex items-center justify-between font-extrabold text-zinc-900">
+                   <div className="flex items-center justify-between font-bold text-zinc-900">
                     <span>Total</span>
                     <span>
                       ${payableAmount>0?payableAmount:billing==="yearly"?selectedPlan.pricePerYear:selectedPlan.pricePerMonth}
@@ -417,7 +417,7 @@ const handlePayment = async () => {
           </div>
 
           {/* Back Link */}
-          <div className="mt-8 text-center">
+          <div className="mt-4 text-center">
             <Link
               href="/agency/dashboard/account/subscriptions"
               className="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-700"

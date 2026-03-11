@@ -436,6 +436,26 @@ const handler = (payload: any) => {
     return <CheckCheck className="h-3 w-3 text-blue-600" />;
   };
 
+
+  const formatDateLabel = (dateString: string) => {
+  const msgDate = new Date(dateString);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  const isToday = msgDate.toDateString() === today.toDateString();
+  const isYesterday = msgDate.toDateString() === yesterday.toDateString();
+
+  if (isToday) return "Today";
+  if (isYesterday) return "Yesterday";
+
+  return msgDate.toLocaleDateString([], {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
+
   const formatedTime = (recivedTime: String) => {
     const timestamp = recivedTime;
     const date = new Date(timestamp);
@@ -893,7 +913,7 @@ const toggleFavorite = (conversationId: string) => {
               <div className="flex-1 px-3 -mt-15 -mb-15 overflow-y-auto max-h-[68vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 {!chatLaoding && (dynamicMessages || []).length !== 0 ? (
                   <div>
-                    {dynamicMessages.map((msg: Message) => (
+                    {/* {dynamicMessages.map((msg: Message) => (
                       <div
                         key={msg._id}
                         className={clsx(
@@ -947,7 +967,80 @@ const toggleFavorite = (conversationId: string) => {
                           </div>
                         </div>
                       </div>
-                    ))}
+                    ))} */}
+                    {dynamicMessages.map((msg: Message, index) => {
+                      const currentDate = new Date(msg.createdAt).toDateString();
+
+                      const prevDate =
+                        index > 0
+                          ? new Date(dynamicMessages[index - 1].createdAt).toDateString()
+                          : null;
+
+                      const showDateDivider = currentDate !== prevDate;
+
+                      return (
+                        <div key={msg._id}>
+
+                          {/* DATE DIVIDER */}
+                          {showDateDivider && (
+                            <div className="flex justify-center my-4">
+                              <span className="bg-gray-200 text-gray-600 text-[10px] px-3 py-1 rounded-full">
+                                {formatDateLabel(msg.createdAt)}
+                              </span>
+                            </div>
+                          )}
+
+                          <div
+                            className={clsx(
+                              "flex",
+                              msg.senderId === user?.id ? "justify-end" : "justify-start"
+                            )}
+                          >
+                            <div className="max-w-[70%]">
+
+                              <div
+                                className={clsx(
+                                  "rounded-2xl px-4 py-2 text-xs",
+                                  msg.senderId === user?.id ? "bg-blue-100" : "bg-gray-100"
+                                )}
+                              >
+                                {msg.attachments?.length > 0 && (
+                                  <div onClick={() => handleDownload(msg.attachments[0])}>
+                                    {msg.messageType?.toLowerCase() === "image" ? (
+                                      <img
+                                        src={msg.attachments[0]}
+                                        className="rounded-lg max-h-40"
+                                      />
+                                    ) : (
+                                      <div className="flex items-center gap-2 text-xs w-[40px] h-[40px] bg-white p-2 rounded-lg">
+                                        <FileText className="h-10 w-10" />
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+
+                                {msg.content}
+                              </div>
+
+                              <div className="flex items-center justify-end gap-1 text-[10px] text-gray-400 mt-1">
+                                {msg.senderId === user?.id && (
+                                  <div>
+                                    {msg.isRead ? (
+                                      <CheckCheck color="blue" size={16} />
+                                    ) : (
+                                      <Check size={16} />
+                                    )}
+                                  </div>
+                                )}
+                                {formatedTime(msg.createdAt)}
+                              </div>
+
+                            </div>
+                          </div>
+
+                        </div>
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="text-center">
