@@ -61,6 +61,7 @@ import {
   Handshake,
   CircleDollarSign,
   Heart,
+  ExternalLink,
 } from "lucide-react";
 import { FaFileAlt } from "react-icons/fa";
 
@@ -102,7 +103,7 @@ export default function AgencyDashboard() {
   console.log("[v0] Agency dashboard rendering");
   const { user, loading } = useAuth();
   const router = useRouter();
-  
+
 
   const [selectedRequirement, setSelectedRequirement] =
     useState<Requirement | null>(null);
@@ -113,51 +114,58 @@ export default function AgencyDashboard() {
     projectsInThisMonth: 0,
     proposals: 0,
     proposalResponses: 0,
-    leadsCount:0,
-    leadsInThisMonth:0
+    leadsCount: 0,
+    leadsInThisMonth: 0,
+    profileViews:0,
+      profileViewsPercentage:0,
+      websiteClicks:0,
+      websiteClicksPercentage:0,
+      conversionPercentage:0,
+      leadsPercentage:0,
+      leads:0
   });
   const [activeProjects, setActiveProjects] = useState<Requirement[]>([]);
-  
+
   const [resLoading, setResLoading] = useState(false);
 
   const getProjectsInThisMonth = (proposals: any[]) => {
-  const now = new Date()
+    const now = new Date()
 
-  return proposals.filter((proposal) => {
-    if (!proposal.acceptedAt) return false
+    return proposals.filter((proposal) => {
+      if (!proposal.acceptedAt) return false
 
-    const acceptedDate = new Date(proposal.acceptedAt)
+      const acceptedDate = new Date(proposal.acceptedAt)
 
-    return (
-      acceptedDate.getMonth() === now.getMonth() &&
-      acceptedDate.getFullYear() === now.getFullYear()
-    )
-  }).length
-}
-const getLeadsInThisMonth = (leads: any[]) => {
-  const now = new Date()
+      return (
+        acceptedDate.getMonth() === now.getMonth() &&
+        acceptedDate.getFullYear() === now.getFullYear()
+      )
+    }).length
+  }
+  const getLeadsInThisMonth = (leads: any[]) => {
+    const now = new Date()
 
-  return leads.filter((lead) => {
-    if (!lead.createdAt) return false
+    return leads.filter((lead) => {
+      if (!lead.createdAt) return false
 
-    const createdDate = new Date(lead.createdAt)
+      const createdDate = new Date(lead.createdAt)
 
-    return (
-      createdDate.getMonth() === now.getMonth() &&
-      createdDate.getFullYear() === now.getFullYear()
-    )
-  }).length
-}
+      return (
+        createdDate.getMonth() === now.getMonth() &&
+        createdDate.getFullYear() === now.getFullYear()
+      )
+    }).length
+  }
   const loadData = async () => {
     setResLoading(true);
     try {
-      const [providerDetailRes, proposalRes, requirementRes,leadsRes] =
+      const [providerDetailRes, proposalRes, requirementRes, leadsRes] =
         await Promise.all([
           authFetch(`/api/providers/${user?.id}`, {}),
           authFetch("/api/proposals", {}),
           authFetch("/api/requirements", {}),
-          authFetch("/api/leads",{})
-          
+          authFetch("/api/leads", {})
+
         ]);
       if (
         providerDetailRes.ok &&
@@ -170,39 +178,52 @@ const getLeadsInThisMonth = (leads: any[]) => {
           proposalData,
           requirementData,
           leadsData,
-          
+
         ] = await Promise.all([
           providerDetailRes.json(),
           proposalRes.json(),
           requirementRes.json(),
           leadsRes.json()
-        
+
         ]);
         console.log("Provider Details Data::::", providerDetailsData);
         console.log("Proposals Data:::", proposalData);
         console.log("Requirements Data::::", requirementData);
-        
-        
+
+
         let responsesCount = proposalData.proposals.filter(
-          (eachItem) => eachItem.status != "pending",
+          (eachItem: any) => eachItem.status != "pending",
         ).length;
+         let profileViewPercentage=providerDetailsData.provider.currentMonthProfileViews>0?Math.round((providerDetailsData.provider.currentMonthProfileViews/providerDetailsData.provider.profileViews)*100) :0;
+           let websiteClicksPercentage=providerDetailsData.provider.currentMonthWebsiteClicks>0?Math.round((providerDetailsData.provider.currentMonthWebsiteClicks/providerDetailsData.provider.websiteClicks)*100) :0;
+        let totalProjectsDone=requirementData.requirements.filter((eachItem: any)=>eachItem?.allocatedToId===user?.id);
+        let conversionPercentage=proposalData.proposals.length>0?Math.round((totalProjectsDone.length/proposalData.proposals.length)*100):0;
         const projectsInThisMonth = getProjectsInThisMonth(
           proposalData.proposals || []
         )
         const leadsInThisMonth = getLeadsInThisMonth(leadsData.data || [])
 
         setDynamicStats({
-        activeProjects: proposalData.proposals.filter((item)=>item.status==="accepted").length,
-        projectsInThisMonth: projectsInThisMonth,
-        proposals: proposalData.proposals.length,
-        proposalResponses: responsesCount,
-        leadsCount:(leadsData.data || []).length,
-        leadsInThisMonth:leadsInThisMonth
-      })
+          activeProjects: proposalData.proposals.filter((item: any) => item.status === "accepted").length,
+          projectsInThisMonth: projectsInThisMonth,
+          proposals: proposalData.proposals.length,
+          proposalResponses: responsesCount,
+          leadsCount: (leadsData.data || []).length,
+          leadsInThisMonth: leadsInThisMonth,
+                    profileViews:providerDetailsData.provider.profileViews,
+          profileViewsPercentage:profileViewPercentage,
+                    websiteClicks:providerDetailsData.provider.websiteClicks,
+          websiteClicksPercentage:websiteClicksPercentage,
+          // proposals:proposalData.proposals.length,
+          // proposalResponses:responsesCount,
+          conversionPercentage:conversionPercentage,
+                    leadsPercentage:0,
+          leads:totalProjectsDone.length,
+        })
 
-       
 
-        
+
+
 
         let currentActiveProjects = proposalData.proposals.filter(
           (eachItem: any) => eachItem.status === "accepted",
@@ -216,10 +237,10 @@ const getLeadsInThisMonth = (leads: any[]) => {
                 new Date(b.acceptedAt).getTime() -
                 new Date(a.acceptedAt).getTime()
             )
-            .slice(0, 2)
+            .slice(0, 6)
         )
-        
-        
+
+
       } else {
         throw new Error();
       }
@@ -230,12 +251,6 @@ const getLeadsInThisMonth = (leads: any[]) => {
     }
   };
 
- 
-
-
- 
- 
-
   const handleProposalSubmit = (requirement: Requirement) => {
     // Placeholder for handleProposalSubmit logic
     console.log("Proposal submitted for requirement:", requirement.id);
@@ -243,13 +258,6 @@ const getLeadsInThisMonth = (leads: any[]) => {
     setSelectedRequirement(null);
   };
 
-  
-
-  
-
-  
-
-  
   useEffect(() => {
     if (!loading && (!user || user.role !== "agency")) {
       router.push("/login");
@@ -270,11 +278,6 @@ const getLeadsInThisMonth = (leads: any[]) => {
   if (!user || user.role !== "agency") {
     return null;
   }
-
- 
-
-  
-
   // Added state for project tab navigation
   // const [projectTab, setProjectTab] = useState<"active" | "completed" | "invitations">("active")
 
@@ -292,29 +295,29 @@ const getLeadsInThisMonth = (leads: any[]) => {
       </div>
     );
   }
-  
-  console.log("Dynamic Top Cards Stats are the::::",dynamicStats)
 
-  const formatDateToShort=(dateString: string): string=> {
-  const date = new Date(dateString)
+  console.log("Dynamic Top Cards Stats are the::::", dynamicStats)
 
-  if (isNaN(date.getTime())) return ""
+  const formatDateToShort = (dateString: string): string => {
+    const date = new Date(dateString)
 
-  return date.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  })
-}
-const getCompletionPercentage = (
-  items: { title: string; description: string; completed: boolean }[]
-): number => {
-  if (!items.length) return 0
+    if (isNaN(date.getTime())) return ""
 
-  const completedCount = items.filter(item => item.completed).length
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    })
+  }
+  const getCompletionPercentage = (
+    items: { title: string; description: string; completed: boolean }[]
+  ): number => {
+    if (!items.length) return 0
 
-  return Math.round((completedCount / items.length) * 100)
-}
+    const completedCount = items.filter(item => item.completed).length
+
+    return Math.round((completedCount / items.length) * 100)
+  }
 
   return (
     <div>
@@ -330,10 +333,10 @@ const getCompletionPercentage = (
 
         <div>
           <div className="space-y-3">
-            
+
             {/* STATS CARDS */}
-            <div className="w-full">
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="w-full flex flex-col gap-8">
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 
                 {/* PROJECTS CARD */}
                 <div className="relative rounded-xl px-4 py-4 shadow-sm flex flex-col justify-between min-h-[130px]">
@@ -361,13 +364,13 @@ const getCompletionPercentage = (
                   </div>
 
                   <div className="flex justify-end">
-                    <button className="bg-[#3C3A3E] hover:bg-[#000] h-[30px] w-[120px] cursor-pointer rounded-full text-white text-xs transition" 
-                    onClick={()=>router.push("/agency/dashboard/projects")}>
+                    <button className="bg-[#3C3A3E] hover:bg-[#000] h-[30px] w-[120px] cursor-pointer rounded-full text-white text-xs transition"
+                      onClick={() => router.push("/agency/dashboard/projects")}>
                       View Projects →
                     </button>
                   </div>
                 </div>
-                  {/* <StatCard
+                {/* <StatCard
                     title="Projects"
                     subtitle={`${dynamicStats.projectsInThisMonth > 0
                             ? `+${dynamicStats.projectsInThisMonth}`
@@ -405,8 +408,8 @@ const getCompletionPercentage = (
                   </div>
 
                   <div className="flex justify-end mt-4">
-                    <button className="bg-[#3C3A3E] hover:bg-[#000] h-[30px] w-[120px] cursor-pointer rounded-full text-white text-xs transition" 
-                    onClick={()=>router.push("/agency/dashboard/proposals")}>
+                    <button className="bg-[#3C3A3E] hover:bg-[#000] h-[30px] w-[120px] cursor-pointer rounded-full text-white text-xs transition"
+                      onClick={() => router.push("/agency/dashboard/proposals")}>
                       View Proposals →
                     </button>
                   </div>
@@ -439,50 +442,151 @@ const getCompletionPercentage = (
 
                   <div className="flex justify-end mt-4">
                     <button className="bg-[#3C3A3E] hover:bg-[#000] h-[30px] w-[120px] cursor-pointer rounded-full text-white text-xs transition"
-                    onClick={()=>router.push("/agency/dashboard/leads")} >
+                      onClick={() => router.push("/agency/dashboard/leads")} >
                       View Leads →
                     </button>
                   </div>
                 </div>
 
               </div>
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                {/* Profile views card */}
+                  <div className="relative rounded-xl px-4 py-4 shadow-sm flex flex-col justify-between">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-blue-100 p-3 rounded-lg">
+                        <Eye className="text-blue-600" size={20} />
+                      </div>
+                      <div>
+                        <h3 className="text-gray-700 font-medium text-sm">
+                          Profile Views
+                        </h3>
+                        <p className="text-xs text-green-600 mt-1">
+                          {dynamicStats.profileViews > 0
+                            ? `${dynamicStats.profileViewsPercentage}`
+                            : "0"}
+                        % new this month
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="text-xl font-semibold text-gray-800">
+                      {dynamicStats.profileViews}
+                    </span>
+                  </div>
+                </div>
+                {/* praposal cards */}
+                    {/* <div className="relative rounded-xl px-4 py-4 shadow-sm flex flex-col justify-between">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-purple-100 p-3 rounded-lg">
+                        <FileText className="text-purple-600" size={20} />
+                      </div>
+                      <div>
+                        <h3 className="text-gray-700 font-medium text-sm">
+                        Praposals
+                        </h3>
+                        <p className="text-xs text-green-600 mt-1">
+                          {dynamicStats.proposals > 0
+                            ? `+${dynamicStats.proposalResponses}`
+                            : "0"}{" "}
+                          new this month
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="text-xl font-semibold text-gray-800">
+                      {dynamicStats.proposals}
+                    </span>
+                  </div>
+                </div> */}
+                {/* website click cards  */}
+                    <div className="relative rounded-xl px-4 py-4 shadow-sm flex flex-col justify-between">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-orange-100 p-3 rounded-lg">
+                        <ExternalLink className="text-orange-600" size={20} />
+                      </div>
+                      <div>
+                        <h3 className="text-gray-700 font-medium text-sm">
+                         Website Clicks
+                        </h3>
+                        <p className="text-xs text-green-600 mt-1">
+                          {dynamicStats.websiteClicks > 0
+                            ? `${dynamicStats.websiteClicksPercentage}`
+                            : "0"}
+                         % new this month
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="text-xl font-semibold text-gray-800">
+                      {dynamicStats.websiteClicks}
+                    </span>
+                  </div>
+                </div>
+                {/* client conversion rate card */}
+                    <div className="relative rounded-xl px-4 py-4 shadow-sm flex flex-col justify-between">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-teal-100 p-3 rounded-lg">
+                        <TrendingUp className="text-teal-600" size={20} />
+                      </div>
+                      <div>
+                        <h3 className="text-gray-700 font-medium text-sm">
+                          Client Conversion Rate
+                        </h3>
+                        <p className="text-xs text-green-600 mt-1">
+                          {dynamicStats.conversionPercentage > 0
+                            ? `${dynamicStats.conversionPercentage}`
+                            : "0"}
+                         % new this month
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="text-xl font-semibold text-gray-800">
+                      {dynamicStats.conversionPercentage}%
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* ACTIVE PROJECTS */}
-           
-                <h1 className="text-[#000] text-lg font-semibold">
-                 Active Projects
-                </h1>
+            <div className="spacey-3 pt-4">
+              <h1 className="text-[#000] text-lg font-semibold mb-2">
+                Active Projects
+              </h1>
 
-                {activeProjects.length !== 0 ? (
-                  <div className="grid md:grid-cols-2 gap-3 mt-1">
-                    {activeProjects.map((project) => (
-                      <ProjectCard
-                        key={project.id}
-                        data={{
-                          id: project.id,
-                          title: project.requirement.title,
-                          amount: project.proposedBudget,
-                          duration: project.proposedTimeline,
-                          category: project.requirement.category,
-                          date: project?.acceptedAt
-                            ? formatDateToShort(project.acceptedAt)
-                            : "N/A",
-                          progress: getCompletionPercentage(project.milestones),
-                        }}
-                        borderColor="#7C6EF6"
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center mt-4">
-                    <p className="text-gray-500 text-xl">
-                      No active projects
-                    </p>
-                  </div>
-                )}
-              
-
+              {activeProjects.length !== 0 ? (
+                <div className="grid md:grid-cols-2 gap-3 mt-1">
+                  {activeProjects.map((project) => (
+                    <ProjectCard
+                      key={project.id}
+                      data={{
+                        id: project.id,
+                        title: project.requirement.title,
+                        amount: project.proposedBudget,
+                        duration: project.proposedTimeline,
+                        category: project.requirement.category,
+                        date: project?.acceptedAt
+                          ? formatDateToShort(project.acceptedAt)
+                          : "N/A",
+                        progress: getCompletionPercentage(project.milestones),
+                      }}
+                      borderColor="#7C6EF6"
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center mt-4">
+                  <p className="text-gray-500 text-xl">
+                    No active projects
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
