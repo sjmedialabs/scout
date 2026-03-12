@@ -160,16 +160,16 @@ export default function AllSubscribersPage() {
       {/* HEADER */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-3xl font-bold my-custom-class text-orangeButton">
+          <h1 className="text-3xl font-bold  text-orangeButton">
             Subscribers
           </h1>
-          <p className="text-gray-500 my-custom-class text-xl">
+          <p className="text-gray-500  text-xl">
             Manage and monitor your customer subscriptions
           </p>
         </div>
 
         <Link href="/admin/subscribers/all-subscribers/add">
-          <Button className="bg-black text-white rounded-3xl my-custom-class flex items-center gap-2">
+          <Button className="bg-black text-white rounded-3xl  flex items-center gap-2">
             <Plus className="h-4 w-4" />
             Add Subscriber
           </Button>
@@ -183,15 +183,15 @@ export default function AllSubscribersPage() {
             placeholder="Search Subscribers"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="md:max-w-sm my-custom-class placeholder:text-gray-500"
+            className="md:max-w-sm  placeholder:text-gray-500"
           />
         </div>
         <div className="rounded-xl border">
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="md:w-48 my-custom-class">
+            <SelectTrigger className="md:w-48 ">
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
-            <SelectContent className="my-custom-class">
+            <SelectContent className="">
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="active">Active</SelectItem>
               <SelectItem value="inactive">Inactive</SelectItem>
@@ -202,7 +202,7 @@ export default function AllSubscribersPage() {
 
         <div className="rounded-xl border">
           <Select value={role} onValueChange={(v) => setRole(v as any)}>
-            <SelectTrigger className="md:w-48 my-custom-class">
+            <SelectTrigger className="md:w-48 ">
               <SelectValue placeholder="All Roles" />
             </SelectTrigger>
             <SelectContent>
@@ -219,13 +219,13 @@ export default function AllSubscribersPage() {
         <table className="w-full min-w-[900px]">
           <thead>
             <tr className="text-left text-sm font-semibold border-b">
-              <th className="p-4 my-custom-class">Company</th>
-              <th className="p-4 my-custom-class">Plan</th>
-              <th className="p-4 my-custom-class">Status</th>
-              <th className="p-4 my-custom-class">Users</th>
-              <th className="p-4 my-custom-class">Monthly Revenue</th>
-              <th className="p-4 my-custom-class">Join Date</th>
-              <th className="p-4 my-custom-class">Actions</th>
+              <th className="p-4 ">Company</th>
+              <th className="p-4 ">Plan</th>
+              <th className="p-4 ">Status</th>
+              <th className="p-4 ">Users</th>
+              <th className="p-4 ">Monthly Revenue</th>
+              <th className="p-4 ">Join Date</th>
+              <th className="p-4 ">Actions</th>
             </tr>
           </thead>
 
@@ -236,7 +236,7 @@ export default function AllSubscribersPage() {
                 className="border-b last:border-none hover:bg-gray-50 transition"
               >
                 <td className="p-4">
-                  <div className="font-bold text-sm h-4 my-custom-class">
+                  <div className="font-bold text-sm h-4 ">
                     {sub.company}
                   </div>
                   <div className="text-sm text-gray-500">{sub.email}</div>

@@ -174,7 +174,7 @@ const isValidPhone = (phone) => {
 
   return (
     <div className="bg-white rounded-lg shadow p-6 space-y-6">
-      <h1 className="text-2xl font-bold my-custom-class text-orangeButton">CMS Management</h1>
+      <h1 className="text-2xl font-bold  text-orangeButton">CMS Management</h1>
 
       <Tabs defaultValue="home" className="w-full">
         <TabsList className="grid grid-cols-6 mb-6 border rounded-xl shadow-lg">
@@ -190,7 +190,7 @@ const isValidPhone = (phone) => {
         <TabsContent value="home" className="space-y-6">
           {/* HERO SECTION */}
           <section className="space-y-4 border p-4 rounded-xl shadow-lg">
-            <h2 className="text-xl font-semibold my-custom-class text-orangeButton">Hero Section</h2>
+            <h2 className="text-xl font-semibold  text-orangeButton">Hero Section</h2>
 
             {/* <FileUpload
               value={cms.homeBannerImg}
@@ -224,7 +224,7 @@ const isValidPhone = (phone) => {
           {/* HOME WORK SECTION */}
           <section className="space-y-4 border p-4 rounded-xl shadow-lg">
             <div className="flex justify-between">
-              <h2 className="text-xl font-semibold my-custom-class text-orangeButton">How Spark Works</h2>
+              <h2 className="text-xl font-semibold  text-orangeButton">How Spark Works</h2>
               <Button
               className="rounded-full"
                 onClick={() =>

@@ -118,16 +118,16 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
         <div className="flex justify-between items-center -mt-3">
           <CardTitle className="flex items-center gap-2">
             <Filter className="h-5 w-5"/>
-            <span className="my-custom-class text-[14px] font-normal -ml-1 text-[#4B4B4B]"> Filter</span>
+            <span className=" text-[14px] font-normal -ml-1 text-[#4B4B4B]"> Filter</span>
           </CardTitle>
-          <Button variant="ghost" size="sm" onClick={clearFilters} className=" hover:bg-transparent focus:bg-transparent active:bg-transparent  hover:text-[#2B67F6] my-custom-class text-[#2B67F6] text-[12px]" >
+          <Button variant="ghost" size="sm" onClick={clearFilters} className=" hover:bg-transparent focus:bg-transparent active:bg-transparent  hover:text-[#2B67F6]  text-[#2B67F6] text-[12px]" >
             Reset All
           </Button>
         </div>
       </CardHeader>
       <CardContent className="space-y-3 -mt-6">
         {/* Service Type */}
-        {/* <div className="space-y-2 my-custom-class">
+        {/* <div className="space-y-2 ">
           <Label className="text-[14px] mb-0 text-[#98A0B4] font-semibold">Service Type</Label>
           <Select value={filters.serviceType} onValueChange={(value) => handleFilterChange("serviceType", value)}>
             <SelectTrigger className="border-2 data-[placeholder]:text-[#98A0B4] border-[#D0D5DD] rounded-full text-[12px]">

@@ -257,8 +257,8 @@ export default function BillingPage() {
     <div className="space-y-4">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-orangeButton my-custom-class">Billing & Invoices</h1>
-        <p className="text-gray-500 mt-0 my-custom-class text-xl">
+        <h1 className="text-3xl font-bold text-orangeButton ">Billing & Invoices</h1>
+        <p className="text-gray-500 mt-0  text-xl">
           Manage your billing, payments, and invoices
         </p>
       </div>
@@ -267,7 +267,7 @@ export default function BillingPage() {
 <div className="inline-flex items-center bg-[#e6edf5] rounded-full p-1">
   <button
     onClick={() => setActiveTab("overview")}
-    className={`px-6 py-2 text-sm font-medium rounded-full transition my-custom-class
+    className={`px-6 py-2 text-sm font-medium rounded-full transition 
       ${
         activeTab === "overview"
           ? "bg-orange-500 text-white shadow"
@@ -279,7 +279,7 @@ export default function BillingPage() {
 
   <button
     onClick={() => setActiveTab("invoices")}
-    className={`px-6 py-2 text-sm font-medium rounded-full transition my-custom-class
+    className={`px-6 py-2 text-sm font-medium rounded-full transition 
       ${
         activeTab === "invoices"
           ? "bg-orange-500 text-white shadow"
@@ -327,7 +327,7 @@ export default function BillingPage() {
 
       {/* MONTHLY REVENUE vs TARGET */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border">
-        <h3 className="text-xl font-semibold text-orangeButton my-custom-class mb-6">
+        <h3 className="text-xl font-semibold text-orangeButton  mb-6">
           Monthly Revenue vs Target
         </h3>
 
@@ -348,7 +348,7 @@ export default function BillingPage() {
 
       {/* MRR GROWTH TREND */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border">
-        <h3 className="text-xl font-semibold text-orangeButton my-custom-class mb-6">
+        <h3 className="text-xl font-semibold text-orangeButton  mb-6">
           MRR Growth Trend
         </h3>
 
@@ -456,11 +456,11 @@ function StatCard({ title, value, note, noteColor, icon }: any) {
         {icon}
       </div>
 
-      <p className="text-sm my-custom-class max-w-[150px] font-bold">{title}</p>
+      <p className="text-sm  max-w-[150px] font-bold">{title}</p>
       </div>
       <div className="items-end">
-      <p className="text-3xl font-bold my-custom-class mt-3">{value}</p>
-      <p className={`text-xs ${noteColor} mt-0 my-custom-class`}>{note}</p>
+      <p className="text-3xl font-bold  mt-3">{value}</p>
+      <p className={`text-xs ${noteColor} mt-0 `}>{note}</p>
       </div>
     </div>
   );

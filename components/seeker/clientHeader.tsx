@@ -206,7 +206,7 @@ const profileRef = useRef<HTMLDivElement>(null);
                   onClick={()=>handleMarkNotificationAsRead(notification._id)}
                 >
                   <div className="text-md text-gray-600 font-semibold">{notification.title}</div>
-                  <p className="text-xs text-[#656565] my-custom-class mt-1">{notification.message}</p>
+                  <p className="text-xs text-[#656565]  mt-1">{notification.message}</p>
                   <div className="text-xs text-gray-400 mt-1">
                     {timeAgo(notification.createdAt)}
                   </div>

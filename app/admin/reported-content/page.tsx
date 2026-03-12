@@ -105,10 +105,10 @@ export default function ModerationPage() {
     <div className="space-y-4">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-orangeButton my-custom-class">
+        <h1 className="text-3xl font-bold text-orangeButton ">
           Reported Content
         </h1>
-        <p className="text-gray-500 my-custom-class">
+        <p className="text-gray-500 ">
           Platform management and oversight
         </p>
       </div>
@@ -129,14 +129,14 @@ export default function ModerationPage() {
         <table className="w-full min-w-[900px] text-sm">
           <thead className="border-b border-red-100">
             <tr className="text-left">
-              {/* <th className="px-6 py-4 font-semibold text-black my-custom-class">Type</th> */}
-              <th className="px-6 py-4 font-semibold text-black my-custom-class">Reason</th>
-              <th className="px-6 py-4 font-semibold text-black my-custom-class">Status</th>
-              <th className="px-6 py-4 font-semibold text-black my-custom-class">Role</th>
-              <th className="px-6 py-4 font-semibold text-black my-custom-class">
+              {/* <th className="px-6 py-4 font-semibold text-black ">Type</th> */}
+              <th className="px-6 py-4 font-semibold text-black ">Reason</th>
+              <th className="px-6 py-4 font-semibold text-black ">Status</th>
+              <th className="px-6 py-4 font-semibold text-black ">Role</th>
+              <th className="px-6 py-4 font-semibold text-black ">
                 Reported Date
               </th>
-              <th className="px-6 py-4 font-semibold text-black text-center my-custom-class">
+              <th className="px-6 py-4 font-semibold text-black text-center ">
                 Actions
               </th>
             </tr>
@@ -154,24 +154,24 @@ export default function ModerationPage() {
                     >
                       {/* Type */}
                       {/* <td className="px-6 py-4">
-                        <Badge className="bg-[#dbd9f0] text-[#4a37d6] my-custom-class rounded-md px-3 py-1">
+                        <Badge className="bg-[#dbd9f0] text-[#4a37d6]  rounded-md px-3 py-1">
                           {report.type}
                         </Badge>
                       </td> */}
 
                       {/* Reason */}
                       <td className="px-6 py-4">
-                        <p className="font-semibold text-black my-custom-class">
+                        <p className="font-semibold text-black ">
                           {report.reason}
                         </p>
-                        <p className="text-sm text-gray-500 my-custom-class">
+                        <p className="text-sm text-gray-500 ">
                           Reported by {report.reportedBy.name}
                         </p>
                       </td>
 
                       {/* Status */}
                       <td className="px-6 py-4">
-                        <span className="inline-flex px-4 py-1 my-custom-class text-sm font-medium bg-yellow-200 text-yellow-800 rounded-sm">
+                        <span className="inline-flex px-4 py-1  text-sm font-medium bg-yellow-200 text-yellow-800 rounded-sm">
                           {report.status}
                         </span>
                       </td>
@@ -183,7 +183,7 @@ export default function ModerationPage() {
                       </td>
 
                       {/* Date */}
-                      <td className="px-6 py-4 text-black my-custom-class flex gap-2 items-center">
+                      <td className="px-6 py-4 text-black  flex gap-2 items-center">
                         <Calendar className="w-4 h-4 text-gray-900" />
                         <span>
                         {new Date(report.createdAt).toLocaleDateString("en-IN")}

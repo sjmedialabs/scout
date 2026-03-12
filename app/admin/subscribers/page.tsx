@@ -489,10 +489,10 @@ const [subscriberGrowthData, setSubscriberGrowthData] =
       {/* HEADER */}
       <div className="flex items-start justify-between gap-4">
       <div>
-        <h1 className="text-3xl font-bold my-custom-class h-8 text-orangeButton">
+        <h1 className="text-3xl font-bold  h-8 text-orangeButton">
           Subscribers Management
         </h1>
-        <p className="text-gray-500 my-custom-class">
+        <p className="text-gray-500 ">
           Welcome back to your B2B management console
         </p>
       </div>
@@ -509,7 +509,7 @@ const [subscriberGrowthData, setSubscriberGrowthData] =
         {stats.map((item) => (
           <Card key={item.title} className="relative bg-white rounded-3xl py-2 pb-0 shadow-lg border-none">
             <CardHeader className="flex flex-row h-2 items-start justify-between">
-              <CardTitle className="text-sm font-bold my-custom-class">
+              <CardTitle className="text-sm font-bold ">
                 {item.title}
               </CardTitle>
               <div className="absolute right-3 top-1 p-2 rounded-full bg-[#eef7fe] text-orange-500">
@@ -517,8 +517,8 @@ const [subscriberGrowthData, setSubscriberGrowthData] =
               </div>
             </CardHeader>
             <CardContent className="pt-2 pb-6">
-              <div className="text-2xl font-bold my-custom-class">{item.value}</div>
-              <p className={`mt-2 my-custom-class text-xs ${item.color ?? "text-green-600"}`}>
+              <div className="text-2xl font-bold ">{item.value}</div>
+              <p className={`mt-2  text-xs ${item.color ?? "text-green-600"}`}>
                 {item.sub}
               </p>
             </CardContent>
@@ -706,7 +706,7 @@ function DashboardCard({
   return (
     <Card className="rounded-3xl bg-white p-0 shadow-lg">
       <CardHeader className="flex flex-row items-center justify-between px-10 pt-4 pb-4">
-        <CardTitle className="text-[22px] font-semibold text-orangeButton my-custom-class">
+        <CardTitle className="text-[22px] font-semibold text-orangeButton ">
           {title}
         </CardTitle>
 
