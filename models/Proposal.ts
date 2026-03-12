@@ -17,7 +17,7 @@ export interface IProposal extends Document {
     duration: string
   }[]
   attachments?: string[]
-  status: "pending" | "viewed" | "shortlisted" | "accepted" | "rejected" | "withdrawn" | "negotation"
+  status: "pending" | "viewed" | "shortlisted" | "accepted" | "rejected" | "withdrawn" | "negotation" | "completed"
   clientViewed: boolean
   clientViewedAt?: Date
   clientResponded: boolean

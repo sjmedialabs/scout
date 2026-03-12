@@ -314,7 +314,21 @@ export async function PUT(
           } else {
             m.approvalStatus = "revision_requested";
           }
-          updates.milestones = milestones;
+          updates.milestones = milestones; 
+          // check if all milestones are completed
+          const allCompleted = milestones.every(milestone => milestone.completed === true);
+
+          console.log("All Milestones Completed::::", allCompleted)
+
+          if (allCompleted) {
+            updates.status = "completed";
+            //for the posted requirement status update
+            await Requirement.findByIdAndUpdate(
+              proposal.requirementId,
+              { status: "Closed" },
+              { new: true },
+            );
+          }
 
           if (action === "request_revision") {
             const projectClient = await Requirement.findById(proposal.requirementId).lean();

@@ -221,6 +221,7 @@ export async function GET(request: NextRequest) {
       services: p.services,
       technologies: p.technologies,
       industries: p.industries,
+      clients: p.clients,
       rating: p.rating,
       reviewCount: p.reviewCount,
       costRating: p.costRating,

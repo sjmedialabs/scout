@@ -94,7 +94,7 @@ const paginatedCompletedProjects = dynamicCompletedProjects.slice(
 
       const completedPercentage = calculateProgress(milestonesDraft || []);
       // Build payload dynamically
-      const payload: any = {
+      const payload: any = { 
         milestones: milestonesDraft,
       };
 

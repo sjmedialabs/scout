@@ -158,10 +158,10 @@ const ProjectInquiriesPage = () => {
     <div className="space-y-6">
       <div className="pb-4 border-b border-gray-200">
         <h1 className="text-2xl font-semibold text-orangeButton">
-          Project Inquiries
+          Find Projects
         </h1>
         <p className="text-sm text-gray-500 mt-0">
-          Browse and respond to client requirements
+          Browse and respond to client projects
         </p>
       </div>
       {/* REMOVED SubscriptionGate */}

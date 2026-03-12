@@ -9,7 +9,7 @@ import type { Proposal } from "@/lib/types"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import RatingStars from "@/components/rating-star"
-import { ChevronRight,ChevronLeft } from "lucide-react"
+import { ChevronRight,ChevronLeft,MoveLeft,MessageSquare } from "lucide-react"
 import { authFetch } from "@/lib/auth-fetch"
 import countries from "i18n-iso-countries";
 import en from "i18n-iso-countries/langs/en.json";
@@ -34,6 +34,8 @@ export default function ProposalViewDetailsPage() {
   const [resLoading, setResLoading] = useState(false)
   const [failed, setFailed] = useState(false)
   const [proposal, setProposal] = useState<Proposal | null>(null)
+
+   const [trackingTab, setTrackingTab] = useState<"overview" | "deliverables">("overview")
 
    // negotation modal and message
       const[showNegotationModal,setShowNegotationModal]=useState(false);
@@ -344,19 +346,77 @@ const handlNegotation=async(proposalId:string)=>{
       }
     };
 
+     const handleMessageAgency = async (proposal: any) => {
+    try {
+      const res = await authFetch(`/api/chat/conversation`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ proposalId: proposal.id }),
+      });
+
+      const data = await res.json();
+
+      router.push(
+        `/client/dashboard/chat?conversationId=${data.conversationId}&agencyId=${proposal?.agency?.userId}`
+      );
+    } catch (error) {
+      console.log("Failed to start conversation", error);
+    }
+  };
+
+  const handleOpenChat = async () => {
+  
+    if (!proposal?.id) return;
+    await handleMessageAgency(proposal);
+  };
+  const getProposalStatusColor = (status: string) => {
+  switch (status) {
+    case "accepted":
+      return "bg-green-500 text-white";
+    case "shortlisted":
+      return "bg-blue-500 text-white";
+    case "rejected":
+      return "bg-red-500 text-white";
+    case "negotation":
+      return "bg-yellow-500 text-white";
+    case "completed":
+      return "bg-purple-500 text-white";
+    default:
+      return "bg-gray-200 text-gray-700";
+  }
+};
+  const getStatusStyles = (status: string) => {
+  switch (status) {
+    case "approved":
+      return "text-green-700 bg-green-100";
+
+    case "waiting_approval":
+      return "text-yellow-700 bg-yellow-100";
+
+    case "revision_requested":
+      return "text-red-700 bg-red-100";
+
+    case "pending":
+    default:
+      return "text-[#667085] bg-[#E4E7EC]";
+  }
+};
+
   return (
-    <div className="space-y-3 -mt-3">
+    <div className="space-y-3 ">
 
       {/* ===================== TOP SECTION ===================== */}
      
 
           {/* Requirement Title */}
-          <h1 className="text-[22px] font-medium text-[#101828]">
+          {/* <h1 className="text-[22px] font-medium text-[#101828]">
            Project Title:<span className="text-gray-700"> {proposal.requirement?.title}</span>
-          </h1>
+          </h1> */}
 
           {/* Agency Details */}
-          <div className="flex items-center justify-between flex-wrap gap-6">
+          {/* <div className="flex items-center justify-between flex-wrap gap-6">
 
             <div className="flex items-center gap-4">
               <img
@@ -402,235 +462,416 @@ const handlNegotation=async(proposalId:string)=>{
               </div>
             </div>
 
-            {/* <Button
+            <Button
               variant="outline"
               className="rounded-full"
               onClick={() => router.push("/client/dashboard/proposals")}
             >
               Back
-            </Button> */}
+            </Button>
 
+          </div> */}
+
+          {/* =====================  PAGE HEADER ===================== */}
+          <div className="flex flex-row flex-wrap justify-between items-start gap-4">
+            <div>
+              <h1 className="text-[22px] font-semibold text-[#101828]">
+                {(proposal as any)?.requirement?.title}
+              </h1>
+              <p className="text-sm text-[#667085] mt-0.5">
+                Agency: {(proposal as any)?.agency?.name.charAt(0).toUpperCase() + (proposal as any)?.agency?.name.slice(1)}
+              </p>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                  
+                   <RatingStars
+                    rating={proposal.agency?.rating}
+                    
+                     />
+                     <span className="text-sm text-[#000]">{proposal.agency?.rating}</span>
+
+                   <span className="text-gray-400">
+                    ({proposal.agency?.reviewCount || 0} reviews)
+                  </span> 
+                </div>
+            </div>
+            <div className="flex items-center gap-2">
+              
+              <Badge
+                  className={`rounded-full text-xs font-semibold px-3 py-1 capitalize 
+                  ${getProposalStatusColor(proposal.status)}`}
+                >
+                  {proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)}
+                </Badge>
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-full gap-1.5"
+                onClick={() => router.push("/client/dashboard/proposals")}
+              >
+                <MoveLeft className="h-4 w-4" />
+                Back to Proposals
+              </Button>
+              <Button
+                variant="default"
+                size="sm"
+                className="rounded-full gap-1.5 bg-[#2C34A1] hover:bg-[#2C34A1]"
+                onClick={handleOpenChat}
+              >
+                <MessageSquare className="h-4 w-4" />
+                Chat
+              </Button>
+            </div>
+          </div>
+
+          {/* Tabs: Overview | Deliverables */}
+          <div className="inline-flex bg-[#e6edf5] rounded-full p-1 gap-1 mb-1">
+            <button
+              type="button"
+              onClick={() => setTrackingTab("overview")}
+              className={`px-4 py-2 text-sm rounded-full transition ${
+                trackingTab === "overview"
+                  ? "bg-[#2C34A1] text-white"
+                  : "text-gray-700"
+              }`}
+            >
+              Overview
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setTrackingTab("deliverables")}
+              className={`px-4 py-2 text-sm rounded-full transition ${
+                trackingTab === "deliverables"
+                  ? "bg-[#2C34A1] text-white"
+                  : "text-gray-700"
+              }`}
+            >
+              Deliverables
+            </button>
           </div>
         
 
       {/* ===================== PROPOSAL DETAILS ===================== */}
-      <Card className="rounded-[14px] border border-[#E4E7EC] bg-white shadow-sm">
-        <CardContent className="px-6 md:px-4 py-0 space-y-0">
+      {
+        trackingTab === "overview" && (
+           <Card className="rounded-[14px] border border-[#E4E7EC] bg-white shadow-sm">
+              <CardContent className="px-6 md:px-4 py-0 space-y-0">
 
-          {/* Status Badge */}
-          <div className="flex justify-end">
-            <Badge
-              className={`rounded-full text-sm px-4 py-1 font-medium ${
-                statusColors[proposal.status?.toLowerCase()]
-              }`}
-            >
-              {proposal.status}
-            </Badge>
-          </div>
-
-          {/* Cost & Timeline */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <label className="text-sm font-semibold text-[#667085]">
-                Proposed Cost ($)
-              </label>
-              <div className="h-[40px] rounded-xl border border-[#E4E7EC] bg-[#F9FAFB] flex items-center px-4 text-[#344054] font-medium">
-                ${proposal.proposedBudget}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-[#667085]">
-                Estimated Timeline
-              </label>
-              <div className="h-[40px] rounded-xl border border-[#E4E7EC] bg-[#F9FAFB] flex items-center px-4 text-[#344054] font-medium">
-                {proposal.proposedTimeline}
-              </div>
-            </div>
-          </div>
-
-          {/* Work Approach */}
-          <div className="space-y-3 mt-3">
-            <label className="text-sm font-semibold text-[#667085]">
-              Work Approach
-            </label>
-            <div className="rounded-xl border border-[#E4E7EC] bg-[#F9FAFB] p-4 text-[#475467] leading-relaxed text-sm md:text-base">
-              {proposal.proposalDescription}
-            </div>
-          </div>
-
-          {/* Cover Letter */}
-          {proposal.coverLetter && (
-            <div className="space-y-3 mt-3">
-              <label className="text-sm font-semibold text-[#667085]">
-                Cover Letter
-              </label>
-              <div className="rounded-xl border border-[#E4E7EC] bg-[#F9FAFB] p-4 text-[#475467] leading-relaxed text-sm md:text-base">
-                {proposal.coverLetter}
-              </div>
-            </div>
-          )}
-
-          {/* Project Milestones */}
-          <div className="space-y-4 mt-3">
-            <label className="text-sm font-semibold text-[#667085]">
-              Project Milestones
-            </label>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              {proposal.milestones?.map((milestone, index) => (
-                <div
-                  key={index}
-                  className="flex items-start justify-between gap-4 border border-[#E4E7EC] bg-[#F9FAFB] rounded-2xl p-4 hover:shadow-sm transition"
-                >
-                  {/* Left Content */}
-                  <div className="flex gap-3">
-                    
-                    {/* Number Circle */}
-                    <div className="min-w-[28px] h-[28px] rounded-full bg-[#1570EF] text-white text-xs font-semibold flex items-center justify-center">
-                      {index + 1}
+                
+                {/* Cost & Timeline */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* <div className="space-y-4">
+                    <label className="text-sm font-semibold text-[#667085]">
+                      Proposed Cost ($)
+                    </label>
+                    <div className="h-[40px] rounded-xl border border-[#E4E7EC] bg-[#F9FAFB] flex items-center px-4 text-[#344054] font-medium">
+                      ${proposal.proposedBudget}
                     </div>
-
-                    {/* Title + Description */}
-                    <div>
-                      <p className="text-sm font-semibold text-[#344054]">
-                        {milestone.title}
-                      </p>
-                      {milestone.description && (
-                        <p className="text-xs text-[#667085] mt-1">
-                          {milestone.description}
-                        </p>
-                      )}
-                    </div>
+                  </div> */}
+                  <div className="p-2 rounded-xl border border-[#E4E7EC] bg-[#F9FAFB]">
+                     <label className="text-md font-semibold text-[#667085]">
+                      Proposed Cost ($)
+                    </label>
+                    <p className="text-sm text-[#667085] mt-0">${proposal.proposedBudget}</p>
                   </div>
 
-                  {/* Right Arrow */}
-                  <ChevronRight className="text-[#98A2B3] w-4 h-4 mt-1" />
+                  {/* <div className="space-y-2">
+                    <label className="text-sm font-semibold text-[#667085]">
+                      Estimated Timeline
+                    </label>
+                    <div className="h-[40px] rounded-xl border border-[#E4E7EC] bg-[#F9FAFB] flex items-center px-4 text-[#344054] font-medium">
+                      {proposal.proposedTimeline}
+                    </div>
+                  </div> */}
+                  <div className="p-2 rounded-xl border border-[#E4E7EC] bg-[#F9FAFB]">
+                    <label className="text-sm font-semibold text-[#667085]">
+                      Estimated Timeline
+                    </label>
+                    <p className="text-sm text-[#667085] mt-0">{proposal.proposedTimeline}</p>
+                  </div>
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Document */}
-          {proposal.attachments && (
-           <div className="flex flex-row gap-3 flex-wrap mt-2">
-                {
-                  proposal.attachments.map((eachItem,index)=>(
-                     <a
-                      href={eachItem}
-                      download
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-[#475467] hover:text-[#1570EF] transition text-sm"
-                    >
-                      <File size={18} />
-                      <span className="underline">Attachment {index+1}</span>
-                    </a>
-                  ))
-                }
-            </div>
-          )}
-
-          {/* Action Buttons */}
-          <div className="flex flex-col border-t border-gray-400 sm:flex-row  justify-between items-center gap-4 mt-3 pt-0">
-            <a className="flex flex-row items-center mt-3 cursor-pointer gap-1"
-              onClick={() => {
-                if (from) {
-                  router.back(); // goes to previous page
-                } else {
-                  router.push("/client/dashboard/proposals");
-                }
-              }}>
-              <ChevronLeft  size={20} className="text-gray-400"/>
-              <span className="text-xs underline text-gray-400">{from?"Back to projects":"Back to proposals"}</span>
-            </a>
-            {/* Buttons */}
-              <div className="flex items-center justify-between pt-4 ">
-                <div className="flex flex-wrap gap-2">
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      handleViewProfile(proposal.agency._id)
-                    }
-                    className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
-                  >
-                    View Profile
-                  </Button>  
-
-                  {/* Shortlist */}
-                  {proposal.status !== "shortlisted" &&
-                    proposal.status !== "accepted" &&
-                    proposal.status !== "rejected" &&
-                    proposal.status !== "completed" && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          handleShortlist(proposal.id)
-                        }
-                        className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
-                      >
-                        Shortlist
-                      </Button>
-                    )}
-
-                  {/* Negotiation */}
-                  {proposal.status !== "accepted" &&
-                    proposal.status !== "rejected" &&
-                    proposal.status !== "shortlisted" &&
-                    proposal.status !== "negotation" &&
-                    proposal.status !== "completed" && (
-                      <Button
-                        variant="default"
-                        size="sm"
-                        onClick={() =>
-                          handlNegotation(proposal.id)
-                        }
-                        className="bg-[#F5A30C] rounded-full text-xs font-bold hover:bg-[#F5A30C] active:bg-[#F5A30C]"
-                      >
-                        Negotation
-                      </Button>
-                    )}
-
-                  {/* Accept */}
-                  {proposal.status !== "accepted" &&
-                    proposal.status !== "rejected" &&
-                    proposal.status !== "completed" && (
-                      <Button
-                        variant="default"
-                        size="sm"
-                        onClick={() =>
-                          handleAccept(proposal.id)
-                        }
-                        className="bg-[#39A935] rounded-full text-xs font-bold hover:bg-[#39A935] active:bg-[#39A935]"
-                      >
-                        Accept
-                      </Button>
-                    )}
-
-                  {/* Reject */}
-                  {proposal.status !== "rejected" &&
-                    proposal.status !== "accepted" &&
-                    proposal.status !== "completed" && (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() =>
-                          handleReject(proposal.id)
-                        }
-                        className="bg-[#FF0000] rounded-full text-xs font-bold hover:bg-[#FF0000] active:bg-[#FF0000]"
-                      >
-                        Reject
-                      </Button>
-                    )}
+                {/* Work Approach */}
+                {/* <div className="space-y-3 mt-3">
+                  <label className="text-sm font-semibold text-[#667085]">
+                    Work Approach
+                  </label>
+                  <div className="rounded-xl border border-[#E4E7EC] bg-[#F9FAFB] p-4 text-[#475467] leading-relaxed text-sm md:text-base">
+                    {proposal.proposalDescription}
+                  </div>
+                </div> */}
+                <div className="p-2 mt-2 rounded-xl border border-[#E4E7EC] bg-[#F9FAFB]">
+                    <label className="text-sm font-semibold text-[#667085]">
+                    Work Approach
+                   </label>
+                    <p className="text-sm text-[#667085] mt-0"> {proposal.proposalDescription}</p>
                 </div>
+               
+
+                {/* Cover Letter */}
+                {proposal.coverLetter && (
+                  // <div className="space-y-3 mt-3">
+                  //   <label className="text-sm font-semibold text-[#667085]">
+                  //     Cover Letter
+                  //   </label>
+                  //   <div className="rounded-xl border border-[#E4E7EC] bg-[#F9FAFB] p-4 text-[#475467] leading-relaxed text-sm md:text-base">
+                  //     {proposal.coverLetter}
+                  //   </div>
+                  // </div>
+                   <div className="p-2 mt-2 rounded-xl border border-[#E4E7EC] bg-[#F9FAFB]">
+                    <label className="text-sm font-semibold text-[#667085]">
+                      Cover Letter
+                    </label>
+                    <p className="text-sm text-[#667085] mt-0">  {proposal.coverLetter}</p>
+                </div>
+                )}
+
+                {/* Project Milestones */}
+                 <div className="mt-3">
+                   <label className="text-sm font-semibold text-[#667085]">
+                      Mile Stones
+                    </label>
+                      <div className="  grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                        {((proposal as any)?.milestones || []).map((milestone: any, index: number) => {
+                          const apiStatus = milestone?.approvalStatus || (milestone?.completed ? "approved" : "pending");
+                          const status =
+                            milestone?.completed || apiStatus === "approved"
+                              ? "Approved"
+                              : apiStatus === "revision_requested"
+                                ? "Revision Requested"
+                                : apiStatus === "waiting_approval"
+                                  ? "Waiting Approval" 
+                                  : "Pending";
+                          const isActionable =
+                            !milestone?.completed &&
+                            apiStatus !== "approved" &&
+                            apiStatus !== "revision_requested" &&
+                            (apiStatus === "waiting_approval" || apiStatus === "pending");
+                          return (
+                            <div
+                              key={index}
+                              className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-[#E4E7EC] bg-[#F9FAFB]"
+                            >
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <p className="text-sm font-semibold text-[#344054]">
+                                    {milestone?.title}
+                                  </p>
+                                  <Badge
+                                      variant="secondary"
+                                      className={`rounded-full text-xs font-medium ${getStatusStyles(milestone.approvalStatus)}`}
+                                    >
+                                      {milestone.approvalStatus.charAt(0).toUpperCase() + milestone.approvalStatus.slice(1)}
+                                    </Badge>
+                                </div>
+                                {milestone?.description && (
+                                  <p className="text-xs text-[#667085] mt-1">{milestone.description}</p>
+                                )}
+                                
+                                {/* Milestone-level deliverables */}
+                                {(milestone?.deliverableUrl || (milestone?.deliverableDocuments?.length > 0)) && (
+                                  <div className="mt-2 flex flex-wrap gap-2">
+                                    {milestone.deliverableUrl && (
+                                      <a
+                                        href={milestone.deliverableUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs text-[#1570EF] hover:underline flex items-center gap-1"
+                                      >
+                                        <File className="h-3.5 w-3" />
+                                        Deliverable link
+                                      </a>
+                                    )}
+                                    {milestone.deliverableDocuments?.map((url: string, i: number) => (
+                                      <a
+                                        key={i}
+                                        href={url}
+                                        download
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs text-[#1570EF] hover:underline flex items-center gap-1"
+                                      >
+                                        <File className="h-3.5 w-3" />
+                                        Document {i + 1}
+                                      </a>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            
+                            </div>
+                          );
+                        })}
+                      </div>
+                 </div>
+
+                
+                
+
+                {/* Action Buttons */}
+                <div className="flex flex-col border-t border-gray-400 sm:flex-row  justify-between items-center gap-4 mt-3 pt-0">
+                  <a className="flex flex-row items-center mt-3 cursor-pointer gap-1"
+                    onClick={() => {
+                      if (from) {
+                        router.back(); // goes to previous page
+                      } else {
+                        router.push("/client/dashboard/proposals");
+                      }
+                    }}>
+                    <ChevronLeft  size={20} className="text-gray-400"/>
+                    <span className="text-xs underline text-gray-400">{from?"Back to projects":"Back to proposals"}</span>
+                  </a>
+                  {/* Buttons */}
+                    <div className="flex items-center justify-between pt-4 ">
+                      <div className="flex flex-wrap gap-2">
+
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            handleViewProfile(proposal.agency._id)
+                          }
+                          className="primary-button rounded-full text-xs font-bold"
+                        >
+                          View Profile
+                        </Button>  
+
+                        {/* Shortlist */}
+                        {proposal.status !== "shortlisted" &&
+                          proposal.status !== "accepted" &&
+                          proposal.status !== "rejected" &&
+                          proposal.status !== "completed" && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                handleShortlist(proposal.id)
+                              }
+                              className="btn-blackButton rounded-full text-xs font-bold"
+                            >
+                              Shortlist
+                            </Button>
+                          )}
+
+                        {/* Negotiation */}
+                        {proposal.status !== "accepted" &&
+                          proposal.status !== "rejected" &&
+                          proposal.status !== "shortlisted" &&
+                          proposal.status !== "negotation" &&
+                          proposal.status !== "completed" && (
+                            <Button
+                              variant="default"
+                              size="sm"
+                              onClick={() =>
+                                handlNegotation(proposal.id)
+                              }
+                              className="btn-blackButton rounded-full text-xs font-bold"
+                            >
+                              Negotation
+                            </Button>
+                          )}
+
+                        {/* Accept */}
+                        {proposal.status !== "accepted" &&
+                          proposal.status !== "rejected" &&
+                          proposal.status !== "completed" && (
+                            <Button
+                              variant="default"
+                              size="sm"
+                              onClick={() =>
+                                handleAccept(proposal.id)
+                              }
+                              className="bg-[#39A935] rounded-full text-xs font-bold hover:bg-[#39A935] active:bg-[#39A935]"
+                            >
+                              Accept
+                            </Button>
+                          )}
+
+                        {/* Reject */}
+                        {proposal.status !== "rejected" &&
+                          proposal.status !== "accepted" &&
+                          proposal.status !== "completed" && (
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() =>
+                                handleReject(proposal.id)
+                              }
+                              className="bg-[#FF0000] rounded-full text-xs font-bold hover:bg-[#FF0000] active:bg-[#FF0000]"
+                            >
+                              Reject
+                            </Button>
+                          )}
+                      </div>
+                    </div>
+                </div>
+
+              </CardContent>
+            </Card>
+        )
+      }
+
+       {/* ===================== DELIVERABLES TAB ===================== */}
+      {trackingTab === "deliverables" && (
+      <Card className="rounded-[14px] border border-[#E4E7EC] bg-white shadow-sm">
+        <CardContent className="px-6 md:px-4">
+          <h2 className="text-lg font-semibold text-[#101828] mb-4">Deliverables</h2>
+          <p className="text-sm text-[#667085] mb-4">
+            Files and assets submitted by the agency for your reference (read-only). Includes proposal-level and milestone-level documents.
+          </p>
+          <div className="space-y-3">
+            {(proposal as any)?.documentUrl && (
+              <div className="flex items-center justify-between p-3 rounded-lg border border-[#E4E7EC] bg-[#F9FAFB]">
+                <div className="flex items-center gap-2 min-w-0">
+                  <File className="h-5 w-5 text-[#667085] shrink-0" />
+                  <span className="text-sm font-medium text-[#344054] truncate">
+                    Document
+                  </span>
+                  <span className="text-xs text-[#667085]">Link</span>
+                </div>
+                <a
+                  href={(proposal as any).documentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-[#1570EF] hover:underline shrink-0"
+                >
+                  Download
+                </a>
               </div>
+            )}
+            {(proposal as any)?.attachments?.map((url: string, i: number) => (
+              <div
+                key={`att-${i}`}
+                className="flex items-center justify-between p-3 rounded-lg border border-[#E4E7EC] bg-[#F9FAFB]"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <File className="h-5 w-5 text-[#667085] shrink-0" />
+                  <span className="text-sm font-medium text-[#344054] truncate">
+                    Attachment {i + 1}
+                  </span>
+                </div>
+                <a
+                  href={url}
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-[#1570EF] hover:underline shrink-0"
+                >
+                  Download
+                </a>
+              </div>
+            ))}
+           
+            {!((proposal as any)?.documentUrl) &&
+              !((proposal as any)?.attachments?.length) &&
+              !((proposal as any)?.milestones?.some((m: any) => m?.deliverableUrl || (m?.deliverableDocuments?.length > 0))) && (
+              <p className="text-md text-[#000] text-center">No deliverables uploaded yet.</p>
+            )}
           </div>
-
         </CardContent>
       </Card>
+      )}
+
 
       {showNegotationModal && (
         <Dialog open={showNegotationModal} onOpenChange={setShowNegotationModal}>

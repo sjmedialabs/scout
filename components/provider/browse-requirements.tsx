@@ -252,7 +252,7 @@ export function BrowseRequirements({
                     className=" primary-button"
                     onClick={() =>
                       router.push(
-                        `/agency/dashboard/leads/${req._id}`
+                        `/agency/dashboard/project-inquiries/${req._id}`
                       )
                     }
                   >
