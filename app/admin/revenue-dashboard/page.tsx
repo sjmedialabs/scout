@@ -456,7 +456,7 @@ console.log("Caluclated pie data is::::::",pieData)
       {/* ---------------- HEADER ---------------- */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-orangeButton my-custom-class">
+          <h1 className="text-3xl font-bold text-orangeButton">
             Revenue & Analytics
           </h1>
           <p className="text-gray-500 max-w-2xl">
@@ -549,7 +549,7 @@ console.log("Caluclated pie data is::::::",pieData)
 
 
       {/* ---------------- KPI CARDS ---------------- */}
-      <div className="grid grid-cols-1 md:grid-cols-3 my-custom-class gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3  gap-6">
         <KpiCard 
           title="Current MRR"
           value={topCardStats.currentMonthRecurringRevenue}
@@ -657,7 +657,7 @@ console.log("Caluclated pie data is::::::",pieData)
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Revenue by Plan */}
         <div className="bg-white rounded-2xl p-6 border shadow-md">
-          <h3 className="text-xl font-semibold my-custom-class text-orangeButton mb-2">
+          <h3 className="text-xl font-semibold  text-orangeButton mb-2">
             Revenue by plan
           </h3>
 
@@ -716,7 +716,7 @@ console.log("Caluclated pie data is::::::",pieData)
 
         {/* Revenue Distribution */}
         <div className="bg-white rounded-2xl p-6 shadow-md border">
-          <h3 className="text-xl font-semibold my-custom-class text-orangeButton mb-6">
+          <h3 className="text-xl font-semibold  text-orangeButton mb-6">
             Revenue by distribution
           </h3>
 

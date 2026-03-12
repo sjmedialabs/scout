@@ -28,10 +28,10 @@ export default function ContentPoliciesPage() {
     <div className="space-y-8">
       {/* HEADER */}
       <div>
-        <h1 className="text-3xl font-bold text-orangeButton my-custom-class">
+        <h1 className="text-3xl font-bold text-orangeButton ">
           Content Policies
         </h1>
-        <p className="text-gray-500 text-base max-w-3xl my-custom-class">
+        <p className="text-gray-500 text-base max-w-3xl ">
           Define and manage the platform’s content guidelines. These policies
           help users understand what is allowed, restricted, or prohibited on
           the platform.
@@ -43,10 +43,10 @@ export default function ContentPoliciesPage() {
         <CardContent className="p-6 space-y-2 pt-1">
           {/* Section Title */}
           <div>
-            <h2 className="text-lg font-semibold text-orangeButton my-custom-class">
+            <h2 className="text-lg font-semibold text-orangeButton ">
               Policy Description
             </h2>
-            <p className="text-sm text-gray-500 my-custom-class">
+            <p className="text-sm text-gray-500 ">
               Write or update your platform’s content rules and moderation
               guidelines.
             </p>

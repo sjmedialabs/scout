@@ -142,10 +142,10 @@ export default function SubscriptionPlansPage() {
     <div className="space-y-6">
       {/* HEADER */}
       <div>
-        <h1 className="text-3xl font-bold my-custom-class text-orangeButton">
+        <h1 className="text-3xl font-bold  text-orangeButton">
           Subscription Plans
         </h1>
-        <p className="text-gray-500 text-lg my-custom-class">
+        <p className="text-gray-500 text-lg ">
           Select the perfect plan for your business needs. Upgrade or downgrade
           at any time.
         </p>
@@ -154,7 +154,7 @@ export default function SubscriptionPlansPage() {
       {/*Free Plan */}
 
        <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-2">
-        <h2 className="text-xl font-semibold flex my-custom-class items-center gap-2">
+        <h2 className="text-xl font-semibold flex  items-center gap-2">
           Update Free Trail Proposal Count
         </h2>
            <Input
@@ -176,7 +176,7 @@ export default function SubscriptionPlansPage() {
 
       {/* ADD PLAN */}
       <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-2">
-        <h2 className="text-xl font-semibold flex my-custom-class items-center gap-2">
+        <h2 className="text-xl font-semibold flex  items-center gap-2">
           Add New Plan
         </h2>
 
@@ -253,14 +253,14 @@ export default function SubscriptionPlansPage() {
               >
                 {isPopular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="flex items-center gap-1 bg-gray-900 my-custom-class text-white text-xs px-3 py-1 rounded-full">
+                    <span className="flex items-center gap-1 bg-gray-900  text-white text-xs px-3 py-1 rounded-full">
                       <Star className="w-3 h-3 fill-white text-white" />
                       Most Popular
                     </span>
                   </div>
                 )}
 
-                <h3 className="text-xl font-semibold text-center my-custom-class">
+                <h3 className="text-xl font-semibold text-center ">
                   {editingId === plan._id ? (
                     <Input
                       value={plan.title}
@@ -280,7 +280,7 @@ export default function SubscriptionPlansPage() {
                   )}
                 </h3>
 
-                <div className="text-center mt-4 my-custom-class">
+                <div className="text-center mt-4 ">
                   {editingId === plan._id ? (
                     <div className="flex gap-2">
                       <Input
@@ -372,7 +372,7 @@ export default function SubscriptionPlansPage() {
                     plan.features.map((f, i) => (
                       <div
                         key={i}
-                        className="flex items-center gap-2 text-sm text-gray-500 my-custom-class"
+                        className="flex items-center gap-2 text-sm text-gray-500 "
                       >
                         <Check className="w-4 h-4 text-green-600" />
                         {f}

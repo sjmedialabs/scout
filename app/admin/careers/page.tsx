@@ -188,7 +188,7 @@ const formats = [
       {/* HEADER */}
       <div className="flex justify-between items-center mb-4">
         <div>
-          <h1 className="font-bold text-orangeButton text-3xl my-custom-class">
+          <h1 className="font-bold text-orangeButton text-3xl ">
             Job Listing
           </h1>
           <p>Listed Jobs</p>

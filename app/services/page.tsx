@@ -443,9 +443,10 @@ useEffect(() => {
     {/* ---------------- RIGHT SIDE (PROVIDERS) ---------------- */}
     <div className="w-full lg:w-[80%] p-4 lg:p-6 ">
        {/* Filters Section */}
-      <div className="flex flex-row  mb-3   pb-2  gap-4 overflow-x-auto mx-1 lg:mx-3 ">
+      <div className="flex flex-row gap-4 mb-3 pb-2 justify-between overflow-x-auto">
         {/*Ratings filter */}
-        <div className="mb-3 sm:mb-0 ">
+        
+        <div className="w-full mb-3 sm:mb-0 ">
           {/* <p className="text-sm text-gray-500 ml-1">Rating</p> */}
               <Select
           onValueChange={(value) => setRatingFilter(value)}
@@ -456,7 +457,7 @@ useEffect(() => {
               border-2
               border-[#b2b2b2]
               cursor-pointer
-              rounded-[8px]
+              rounded-full
               shadow-none
               focus:ring-0
               
@@ -477,7 +478,7 @@ useEffect(() => {
         </div>
 
         {/* Price filter*/}
-         <div className="mb-3 sm:mb-0">
+         <div className="w-full mb-3 sm:mb-0 ">
           {/* <p className="text-sm text-gray-500 ml-1">Rating</p> */}
               <Select
                 onValueChange={(value) => setPriceFilter(value)}
@@ -488,7 +489,7 @@ useEffect(() => {
                     border-2
                     border-[#b2b2b2]
                     cursor-pointer
-                    rounded-[8px]
+                    rounded-full
                     shadow-none
                     focus:ring-0
                     px-3
@@ -508,7 +509,7 @@ useEffect(() => {
         </div>
 
         {/* Projects filter */}
-        <div className="mb-3 sm:mb-0">
+        <div className="w-full mb-3 sm:mb-0">
           {/* <p className="text-sm text-gray-500 ml-1">Rating</p> */}
               <Select
                 onValueChange={(value) => setProjectFilter(value)}
@@ -519,7 +520,7 @@ useEffect(() => {
                     border-2
                     border-[#b2b2b2]
                     cursor-pointer
-                    rounded-[8px]
+                    rounded-full
                     shadow-none
                     focus:ring-0
                     px-3
@@ -539,7 +540,7 @@ useEffect(() => {
         </div>
 
         {/* Team Size filter */}
-        <div className="mb-3 sm:mb-0">
+        <div className="w-full mb-3 sm:mb-0">
           {/* <p className="text-sm text-gray-500 ml-1">Rating</p> */}
               <Select
                 onValueChange={(value) => setTeamSizeFilter(value)}
@@ -550,7 +551,7 @@ useEffect(() => {
                     border-2
                     border-[#b2b2b2]
                     cursor-pointer
-                    rounded-[8px]
+                    rounded-full
                     shadow-none
                     focus:ring-0
                     px-3
@@ -574,6 +575,7 @@ useEffect(() => {
                 </SelectContent>
               </Select>
         </div>
+        
 
         {/* Reset Filters Button */}
         <div className="mb-3 sm:mb-0 mt-0.5">
@@ -584,7 +586,7 @@ useEffect(() => {
               setProjectFilter("");
               setTeamSizeFilter("");
             }}
-            className="text-sm h-[30px] font-extralight rounded-xl  bg-orangeButton text-[#fff]"
+            className="btn-blackButton h-[32px]"
           >
             Clear
           </Button>
@@ -596,7 +598,7 @@ useEffect(() => {
       {/* Providers Grid */}
       <div>
         {filteredProviders.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-7 max-h-[100vh] overflow-y-auto [scrollbar-width:none] 
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-7 max-h-[100vh] overflow-y-auto [scrollbar-width:none] 
           [-ms-overflow-style:none]        
           [&::-webkit-scrollbar]:hidden">
             {filteredProviders.slice(0, visibleCount).map((p: any) => (
@@ -622,10 +624,15 @@ useEffect(() => {
                     {/* LEFT — Verified */}
                     <div className="absolute left-0">
                       {p.isVerified && (
-                        <span className="inline-flex items-center rounded-lg border font-bold px-2 py-0 text-[10px] text-green-500 bg-white">
+                        <span className="inline-flex items-center rounded-full border font-bold px-2 py-0 text-[10px] text-white bg-[#232a85]">
                           Verified
                         </span>
                       )}
+                      {/* {p.isFeatured && (
+                            <span className="bg-[#F54A0C] inline-flex items-center rounded-full border font-bold px-2 py-0 text-[10px] text-white">
+                              Featured
+                            </span>
+                          )} */}
                     </div>
 
                     {/* RIGHT — Rating */}
@@ -702,13 +709,10 @@ useEffect(() => {
                   </div>
 
                   {/* Buttons */}
-                  <div className="flex flex-wrap gap-2 pt-1">
+                  <div className="flex  justify-between gap-3 pt-1">
                     <button
                       // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#e0332c] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
-                      className="flex-1 border border-transparent cursor-pointer rounded-xl 
-                      bg-[#e0332c] py-1 text-[10px] font-bold text-white
-                       duration-700 ease-out
-                      hover:bg-white hover:text-black hover:border-black transition-colors"
+                      className="primary-button h-[25px] w-full"
                       onClick={() =>
                         router.push(`/provider/${p.id || p._id}`)
                       }
@@ -718,10 +722,7 @@ useEffect(() => {
 
                     <button
                       // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#000000] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
-                      className="flex-1 border border-transparent cursor-pointer rounded-xl 
-                      bg-black py-1 text-[10px] font-bold text-white
-                       duration-700 ease-out
-                      hover:bg-white hover:text-black hover:border-black transition-colors"
+                      className="btn-blackButton h-[25px] w-full"
                       onClick={() => handleContact(p)}
                     >
                       Contact

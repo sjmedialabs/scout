@@ -57,10 +57,10 @@ export default function AddSubscriberPage() {
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-2 py-0">
       {/* HEADER */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-orangeButton h-8 my-custom-class">
+        <h1 className="text-3xl font-bold text-orangeButton h-8 ">
           Add New Subscriber
         </h1>
-        <p className="text-gray-500 text-xl mt-1 my-custom-class">
+        <p className="text-gray-500 text-xl mt-1">
           Enter below information
         </p>
       </div>
@@ -84,23 +84,23 @@ export default function AddSubscriberPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Company Name */}
         <div className="space-y-2">
-          <label className="text-sm  my-custom-class font-bold text-gray-400">
+          <label className="text-sm  m font-bold text-gray-400">
             Company Name
           </label>
           <Input 
           onChange={(e) => handleChange("company", e.target.value)}
-          className="placeholder:text-gray-500 border-gray-300 rounded-xl my-custom-class placeholder:text-xs" 
+          className="placeholder:text-gray-500 border-gray-300 rounded-xl  placeholder:text-xs" 
           placeholder="Enter Company Name" />
         </div>
 
         {/* Email */}
         <div className="space-y-2">
-          <label className="text-sm font-bold my-custom-class text-gray-400">
+          <label className="text-sm font-bold s text-gray-400">
             Email address
           </label>
           <Input 
           onChange={(e) => handleChange("email", e.target.value)}
-          className="placeholder:text-gray-500 border-gray-300 rounded-xl my-custom-class placeholder:text-xs" 
+          className="placeholder:text-gray-500 border-gray-300 rounded-xl  placeholder:text-xs" 
           placeholder="Enter email address" 
           type="email"
           />

@@ -685,7 +685,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                         <div className="flex flex-col lg:flex-row gap-4">
                           
                           {/* Left Image */}
-                          <div className="h-[160px] w-full lg:w-[170px] rounded-t-[18px] lg:rounded-[18px] overflow-hidden sm:shrink-0">
+                          <div className="h-auto w-full lg:w-[170px] rounded-t-[18px] lg:rounded-[18px] overflow-hidden sm:shrink-0">
                             <img
                               src={proposal?.agency?.coverImage || "/proposal.jpg"}
                               alt={proposal.agency?.name}
@@ -711,7 +711,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                 </div>
  
                                 <h3
-                                  className="text-xl text-[#000] mb-0"
+                                  className="text-xl font-bold text-[#000] mb-0"
                                   onClick={() =>
                                     handleViewProfile(proposal.providerId)
                                   }
@@ -755,22 +755,22 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                             {/* Description Section */}
                             <div className="space-y-2">
 
-                              {/* {proposal?.coverLetter && (
+                              {proposal?.coverLetter && (
                                 <div>
-                                  <h4 className="font-bold text-xl text-[#616161] mb-0">
+                                  <h4 className="font-bold text-sm text-black mb-0">
                                     Cover Letter
                                   </h4>
-                                  <p className="text-[#939191] font-normal line-clamp-2 text-sm">
+                                  <p className="text-[#939191] font-normal line-clamp-1 text-xs">
                                     {proposal?.coverLetter}
                                   </p>
                                 </div>
-                              )} */}
+                              )}
 
-                              <div className="-mt-3">
-                              {/* <h4 className="font-bold text-xl text-[#616161] mb-0">
+                              <div className="">
+                              <h4 className="font-bold text-sm text-black mb-0">
                                 Proposal Description
-                              </h4> */}
-                              <p className="text-[#939191] font-normal text-sm line-clamp-1">
+                              </h4>
+                              <p className="text-[#939191] font-normal text-xs line-clamp-1">
                                 {proposal.proposalDescription}
                               </p>
                             </div>
@@ -784,7 +784,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                     proposal.updatedAt
                                   ).toLocaleDateString()}
                                 </span> */}
-                                 <span className="text-[#000] text-[12px] font-semibold"> Submitted on :</span> <span className="text-xs text-gray-500"> {new Date(
+                                 <span className="text-[#000] text-sm font-semibold"> Submitted on :</span> <span className="text-xs text-gray-500"> {new Date(
                                     proposal.createdAt
                                   ).toLocaleDateString()}</span> 
            
@@ -836,7 +836,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                     onClick={() =>
                                       handleViewPortfolio(proposal.agency._id)
                                     }
-                                    className="bg-[#e6e8ec] rounded-xl text-xs text-[#000] hover:text-[#000] rounded-full hover:bg-[#e6e8ec] font-bold active:bg-[#e6e8ec] active:text-[#000]"
+                                    className="primary-button"
                                   >
                                     View Profile
                                   </Button>
@@ -847,19 +847,21 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                     onClick={() =>
                                       router.push(`proposals/${proposal.id}`)
                                     }
-                                    className="bg-[#e6e8ec] rounded-xl text-xs text-[#000] hover:text-[#000] rounded-full hover:bg-[#e6e8ec] font-bold active:bg-[#e6e8ec] active:text-[#000]"
+                                    className="primary-button"
                                   >
                                     View Proposal Details
                                   </Button>
-
+                                  
+                                  {proposal.status !== "rejected" && (
                                   <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={() => handleMessageAgency(proposal)}
-                                     className="bg-[#e6e8ec] rounded-xl text-xs text-[#000] hover:text-[#000] rounded-full hover:bg-[#e6e8ec] font-bold active:bg-[#e6e8ec] active:text-[#000]"
+                                     className="btn-blackButton"
                                   >
                                     Chat
                                   </Button>
+                                  )}
 
                                   {/* Shortlist */}
                                   {proposal.status !== "shortlisted" &&
@@ -872,7 +874,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                         onClick={() =>
                                           handleShortlist(proposal.id)
                                         }
-                                        className="bg-[#e6e8ec] rounded-xl text-xs text-[#000] hover:text-[#000] rounded-full hover:bg-[#e6e8ec] font-bold active:bg-[#e6e8ec] active:text-[#000]"
+                                        className="btn-blackButton"
                                       >
                                         Shortlist
                                       </Button>
@@ -890,7 +892,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                         onClick={() =>
                                           handlNegotation(proposal.id)
                                         }
-                                         className="bg-[#e6e8ec] rounded-xl text-xs text-[#000] hover:text-[#000] rounded-full hover:bg-[#e6e8ec] font-bold active:bg-[#e6e8ec] active:text-[#000]"
+                                         className="btn-blackButton"
                                       >
                                         Negotation
                                       </Button>

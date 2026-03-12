@@ -98,7 +98,7 @@ export function ProposalList({
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center mt-0">
-        <h3 className="text-lg font-semibold my-custom-class tracking-tight">Proposals Received</h3>
+        <h3 className="text-lg font-semibold tracking-tight">Proposals Received</h3>
         <div className="text-sm text-muted-foreground">
           Showing {visibleProposals.length} of {proposals.length} proposals
           {(proposals.length-visibleProposals.length) > 0 && ` (${proposals.length-visibleProposals.length} rejected)`}

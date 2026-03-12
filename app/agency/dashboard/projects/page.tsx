@@ -1045,9 +1045,9 @@ const addMilestoneToProject = async () => {
                       </div>
 
                       {/* Buttons */}
-                      <div className="mt-4 flex flex-wrap gap-3">
+                      <div className="mt-4 flex flex-wrap gap-2">
                         <Button
-                          className="rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 text-white h-[30px] w-[130px] text-xs"
+                          className="btn-blackButton h-[30px]"
                           onClick={() => handleMessageClient(project)}
                         >
                           <MessageSquare className="h-3 w-3" />
@@ -1056,7 +1056,7 @@ const addMilestoneToProject = async () => {
 
                         <Button
                           variant="outline"
-                          className="rounded-full h-[30px] w-[120px] text-xs"
+                          className="primary-button h-[30px]"
                           onClick={() =>
                             router.push(`/agency/dashboard/proposals/${project.id}`)
                           }
@@ -1067,7 +1067,7 @@ const addMilestoneToProject = async () => {
 
                         <Button
                           variant="outline"
-                          className="rounded-full h-[30px] w-[130px] text-xs"
+                          className="btn-blackButton h-[30px]"
                           onClick={() => {
                             setSelectedProject(project)
                             setMilestonesDraft(
