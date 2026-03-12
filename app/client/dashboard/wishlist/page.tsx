@@ -473,7 +473,7 @@ const WishListPage = () => {
                     </button>
                      <button
                       // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#e0332c] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
-                      className="bg-red-500 text-white h-[25px] w-[70px] rounded-full text-[10px]"
+                      className="bg-red-500 text-white h-[25px] w-[70px] rounded-full text-[10px] cursor-pointer"
                      onClick={() => handleRemove(p.agency._id)}
                     >
                       Remove

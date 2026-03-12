@@ -503,7 +503,7 @@ const ProviderComparisonPage = () => {
         </div>
         </div>
         <p className="text-md text-[#656565] -mt-1">
-          Compare vendors side-by-side to make informed decisions
+          Compare agencies side-by-side to make informed decisions
         </p>
       </div>
 
