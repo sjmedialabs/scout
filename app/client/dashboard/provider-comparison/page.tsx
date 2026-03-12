@@ -485,16 +485,30 @@ const ProviderComparisonPage = () => {
   return (
     <div className="space-y-3">
       <div>
-        <h1 className="text-xl text-[#F4561C] my-custom-class leading-6">
+      <div className="flex justify-between" >
+        <div>
+        <h1 className="text-xl text-[#F4561C] font-bold leading-6">
           Provider Comparison
         </h1>
-        <p className="text-md text-[#656565] my-custom-class mt-0">
+        </div>
+         <div> 
+          <Button
+                variant="outline"
+                onClick={() => setShowVendorModal(true)}
+                size="sm"
+                className="btn-blackButton"
+              >
+                Add Agency
+              </Button>
+        </div>
+        </div>
+        <p className="text-md text-[#656565] -mt-1">
           Compare vendors side-by-side to make informed decisions
         </p>
       </div>
 
       {/* Vendor Selection */}
-      <Card className="border-[1px] border-[#D1CBCB] rounded-3xl bg-[#fff] shadow-none w-auto">
+      {/* <Card className="border-[1px] border-[#D1CBCB] rounded-3xl bg-[#fff] shadow-none w-auto">
         <CardHeader>
           <div className="flex flex-row flex-wrap justify-between items-center">
             <div>
@@ -532,7 +546,7 @@ const ProviderComparisonPage = () => {
               ))}
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
 
       {/* Side-by-Side Comparison */}
       {(selectedVendor || []).length !== 0 && (
@@ -710,14 +724,14 @@ const ProviderComparisonPage = () => {
                 </div> */}
 
                 {/* Action Buttons */}
-                <div className="flex gap-2 p-6  bg-[#fff]">
+                <div className="flex gap-2 p-3 pb-1  bg-[#fff]">
                   <a
                     href={`/provider/${proposal.agency._id}`}
                     target="_blank"
                     className="w-full"
                   >
                     <Button
-                      className="flex-1 bg-[#2C34A1] w-full rounded-full min-h-[40px]"
+                      className="btn-blackButton"
                       size="sm"
                     >
                       View Details
@@ -729,7 +743,7 @@ const ProviderComparisonPage = () => {
                     size="sm"
                     className={`items-center ${proposal.isFavourite ? "bg-red-500" : "bg-[#000]"} rounded-full mt-0 min-h-[40px]`}
                   >
-                    <Heart className="h-8 w-8" color="#fff" />
+                    <Heart className="h-7 w-7" color="#fff" />
                   </Button>
                 </div>
               </div>
@@ -746,78 +760,20 @@ const ProviderComparisonPage = () => {
         </div>
       )}
 
-      {/* Comparison Summary Table*/}
-      <h1 className="text-xl text-[#F54A0C] font-bold mb-1 my-custom-class">
-        Comparison Summary
-      </h1>
-      {(selectedVendor || []).length !== 0 && (
-        <Card className="bg-[#fff] mt-2 rounded-xl border-[1px] border-[#E6E6E6]">
-          {/* ⚠️ Important: NO overflow on CardContent */}
-          <CardContent className="p-0 font-bold text-black text-sm">
-            {/* Scroll wrapper */}
-            <div className="relative w-full overflow-x-auto">
-              <table className="w-full  border-collapse">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-3 font-bold">Criteria</th>
-                    {selectedVendor.map((item) => (
-                      <th
-                        key={item._id}
-                        className="text-center p-3 font-bold text-black"
-                      >
-                        {item.agency.name}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-
-                <tbody>
-                  <tr className="border-b">
-                    <td className="p-3 font-bold">Overall Rating</td>
-                    {selectedVendor.map((p) => (
-                      <td key={p._id} className="text-center p-3 font-medium">
-                        {p.agency.rating}
-                      </td>
-                    ))}
-                  </tr>
-
-                  <tr className="border-b">
-                    <td className="p-3 font-bold">Proposal Amount</td>
-                    {selectedVendor.map((p) => (
-                      <td key={p._id} className="text-center p-3 font-medium">
-                        ${p.agency?.minAmount.toLocaleString()}
-                      </td>
-                    ))}
-                  </tr>
-
-                  <tr className="border-b">
-                    <td className="p-3 font-bold">Timeline</td>
-                    {selectedVendor.map((p) => (
-                      <td key={p._id} className="text-center p-3 font-medium">
-                        {p.agency.minTimeLine}
-                      </td>
-                    ))}
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/*Vendor modal */}
       {showVendorModal && (
         <Dialog open={showVendorModal} onOpenChange={setShowVendorModal}>
-          <DialogContent className="max-h-[90vh] p-0 flex flex-col sm:min-w-3xl">
+          <DialogContent className="max-h-[90vh] p-0 flex flex-col sm:min-w-4xl">
             {/* 🔹 HEADER (Fixed) */}
             <div className="flex items-center justify-between px-6 py-4 border-b">
               <h1 className="text-xl text-[#F4561C] font-normal">
-                Select Vendor to compare
+                Select agency to compare
               </h1>
             </div>
 
             {/* 🔹 FILTER + CONTENT (Scrollable) */}
-            <div className="flex-1  overflow-y-auto px-6 py-4">
+            <div className="flex-1  overflow-y-auto px-6">
               {/* Filter */}
               <div className=" lg:grid lg:grid-cols-2 gap-5 w-full">
                 <div className="relative w-full min-w-0">
@@ -826,11 +782,11 @@ const ProviderComparisonPage = () => {
                     placeholder="Search providers..."
                     className="
                     pl-10 text-sm md:text-base
-                    border-0 border-b-2 border-b-[#b2b2b2]
-                    bg-transparent rounded-none shadow-none
+                    border rounded-full border-[#b2b2b2]
+                    bg-transparent  shadow-none
                     focus:outline-none focus:ring-0
                     focus-visible:outline-none focus-visible:ring-0
-                    focus:border-[#F54A0C]
+                    focus:border-[#F54A0C] py-1
                   "
                     value={searchFilter}
                     onChange={(e) => {
@@ -843,10 +799,10 @@ const ProviderComparisonPage = () => {
                 <Select onValueChange={handleFilterChange} value={filterStatus}>
                   <SelectTrigger
                     className="
-                  mt-3
+                  
                   lg:mt-1
-                  border-0
-                  border-2
+                  border
+        
                   border-[#b2b2b2]
                   rounded-full
                   shadow-none
@@ -855,9 +811,9 @@ const ProviderComparisonPage = () => {
                   focus:border-[#b2b2b2]
                   placeholder:text-[#b2b2b2]
                   px-6
-                  w-[160px]
+                  w-[170px]
         
-                  h-12
+                  h-14
                   text-sm
                   md:text-base
                 "
@@ -874,68 +830,78 @@ const ProviderComparisonPage = () => {
 
               {/* Proposals */}
               {(filteredProviders || []).length !== 0 ? (
-                <div className="mt-4 grid sm:grid-cols-2 gap-4">
-                  {filteredProviders.map((provider) => (
+                <div className="mt-4 grid sm:grid-cols-4 gap-2">
+                  {/* {filteredProviders.map((provider) => ( */}
+                  {filteredProviders
+                    .filter(
+                      (provider) =>
+                        !selectedVendor.some(
+                          (item) => item.agency?._id === provider.id
+                        )
+                    )
+                    .map((provider) => (
                     <Card
                       key={provider.id}
-                      className="rounded-4xl mb-2 overflow-hidden border-2 border-[#E0E0E0]  py-0 shadow-sm hover:shadow-md transition-shadow"
+                      className="rounded-2xl mb-2 overflow-hidden border-2 border-[#E0E0E0]  py-0 shadow-sm hover:shadow-md transition-shadow"
                     >
                       {/* Image flush to top */}
                       <div className="w-full">
                         <img
                           src={provider?.coverImage || "/uploads/15ac2d8f-31f9-48ac-aadd-b67ba9f4d860-Artificial-intelligence-platforms-copy.jpg"}
                           alt={provider.name}
-                          className="w-full h-[200px] sm:h-[240px] md:h-[300px] object-cover block"
+                          className="w-full h-[200px] sm:h-[240px] md:h-[100px] object-cover block"
                         />
                       </div>
 
                        {/* CONTENT */}
-                        <div className="p-4 sm:p-6 flex flex-col flex-1">
+                        <div className="p-2 py-1 -mt-6 flex flex-col flex-1">
                           {/* 🔝 TOP CONTENT (normal flow) */}
-                          <div>
+                          <div >
                             {/* Badges + rating */}
-                            <div className="flex flex-wrap items-start justify-between gap-3">
-                              <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap items-start justify-between">
+                              {/* <div className="flex flex-wrap gap-2">
                                 {provider.isVerified && (
-                                  <Badge className="bg-[#2C34A1] text-white h-7 px-3 rounded-2xl">
+                                  <Badge className="bg-[#2C34A1] text-xs text-white rounded-2xl">
                                     Verified
                                   </Badge>
                                 )}
-                                {/* {provider.isFeatured && (
-                                  <Badge className="bg-[#F54A0C] text-white h-7 px-3 rounded-2xl">
+                                {provider.isFeatured && (
+                                  <Badge className="bg-[#F54A0C] text-white  rounded-2xl">
                                     Featured
                                   </Badge>
-                                )} */}
-                              </div>
+                                )}
+                              </div> */}
       
                               <div className="flex items-center gap-1 text-sm">
-                                <RatingStars rating={provider.rating} />
-                                <span className="font-semibold">
+                                <RatingStars
+                                size={12}
+                                rating={provider.rating} />
+                                <span className="font-semibold text-[10px]">
                                   {provider.rating}
                                 </span>
-                                <span className="text-muted-foreground">
+                                {/* <span className="text-muted-foreground">
                                   ({provider.reviewCount})
-                                </span>
+                                </span> */}
                               </div>
                             </div>
       
                             {/* Title + description */}
-                            <h3 className="mt-2 text-xl sm:text-2xl font-semibold text-left">
+                            <h3 className="text-sm font-semibold text-left">
                               {provider.name}
                             </h3>
-                            <p className="mt-1 text-sm text-[#b2b2b2] text-left">
+                            <p className=" text-xs text-[#b2b2b2] text-left line-clamp-1">
                               {provider.tagline}
                             </p>
       
                             {/* Tags */}
-                            <div className="mt-3 mb-4">
+                            <div className=" mt-1">
                               {provider.services.length !== 0 ? (
                                 <div className="flex flex-wrap gap-2">
-                                  {provider.services.slice(0,3).map((service) => (
+                                  {provider.services.slice(0,1).map((service) => (
                                     <Badge
                                       key={service}
                                       variant="outline"
-                                      className="h-7 px-3 rounded-2xl bg-[#f2f2f2] text-[#000] text-xs sm:text-sm"
+                                      className="rounded-2xl bg-[#f2f2f2] text-[#000] text-[10px]"
                                     >
                                       {service}
                                     </Badge>
@@ -943,8 +909,8 @@ const ProviderComparisonPage = () => {
                                 </div>
                               ) : (
                                 <div className="text-center mx-auto">
-                                  <p className="text-xl my-6 text-gray-400">
-                                    No Services
+                                  <p className="text-xs my-2 text-gray-400">
+                                    No Services Added
                                   </p>
                                 </div>
                               )}
@@ -979,13 +945,13 @@ const ProviderComparisonPage = () => {
                                 </span>
                               </div>
                             </div> */}
-                            <p className="text-[#808080] text-sm sm:text-base font-semibold mb-3">
+                            <p className="text-[#808080] text-xs font-semibold mb-1 mt-1">
                               Starting Price : {provider?.hourlyRate || 0} $/hour
                             </p>
       
-                            <div className="mt-3 flex flex-col sm:flex-row gap-2">
+                            <div className=" flex flex-col sm:flex-row gap-2 mb-2">
                               <Button
-                                className="w-full sm:w-[140px] bg-[#2C34A1] hover:bg-[#2C34A1] rounded-3xl text-white"
+                                className="btn-blackButton h-[20px] w-[70px]"
                                 onClick={() => addToCompare(provider.id)}
                               >
                                 Compare
@@ -1009,7 +975,7 @@ const ProviderComparisonPage = () => {
             {/* 🔹 FOOTER (Fixed) */}
             <div className="px-6 py-4 border-t">
               <DialogClose asChild>
-                <Button className="bg-[#000] rounded-full hover:bg-[#000] active:bg-[#000]">
+                <Button className="btn-blackButton h-[30px]">
                   Close
                 </Button>
               </DialogClose>

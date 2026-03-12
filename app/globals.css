@@ -218,7 +218,7 @@
 }
 
 .btn-blackButton{
-  background-color: #3C3A3E;
+  background-color: #2C34A1;
   color: white;
   transition: all 0.2s ease;
   font-size: 12px;
@@ -226,7 +226,7 @@
   border-radius: 9999px;
 }
 .btn-blackButton:hover{
-   background-color: #000;
+   background-color: #232A8F;
    color: white;
 }
 

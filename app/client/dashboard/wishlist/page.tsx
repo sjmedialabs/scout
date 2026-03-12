@@ -230,7 +230,7 @@ const WishListPage = () => {
       )}
 
       {(wishListData || []).length !== 0 && !resLoading && !failed && (
-        <div className="grid grid-cols-1 md:grid-cols-2  lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2  lg:grid-cols-4 gap-3">
           {wishListData.map((p) => (
             // <Card
             //   key={provider._id}
@@ -393,7 +393,7 @@ const WishListPage = () => {
                   </div>
 
                   {/* Title + Description */}
-                  <div className="py-3">
+                  <div className="py-1">
                     <h3
                       className="text-md font-bold text-[#0E0E0E] leading-tight"
                       
@@ -453,10 +453,10 @@ const WishListPage = () => {
                   </div>
 
                   {/* Buttons */}
-                  <div className="flex flex-wrap gap-2 pt-1">
+                  <div className="flex justify-between gap-1 pt-1">
                     <button
                       // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#e0332c] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
-                      className="secondary-button h-[30px] w-[100px]"
+                      className="primary-button h-[25px] w-[75px] !text-[10px]"
                       onClick={() =>
                         handleViewProfile(p.agency._id)
                       }
@@ -466,14 +466,14 @@ const WishListPage = () => {
 
                     <button
                       // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#000000] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
-                      className="btn-blackButton h-[30px] w-[80px]"
+                      className="btn-blackButton h-[25px] w-[70px] !text-[10px]"
                       onClick={() => handleMessage(p.agency.userId)}
                     >
                       Contact
                     </button>
                      <button
                       // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#e0332c] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
-                      className="primary-button h-[30px] w-[80px]"
+                      className="bg-red-500 text-white h-[25px] w-[70px] rounded-full text-[10px]"
                      onClick={() => handleRemove(p.agency._id)}
                     >
                       Remove

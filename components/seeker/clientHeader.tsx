@@ -174,7 +174,22 @@ const profileRef = useRef<HTMLDivElement>(null);
           [-ms-overflow-style:none]        
           [&::-webkit-scrollbar]:hidden">
             
-            
+            {/* 🔹 Header with View All */}
+            <div className="flex items-center justify-between px-4 py-2 border-b bg-gray-50">
+              <span className="text-sm font-semibold text-gray-700">
+                Notifications
+              </span>
+
+              <button
+                onClick={() => {
+                  setDropdownOpen(false)
+                  router.push("/client/dashboard/notifications")
+                }}
+                className="btn-blackButton w-[60px] "
+              >
+                View All
+              </button>
+            </div>
 
             {notifications.length === 0 ? (
               <div className="p-4 text-sm text-gray-500">
