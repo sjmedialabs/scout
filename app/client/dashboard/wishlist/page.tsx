@@ -456,10 +456,7 @@ const WishListPage = () => {
                   <div className="flex flex-wrap gap-2 pt-1">
                     <button
                       // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#e0332c] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
-                      className="flex-1 border border-transparent cursor-pointer rounded-xl 
-                      bg-[#2c34a1] py-1 text-[10px] font-bold text-white
-                       duration-700 ease-out
-                      hover:bg-white hover:text-black hover:border-black transition-colors"
+                      className="secondary-button h-[30px] w-[100px]"
                       onClick={() =>
                         handleViewProfile(p.agency._id)
                       }
@@ -469,20 +466,14 @@ const WishListPage = () => {
 
                     <button
                       // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#000000] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
-                      className="flex-1 border border-transparent cursor-pointer rounded-xl 
-                      bg-black py-1 text-[10px] font-bold text-white
-                       duration-700 ease-out
-                      hover:bg-white hover:text-black hover:border-black transition-colors"
+                      className="btn-blackButton h-[30px] w-[80px]"
                       onClick={() => handleMessage(p.agency.userId)}
                     >
                       Contact
                     </button>
                      <button
                       // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#e0332c] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
-                      className="flex-1 border border-transparent cursor-pointer rounded-xl 
-                      bg-[#e0332c] py-1 text-[10px] font-bold text-white
-                       duration-700 ease-out
-                      hover:bg-white hover:text-black hover:border-black transition-colors"
+                      className="primary-button h-[30px] w-[80px]"
                      onClick={() => handleRemove(p.agency._id)}
                     >
                       Remove

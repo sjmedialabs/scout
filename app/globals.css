@@ -198,6 +198,9 @@
   background-color: var(--blueButton);
   color: white;
   transition: all 0.2s ease;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 9999px;
 }
 .secondary-button:hover{
    background-color: var(--hoverBlueButton);
