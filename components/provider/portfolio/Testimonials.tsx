@@ -1,10 +1,13 @@
 "use client"
 
 type Testimonial = {
-  clientName: string
-  company: string
+  _id: string
   rating: number
-  text: string
+  content: string
+  client: {
+    name: string
+    position: string
+  }
 }
 
 export default function Testimonials({
@@ -14,23 +17,27 @@ export default function Testimonials({
 }) {
   if (!testimonials.length) return null
 
+  const topTestimonials = [...testimonials]
+    .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+    .slice(0, 6)
+
   return (
     <div className="shadow-md rounded-2xl border border-orange-100 bg-white p-6 space-y-4">
       {/* Header */}
       <div>
-        <h3 className="text-[16px] font-semibold h-5 text-orangeButton my-custom-class">
+        <h3 className="text-[16px] font-semibold h-5 text-orangeButton">
           What Clients Are Saying
         </h3>
-        <p className="text-[12px] text-gray-500 my-custom-class">
+        <p className="text-[12px] text-gray-500">
           Trusted by leaders from various industries
         </p>
       </div>
 
       {/* Testimonials Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {testimonials.map((item, index) => (
+        {topTestimonials.map((item, index) => (
           <div
-            key={index}
+            key={item._id || index}
             className="rounded-xl border border-gray-200 bg-white p-4 flex flex-col"
           >
 
@@ -49,18 +56,18 @@ export default function Testimonials({
             </div>
 
             {/* Review text */}
-            <p className="text-[12px] leading-normal italic text-gray-500 my-custom-class">
+            <p className="text-[12px] leading-normal italic text-gray-500">
 
-              “{item.text}”
+              “{item?.content}”
             </p>
 
          
             <div className="mt-auto pt-3">
-              <p className="text-[12px] font-semibold text-gray-900 my-custom-class">
-                {item.clientName}
+              <p className="text-[12px] font-semibold text-gray-900">
+                {item?.client?.name}
               </p>
-              <p className="text-[11px] text-gray-500 my-custom-class">
-                {item.company}
+              <p className="text-[11px] text-gray-500">
+                {item?.client?.position}
               </p>
             </div>
           </div>
