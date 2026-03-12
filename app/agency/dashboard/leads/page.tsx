@@ -449,6 +449,7 @@ Dropped Leads
                               setIsOpen(true)
                             }}
                             className="text-blue-600 cursor-pointer hover:text-blue-800"
+                            title="View Lead Details"
                           >
                             <Eye size={18} />
                           </button>
@@ -461,6 +462,7 @@ Dropped Leads
                                   setOpenDropdown(openDropdown === lead._id ? null : lead._id)
                                 }}
                                 className="text-gray-600 cursor-pointer hover:text-black"
+                                title="Edit the status of Lead"
                               >
                                 <ChevronDown size={18} />
                               </button>
