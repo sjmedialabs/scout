@@ -194,7 +194,7 @@ const { cms, providers, projects, categories } = data;
             </div>
             <h2 className="stext-mediun uppercase font-bold text-blueButton ">
              {cms?.homeServiceTitle}
-              {/* <span className="text-blueButton font-bold my-custom-class">
+              {/* <span className="text-blueButton font-bold ">
                 any project
               </span> */}
             </h2>

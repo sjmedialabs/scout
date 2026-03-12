@@ -10,6 +10,13 @@ import PortfolioGrid from "@/components/provider/portfolio/PortfolioGrid";
 import Testimonials from "@/components/provider/portfolio/Testimonials";
 import { Button } from "@/components/ui/button";
 import { authFetch } from "@/lib/auth-fetch";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function ProviderPortfolioPage() {
   const { user, loading } = useCurrentUser();
@@ -17,7 +24,7 @@ export default function ProviderPortfolioPage() {
   const [provider, setProvider] = useState<any>(null);
   const [responseLoading, setResponseLoading] = useState(true);
   const [failed, setFailed] = useState(false);
-
+  const [reviews, setReviews] = useState<Review[]>([]);
   const loadData = async () => {
     if (!user?.userId) return;
 
@@ -41,7 +48,26 @@ export default function ProviderPortfolioPage() {
       loadData();
     }
   }, [loading, user]);
+  useEffect(() => {
+    loadReview();
+  }, []);
 
+  const loadReview = async () => {
+    try {
+      const reviewRes = await authFetch("/api/reviews");
+      const data = await reviewRes.json();
+
+      console.log("Fetched the reviews::::", data);
+
+      if (reviewRes.ok) {
+        setReviews(data.reviews);
+        setFailed(false);
+      }
+    } catch (error) {
+      console.log("Failed to  fetch the data:::");
+      setFailed(true);
+    }
+  };
   /* Loading */
   if (responseLoading) {
     return (
@@ -79,7 +105,20 @@ export default function ProviderPortfolioPage() {
           <ServiceLines provider={provider} />
           <PricingSnapshot provider={provider} />
           <PortfolioGrid provider={provider} />
-          <Testimonials testimonials={provider.testimonials} />
+          <Testimonials testimonials={reviews} />
+          {/* {reviews && reviews.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>What Clients Are Saying</CardTitle>
+                <CardDescription>
+                  Trusted by leaders from various industries
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Testimonials testimonials={reviews} />
+              </CardContent>
+            </Card>
+          )} */}
         </div>
 
         {/* Sidebar */}

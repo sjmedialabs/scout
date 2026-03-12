@@ -307,7 +307,7 @@ const addMilestoneToProject = async () => {
         <div>
           {dynamicActiveProjects.length !== 0 ? (
             <div>
-                <div className="space-y-5 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="space-y-5 grid grid-cols-1 gap-4">
                     {paginatedActiveProjects.map((project) => (
                       <Card
                         key={project.id}
@@ -347,9 +347,9 @@ const addMilestoneToProject = async () => {
                           <div className="border-t border-gray-200 my-3" />
 
                           {/* Details Section */}
-                          <div className="grid grid-cols-2 text-sm text-gray-600">
+                          <div className="grid grid-cols-1 text-sm text-gray-600">
                             {/* Left Column */}
-                            <div className="space-y-4 pr-4 border-r border-gray-200">
+                            <div className="flex flex-row justify-between flex-wrap gap-2 items-center">
 
                               {/* Budget */}
                               <div className="flex items-center gap-2">
@@ -368,10 +368,10 @@ const addMilestoneToProject = async () => {
                                 </div>
                                 <span>{project.proposedTimeline}</span>
                               </div>
-                            </div>
+                        
 
                             {/* Right Column */}
-                            <div className="space-y-4 pl-4">
+                        
 
                               {/* Milestones Count */}
                               <div className="flex items-center gap-2">
@@ -475,7 +475,8 @@ const addMilestoneToProject = async () => {
 
                             <Button
                               variant="outline"
-                             className="btn-blackButton h-[30px]" onClick={() => {
+                              className="rounded-full h-[30px] w-[130px] text-xs bg-gray-200"
+                              onClick={() => {
                                 setSelectedProject(project);
                                 setIsAddMilestoneOpen(true);
                               }}
@@ -835,7 +836,7 @@ const addMilestoneToProject = async () => {
                         )}
 
                         {/* Upload */}
-                        <PdfUpload
+                        {/* <PdfUpload
                           maxSizeMB={10}
                           placeholderText="Upload Deliverable Files"
                           onUploadSuccess={(url) => {
@@ -847,7 +848,7 @@ const addMilestoneToProject = async () => {
                               ],
                             }));
                           }}
-                        />
+                        /> */}
                       </div>
 
                       <DialogFooter>
@@ -923,7 +924,7 @@ const addMilestoneToProject = async () => {
         <div>
           {dynamicCompletedProjects.length !== 0 ? (
             <div>
-              <div className="space-y-5 grid grid-cols-1 lg:grid-cols-2 gap-3">
+              <div className="space-y-5 grid grid-cols-1 gap-3">
                 {paginatedCompletedProjects.map((project) => (
                   <Card
                     key={project.id}
@@ -1044,9 +1045,9 @@ const addMilestoneToProject = async () => {
                       </div>
 
                       {/* Buttons */}
-                      <div className="mt-4 flex flex-wrap gap-3">
+                      <div className="mt-4 flex flex-wrap gap-2">
                         <Button
-                          className="rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 text-white h-[30px] w-[130px] text-xs"
+                          className="btn-blackButton h-[30px]"
                           onClick={() => handleMessageClient(project)}
                         >
                           <MessageSquare className="h-3 w-3" />
@@ -1055,7 +1056,7 @@ const addMilestoneToProject = async () => {
 
                         <Button
                           variant="outline"
-                          className="rounded-full h-[30px] w-[120px] text-xs"
+                          className="primary-button h-[30px]"
                           onClick={() =>
                             router.push(`/agency/dashboard/proposals/${project.id}`)
                           }
@@ -1066,7 +1067,7 @@ const addMilestoneToProject = async () => {
 
                         <Button
                           variant="outline"
-                          className="rounded-full h-[30px] w-[130px] text-xs"
+                          className="btn-blackButton h-[30px]"
                           onClick={() => {
                             setSelectedProject(project)
                             setMilestonesDraft(

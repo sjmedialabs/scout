@@ -535,7 +535,7 @@ const textareaClass =
                           
                           {/* Left Image */}
         
-                           <div className="h-[160px] w-full lg:w-[170px] rounded-t-[18px] lg:rounded-[18px] overflow-hidden sm:shrink-0">
+                           <div className="h-auto w-full lg:w-[170px] rounded-t-[18px] lg:rounded-[18px] overflow-hidden sm:shrink-0">
                             <img
                               src={proposal?.agency?.coverImage || "/proposal.jpg"}
                               alt={proposal.agency?.name}
@@ -606,24 +606,24 @@ const textareaClass =
                             {/* Description Section */}
                             <div className="space-y-0">
 
-                              {/* {proposal?.coverLetter && (
+                              {proposal?.coverLetter && (
                                 <div>
-                                  <h4 className="font-bold text-xl text-[#616161] mb-0">
+                                  <h4 className="font-bold text-sm text-black mb-0">
                                     Cover Letter
                                   </h4>
-                                  <p className="text-[#939191] font-normal line-clamp-2 text-sm">
+                                  <p className="text-[#939191] font-normal line-clamp-1 text-xs">
                                     {proposal?.coverLetter}
                                   </p>
                                 </div>
-                              )} */}
+                              )}
 
                               <div>
-                              {/* <h4 className="font-bold text-xl text-[#616161] mb-0">
+                              <h4 className="font-bold text-sm text-black mb-0">
                                 Proposal Description
                               </h4>
-                              <p className="text-[#939191] font-normal text-xs line-clamp-2">
+                              <p className="text-[#939191] font-normal text-xs line-clamp-1">
                                 {proposal.proposalDescription}
-                              </p> */}
+                              </p>
                             </div>
 
 
@@ -636,7 +636,7 @@ const textareaClass =
                                   ).toLocaleDateString()}
                                 </span> */}
 
-                                 <span className="text-[#000] text-[12px] font-semibold"> Submitted on :</span> <span className="text-xs text-gray-500"> {new Date(
+                                 <span className="text-[#000] text-sm font-semibold"> Submitted on :</span> <span className="text-xs text-gray-500"> {new Date(
                                     proposal.createdAt
                                   ).toLocaleDateString()}</span> 
            
@@ -672,7 +672,7 @@ const textareaClass =
                                     onClick={() =>
                                       handleViewPortfolio(proposal.agency._id)
                                     }
-                                    className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
+                                    className="primary-button"
                                   >
                                     View Profile
                                   </Button>
@@ -683,19 +683,21 @@ const textareaClass =
                                     onClick={() =>
                                       router.push(`/client/dashboard/proposals/${proposal.id}?from=projects`)
                                     }
-                                    className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
+                                    className="primary-button"
                                   >
                                     View Proposal Details
                                   </Button>
-
+                                  
+                                  {proposal.status !== "rejected" && (
                                   <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={() => handleMessageAgency(proposal)}
-                                    className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
+                                    className="btn-blackButton"
                                   >
                                     Chat
-                                  </Button>
+                                  </Button> 
+                                    )}
 
                                   {/* Shortlist */}
                                   {proposal.status !== "shortlisted" &&
@@ -708,7 +710,7 @@ const textareaClass =
                                         onClick={() =>
                                           handleShortlist(proposal.id)
                                         }
-                                        className="bg-[#E6E8EC] rounded-full text-xs font-bold hover:bg-[#E6E8EC] hover:text-[#000] active:bg-[#E6E8EC] active:text-[#000]"
+                                        className="btn-blackButton"
                                       >
                                         Shortlist
                                       </Button>
@@ -726,7 +728,7 @@ const textareaClass =
                                         onClick={() =>
                                           handlNegotation(proposal.id)
                                         }
-                                        className="bg-[#F5A30C] rounded-full text-xs font-bold hover:bg-[#F5A30C] active:bg-[#F5A30C]"
+                                        className="btn-blackButton"
                                       >
                                         Negotation
                                       </Button>
@@ -742,7 +744,7 @@ const textareaClass =
                                         onClick={() =>
                                           handleAccept(proposal.id)
                                         }
-                                        className="bg-[#39A935] rounded-full text-xs font-bold hover:bg-[#39A935] active:bg-[#39A935]"
+                                        className="bg-[#39A935] rounded-full text-xs hover:bg-[#39A935] active:bg-[#39A935]"
                                       >
                                         Accept
                                       </Button>
@@ -758,7 +760,7 @@ const textareaClass =
                                         onClick={() =>
                                           handleReject(proposal.id)
                                         }
-                                        className="bg-[#FF0000] rounded-full text-xs font-bold hover:bg-[#FF0000] active:bg-[#FF0000]"
+                                        className="bg-[#FF0000] rounded-full text-xs hover:bg-[#FF0000] active:bg-[#FF0000]"
                                       >
                                         Reject
                                       </Button>

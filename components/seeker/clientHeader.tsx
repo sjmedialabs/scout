@@ -174,7 +174,22 @@ const profileRef = useRef<HTMLDivElement>(null);
           [-ms-overflow-style:none]        
           [&::-webkit-scrollbar]:hidden">
             
-            
+            {/* 🔹 Header with View All */}
+            <div className="flex items-center justify-between px-4 py-2 border-b bg-gray-50">
+              <span className="text-sm font-semibold text-gray-700">
+                Notifications
+              </span>
+
+              <button
+                onClick={() => {
+                  setDropdownOpen(false)
+                  router.push("/client/dashboard/notifications")
+                }}
+                className="btn-blackButton w-[60px] "
+              >
+                View All
+              </button>
+            </div>
 
             {notifications.length === 0 ? (
               <div className="p-4 text-sm text-gray-500">
@@ -191,7 +206,7 @@ const profileRef = useRef<HTMLDivElement>(null);
                   onClick={()=>handleMarkNotificationAsRead(notification._id)}
                 >
                   <div className="text-md text-gray-600 font-semibold">{notification.title}</div>
-                  <p className="text-xs text-[#656565] my-custom-class mt-1">{notification.message}</p>
+                  <p className="text-xs text-[#656565]  mt-1">{notification.message}</p>
                   <div className="text-xs text-gray-400 mt-1">
                     {timeAgo(notification.createdAt)}
                   </div>

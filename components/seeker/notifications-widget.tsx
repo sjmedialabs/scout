@@ -61,7 +61,7 @@ export function NotificationsWidget({ notifications, onMarkAsRead, onDismiss }: 
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             {/* <Bell className="h-5 w-5" /> */}
-            <CardTitle className="text-xl my-custom-class text-[#000] font-bold">Notifications</CardTitle>
+            <CardTitle className="text-xl  text-[#000] font-bold">Notifications</CardTitle>
             {/* {unreadNotifications.length > 0 && (
               <Badge variant="destructive" className="text-xs">
                 {unreadNotifications.length}
@@ -102,9 +102,9 @@ export function NotificationsWidget({ notifications, onMarkAsRead, onDismiss }: 
                           {notification.createdAt.toLocaleDateString()}
                         </span>
                       </div> */}
-                      <h4 className="font-bold text-[#000] text-sm my-custom-class">{notification.title}</h4>
-                      <p className="text-xs text-[#656565] my-custom-class mt-1">{notification.message}</p>
-                      <p className="text-xs text-[#6B6B6B] my-custom-class font-bold mt-1">{timeAgo(notification.createdAt)}</p>
+                      <h4 className="font-bold text-[#000] text-sm">{notification.title}</h4>
+                      <p className="text-xs text-[#656565] mt-1">{notification.message}</p>
+                      <p className="text-xs text-[#6B6B6B] font-bold mt-1">{timeAgo(notification.createdAt)}</p>
                     </div>
                   </div>
                   {/* <div className="flex gap-1">

@@ -9,6 +9,9 @@ type CompanyOverviewCardProps = {
     description?: string
     teamSize?: string
     foundedYear?: string | number
+    projectsCompleted?: string | number
+    minProjectSize?: string | number
+    hourlyRate?: string | number
   }
 }
 
@@ -19,7 +22,7 @@ export default function CompanyOverviewCard({ provider }: CompanyOverviewCardPro
       
       {/* Top section */}
       <div className="px-5 pt-4 pb-2 flex items-end justify-between flex-col sm:flex-row sm:justify-between gap-2">
-          <h2 className="text-[16px] font-semibold text-orangeButton my-custom-class sm:self-end">
+          <h2 className="text-[16px] font-semibold text-orangeButton">
             {provider.companyOverview || "Company Overview"}
           </h2>
 
@@ -36,7 +39,7 @@ export default function CompanyOverviewCard({ provider }: CompanyOverviewCardPro
 
           
         <div className="px-6 pb-3">
-          <p className="text-[11px]  text-gray-600 my-custom-class">
+          <p className="text-[11px]  text-gray-600">
             {provider.description ||
             "No company description provided yet."}
           </p>
@@ -48,17 +51,34 @@ export default function CompanyOverviewCard({ provider }: CompanyOverviewCardPro
 
       {/* Bottom meta section */}
       <div className="p-6 pt-3 pl-10 pb-3 flex flex-col sm:flex-row gap-12">
-        <div className="text-[11px] font-semibold text-gray-900 my-custom-class">
+        <div className="text-[11px] font-semibold text-gray-900">
           Employees:{" "} 
           <span className="font-bold">
             {provider.teamSize || "—"}
           </span>
         </div>
-
-        <div className="text-[11px] font-semibold text-gray-900 my-custom-class">
+        <div className="text-[11px] font-semibold text-gray-900">
           Founded:{" "}
           <span className="font-bold">
             {provider.foundedYear || "—"}
+          </span>
+        </div>
+          <div className="text-[11px] font-semibold text-gray-900">
+          Project Completed:{" "}
+          <span className="font-bold">
+            {provider.projectsCompleted || "—"}
+          </span>
+        </div>
+          <div className="text-[11px] font-semibold text-gray-900">
+          Min Project Size:{" "}
+          <span className="font-bold">
+            {provider.minProjectSize || "—"}$
+          </span>
+        </div>
+          <div className="text-[11px] font-semibold text-gray-900">
+          Hourly Rate:{" "}
+          <span className="font-bold">
+            {provider.hourlyRate || "—"}$/hr
           </span>
         </div>
       </div>

@@ -1,50 +1,22 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from "recharts";
 
 import {
-  MessageSquareMore,
-  Building,
-  Star,
-  MapPin,
-  Calendar,
-  Award,
-  MessageCircle,
   ExternalLink,
-  Users,
-  Clock,
-  DollarSign,
   CheckCircle2,
-  Globe,
-  Mail,
-  Phone,
-  Briefcase,
-  CircleUser,
-  Share2,
 } from "lucide-react";
-import { FaCircleUser } from "react-icons/fa6";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { mockProviders } from "@/lib/mock-data";
 import RatingStars from "@/components/rating-star";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { authFetch } from "@/lib/auth-fetch";
 import ContactProviderModal from "@/components/leadPopupForm";
+import CompanyOverviewCard from "@/components/provider/portfolio/CompanyOverviewCard";
+import FocusAreasCard from "@/components/provider/portfolio/FocusAreasCard";
+import PortfolioGrid from "@/components/provider/portfolio/PortfolioGrid";
+import PricingSnapshot from "@/components/provider/portfolio/PricingSnapshot";
+import ServiceLines from "@/components/provider/portfolio/ServiceLines";
+import Testimonials from "@/components/provider/portfolio/Testimonials";
 
 export default function ProviderProfilePage({
   params,
@@ -54,23 +26,11 @@ export default function ProviderProfilePage({
   const { id } = params;
   const [open, setOpen] = useState(false)
 
-  // Find provider by ID
-  const provider = mockProviders.find((p) => p.id === id);
-  const [serviceFilter, setServiceFilter] = useState("");
-  const [sortByFilter, setSortByFilter] = useState("");
   const [providerDetails, setProviderDetails] = useState({});
-  const [activeTab, setActiveTab] = useState("overview");
   const [reviews, setReviews] = useState([]);
-  const [filteredReviews, setFilteredReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
 
-  const overviewRef = useRef(null);
-  const servicesRef = useRef(null);
-  const portfolioRef = useRef(null);
-  const awardsRef = useRef(null);
-  const reviewsRef = useRef(null);
-  
   useEffect(() => {
     loadData();
   }, []);
@@ -112,84 +72,6 @@ export default function ProviderProfilePage({
     );
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      month: "long",
-      day: "2-digit",
-      year: "numeric",
-    });
-  };
-
-  const stats = [
-    { label: "Year founded", value: providerDetails.foundedYear || "N/A" },
-    { label: "Team Size", value: providerDetails.teamSize || 0 },
-    { label: "Projects Completed", value: providerDetails.projectsCompleted || 0 },
-    { label: "Min Project Size", value: `${providerDetails.minProjectSize}$` || 0 },
-    { label: "Hourly rate", value: `${providerDetails.hourlyRate}$/hr` || 0 },
-  ];
-
-  useEffect(() => {
-    let tempFilteredReviews = [...reviews];
-
-    // 🔹 Service filter
-    if (serviceFilter && serviceFilter !== "all") {
-      tempFilteredReviews = tempFilteredReviews.filter((eachItem) =>
-        eachItem.project.category
-          .toLowerCase()
-          .includes(serviceFilter.toLowerCase()),
-      );
-    }
-
-    // 🔹 Rating sort
-    if (sortByFilter) {
-      if (sortByFilter === "low-to-high") {
-        tempFilteredReviews.sort((a, b) => (a.rating ?? 0) - (b.rating ?? 0));
-      }
-
-      if (sortByFilter === "high-to-low") {
-        tempFilteredReviews.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
-      }
-    }
-
-    setFilteredReviews(tempFilteredReviews);
-  }, [serviceFilter, sortByFilter, reviews]);
-
-  useEffect(() => {
-  const handleScroll = () => {
-    const sections = [
-      { id: "overview", ref: overviewRef },
-      { id: "services", ref: servicesRef },
-      { id: "portfolio", ref: portfolioRef },
-      { id: "awards", ref: awardsRef },
-      { id: "reviews", ref: reviewsRef },
-    ];
-
-    const scrollPosition = window.scrollY + 150;
-
-    for (const section of sections) {
-      const element = section.ref.current;
-      if (!element) continue;
-
-      const offsetTop = element.offsetTop;
-      const offsetHeight = element.offsetHeight;
-
-      if (
-        scrollPosition >= offsetTop &&
-        scrollPosition < offsetTop + offsetHeight
-      ) {
-        setActiveTab(section.id);
-        break;
-      }
-    }
-  };
-
-  window.addEventListener("scroll", handleScroll);
-
-  return () => {
-    window.removeEventListener("scroll", handleScroll);
-  };
-}, []);
-
   const webisteClickHandle = async (e, id) => {
     e.preventDefault();
     console.log(providerDetails.websiteClicks + 1);
@@ -226,76 +108,13 @@ export default function ProviderProfilePage({
     );
   }
 
-  // Group reviews by service & calculate avg rating
-const serviceRatings = {};
-
-reviews.forEach((review) => {
-  const service = review.project?.category || "Other";
-  if (!serviceRatings[service]) {
-    serviceRatings[service] = {
-      total: 0,
-      count: 0,
-    };
-  }
-
-  serviceRatings[service].total += review.rating || 0;
-  serviceRatings[service].count += 1;
-});
-
-// Convert to array with avg rating
-const topServices = Object.keys(serviceRatings)
-  .map((service) => ({
-    name: service,
-    value:
-      serviceRatings[service].total /
-      serviceRatings[service].count,
-  }))
-  .sort((a, b) => b.value - a.value)
-  .slice(0, 5);
-
-  const SERVICE_COLORS = [
-  "#2C34A1", // primary blue
-  "#F54A0C", // orange
-  "#22C55E", // green
-  "#A855F7", // purple
-  "#FACC15", // yellow
-];
-
-const scrollToSection = (section) => {
-  const refs = {
-    overview: overviewRef,
-    services: servicesRef,
-    portfolio: portfolioRef,
-    awards: awardsRef,
-    reviews: reviewsRef,
-  };
-
-  const target = refs[section]?.current;
-
-  if (target) {
-    // target.scrollIntoView({
-    //   behavior: "smooth",
-    //   block: "start",
-    // });
-    const yOffset = -90; // height of tabs area
-const y =
-  target.getBoundingClientRect().top + window.pageYOffset + yOffset;
-
-window.scrollTo({
-  top: y,
-  behavior: "smooth",
-});
-  }
-  setActiveTab(section);
-};
-
 
   return (
     <>
     <div className="min-h-screen mt-0 bg-white">
       {/* Hero Section */}
       <div
-        className="text-white py-10 pb-10"
+        className="text-white flex items-center justify-center md:py-10"
         style={{
           backgroundImage: `url(/ProviderDetailBanner.jpg)`,
           backgroundSize: "cover",
@@ -304,12 +123,13 @@ window.scrollTo({
           height: "350px",
         }}
       >
-        <div className="max-w-7xl mx-auto px-8 py-12 lg:px-30">
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+        <div className="max-w-7xl mx-auto px-8 flex justify-center items-center lg:py-12 lg:px-30">
+          <div className="flex flex-col md:flex-row justify-center md:items-center gap-6">
+            <div className="flex flex-row gap-4 items-center">
             <div>
               <img
                 src={providerDetails.logo || "/provider4.jpg"}
-                className="h-45 w-48  rounded-2xl"
+                className="h-20 md:h-45 w-24 md:w-48  rounded-2xl"
               />
             </div>
             <div className="flex-1">
@@ -326,13 +146,14 @@ window.scrollTo({
                     Featured
                   </Badge>
                 )} */}
-                <h1 className="text-4xl font-extrabold mt-1 tracking-widest">
+                <h1 className="text-2xl md:text-4xl font-extrabold mt-1 tracking-widest">
                   {providerDetails.name.toUpperCase()}
                 </h1>
               </div>
               <p className="text-lg text-white/90 mb-2">
                 {providerDetails.tagline || "Professional service provider"}
               </p>
+              {/* location */}
               <div className="grid grid-cols-3 gap-1 mb-3 text-sm">
                 <div className="flex items-center gap-2">
                   <img
@@ -363,6 +184,7 @@ window.scrollTo({
                   </span>
                 </div> */}
               </div>
+              {/* stars rating */}
               <div className="flex flex-wrap items-center gap-4 text-sm">
                 <div className="flex items-center gap-2">
                   <RatingStars rating={providerDetails.rating} />
@@ -379,9 +201,11 @@ window.scrollTo({
                 </Badge> */}
               </div>
             </div>
-            <div className="flex flex-col gap-1">
+            </div>
+            {/* buttons section */}
+            <div className="flex flex-col justify-center gap-1">
               
-                <Button
+                {/* <Button
                   size="lg"
                   onClick={() => setOpen(true)}
                   className="bg-white  text-[#2C34A1] hover:bg-white/90 text-sm font-semibold  active:bg-white  rounded-3xl"
@@ -396,11 +220,11 @@ window.scrollTo({
                   open={open}
                   onClose={() => setOpen(false)}
                   userId={providerDetails.userId}    
-                  />
+                  /> */}
 
               
-              {providerDetails.website && (
-                <a href={`${providerDetails.website}`} target="_blank">
+              {providerDetails?.website && (
+                <a href={`${providerDetails.website}`} target="_blank" className="flex justify-center">
                   <Button
                     size="lg"
                     variant="outline"
@@ -417,382 +241,23 @@ window.scrollTo({
         </div>
       </div>
 
-      {/* ================= TABS ================= */}
-      <div className="bg-[#7fa5c2] sticky top-0 z-50">
-    <div className=" bg-white -pt-1 border-b border-[#E5E7EB] rounded-t-2xl">
-      <div className="max-w-7xl mx-auto px-10 flex gap-10 font-medium text-[16px]">
-        {["overview","services","portfolio","awards","reviews"].map(tab => (
-          <button
-            key={tab}
-            onClick={() => scrollToSection(tab)}
-            className={`py-3 capitalize border-b-2 transition cursor-pointer
-              ${
-                activeTab === tab
-                  ? "border-[#2C34A1] text-[#2C34A1]"
-                  : "border-transparent text-gray-500"
-              }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-    </div>
-    </div>
-
-    {/* ================= CONTENT ================= */}
-    <div className="max-w-7xl mx-auto px-10 py-8 space-y-8">
-
-      {/* ================= OVERVIEW TAB ================= */}
-      
-        <div 
-        ref={overviewRef}
-        className=" gap-6 -mt-4 scroll-mt-40">
-
-          {/* LEFT STATS */}
-          <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-[#ECEEF3]">
-            <h1 className="text-lg font-semibold mb-4 -mt-4">Company Overview</h1>
-
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              {stats.map((item, i) => (
-                <div
-                  key={i}
-                  className="bg-[#e9ecfc] w-50 py-2 border border-[#ECEEF3] rounded-xl p-4 text-center"
-                >
-                  <p className="font-medium">{item.label}</p>
-                  <p className="text-sm text-gray-500">{item.value}</p>
-                </div>
-              ))}
-            </div>
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:h-screen overflow-y-auto">
+          {/* Main */}
+          <div className="lg:col-span-2 space-y-6 lg:h-screen overflow-y-scroll">
+            <CompanyOverviewCard provider={providerDetails} />
+            <ServiceLines provider={providerDetails} />
+            <PricingSnapshot provider={providerDetails} />
+            <PortfolioGrid provider={providerDetails} />
+            <Testimonials testimonials={reviews} />
           </div>
 
-          {/* RIGHT TECHNOLOGIES */}
-          {/* <div className="bg-white rounded-2xl p-6 border border-[#ECEEF3]">
-            <h1 className="text-lg font-semibold mb-4 -mt-4">
-              Technologies Offered
-            </h1>
-
-            <div className="flex flex-wrap gap-2">
-              {(providerDetails.technologies || []).map((tech, i) => (
-                <span
-                  key={i}
-                  className="px-3 py-2 bg-[#e9ecfc] text-black rounded-xl text-sm font-medium"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
-          </div> */}
-        </div>
-      
-
-      {/* ================= SERVICES TAB ================= */}
-      
-        <div 
-        ref={servicesRef}
-        className="grid lg:grid-cols-3 gap-6 -mt-4 scroll-mt-40">
-
-          <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-[#ECEEF3]">
-            <h1 className="text-lg font-semibold mb-4 -mt-4">
-              Services Offered
-            </h1>
-
-            <div className="flex flex-wrap gap-3 -mt-2">
-              {(providerDetails.services || []).map((service, i) => (
-                <div
-                  key={i}
-                  className="px-4 py-2 bg-[#e9ecfc] text-black rounded-xl text-sm font-medium"
-                >
-                  {service}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* TOP SERVICES CHART */}
-          <div className="bg-white rounded-2xl p-6 border border-[#ECEEF3]">
-            <h1 className="text-lg font-semibold mb-4 -mt-4">
-              Top Services
-            </h1>
-
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie
-                  data={topServices}
-                  dataKey="value"
-                  nameKey="name"
-                  outerRadius={90}
-                >
-                  {topServices.map((_, index) => (
-                    <Cell 
-                    key={`cell-${index}`}
-                    fill= {SERVICE_COLORS[index % SERVICE_COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+          {/* Sidebar */}
+          <div className="space-y-6 lg:h-screen ">
+            <FocusAreasCard provider={providerDetails} />
           </div>
         </div>
-      
-
-      {/* ================= PORTFOLIO TAB ================= */}
-      
-        <div ref={portfolioRef}>
-        <h1 className="text-lg font-semibold mb-4 -mt-4 scroll-mt-40">
-              Our Portfolio
-        </h1>
-        
-        <div className="grid sm:grid-cols-2 gap-8 w-170">
-          {(providerDetails.portfolio || []).map((item) => (
-            <div
-              key={item.id}
-              className="bg-white flex flex-col justify-between rounded-2xl border  overflow-hidden items-center border-[#ECEEF3] shadow-sm"
-            >
-              <div className="h-[160px] w-full overflow-hidden">
-              <img
-                src={item.image}
-                className=" w-full h-[160px] object-cover rounded-t-2xl hover:scale-105 transition-transform duration-300"
-              />
-              </div>
-
-              <div className="px-4 py-2 w-full">
-                <h4 className="font-semibold">{item.title}</h4>
-                <p className="text-sm text-gray-500 mb-2">
-                  {item.description}
-                </p>
-
-                <div className="flex flex-wrap gap-1">
-                  {item.technologies?.map((tech, i) => (
-                    <Badge 
-                    className="rounded-full bg-[#dbe0f3] text-black"
-                    key={i}>{tech}</Badge>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        </div>
-      
-
-      {/* ================= AWARDS TAB ================= */}
-
-      
-        <div ref={awardsRef}>
-        <h1 className="text-lg font-semibold mb-4 -mt-4 scroll-mt-40">
-              Awards
-        </h1>
-  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 w-170">
-
-    {(providerDetails.awards || []).length === 0 && (
-      <div className="col-span-full text-center text-gray-500">
-        No awards available
-      </div>
-    )}
-
-    {(providerDetails.awards || []).map((award, i) => (
-      <div
-        key={i}
-        className="bg-white rounded-2xl border border-[#ECEEF3] shadow-sm hover:shadow-lg transition duration-300"
-      >
-        <div className=" overflow-hidden rounded-t-2xl bg-gray-50 flex items-center justify-center">
-          <img
-            src={award.imageUrl}
-            alt={award.title}
-            className="w-full object-cover hover:scale-105 transition-transform duration-300"
-          />
-        </div>
-
-        <div className="p-4 text-center">
-          <h4 className="font-semibold text-sm">
-            {award.title}
-          </h4>
-        </div>
-      </div>
-      
-    ))}
-
-  </div>
-  </div>
-
-      {/* {activeTab === "awards" && (
-        <div className="bg-white rounded-2xl p-6 border border-[#ECEEF3]">
-          <h1 className="text-2xl font-semibold mb-4">Awards</h1>
-
-          <div className="flex flex-wrap gap-3">
-            {(providerDetails.awards || []).map((award, i) => (
-              <Badge key={i}>{award}</Badge>
-            ))}
-          </div>
-        </div>
-      )} */}
-
-     
-      {/* ================= REVIEWS TAB ================= */}
-        
-          <div 
-          ref={reviewsRef}
-          className="space-y-2 mt-6 scroll-mt-40">
-
-            {/* Filters */}
-            <div className="flex flex-col lg:flex-row justify-between gap-4">
-              <h2 className="text-lg font-bold">
-                Reviews
-              </h2>
-
-              <div className="flex gap-3">
-                {/* Service Filter */}
-                <Select
-                  onValueChange={(value) => setServiceFilter(value)}
-                  value={serviceFilter}
-                >
-                  <SelectTrigger className="bg-[#f5f5f5] rounded-full w-[170px] h-12 border-[#e5e5e5]">
-                    <SelectValue placeholder="Select Services" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Services</SelectItem>
-                    <SelectItem value="development">Development</SelectItem>
-                    <SelectItem value="design">Design</SelectItem>
-                    <SelectItem value="marketing">Marketing</SelectItem>
-                    <SelectItem value="consulting">Consulting</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {/* Sort */}
-                <Select
-                  onValueChange={(value) => setSortByFilter(value)}
-                  value={sortByFilter}
-                >
-                  <SelectTrigger className="bg-[#f5f5f5] rounded-full w-[170px] h-12 border-[#e5e5e5]">
-                    <SelectValue placeholder="Rating" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low-to-high">Low to high</SelectItem>
-                    <SelectItem value="high-to-low">High to low</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Reviews List */}
-            {filteredReviews.length !== 0 ? (
-              <div className=" grid grid-cols-2 gap-4">
-                {
-                  filteredReviews.map((review) => (
-                <div
-                  key={review._id}
-                  className="border  border-gray-200 rounded-3xl p-8 bg-white shadow-sm"
-                >
-                  {/* TOP */}
-                  <div className="flex flex-col lg:flex-row justify-between gap-6">
-
-                    {/* LEFT CONTENT */}
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold">The Review</h3>
-
-                      <p className="text-sm text-[#b2b2b2]">
-                        {formatDate(review.createdAt)}
-                      </p>
-
-                      <h4 className="font-semibold mt-3">
-                        Feedback summary
-                      </h4>
-
-                      <p className="text-sm text-[#9c9c9c] mt-1 leading-relaxed">
-                        {review.content}
-                      </p>
-                    </div>
-
-                    {/* RIGHT RATING */}
-                    <div className="flex flex-col items-end min-w-[120px]">
-                      <span className="text-5xl font-bold text-[#898383]">
-                        {review.rating || 0}
-                      </span>
-
-                      <RatingStars rating={review.rating || 0} />
-
-                      <p className="text-sm mt-1">
-                        {/* <span className="font-semibold">
-                          {review.rating || 0}
-                        </span>
-                        <span className="text-[#898383]">
-                          {" "}({reviews.length})
-                        </span> */}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* BOTTOM */}
-                  <div className="flex flex-col lg:flex-row justify-between mt-6 gap-6">
-
-                    {/* REVIEWER */}
-                    <div>
-                      <h4 className="font-bold">The Reviewer</h4>
-
-                      <p className="text-sm text-[#b2b2b2]">
-                        {review.client?.position}
-                      </p>
-
-                      <div className="flex items-center gap-2 text-[#bdbdbd] mt-1">
-                        <FaCircleUser className="h-5 w-5" />
-                        <span className="text-sm font-medium">
-                          {review.client?.name}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* META INFO — RESTORED */}
-                    <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-[#9c9c9c]">
-
-                      {/* {review.client?.industry && (
-                        <div className="flex items-center gap-1">
-                          <Building className="h-4 w-4" />
-                          {review.client.industry}
-                        </div>
-                      )} */}
-
-                      {/* {review.client?.location && (
-                        <div className="flex items-center gap-1">
-                          <MapPin className="h-4 w-4" />
-                          {review.client.location}
-                        </div>
-                      )} */}
-
-                      {review.client?.employees && (
-                        <div className="flex items-center gap-1">
-                          <Users className="h-4 w-4" />
-                          {review.client.employees}
-                        </div>
-                      )}
-
-                      {review.client?.reviewType && (
-                        <div className="flex items-center gap-1">
-                          <MessageSquareMore className="h-4 w-4" />
-                          {review.client.reviewType}
-                        </div>
-                      )}
-
-                      {review.client?.verified && (
-                        <div className="flex items-center gap-1 text-green-600">
-                          <CheckCircle2 className="h-4 w-4" />
-                          Verified
-                        </div>
-                      )}
-
-                    </div>
-                  </div>
-                </div>
-              ))
-                }
-                </div>
-            ) : (
-              <div className="text-center mt-20">
-                <p className="text-xl">No Reviews for this provider</p>
-              </div>
-            )}
-          </div>
     </div>
   </div>
   </>

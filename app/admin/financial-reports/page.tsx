@@ -357,7 +357,7 @@ return (
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold text-orangeButton my-custom-class">
+        <h1 className="text-3xl font-bold text-orangeButton ">
           Revenue & Analytics
         </h1>
         <p className="text-gray-500 max-w-xl">
@@ -368,7 +368,7 @@ return (
 
       {/* Section Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-orangeButton my-custom-class">
+        <h2 className="text-xl font-semibold text-orangeButton ">
           Monthly Recurring Revenue (MRR)
         </h2>
        <div className="flex gap-5">

@@ -63,7 +63,7 @@ export default function AdminNotificationsPage() {
     <div className="space-y-8">
       {/* HEADER */}
       <div>
-        <h1 className="text-3xl font-bold text-orangeButton my-custom-class">
+        <h1 className="text-3xl font-bold text-orangeButton ">
           System Notifications
         </h1>
         <p className="text-gray-500 text-base">

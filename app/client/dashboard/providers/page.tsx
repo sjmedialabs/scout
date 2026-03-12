@@ -233,7 +233,7 @@ const paginatedProviders = filteredProviders.slice(
     <div className="w-full min-h-screen bg-transparent">
       <div className="w-full ">
      <div className="border-b mb-2 pb-1">
-      <h1 className="font-bold text-2xl">Find Agencies</h1>
+      <h1 className="font-bold text-[#fa3200] text-xl">Find Agencies</h1>
       </div>
       {/* ---------------- FILTER BAR ---------------- */}
 
@@ -486,7 +486,7 @@ const paginatedProviders = filteredProviders.slice(
                     {/* LEFT — Verified */}
                     <div className="absolute left-0">
                       {p.isVerified && (
-                        <span className="inline-flex items-center rounded-lg border font-bold px-2 py-0 text-[10px] text-green-500 bg-white">
+                        <span className="inline-flex items-center rounded-lg border font-bold px-2 py-0 text-[10px] text-white bg-[#232a8f]">
                           Verified
                         </span>
                       )}
@@ -571,7 +571,7 @@ const paginatedProviders = filteredProviders.slice(
                   </div>
 
                   {/* Buttons */}
-                  <div className="flex flex-wrap gap-2 pt-1">
+                  <div className="flex flex-wrap  justify-between pt-1">
                     <button
                       // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#e0332c] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
                       className="primary-button w-[100px] h-[30px]"

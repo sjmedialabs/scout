@@ -183,8 +183,8 @@ const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
 
   return (
     <div className="space-y-10">
-      <h1 className="text-3xl font-bold text-orangeButton my-custom-class h-1">Service Category Management</h1>
-      <p className="text-gray-500 my-custom-class h-1">Manage categories → subcategories → service items.</p>
+      <h1 className="text-3xl font-bold text-orangeButton  h-1">Service Category Management</h1>
+      <p className="text-gray-500 h-1">Manage categories → subcategories → service items.</p>
 
       {/* ADD MAIN CATEGORY */}
       <div className="bg-white p-4 rounded-2xl border shadow-md space-y-6">
@@ -233,7 +233,7 @@ const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
         className="text-lg font-semibold"
       />
     ) : (
-      <h2 className="text-xl font-semibold text-orangeButton my-custom-class">{cat.title}</h2>
+      <h2 className="text-xl font-semibold text-orangeButton ">{cat.title}</h2>
     )}
   </div>
 

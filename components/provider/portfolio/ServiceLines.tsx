@@ -26,11 +26,11 @@ export default function ServiceLines({ provider }: ServiceLinesProps) {
 
   return (
     <div className="shadow-md border-orange-100 bg-white overflow-hidden rounded-2xl border p-6 space-y-4">
-      <h3 className="text-[16px] font-semibold text-orangeButton my-custom-class">
+      <h3 className="text-[16px] font-semibold text-orangeButton">
         Service Lines
       </h3>
 
-      <div className="flex flex-wrap gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {services.map((service, index) => (
           <div
             key={service}
@@ -38,14 +38,13 @@ export default function ServiceLines({ provider }: ServiceLinesProps) {
               ${colors[index % colors.length]}
               flex items-center justify-between
               rounded-xl px-4 py-2
-              min-w-[260px]
             `}
           >
-            <span className="text-[12px] font-semibold text-gray-800 my-custom-class">
+            <span className="text-[12px] font-semibold text-gray-800">
               {service}
             </span>
 
-            <span className="text-[12px] font-semibold text-black my-custom-class">
+            <span className="text-[12px] font-semibold text-black">
               {percentage}%
             </span>
           </div>

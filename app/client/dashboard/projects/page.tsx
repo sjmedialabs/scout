@@ -122,6 +122,32 @@ const statusOptions = [
 ];
 import { useSearchParams } from "next/navigation";
 
+const StarRating = ({
+  value,
+  onChange,
+}: {
+  value: number | string;
+  onChange: (value: number) => void;
+}) => {
+  const rating = Number(value) || 0;
+
+  return (
+    <div className="flex items-center gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          onClick={() => onChange(star)}
+          className={`h-3.5 w-3.5 cursor-pointer transition ${
+            star <= rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+          }`}
+        />
+      ))}
+
+      <span className="ml-2 text-sm text-gray-600">{rating}/5</span>
+    </div>
+  );
+};
+
 const ProjectsPage = () => {
   const { user, loading } = useAuth();
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -590,7 +616,7 @@ const paginatedRequirements = filteredRequirements?.slice(
     <div className="space-y-2">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center ">
         <div>
-          <h1 className="text-xl font-bold text-[#182142]  leading-6">
+          <h1 className="text-xl font-bold text-[#fa3200]  leading-6">
             Projects
           </h1>
           <p className="text-md text-[#2e2f48] font-normal my-custom-class mt-0">
@@ -617,7 +643,7 @@ const paginatedRequirements = filteredRequirements?.slice(
               placeholder="Search projects..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full h-[35px] mt-0.5 placeholder:text-gray-500 placeholder:text-sm border border-[#D0D5DD] rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none"
+              className="w-full h-[35px] mt-0.5 placeholder:text-gray-500 placeholder:text-sm border border-[#D0D5DD] rounded-full pl-10 pr-4 py-2 text-sm focus:outline-none"
             />
             <svg
               className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
@@ -638,7 +664,7 @@ const paginatedRequirements = filteredRequirements?.slice(
             onValueChange={(value) => setSelectedStatus(value)}
           >
             <SelectTrigger
-              className={`w-full h-[35px] mt-0.5 border data-[placeholder]:text-gray-500 border-[#D0D5DD] rounded-lg px-3 text-sm focus:outline-none ${
+              className={`w-[135px] h-[35px] mt-0.5 border data-[placeholder]:text-gray-500 border-[#D0D5DD] rounded-full px-3 text-sm focus:outline-none ${
                 !selectedStatus ? "text-gray-500" : "text-black"
               }`}
             >
@@ -661,7 +687,7 @@ const paginatedRequirements = filteredRequirements?.slice(
             <ServiceDropdown
               value={selectedCategory}
               onChange={(value) => setSelectedCategory(value)}
-              triggerClassName="border -mt-0 border-[#D0D5DD] text-[#000000] rounded-lg p-2"
+              triggerClassName="border -mt-0 border-[#D0D5DD] text-[#000000] rounded-full p-2"
               triggerSpanClassName="text-[#98A0B4] text-sm"
             />
           </div>
@@ -678,7 +704,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                 if (!startDate) setStartInputType("text");
               }}
               onChange={(e) => setStartDate(e.target.value)}
-              className="placeholder:text-gray-500 placeholder:text-sm w-[80px] xl:w-full -mt-0.5 h-[35px] border border-[#D0D5DD] rounded-lg p-2  text-sm focus:outline-none"
+              className="placeholder:text-gray-500 placeholder:text-sm w-[80px] xl:w-full -mt-0.5 h-[35px] border border-[#D0D5DD] rounded-full p-2  text-sm focus:outline-none"
             />
           </div>
 
@@ -694,7 +720,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                 if (!endDate) setEndInputType("text");
               }}
               onChange={(e) => setEndDate(e.target.value)}
-              className="placeholder:text-gray-500 placeholder:text-sm w-[80px] xl:w-full -mt-0.5 h-[35px] border border-[#D0D5DD] rounded-lg  p-2 text-sm focus:outline-none"
+              className="placeholder:text-gray-500 placeholder:text-sm w-[80px] xl:w-full -mt-0.5 h-[35px] border border-[#D0D5DD] rounded-full  p-2 text-sm focus:outline-none"
             />
           </div>
 
@@ -978,7 +1004,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                         onClick={() =>
                           router.push(`/client/dashboard/projects/${project._id}`)
                         }
-                        className="bg-[#2C34A1] text-xs rounded-full text-[#fff]  hover:bg-[#2C34A1] h-[30px]"
+                        className="btn-blackButton h-[30px]"
                       >
                         {/* {project.proposals} proposals recieved */}
                         {`${(project.status.toLowerCase()==="allocated" || project.status.toLowerCase()==="closed")?"View Status":`View ${project.proposals>1?"Proposals":"Proposal"} (${project.proposals})`}`}
@@ -990,7 +1016,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                         onClick={() =>
                           router.push( `/client/dashboard/projects/${project._id}/details`)
                         }
-                        className="bg-[#000] text-[#fff] hover:bg-gray-800 text-xs rounded-full h-[30px]"
+                        className="primary-button h-[30px]"
                       >
                         View Requirement
                         {/* <FaArrowRightLong className="h-1 w-1" color="#fff" /> */}
@@ -1007,7 +1033,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                         variant="outline"
                         size="sm"
                         onClick={() => handleEditProject(project)}
-                        className="bg-[#000] text-sm rounded-full text-[#fff]  hover:bg-[#000] w-[100px] h-[40px]"
+                        className="btn-blackButton h-[30px]"
                       >
                         Edit
                       </Button>
@@ -1355,7 +1381,31 @@ const paginatedRequirements = filteredRequirements?.slice(
               </div>
 
               {/* Ratings (unchanged UI) */}
+
               {[
+                { label: "Overall Rating", key: "rating" },
+                { label: "Cost Rating", key: "costRating" },
+                { label: "Quality Rating", key: "qualityRating" },
+                { label: "Willing To Refer Rating", key: "willingToReferRating" },
+                { label: "Schedule Rating", key: "scheduleRating" },
+              ].map((item) => (
+                <div className="space-y-2" key={item.key}>
+                  <Label className="text-[#000] text-[14px] font-bold">
+                    {item.label}
+                  </Label>
+
+                  <StarRating
+                    value={reviewForm[item.key]}
+                    onChange={(rating) =>
+                      setReviewForm((prev) => ({
+                        ...prev,
+                        [item.key]: rating,
+                      }))
+                    }
+                  />
+                </div>
+              ))}
+              {/* {[
                 { label: "Rating 0/5", key: "rating" },
                 { label: "Cost Rating 0/5", key: "costRating" },
                 { label: "Quality Rating 0/5", key: "qualityRating" },
@@ -1404,7 +1454,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                     required
                   />
                 </div>
-              ))}
+              ))} */}
 
               {/*  Start Date – Calendar Popover */}
               {/* <div className="space-y-2">
