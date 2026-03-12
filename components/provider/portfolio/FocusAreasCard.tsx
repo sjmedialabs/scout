@@ -24,10 +24,12 @@ export default function FocusAreasCard({provider}) {
         {
           (provider?.industries || []).length!==0 ? 
           (
-            <div>
+            <div className="flex flex-row gap-2 flex-wrap">
               {
               provider?.industries.map((item)=>(
-                <Badge  className="text-[12px] leading-[1.6] bg-[#F54A0C] min-w-[60px] h-[20px]">{item}</Badge>
+                <div>
+                  <Badge  className="text-[12px] leading-[1.6] bg-[#F54A0C] min-w-[60px] h-[20px]">{item}</Badge>
+                </div>
               ))
 
               }

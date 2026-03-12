@@ -111,6 +111,7 @@ export function CompanyProfileEditor({
     minProjectSize: provider?.minProjectSize || 0,
     focusArea: provider.focusArea || "",
     hourlyRate: provider.hourlyRate || "",
+    clients: provider.clients || [],
     website: provider.website || "",
     salesEmail: provider.salesEmail || "",
     schedulingLink: provider.schedulingLink || "",
@@ -150,6 +151,8 @@ export function CompanyProfileEditor({
   );
   const [newTechnology, setNewTechnology] = useState("");
   const [newIndustry, setNewIndustry] = useState("");
+  const [newClient, setNewClient] = useState("");
+  
   const [isEditMode, setIsEditMode] = useState(false);
   // const [newAward, setNewAward] = useState("");
   const [awardForm, setAwardForm] = useState({
@@ -267,6 +270,7 @@ export function CompanyProfileEditor({
         country:formData.country,
         minProjectSize: formData.minProjectSize,
         focusArea: formData.focusArea,
+        clients:formData.clients,
 
         services: formData.services || [],
         technologies: formData.technologies || [],
@@ -375,6 +379,25 @@ export function CompanyProfileEditor({
       industries: prev.industries.filter((item: string) => item !== industry),
     }));
   };
+
+  const addClient = () => {
+    if (
+      newClient.trim() &&
+      !(formData.clients || []).includes(newClient)
+    ) {
+      setFormData((prev) => ({
+        ...prev,
+        clients: [...(prev.clients || []), newClient],
+      }));
+      setNewClient("");
+    }
+  }
+  const removeClient = (client: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      clients: prev.clients.filter((item:string) => item !== client),
+    }));
+  }
 
   const addLanguage = (language: string) => {
     if (language && !(formData.languagesSpoken || []).includes(language)) {
@@ -1189,7 +1212,7 @@ export function CompanyProfileEditor({
             <p className="text-sm text-red-500">{errors.description}</p>
           )}
         </div>
-        {/* <div className="space-y-2">
+        <div className="space-y-2">
           <Label
             htmlFor="focus-area"
             className="text-sm font-inter text-[#98A0B4] font-semibold"
@@ -1203,10 +1226,10 @@ export function CompanyProfileEditor({
               setFormData((prev) => ({ ...prev, focusArea: e.target.value }));
             }}
             rows={6}
-            className={` placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+             className={`${errors.description ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
             placeholder="Focus areas about the company"
           />
-        </div> */}
+        </div>
 
       {/*Technologies offered */}
 
@@ -1258,6 +1281,114 @@ export function CompanyProfileEditor({
           </CardContent>
         </Card>
       </div>
+      {/*Industries working */}
+        <div className="mt-3">
+        <h1 className="font-inter text-sm text-[#a2a9bb] font-bold leading-6">
+          Industries Working
+        </h1>
+        
+        <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
+          <CardContent className="space-y-4 py-6">
+            <div className="flex flex-wrap gap-2">
+              {(formData.industries || []).map((ind) => (
+                <Badge
+                  key={ind}
+                  variant="secondary"
+                  className="flex items-center gap-2 bg-[#1C96F4]"
+                >
+                  {ind}
+                  {
+                    isEditMode &&(
+                      <div onClick={() => removeIndustry(ind)}>
+                        <X className="h-3 w-3 cursor-pointer" />
+                      </div>
+                    )
+                  }
+                </Badge>
+              ))}
+            </div>
+
+            {
+              isEditMode &&(
+                <div className="flex gap-2 w-[50%]">
+                  <Input
+                    type="text"
+                    value={newIndustry}
+                    onChange={(e) => setNewIndustry(e.target.value)}
+                    placeholder="Consulting..."
+                    className=" placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] rounded-[6px]"
+                  />
+
+                  <Button
+                    onClick={addIndustry}
+                    className="bg-[#F54A0C] h-[36px] w-[70px] mt-1.5"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              )
+            }
+          </CardContent>
+        </Card>
+       </div>
+
+       {/*client names */}
+       <div className="mt-3">
+        <h1 className="font-inter text-sm text-[#a2a9bb] font-bold leading-6">
+          Clients
+        </h1>
+
+        <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
+          <CardContent className="space-y-4 py-6">
+            
+            {/* Client Badges */}
+            <div className="flex flex-wrap gap-2">
+              {(formData.clients || []).map((client) => (
+                <Badge
+                  key={client}
+                  variant="secondary"
+                  className="flex items-center gap-2 bg-[#1C96F4]"
+                >
+                  {client}
+
+                  {isEditMode && (
+                    <div onClick={() => removeClient(client)}>
+                      <X className="h-3 w-3 cursor-pointer" />
+                    </div>
+                  )}
+                </Badge>
+              ))}
+              {
+                (formData.clients || []).length === 0 &&(
+                  <p className="text-gray-500 text-md text-center ">No Clients are yet</p>
+                )
+              }
+            </div>
+
+            {/* Add Client Input */}
+            {isEditMode && (
+              <div className="flex gap-2 w-[50%]">
+                <Input
+                  type="text"
+                  value={newClient}
+                  onChange={(e) => setNewClient(e.target.value)}
+                  placeholder="Client name..."
+                  className="placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] rounded-[6px]"
+                />
+
+                <Button
+                  onClick={addClient}
+                  className="bg-[#F54A0C] h-[36px] w-[70px] mt-1.5"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+
+          </CardContent>
+        </Card>
+      </div>
+
       </div>
       </div>
       </TabsContent>

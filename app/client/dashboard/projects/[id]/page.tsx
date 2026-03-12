@@ -412,6 +412,22 @@ const textareaClass =
     if (!countryName) return "";
     return countries.getAlpha2Code(countryName, "en")?.toLowerCase() || "";
   };
+  const getStatusStyles = (status: string) => {
+  switch (status) {
+    case "approved":
+      return "text-green-700 bg-green-100";
+
+    case "waiting_approval":
+      return "text-yellow-700 bg-yellow-100";
+
+    case "revision_requested":
+      return "text-red-700 bg-red-100";
+
+    case "pending":
+    default:
+      return "text-[#667085] bg-[#E4E7EC]";
+  }
+};
 
   return (
     <div className="">
@@ -425,7 +441,7 @@ const textareaClass =
         <div className="flex flex-col justify-center items-center text-center min-h-100">
           <h1 className="text-center font-semibold">
             Failed to Retrive the data
-          </h1>
+          </h1> 
           <Button
             onClick={loadData}
             className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]"
@@ -845,12 +861,13 @@ const textareaClass =
                 {(acceptedProposal as any)?.requirement?.title}
               </h1>
               <p className="text-sm text-[#667085] mt-0.5">
-                Agency: {(acceptedProposal as any)?.agency?.name}
+                Agency: {(acceptedProposal as any)?.agency?.name.charAt(0).toUpperCase() + (acceptedProposal as any)?.agency?.name.slice(1)}
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Badge className="rounded-full bg-[#101828] text-white px-3 py-1 text-xs font-medium">
-                Active
+              <Badge className="rounded-full bg-green-500 text-white px-3 py-1 text-xs font-medium">
+                {acceptedProposal.status.charAt(0).toUpperCase() +
+                  acceptedProposal.status.slice(1)}
               </Badge>
               <Button
                 variant="outline"
@@ -896,25 +913,26 @@ const textareaClass =
           })()}
 
           {/* Tabs: Overview | Deliverables */}
-          <div className="flex gap-1 border-b border-[#E4E7EC]">
+          <div className="inline-flex bg-[#e6edf5] -mt-2 rounded-full p-1 gap-1 mb-1">
             <button
               type="button"
               onClick={() => setTrackingTab("overview")}
-              className={`px-4 py-2.5 text-sm font-medium rounded-t-lg transition ${
+              className={`px-4 py-2 text-sm rounded-full transition ${
                 trackingTab === "overview"
-                  ? "bg-[#101828] text-white"
-                  : "bg-[#F9FAFB] text-[#667085] hover:bg-[#E4E7EC]"
+                  ? "bg-[#2C34A1] text-white"
+                  : "text-gray-700"
               }`}
             >
               Overview
             </button>
+
             <button
               type="button"
               onClick={() => setTrackingTab("deliverables")}
-              className={`px-4 py-2.5 text-sm font-medium rounded-t-lg transition ${
+              className={`px-4 py-2 text-sm rounded-full transition ${
                 trackingTab === "deliverables"
-                  ? "bg-[#101828] text-white"
-                  : "bg-[#F9FAFB] text-[#667085] hover:bg-[#E4E7EC]"
+                  ? "bg-[#2C34A1] text-white"
+                  : "text-gray-700"
               }`}
             >
               Deliverables
@@ -955,9 +973,12 @@ const textareaClass =
                       <p className="text-sm font-semibold text-[#344054]">
                         {milestone?.title}
                       </p>
-                      <Badge variant="secondary" className="rounded-full text-xs font-medium text-[#667085] bg-[#E4E7EC]">
-                        {status}
-                      </Badge>
+                      <Badge
+                          variant="secondary"
+                          className={`rounded-full text-xs font-medium ${getStatusStyles(milestone.approvalStatus)}`}
+                        >
+                          {status}
+                        </Badge>
                     </div>
                     {milestone?.description && (
                       <p className="text-xs text-[#667085] mt-1">{milestone.description}</p>
