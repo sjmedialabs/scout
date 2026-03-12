@@ -180,6 +180,23 @@ useEffect(() => {
       toast.error("Failed to jupdated the status of lead")
     }
   }
+  const leadStats = useMemo(() => {
+  const total = leads.length
+
+  const contacted = leads.filter(
+    (lead) => lead.status === "contacted"
+  ).length
+
+  const won = leads.filter(
+    (lead) => lead.status === "won"
+  ).length
+
+  const dropped = leads.filter(
+    (lead) => lead.status === "dropped"
+  ).length
+
+  return { total, contacted, won, dropped }
+}, [leads])
   const getStatusStyles = (status: string) => {
   switch (status) {
     case "pending":
@@ -220,13 +237,13 @@ useEffect(() => {
             onClick={() => setLeadTab(tab as any)}
             className={`px-4 py-2 cursor-pointer text-sm rounded-full transition ${
               leadTab === tab
-                ? "bg-orangeButton text-white my-custom-class"
-                : "text-gray-700 my-custom-class"
+                ? "primary-button text-white"
+                : "text-gray-700"
             }`}
           >
             {tab === "opted"
-              ? "Opted Leads"
-              :"Direct Leads"}
+              ? "Direct Leads"
+              :"Opted Leads"}
           </button>
         ))}
       </div>
@@ -234,9 +251,75 @@ useEffect(() => {
      {
       leadTab==="opted" &&(
         <div className="min-h-screen">
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
 
+<Card className="shadow-lg bg-white rounded-2xl flex flex-col gap-2">
+<CardHeader className="flex flex-row items-center justify-between pb-2">
+<CardTitle className="text-sm font-medium text-gray-500">
+Total Leads
+</CardTitle>
+<div className="bg-gray-100 rounded-full p-2">
+<Users className="w-5 h-5 text-orangeButton"/>
+</div>
+</CardHeader>
+<CardContent>
+<div className="text-2xl font-bold">
+{leadStats.total}
+</div>
+</CardContent>
+</Card>
+
+
+<Card className="shadow-lg bg-white rounded-2xl flex flex-col gap-2">
+<CardHeader className="flex flex-row items-center justify-between pb-2">
+<CardTitle className="text-sm font-medium text-gray-500">
+Contacted Leads
+</CardTitle>
+<div className="bg-gray-100 rounded-full p-2">
+<MessageSquare className="w-5 h-5 text-orangeButton"/></div>
+</CardHeader>
+<CardContent>
+<div className="text-2xl font-bold">
+{leadStats.contacted}
+</div>
+</CardContent>
+</Card>
+
+
+<Card className="shadow-lg bg-white rounded-2xl flex flex-col gap-2">
+<CardHeader className="flex flex-row items-center justify-between pb-2">
+<CardTitle className="text-sm font-medium text-gray-500">
+Won Leads
+</CardTitle>
+<div className="bg-gray-100 rounded-full p-2">
+<CheckCircle className="w-5 h-5 text-orangeButton"/></div>
+</CardHeader>
+<CardContent>
+<div className="text-2xl font-bold">
+{leadStats.won}
+</div>
+</CardContent>
+</Card>
+
+
+<Card className="shadow-lg bg-white rounded-2xl flex flex-col gap-2">
+<CardHeader className="flex flex-row items-center justify-between pb-2">
+<CardTitle className="text-sm font-medium text-gray-500">
+Dropped Leads
+</CardTitle>
+<div className="bg-gray-100 rounded-full p-2">
+<Target className="w-5 h-5 text-orangeButton"/></div>
+</CardHeader>
+<CardContent>
+<div className="text-2xl font-bold">
+{leadStats.dropped}
+</div>
+</CardContent>
+</Card>
+
+</div>
             {/* 🔹 Filters */}
-            <div className=" mb-2 max-w-[95vw] overflow-x-auto">
+            <div className=" mb-4 max-w-[95vw] overflow-x-auto">
                   <div className="flex items-center gap-3 ">
 
                       {/* Search */}
@@ -366,6 +449,7 @@ useEffect(() => {
                               setIsOpen(true)
                             }}
                             className="text-blue-600 cursor-pointer hover:text-blue-800"
+                            title="View Lead Details"
                           >
                             <Eye size={18} />
                           </button>
@@ -378,6 +462,7 @@ useEffect(() => {
                                   setOpenDropdown(openDropdown === lead._id ? null : lead._id)
                                 }}
                                 className="text-gray-600 cursor-pointer hover:text-black"
+                                title="Edit the status of Lead"
                               >
                                 <ChevronDown size={18} />
                               </button>
