@@ -45,13 +45,13 @@ export default function ProposalHeader({
           className="BackButton"
           onClick={() => router.push(buttonUrl)}
         >
-          <MoveLeft className="h-4 w-4" />
+          {/* <MoveLeft className="h-4 w-4" /> */}
           {buttonText}
         </Button>
       </div>
 
       {/* Client Details */}
-      <div className="flex items-center -mt-4 justify-between flex-wrap gap-6">
+      <div className="flex items-center  justify-between flex-wrap gap-6">
         <div className="flex items-center gap-4">
           <img
             src={proposal.client?.image || "/placeholder-logo.png"}

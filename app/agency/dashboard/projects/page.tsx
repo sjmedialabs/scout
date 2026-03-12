@@ -475,8 +475,7 @@ const addMilestoneToProject = async () => {
 
                             <Button
                               variant="outline"
-                              className="rounded-full h-[30px] w-[130px] text-xs"
-                              onClick={() => {
+                             className="btn-blackButton h-[30px]" onClick={() => {
                                 setSelectedProject(project);
                                 setIsAddMilestoneOpen(true);
                               }}
