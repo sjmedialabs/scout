@@ -836,7 +836,7 @@ const addMilestoneToProject = async () => {
                         )}
 
                         {/* Upload */}
-                        <PdfUpload
+                        {/* <PdfUpload
                           maxSizeMB={10}
                           placeholderText="Upload Deliverable Files"
                           onUploadSuccess={(url) => {
@@ -848,7 +848,7 @@ const addMilestoneToProject = async () => {
                               ],
                             }));
                           }}
-                        />
+                        /> */}
                       </div>
 
                       <DialogFooter>
