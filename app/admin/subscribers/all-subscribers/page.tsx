@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Calendar, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 /* ---------------- TYPES ---------------- */
 
@@ -34,6 +35,7 @@ type Subscriber = {
 
 
 export default function AllSubscribersPage() {
+  const router = useRouter();
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("");
@@ -156,39 +158,44 @@ export default function AllSubscribersPage() {
 
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-0 space-y-4">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-0 space-y-2">
       {/* HEADER */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-3xl font-bold  text-orangeButton">
+          <h1 className="text-xl font-bold  text-orangeButton">
             Subscribers
           </h1>
-          <p className="text-gray-500  text-xl">
+          <p className="text-gray-500  text-md">
             Manage and monitor your customer subscriptions
           </p>
         </div>
 
-        <Link href="/admin/subscribers/all-subscribers/add">
-          <Button className="bg-black text-white rounded-3xl  flex items-center gap-2">
-            <Plus className="h-4 w-4" />
+        <div className="flex flex-row gap-3">
+          
+          <Button className="btn-blackButton h-[30px]" onClick={()=>router.push("/admin/subscribers/all-subscribers/add")}>
+            <Plus className="h-3 w-3" />
             Add Subscriber
           </Button>
-        </Link>
+          <Button className="BackButton rounded-full mt-0 !h-[30px] " onClick={()=>router.push("/admin/subscribers")}>
+             Back to subcribers
+          </Button>
+        
+        </div>
       </div>
 
       {/* FILTERS */}
-      <div className="flex flex-col md:flex-row  gap-4">
-        <div className="border rounded-xl w-100">
+      <div className="flex flex-row  gap-4">
+        <div className="border rounded-full h-[35px] lg:w-100">
           <Input
             placeholder="Search Subscribers"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="md:max-w-sm  placeholder:text-gray-500"
+            className=" rounded-full w-full h-[35px] text-xs  placeholder:text-gray-500"
           />
         </div>
-        <div className="rounded-xl border">
+        <div className="">
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="md:w-48 ">
+            <SelectTrigger className="rounded-full h-[40px] text-xs border border-gray-200 w-full lg:w-48 ">
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
             <SelectContent className="">
@@ -200,9 +207,9 @@ export default function AllSubscribersPage() {
           </Select>
         </div>
 
-        <div className="rounded-xl border">
+        <div className="">
           <Select value={role} onValueChange={(v) => setRole(v as any)}>
-            <SelectTrigger className="md:w-48 ">
+            <SelectTrigger className="border border-gray-200 rounded-full h-[40px] text-xs lg:w-48 ">
               <SelectValue placeholder="All Roles" />
             </SelectTrigger>
             <SelectContent>

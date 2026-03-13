@@ -207,6 +207,8 @@ const paginatedCompletedProjects = dynamicCompletedProjects.slice(
 
 const addMilestoneToProject = async () => {
   if (!selectedProject) return;
+  
+  console.log("-----selected project----------",selectedProject)
 
   if (!newMilestone.title.trim() || !newMilestone.description.trim()) {
     toast.error("Milestone title and description is required");
@@ -217,7 +219,7 @@ const addMilestoneToProject = async () => {
     setUpdating(true);
 
     const updatedMilestones = [
-      ...milestonesDraft,
+      ...selectedProject.milestones,
       {
         title: newMilestone.title,
         description: newMilestone.description,
@@ -226,6 +228,8 @@ const addMilestoneToProject = async () => {
         approvalStatus: "pending",
       },
     ];
+    console.log("----updatedMilestones---", updatedMilestones);
+
 
     const payload = {
       milestones: updatedMilestones,
@@ -234,7 +238,7 @@ const addMilestoneToProject = async () => {
     const res = await authFetch(`/api/proposals/${selectedProject.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(payload), 
     });
 
     if (!res.ok) throw new Error("Failed to add milestone");
@@ -258,7 +262,39 @@ const addMilestoneToProject = async () => {
     setUpdating(false);
   }
 };
-  
+  const getStatusStyles = (status: string) => {
+  switch (status) {
+    case "approved":
+      return "text-green-700 bg-green-100";
+
+    case "waiting_approval":
+      return "text-yellow-700 bg-yellow-100";
+
+    case "revision_requested":
+      return "text-red-700 bg-red-100";
+
+    case "pending":
+    default:
+      return "text-[#667085] bg-[#E4E7EC]";
+  }
+};
+const getStatusText = (status: string) => {
+  switch (status) {
+    case "approved":
+      return "Approved";
+
+    case "waiting_approval":
+      return "Waiting approval";
+
+    case "revision_requested":
+      return "Revison requested";
+
+    case "pending":
+    default:
+      return "Pending";
+  }
+};
+
 
   if (resLoading) {
     return (
@@ -501,21 +537,30 @@ const addMilestoneToProject = async () => {
                             key={m.id}
                             className="flex flex-col gap-2 border rounded-xl p-3"
                           >
-                            <div className="flex items-center gap-3">
-                              <span
+                            <div className="flex items-center justify-between  gap-3">
+                              <div className="flex flex-col">
+                                <span
                                 className={`text-sm flex-1 ${
                                   m.completed ? "line-through text-gray-400" : ""
                                 }`}
                               >
                                 {m.title}
                               </span>
+                               <Badge
+                                variant="secondary"
+                                className={`rounded-full text-xs font-medium ${getStatusStyles(m.approvalStatus)}`}
+                              >
+                                {getStatusText(m.approvalStatus)}
+                              </Badge>
 
-                              {!m.completed && m.approvalStatus !== "approved" && (
+                              </div>
+
+                              {!m.completed && m.approvalStatus !== "approved" && m.approvalStatus!="waiting_approval" && (
                                 <div className="flex flex-col">
                                   <Button
                                     type="button"
                                     size="sm"
-                                    variant="outline"
+                                    variant="outline" 
                                     className="rounded-full text-xs h-7"
                                     onClick={() => {
                                       setMilestonesDraft((prev) =>
@@ -1065,7 +1110,7 @@ const addMilestoneToProject = async () => {
                           View Details
                         </Button>
 
-                        <Button
+                        {/* <Button
                           variant="outline"
                           className="btn-blackButton h-[30px]"
                           onClick={() => {
@@ -1081,7 +1126,7 @@ const addMilestoneToProject = async () => {
                         >
                           <Edit className="h-3 w-3 " />
                           Update Progress
-                        </Button>
+                        </Button> */}
                       </div>
                     </CardContent>
                   </Card>

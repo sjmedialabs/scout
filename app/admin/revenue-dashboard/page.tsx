@@ -24,6 +24,15 @@ import {
 import { DollarSign, TrendingUp, PieChart, Filter } from "lucide-react";
 import { User } from "@/lib/types";
 import { authFetch } from "@/lib/auth-fetch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 // -------------------------------------------------
 // MOCK DATA (Replace with API later)
@@ -34,22 +43,7 @@ const mockRevenueByPlan = [
   { plan: "Enterprise", enterprise: 74.15, revenue: 70.32 },
 ];
 
-const pieData = [
-  { name: "Subscription Revenue", value: 151.48, color: "#8b7cfb" },
-  { name: "Usage-Based Fees", value: 65.55, color: "#ff9c8a" },
-  { name: "Premium Features", value: 162.51, color: "#3ec1d3" },
-  { name: "Integration Fees", value: 64.31, color: "#ffb84d" },
-];
 
-
-const mrrTrend = [
-  { month: "Jan", value: 190, scatter: 70 },
-  { month: "Feb", value: 120, scatter: 65 },
-  { month: "Mar", value: 195, scatter: 85 },
-  { month: "Apr", value: 130, scatter: 90 },
-  { month: "May", value: 165, scatter: 60 },
-  { month: "Jun", value: 110, scatter: 55 },
-];
 
 const COLORS = [
   "#60a5fa", // blue
@@ -66,6 +60,12 @@ const COLORS = [
 export default function RevenueDashboardPage() {
 
   const [filterOpen, setFilterOpen] = useState(false);
+  const currentYear = new Date().getFullYear();
+
+const years = Array.from(
+  { length: currentYear - 2024 + 1 },
+  (_, i) => 2024 + i
+);
 
 const [dateFilter, setDateFilter] = useState({
   year: "",
@@ -183,9 +183,9 @@ const [dateFilter, setDateFilter] = useState({
 
       const filteredRevenue = getFilteredRevenue();
 
-const successfulPayments = filteredRevenue.filter(
-  (p: any) => p.status === "success"
-);
+      const successfulPayments = filteredRevenue.filter(
+        (p: any) => p.status === "success"
+      );
 
       // ---------- MRR ----------
       const currentMonthRevenue = successfulPayments
@@ -456,67 +456,82 @@ console.log("Caluclated pie data is::::::",pieData)
       {/* ---------------- HEADER ---------------- */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-orangeButton">
+          <h1 className="text-xl font-bold text-orangeButton">
             Revenue & Analytics
           </h1>
-          <p className="text-gray-500 max-w-2xl">
+          <p className="text-gray-500 text-md max-w-2xl">
             Track revenue metrics, customer analytics, and market insights for
             your B2B sharing platform
           </p>
         </div>
 
-        <button
+        <Button
           onClick={() => setFilterOpen(!filterOpen)}
-          className="flex items-center cursor-pointer gap-2 bg-black text-white px-5 py-2 rounded-full text-sm"
+          className="btn-blackButton h-[30px]"
         >
-          <Filter className="w-4 h-4" />
+          <Filter className="w-3 h-3" />
           Filter by Date
-        </button>
+        </Button>
       </div>
 
       {filterOpen && (
-  <div className="bg-white border rounded-2xl p-4 shadow-md flex flex-wrap gap-4 items-end">
+  <div className="bg-white border rounded-2xl p-4 shadow-md flex flex-wrap gap-4 items-center ">
     
-    {/* Year */}
-    <div>
-      <label className="text-xs text-gray-500">Year</label>
-      <select
-        className="border rounded px-2 py-1"
-        onChange={(e) =>
-          setDateFilter({ ...dateFilter, year: e.target.value })
-        }
-      >
-        <option value="">All</option>
-        <option value="2026">2026</option>
-        <option value="2025">2025</option>
-        <option value="2024">2024</option>
-      </select>
-    </div>
+   {/* Year */}
+<div>
+  <label className="text-md font-semibold text-gray-500">Year</label>
+  <Select
+    onValueChange={(value) =>
+      setDateFilter({ ...dateFilter, year: value })
+    }
+  >
+    <SelectTrigger className="w-[120px] text-xs border border-gray-200 h-8">
+      <SelectValue placeholder="All" />
+    </SelectTrigger>
 
-    {/* Month */}
-    <div>
-      <label className="text-xs text-gray-500">Month</label>
-      <select
-        className="border rounded px-2 py-1"
-        onChange={(e) =>
-          setDateFilter({ ...dateFilter, month: e.target.value })
-        }
-      >
-        <option value="">All</option>
-        {MONTHS.map((m, i) => (
-          <option key={m} value={i}>
-            {m}
-          </option>
-        ))}
-      </select>
-    </div>
+    <SelectContent>
+      <SelectItem value="all">All</SelectItem>
+
+      {years.map((year) => (
+        <SelectItem key={year} value={year.toString()}>
+          {year}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+</div>
+
+{/* Month */}
+<div>
+  <label className="text-md text-gray-500 font-semibold">Month</label>
+
+  <Select
+    onValueChange={(value) =>
+      setDateFilter({ ...dateFilter, month: value })
+    }
+  >
+    <SelectTrigger className="w-[120px] h-8 text-sm border border-gray-200">
+      <SelectValue placeholder="All" />
+    </SelectTrigger>
+
+    <SelectContent>
+      <SelectItem value="all">All</SelectItem>
+
+      {MONTHS.map((m, i) => (
+        <SelectItem key={m} value={i.toString()}>
+          {m}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+</div>
 
     {/* From */}
     <div>
-      <label className="text-xs text-gray-500">From</label>
-      <input
+      <label className="text-md font-semibold text-gray-500">From</label>
+      <Input
         type="date"
-        className="border rounded px-2 py-1"
+        className="border rounded px-2 h-9 border-gray-200 text-xs"
         onChange={(e) =>
           setDateFilter({ ...dateFilter, from: e.target.value })
         }
@@ -525,10 +540,10 @@ console.log("Caluclated pie data is::::::",pieData)
 
     {/* To */}
     <div>
-      <label className="text-xs text-gray-500">To</label>
-      <input
+      <label className="text-md text-gray-500 font-semibold">To</label>
+      <Input
         type="date"
-        className="border rounded px-2 py-1"
+        className="border border-gray-200 h-9 rounded px-2 py-1"
         onChange={(e) =>
           setDateFilter({ ...dateFilter, to: e.target.value })
         }
@@ -536,14 +551,16 @@ console.log("Caluclated pie data is::::::",pieData)
     </div>
 
     {/* Reset */}
-    <button
+    <div  className="mt-5">
+       <Button
       onClick={() =>
         setDateFilter({ year: "", month: "", from: "", to: "" })
       }
-      className="text-sm bg-gray-200 px-3 py-1 rounded"
+      className="btn-blackButton h-[30px]"
     >
       Reset
-    </button>
+    </Button>
+    </div>
   </div>
 )}
 
@@ -578,7 +595,7 @@ console.log("Caluclated pie data is::::::",pieData)
       {/* ---------------- MRR TREND ---------------- */}
       
       <div className="bg-white rounded-2xl p-6 shadow-md border">
-  <h3 className="text-xl font-semibold text-orangeButton mb-6">
+  <h3 className="text-xl font-semibold text-orangeButton mb-3">
     MRR Growth Trend
   </h3>
 

@@ -168,11 +168,11 @@ if(isLoading){
 
 
   return (
-    <div className="space-y-6 -mt-6">
+    <div className="space-y-6 ">
       {/* Page Heading */}
-      <div className="py-2 border-b border-slate-300 mb-4 flex items-center justify-between">
+      <div className="py-2 border-b border-slate-300 mb-2 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-orangeButton">
+          <h1 className="text-xl font-bold text-orangeButton">
             Dashboard Overview
           </h1>
           <p className="text-gray-500 text-md -mt-1">
@@ -256,16 +256,16 @@ export function DashboardCard({
 }: DashboardCardProps) {
   return (
     <div
-      className="relative rounded-2xl px-3 py-3 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+      className="relative rounded-2xl px-3 py-2  shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
       style={{
         background: `linear-gradient(to bottom, ${gradientFrom}, ${gradientTo})`,
       }}
     >
       {/* Top Accent Line */}
-      <div
+      {/* <div
         className="absolute top-0 left-0 w-full h-2 rounded-t-2xl"
         style={{ backgroundColor: accentColor }}
-      />
+      /> */}
 
       {/* Header */}
       <div className="flex items-center justify-between mt-3">
@@ -285,7 +285,7 @@ export function DashboardCard({
 
       {/* Helper */}
       {helper && (
-        <p className={`text-sm ${parseInt(value)>0?"text-green-600":"text-red-500"} mt-1 font-medium`}>
+        <p className={`text-xs ${parseInt(value)>0?"text-green-600":"text-red-500"} mt-1 font-medium`}>
           {helper}
         </p>
       )}

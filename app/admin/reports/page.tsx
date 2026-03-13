@@ -1269,11 +1269,11 @@ const getARPU = (payments) => {
     );
   }
   return (
-    <div className="space-y-4 -mt-4">
-      {/* ---------- Header ---------- */}
+    <div className="space-y-4 ">
+      {/* ---------- Header --------- */}
       <div className="flex items-center mb-2 justify-between">
         <div>
-          <h1 className="text-2xl -mb-1 text-orangeButton font-bold">Reports & Analytics</h1>
+          <h1 className="text-xl -mb-1 text-orangeButton font-bold">Reports & Analytics</h1>
           <p className="text-gray-500 text-md">
             Comprehensive insights into platform performance
           </p>
@@ -1284,9 +1284,9 @@ const getARPU = (payments) => {
             <TooltipTrigger asChild>
               <Button
                 onClick={handleExport}
-                className="bg-[#FF0000] hover:bg-red-600 rounded-full"
+                className="primary-button h-[30px]"
               >
-                <Download className="w-4 h-4 mr-2" />
+                <Download className="w-3 h-3" />
                 Export Report
               </Button>
             </TooltipTrigger>

@@ -612,7 +612,7 @@ const getARPU = (payments) => {
 
 
   return (
-    <div className="space-y-6 -mt-5">
+    <div className="space-y-6 ">
       <div className="border-b pb-2 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold -mb-1 text-orangeButton">

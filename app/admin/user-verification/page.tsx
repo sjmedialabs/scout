@@ -142,11 +142,11 @@ if (loading) {
       {/* HEADER */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-3xl font-bold  text-orangeButton">
+          <h1 className="text-xl font-bold  text-orangeButton">
             User Verification
 
           </h1>
-          <p className="text-gray-500  text-xl">
+          <p className="text-gray-500  text-md">
             Review documents and verify provider/business profiles.
           </p>
         </div>
@@ -155,18 +155,18 @@ if (loading) {
       </div>
 
       {/* FILTERS */}
-      <div className="flex flex-col md:flex-row  gap-4">
-        <div className="border rounded-xl w-100">
+      <div className="flex flex-row  gap-4">
+        <div className="border rounded-full h-[35px] lg:w-100">
           <Input
             placeholder="Search Subscribers"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="md:max-w-sm  placeholder:text-gray-500"
+            className="w-full h-[35px] rounded-full placeholder:text-gray-500 bg-transparent"
           />
         </div>
-        <div className="rounded-xl border">
+        <div className="">
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="md:w-48 ">
+            <SelectTrigger className="rounded-full h-[40px] w-[120px] border text-xs border-gray-200  py-0 flex items-center ">
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
             <SelectContent className="">
@@ -174,7 +174,7 @@ if (loading) {
               <SelectItem value="verified">Verified</SelectItem>
               <SelectItem value="unverified">unVerified</SelectItem>
               
-            </SelectContent>
+            </SelectContent>        
           </Select>
         </div>
 

@@ -67,7 +67,7 @@ export function AdminSidebar({
      <aside
   className={`
     fixed top-0 left-0 h-full z-50
-    bg-[#e0dbfa] text-[#000] border-r
+    bg-[#3C3A3E] text-[#fff] border-r
     flex flex-col
     transition-all duration-300
 
@@ -79,16 +79,17 @@ export function AdminSidebar({
   `}
 >
   {/* HEADER (Fixed) */}
-  <div className="p-2 py-4.5 border-b flex justify-between items-center shrink-0">
+  <div className="px-3 py-2 border-b flex justify-between items-center shrink-0">
     {!collapsed && (
-      <h2 className="text-md font-extrabold text-[#000]">
-        Super Admin Dashboard
-      </h2>
+      // <h2 className="text-md font-extrabold text-[#000]">
+      //   Super Admin Dashboard
+      // </h2>
+       <img src="/scoutFooterLogo.png" className="h-[45px] w-[120px]"/>
     )}
 
     {/* Desktop Chevron */}
-    <div className="hidden lg:block">
-      <button onClick={onCollapseToggle}>
+    <div className="hidden lg:block items-center mt-5">
+      <button onClick={onCollapseToggle} className="cursor-pointer">
         {collapsed ? (
           <ChevronRight className="w-5 h-5" />
         ) : (
@@ -124,15 +125,15 @@ export function AdminSidebar({
             href={`/admin/${item.id}`}
             onClick={() => {
               if (window.innerWidth < 1024) {
-                onMobileToggle();
+                onMobileToggle(); 
               }
             }}
             className={`
               flex items-center gap-3 px-3 py-2 text-sm
               ${
                 isActive
-                  ? "bg-[#ebe6f8] border border-[#e4dff6] text-[#000] rounded-[8px]"
-                  : "text-[#000] hover:bg-[#ebe6f8] rounded-[8px]"
+                  ? "text-[#F54A0C] rounded-[8px]"
+                  : "text-[#fff] rounded-[8px]"
               }
             `}
           >
@@ -145,12 +146,12 @@ export function AdminSidebar({
   </div>
 
   {/* FOOTER (Fixed) */}
-  <div className="p-4 border-t border-[#e4dff6] shrink-0">
+  <div className="py-2 px-6 border-t border-[#e4dff6] shrink-0">
     <Button
       variant="outline"
       className="
         flex items-center justify-center gap-2
-        px-5 py-2.5 w-full
+        px-2 h-[30px] w-full
         text-white bg-orange-600
         hover:bg-orange-600 hover:text-white
         rounded-full border-none
@@ -158,9 +159,9 @@ export function AdminSidebar({
       "
       onClick={handleLogout}
     >
-      <LogOut className="w-4 h-4" />
+      <LogOut className="w-3 h-3" />
       {!collapsed && (
-        <span className="text-sm font-medium">Logout</span>
+        <span className="text-xs font-medium">Logout</span>
       )}
     </Button>
   </div>

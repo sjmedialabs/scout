@@ -33,7 +33,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {/* Header */}
           <AdminHeader onMenuClick={() => setMobileOpen(true)} />
 
-          <main className="p-6">
+          <main className="px-4 py-3">
             {children}
           </main>
         </div>

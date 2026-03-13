@@ -10,6 +10,17 @@ import { authFetch } from "@/lib/auth-fetch";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { Label } from "recharts";
 import dynamic from "next/dynamic"
+import ServiceDropdown from "@/components/select-category-filter";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Plus, X, ExternalLink, Lock } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "@/lib/toast"
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false })
 import "react-quill/dist/quill.snow.css"
@@ -20,6 +31,7 @@ export default function ContentManagementPage() {
   const [cms, setCMS] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const[quickSearchTag,setQuickSearchTag]=useState("")
 
   const modules = useMemo(() => ({
   toolbar: [
@@ -67,7 +79,7 @@ const formats = [
     }));
   };
 
-  const handleAdd = (field: string, item: any) => {
+  const handleAdd = (field: string, item: any) => { 
     setCMS((prev: any) => ({
       ...prev,
       [field]: [...prev[field], item],
@@ -156,7 +168,8 @@ const formats = [
     });
 
     const data = await res.json();
-    setMessage(data.success ? "Saved Successfully!" : data.error);
+    // setMessage(data.success ? "Saved Successfully!" : data.error);
+    toast.success("Saved Successfully")
     console.log("CMS save response:", data);
     setLoading(false);
   };
@@ -173,20 +186,78 @@ const isValidPhone = (phone) => {
   if (!cms) return <p className="text-center py-10">Loading...</p>;
 
   return (
-    <div className="bg-white rounded-lg shadow p-6 space-y-6">
-      <h1 className="text-2xl font-bold  text-orangeButton">CMS Management</h1>
+    <div className=" space-y-6">
+     
+ 
 
       <Tabs defaultValue="home" className="w-full">
-        <TabsList className="grid grid-cols-6 mb-6 border rounded-xl shadow-lg">
-          <TabsTrigger value="home">Home</TabsTrigger>
-          <TabsTrigger value="about">About</TabsTrigger>
-          <TabsTrigger value="contact">Contact</TabsTrigger>
-          <TabsTrigger value="help-center">Help-Center</TabsTrigger>
-          <TabsTrigger value="privacy-policy">Privacy Policy</TabsTrigger>
-          <TabsTrigger value="term-services">Terms and Services</TabsTrigger>
-        </TabsList>
+         <div className="sticky top-16  bg-white pb-3">
+          <div className="flex flex-row justify-between items-center">
+            <h1 className="text-2xl font-bold text-orangeButton">
+              CMS Management
+            </h1>
 
-        {/* ─────────────────────────────── HOME TAB ─────────────────────────────── */}
+            <Button
+              className="btn-blackButton h-[30px]"
+              onClick={handleSave}
+              disabled={loading}
+            >
+              {loading ? "Saving..." : "Save Changes"}
+            </Button>
+          </div>
+
+        
+          <TabsList className="inline-flex bg-[#e6edf5] rounded-full p-1 gap-1">
+            
+            <TabsTrigger
+              value="home"
+              className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
+            >
+              Home
+            </TabsTrigger>
+
+            <TabsTrigger
+              value="about"
+              className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
+            >
+              About
+            </TabsTrigger>
+
+            <TabsTrigger
+              value="contact"
+              className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
+            >
+              Contact
+            </TabsTrigger>
+
+            <TabsTrigger
+              value="help-center"
+              className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
+            >
+              Help Center
+            </TabsTrigger>
+
+            <TabsTrigger
+              value="privacy-policy"
+              className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
+            >
+              Privacy Policy
+            </TabsTrigger>
+
+            <TabsTrigger
+              value="term-services"
+              className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
+            >
+              Terms & Services
+            </TabsTrigger>
+
+          </TabsList>
+
+          </div>
+       
+
+         <div className="max-h-[90vh] overflow-y-auto">
+           {/* ─────────────────────────────── HOME TAB ─────────────────────────────── */}
         <TabsContent value="home" className="space-y-6">
           {/* HERO SECTION */}
           <section className="space-y-4 border p-4 rounded-xl shadow-lg">
@@ -219,6 +290,59 @@ const isValidPhone = (phone) => {
                 updateField("homeBannerSubtitle", e.target.value)
               }
             /> */}
+            <h2 className="text-xl font-semibold  text-orangeButton">Quick Search Tags</h2>
+
+             <div className="">
+              <div className="space-y-4 py-0">
+
+                {/* ✅ ALWAYS SHOW ADDED SERVICES */}
+                <div className="flex flex-wrap gap-2">
+                  {(cms.homeBannerQuickSearchTags || []).map((service,index) => (
+                    <Badge
+                      key={service}
+                      variant="secondary"
+                      className="flex items-center gap-2 bg-[#1C96F4]"
+                    >
+                      {service}
+
+                      {/*  remove icon hidden in view mode */}
+                      
+                        <div onClick={() => handleRemove("homeBannerQuickSearchTags",index)}>
+                          <X className="h-3 w-3 cursor-pointer" />
+                        </div>
+                    
+                    </Badge>
+                  ))}
+                </div>
+
+                {/* ✅ CATEGORY SELECT (EDIT MODE ONLY) */}
+                <ServiceDropdown
+                    value={quickSearchTag}
+                    onChange={(value) =>{
+                    if(!cms.homeBannerQuickSearchTags?.includes(value) && cms.homeBannerQuickSearchTags?.length<=9){
+                      setQuickSearchTag(value)
+                      handleAdd("homeBannerQuickSearchTags",value)
+                    }
+                    else if(cms.homeBannerQuickSearchTags?.includes(value)){
+                      alert("Already Tag is added")
+                      setQuickSearchTag("")
+                    }
+                    else{
+                      alert("Cannot add the more than 9 tags")
+                      setQuickSearchTag("")
+                    }
+                      
+                    }
+                      
+                    }
+                    placeholder="Select service"
+                    triggerClassName="border-2 border-[#D0D5DD] text-[#000] max-w-[200px] rounded-[8px] p-4
+                        text-xs"
+                    triggerSpanClassName="text-[#000]"
+                  />
+              </div>
+            </div>
+            
           </section>
 
           {/* HOME WORK SECTION */}
@@ -226,7 +350,7 @@ const isValidPhone = (phone) => {
             <div className="flex justify-between">
               <h2 className="text-xl font-semibold  text-orangeButton">How Spark Works</h2>
               <Button
-              className="rounded-full"
+              className="btn-blackButton h-[30px]"
                 onClick={() =>
                   handleAdd("homeWorkSection", {
                     title: "",
@@ -234,6 +358,7 @@ const isValidPhone = (phone) => {
                     image: "",
                   })
                 }
+
               >
                 + Add Step
               </Button>
@@ -286,7 +411,7 @@ const isValidPhone = (phone) => {
                 />
 
                 <Button
-                className="rounded-full"
+                className="primary-button h-[30px]"
                   variant="destructive"
                   onClick={() => handleRemove("homeWorkSection", index)}
                 >
@@ -479,7 +604,7 @@ const isValidPhone = (phone) => {
             
              <div className="flex justify-between">
               <h2 className="text-xl font-semibold">About Points</h2>
-              <Button onClick={() => handleAdd("aboutPoints", "")}>
+              <Button onClick={() => handleAdd("aboutPoints", "")} className="btn-blackButton h-[30px]">
                 + Add
               </Button>
             </div>
@@ -500,7 +625,8 @@ const isValidPhone = (phone) => {
                   className="border-gray-200 rounded-xl placeholder:text-gray-300"
                 />
                 <Button
-                  variant="destructive"
+                  
+                  className="primary-button h-[30px]"
                   onClick={() => handleRemove("aboutPoints", index)}
                 >
                   Remove
@@ -568,6 +694,7 @@ const isValidPhone = (phone) => {
             <div className="flex justify-between">
               <h2 className="text-xl font-semibold">Vision & Mission Cards</h2>
               <Button
+                className="btn-blackButton h-[30px]"
                 onClick={() =>
                   handleAdd("aboutVisionCard", {
                     icon: "",
@@ -628,6 +755,7 @@ const isValidPhone = (phone) => {
 
                 <Button
                   variant="destructive"
+                  className="primary-button h-[30px]"
                   onClick={() => handleRemove("aboutVisionCard", index)}
                 >
                   Remove
@@ -640,6 +768,7 @@ const isValidPhone = (phone) => {
             <div className="flex justify-between">
               <h2 className="text-xl font-semibold">About Stats</h2>
               <Button
+                className="btn-blackButton h-[30px]"
                 onClick={() => handleAdd("aboutStats", { value: "", text: "" })}
               >
                 + Add Stat
@@ -688,7 +817,8 @@ const isValidPhone = (phone) => {
                 previewClassName="w-24 h-24"
               />
                 <Button
-                  variant="destructive"
+                  className="primary-button h-[30px]"
+
                   onClick={() => handleRemove("aboutStats", index)}
                 >
                   Remove
@@ -723,7 +853,8 @@ const isValidPhone = (phone) => {
             <div>
               <div className="flex justify-between">
               <h2 className="text-xl font-semibold">Team Members</h2>
-              <Button
+              <Button 
+                className="btn-blackButton h-[30px]"
                 onClick={() =>
                   handleAdd("aboutTeam", {
                     image: "",
@@ -780,7 +911,7 @@ const isValidPhone = (phone) => {
                 />
 
                 <Button
-                  variant="destructive"
+                  className="primary-button h-[30px]"
                   onClick={() => handleRemove("aboutTeam", index)}
                 >
                   Remove
@@ -809,6 +940,7 @@ const isValidPhone = (phone) => {
               <div className="flex justify-between">
               <h2 className="text-xl font-semibold">About Values</h2>
               <Button
+                className="btn-blackButton h-[30px]"
                 onClick={() =>
                   handleAdd("aboutValues", { title: "", description: "" })
                 }
@@ -859,7 +991,7 @@ const isValidPhone = (phone) => {
                 previewClassName="w-24 h-24"
               />
                 <Button
-                  variant="destructive"
+                  className="primary-button h-[30px]"
                   onClick={() => handleRemove("aboutValues", index)}
                 >
                   Remove
@@ -1064,6 +1196,7 @@ const isValidPhone = (phone) => {
             <div className="flex justify-between">
               <h2 className="text-xl font-semibold">Left side points</h2>
               <Button
+              className="btn-blackButton h-[30px]"
                 onClick={() =>
                   handleHelpCenterAdd("helpCenter", {
                     title: "",
@@ -1103,7 +1236,7 @@ const isValidPhone = (phone) => {
                 />
 
                 <Button
-                  variant="destructive"
+                  className="primary-button h-[30px]"
                   onClick={() => handleHelpCenterRemove("helpCenter", index)}
                 >
                   Remove
@@ -1171,7 +1304,8 @@ const isValidPhone = (phone) => {
             
              <div className="flex justify-between">
               <h2 className="text-xl font-semibold">Privacy Policy Section Two</h2>
-              <Button
+              <Button 
+              className="btn-blackButton h-[30px]"
                 onClick={() =>
                   handlePrivacyPolicyAdd("privacyPolicy", {
                     title: "",
@@ -1225,7 +1359,7 @@ const isValidPhone = (phone) => {
 
 
                 <Button
-                  variant="destructive"
+                  className="primary-button h-[30px]"
                   onClick={() => handlePrivacyPolicyRemove("privacyPolicy", index)}
                 >
                   Remove
@@ -1260,7 +1394,8 @@ const isValidPhone = (phone) => {
             
              <div className="flex justify-between">
               <h2 className="text-xl font-semibold">Term Services Section Two</h2>
-              <Button
+              <Button 
+              className="btn-blackButton h-[30px]"
                 onClick={() =>
                   handleTermServicesAdd("termServices", {
                     title: "",
@@ -1305,7 +1440,7 @@ const isValidPhone = (phone) => {
 
 
                 <Button
-                  variant="destructive"
+                  className="primary-button h-[30px]"
                   onClick={() => handleTermServicesRemove("termServices", index)}
                 >
                   Remove
@@ -1315,12 +1450,13 @@ const isValidPhone = (phone) => {
           </section>
         </TabsContent>
 
+         </div>
 
       </Tabs>
 
-      <Button className="w-full mt-3" onClick={handleSave} disabled={loading}>
+      {/* <Button className="w-full mt-3" onClick={handleSave} disabled={loading}>
         {loading ? "Saving..." : "Save Changes"}
-      </Button>
+      </Button> */}
 
       {message && <p className="text-center text-sm mt-4">{message}</p>}
     </div>
