@@ -99,10 +99,10 @@ useEffect(() => {
     <div className="space-y-4 -mt-2">
       {/* HEADER */}
       <div>
-        <h1 className="text-3xl font-bold text-orangeButton my-custom-class">
-          System Notifications
+        <h1 className="text-xl font-bold text-orangeButton">
+          Notifications
         </h1>
-        <p className="text-gray-500 text-base">
+        <p className="text-gray-500 text-md">
           Platform management and oversight
         </p>
       </div>

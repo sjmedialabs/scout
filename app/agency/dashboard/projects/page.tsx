@@ -177,9 +177,34 @@ const paginatedCompletedProjects = dynamicCompletedProjects.slice(
   }, [user, loading, router]);
 
 
-  const handleMessageClient=(recievedProject)=>{
-    router.push(`/agency/dashboard/messages?clientId=${recievedProject?.clientId}&agencyId=${recievedProject?.agencyId}`)
+  // const handleMessageClient=(recievedProject)=>{
+  //   router.push(`/agency/dashboard/messages?clientId=${recievedProject?.clientId}&agencyId=${recievedProject?.agencyId}`)
+  // }
+
+ const handleMessageClient = async (receivedProject: any) => {
+  try {
+    const res = await authFetch(`/api/chat/conversation`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        proposalId: receivedProject.id,
+        clientId: receivedProject.client._id,
+        agencyId: receivedProject.agency._id,
+      }),
+    });
+
+    const data = await res.json();
+
+    router.push(
+      `/agency/dashboard/messages?conversationId=${data.conversationId}`
+    );
+  } catch (error) {
+    console.log("Failed to start conversation", error);
   }
+};
+
  const handleAddMilestone = () => {
   if (!newMilestone.title.trim()) {
     alert("Milestone title is required");
@@ -270,10 +295,10 @@ const addMilestoneToProject = async () => {
   console.log("Loaded Milesstone Draft is::::",milestonesDraft)
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-1">
       {/* HEADER */}
       <div>
-        <h1 className="text-xl font-bold text-orangeButton h-6 my-custom-class">
+        <h1 className="text-xl font-bold text-orangeButton h-6 ">
           My Projects
         </h1>
         <p className="text-gray-500 text-md my-custom-class">
@@ -282,12 +307,12 @@ const addMilestoneToProject = async () => {
       </div>
 
       {/* TABS */}
-      <div className="inline-flex bg-[#e6edf5] rounded-full p-1 gap-1">
+      <div className="inline-flex bg-[#e6edf5] rounded-full mb-3 p-1 gap-1">
         {["active", "completed"].map((tab) => (
           <button
             key={tab}
             onClick={() => setProjectTab(tab as any)}
-            className={`px-4 py-2 text-sm rounded-full transition ${
+            className={`px-4 py-1 text-xs rounded-full transition cursor-pointer ${
               projectTab === tab
                 ? "bg-orangeButton text-white my-custom-class"
                 : "text-gray-700 my-custom-class"
@@ -307,13 +332,13 @@ const addMilestoneToProject = async () => {
         <div>
           {dynamicActiveProjects.length !== 0 ? (
             <div>
-                <div className="space-y-5 grid grid-cols-1 gap-4">
+                <div className="space-y-0 grid grid-cols-1 gap-4">
                     {paginatedActiveProjects.map((project) => (
                       <Card
                         key={project.id}
-                        className="rounded-2xl h-[100%] p-1 shadow-sm transition hover:shadow-md bg-white"
+                        className="rounded-2xl h-[100%] pt-1 shadow-sm transition hover:shadow-md bg-white"
                       >
-                        <CardContent className="p-3">
+                        <CardContent className="pl-3 ">
 
                           {/* Top Section */}
                           <div className="flex justify-between items-start">
@@ -323,7 +348,7 @@ const addMilestoneToProject = async () => {
                               </div> */}
 
                               <div>
-                                <h3 className="font-semibold text-gray-800 text-base">
+                                <h3 className="font-semibold text-gray-800 text-[15px]">
                                   {project.requirement.title}
                                 </h3>
                                 <p className="text-xs text-gray-500">
@@ -344,17 +369,17 @@ const addMilestoneToProject = async () => {
                           </div>
 
                           {/* Divider */}
-                          <div className="border-t border-gray-200 my-3" />
+                          {/* <div className="border-t border-gray-200 my-3" /> */}
 
                           {/* Details Section */}
-                          <div className="grid grid-cols-1 text-sm text-gray-600">
+                          <div className="grid grid-cols-1 mt-2 mb-2 text-sm text-gray-600">
                             {/* Left Column */}
                             <div className="flex flex-row justify-between flex-wrap gap-2 items-center">
 
                               {/* Budget */}
                               <div className="flex items-center gap-2">
-                                <div className="p-2 rounded-full bg-[#F54A0C]">
-                                  <DollarSign size={14} className="text-white" />
+                                <div className="p-1 rounded-full bg-[#F54A0C]">
+                                  <DollarSign size={12} className="text-white" />
                                 </div>
                                 <span>
                                   ${project.proposedBudget.toLocaleString()}
@@ -363,8 +388,8 @@ const addMilestoneToProject = async () => {
 
                               {/* Timeline */}
                               <div className="flex items-center gap-2">
-                                <div className="p-2 rounded-full bg-[#F54A0C]">
-                                  <Calendar size={14} className="text-white" />
+                                <div className="p-1 rounded-full bg-[#F54A0C]">
+                                  <Calendar size={12} className="text-white" />
                                 </div>
                                 <span>{project.proposedTimeline}</span>
                               </div>
@@ -375,31 +400,27 @@ const addMilestoneToProject = async () => {
 
                               {/* Milestones Count */}
                               <div className="flex items-center gap-2">
-                                <div className="p-2 rounded-full bg-[#F54A0C]">
-                                  <Tag size={14} className="text-white" />
+                                <div className="p-1 rounded-full bg-[#F54A0C]">
+                                  <Tag size={12} className="text-white" />
                                 </div>
                                 <span>{project.milestones.length} Milestones</span>
                               </div>
 
                               {/* Status Text */}
                               <div className="flex items-center gap-2">
-                                <div className="p-2 rounded-full bg-[#F54A0C]">
-                                  <Clock size={14} className="text-white" />
+                                <div className="p-1 rounded-full bg-[#F54A0C]">
+                                  <Clock size={12} className="text-white" />
                                 </div>
                                 <span className="capitalize">{project.status}</span>
                               </div>
                             </div>
                           </div>
 
-                          <div className="border-t border-gray-200 my-3" />
+                          {/* <div className="border-t border-gray-200 my-3" /> */}
 
                           {/* Progress */}
-                          <div>
-                            <div className="flex justify-end text-xs text-gray-500 mb-1">
-                              <span>
-                                {calculateProgress(project.milestones) || 0}% Complete
-                              </span>
-                            </div>
+                          <div className="justify-between items-center mb-1  mt-1 flex">
+                            
 
                             <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                               <div
@@ -409,14 +430,19 @@ const addMilestoneToProject = async () => {
                                 }}
                               />
                             </div>
+                            <div className="flex min-w-22 justify-end text-xs text-gray-500 ">
+                              <span>
+                                {calculateProgress(project.milestones) || 0}% Complete
+                              </span>
+                            </div>
                           </div>
 
                           {/* Milestones Pills */}
-                          <div className="mt-3 flex flex-wrap gap-2">
+                          <div className=" flex flex-wrap gap-2">
                             {project.milestones.map((m, i) => (
                               <span
                                 key={i}
-                                className={`px-4 py-1 rounded-full text-xs border ${
+                                className={`px-4 py-0 rounded-full text-xs border ${
                                   m?.completed
                                     ? "bg-gray-100 text-gray-400"
                                     : "bg-white text-gray-900"
@@ -428,9 +454,9 @@ const addMilestoneToProject = async () => {
                           </div>
 
                           {/* Buttons */}
-                          <div className="mt-4 flex flex-wrap gap-3">
+                          <div className="mt-2 -mb-3  flex flex-wrap gap-3">
                             <Button
-                              className="btn-blackButton h-[30px]"
+                              className="btn-blackButton h-[25px] text-[12px]!"
                               onClick={() => handleMessageClient(project)}
                             >
                               <MessageSquare className="h-3 w-3" />
@@ -439,18 +465,18 @@ const addMilestoneToProject = async () => {
 
                             <Button
                               variant="outline"
-                              className="h-[30px] primary-button"
+                              className="h-[25px] primary-button"
                               onClick={() =>
                                 router.push(`/agency/dashboard/proposals/${project.id}`)
                               }
                             >
-                              <Eye size={16} />
+                              <Eye className="h-3 w-3" />
                               View Details
                             </Button>
 
                             <Button
                               variant="outline"
-                              className="btn-blackButton h-[30px]"
+                              className="btn-blackButton h-[25px]"
                               onClick={() => {
                                 setSelectedProject(project)
                                 setMilestonesDraft(
@@ -475,7 +501,7 @@ const addMilestoneToProject = async () => {
 
                             <Button
                               variant="outline"
-                              className="rounded-full h-[30px] w-[130px] text-xs bg-gray-200"
+                              className="rounded-full h-[25px] w-[130px] text-xs bg-gray-200"
                               onClick={() => {
                                 setSelectedProject(project);
                                 setIsAddMilestoneOpen(true);
@@ -487,6 +513,8 @@ const addMilestoneToProject = async () => {
                         </CardContent>
                       </Card>
                     ))}
+
+
                  {isProgressModalOpen && selectedProject && (
                   <Dialog open={isProgressModalOpen} onOpenChange={setIsProgressModalOpen}>
                     <DialogContent className="sm:max-w-lg max-h-[90vh]">
@@ -740,12 +768,12 @@ const addMilestoneToProject = async () => {
                       </div>
 
                       <DialogFooter className="gap-2">
-                        <Button variant="outline" onClick={() => setIsProgressModalOpen(false)}>
+                        <Button className="btn-blackButton" variant="outline" onClick={() => setIsProgressModalOpen(false)}>
                           Cancel
                         </Button>
 
                         <Button
-                          className="bg-[#2C34A1]"
+                          className="primary-button"
                           disabled={updating}
                           onClick={updateProgress}
                         >
@@ -876,7 +904,7 @@ const addMilestoneToProject = async () => {
                 </div>
                 {/*pagination */}
               {totalActivePages > 1 && (
-                <div className="sticky bottom-0 left-0 right-0 -mx-8 bg-white border-gray-500 py-2 mt-1 z-10 flex justify-center gap-2 border-t">
+                <div className=" bottom-0 left-0 right-0 -mx-8 bg-white border-gray-500 py-2 mt-1 z-10 flex justify-center gap-2">
                   <button
                     disabled={activePage === 1}
                     onClick={() => setActivePage((p) => p - 1)}
@@ -924,7 +952,7 @@ const addMilestoneToProject = async () => {
         <div>
           {dynamicCompletedProjects.length !== 0 ? (
             <div>
-              <div className="space-y-5 grid grid-cols-1 gap-3">
+              <div className="space-y-0 grid grid-cols-1 gap-2">
                 {paginatedCompletedProjects.map((project) => (
                   <Card
                     key={project.id}

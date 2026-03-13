@@ -114,7 +114,7 @@ export default function ProviderProfilePage({
     <div className="min-h-screen mt-0 bg-white">
       {/* Hero Section */}
       <div
-        className="text-white flex items-center justify-center md:py-10"
+        className="text-white flex  justify-center lg:justify-start md:py-10"
         style={{
           backgroundImage: `url(/ProviderDetailBanner.jpg)`,
           backgroundSize: "cover",
@@ -123,7 +123,7 @@ export default function ProviderProfilePage({
           height: "350px",
         }}
       >
-        <div className="max-w-7xl mx-auto px-8 flex justify-center items-center lg:py-12 lg:px-30">
+        <div className="max-w-7xl px-20 flex justify-start   lg:py-12 ">
           <div className="flex flex-col md:flex-row justify-center md:items-center gap-6">
             <div className="flex flex-row gap-4 items-center">
             <div>
@@ -146,7 +146,7 @@ export default function ProviderProfilePage({
                     Featured
                   </Badge>
                 )} */}
-                <h1 className="text-2xl md:text-4xl font-extrabold mt-1 tracking-widest">
+                <h1 className="text-2xl font-extrabold mt-1">
                   {providerDetails.name.toUpperCase()}
                 </h1>
               </div>

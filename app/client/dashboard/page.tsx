@@ -990,15 +990,15 @@ export default function ClientDashboard() {
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-[#111827]">
                 Projects Overview
-                {hasMoreProjects && (
+                {/* {hasMoreProjects && (
                   <span className="ml-2 text-sm font-normal text-[#6B7280]">
                     (showing {PROJECTS_OVERVIEW_LIMIT} of {projectsOverviewAll.length})
                   </span>
-                )}
+                )} */}
               </h2>
               <Button
                 variant="ghost"
-                className="h-8 px-3 primary-button"
+                className="h-[28px] w-[80px] primary-button"
                 onClick={() => router.push("/client/dashboard/projects")}
               >
                 View All →
@@ -1011,7 +1011,7 @@ export default function ClientDashboard() {
                   key={project.id}
                   className="bg-white rounded-2xl border border-[#E5E7EB]"
                 >
-                  <CardContent className="py-4 px-4 md:px-6">
+                  <CardContent className="py-0 px-4 md:px-6">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
@@ -1028,9 +1028,9 @@ export default function ClientDashboard() {
                         </div>
                       </div>
 
-                      <Button
+                      {/* <Button
                         variant="outline"
-                        className="primary-button h-[30px]"
+                        className="text-blue-500 underline border-0 shadow-none hover:bg-transparent hover:text-blue-900"
                         // onClick={() => handleViewProposals(project.id)}
                         onClick={() =>
                              router.push(`/client/dashboard/projects/${project.id}`)
@@ -1039,7 +1039,7 @@ export default function ClientDashboard() {
                         {`${(project.status.toLowerCase()==="allocated" || project.status.toLowerCase()==="closed")
                         ? "View Status"
                         : `View ${project.counts.total > 1 ? "Proposals" : "Proposal"}`}`}
-                      </Button>
+                      </Button> */}
                     </div>
 
                     <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-3 text-[10px] md:text-xs">
@@ -1097,29 +1097,29 @@ export default function ClientDashboard() {
           <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* <Card className="bg-[#fff] rounded-2xl">
               <CardHeader className="px-3 md:px-6">
-                <CardTitle className="font-bold text-[#F4561C] text-lg md:text-xl leading-4 my-custom-class">
+                <CardTitle className="font-bold text-[#F4561C] text-lg md:text-xl leading-4 ">
                   Agency Comparison
                 </CardTitle>
-                <CardDescription className="text-smmd:text-md my-custom-class text-[#656565] font-normal">
+                <CardDescription className="text-smmd:text-md  text-[#656565] font-normal">
                   Compare agencies side-by-side with rating breakdown
                 </CardDescription>
               </CardHeader>
               <CardContent className="px-0">
                 <div className="space-y-4">
                   <div className="grid grid-cols-4 gap-2 text-xs font-medium text-muted-foreground pb-2 px-3 md:px-6">
-                    <div className="font-bold text-sm text-[#6B6B6B] my-custom-class">
+                    <div className="font-bold text-sm text-[#6B6B6B] ">
                       Agency
                     </div>
-                    <div className="text-center font-bold text-sm text-[#6B6B6B] my-custom-class">
+                    <div className="text-center font-bold text-sm text-[#6B6B6B] ">
                       Quality
                     </div>
-                    <div className="text-center font-bold text-sm text-[#6B6B6B] my-custom-class">
+                    <div className="text-center font-bold text-sm text-[#6B6B6B] ">
                       Schedule
                     </div>
-                    <div className="text-center font-bold text-sm text-[#6B6B6B] my-custom-class">
+                    <div className="text-center font-bold text-sm text-[#6B6B6B] ">
                       Cost
                     </div>
-                    <div className="text-center font-bold text-sm text-[#6B6B6B] my-custom-class">
+                    <div className="text-center font-bold text-sm text-[#6B6B6B] ">
                       Refer
                     </div>
                   </div>
@@ -1129,7 +1129,7 @@ export default function ClientDashboard() {
                       key={vendor.id}
                       className="grid  border-t-[1px] px-3 md:px-6 pt-4 border-[#E3E3E3] grid-cols-4 gap-2 items-center text-sm"
                     >
-                      <div className="font-medium text-xs md:text-sm text-[#6B6B6B] my-custom-class">
+                      <div className="font-medium text-xs md:text-sm text-[#6B6B6B] ">
                         {vendor.name}
                       </div>
                       <div className="text-center">
@@ -1172,10 +1172,10 @@ export default function ClientDashboard() {
 
             {/* <Card className="bg-[#fff] rounded-2xl">
               <CardHeader className="px-3 md:px-6">
-                <CardTitle className="font-bold text-[#F4561C] text-lg md:text-xl leading-4 my-custom-class">
+                <CardTitle className="font-bold text-[#F4561C] text-lg md:text-xl leading-4 ">
                   Cost Distribution
                 </CardTitle>
-                <CardDescription className="text-sm md:text-md my-custom-class text-[#656565] font-normal">
+                <CardDescription className="text-sm md:text-md  text-[#656565] font-normal">
                   Proposal budget ranges vs your stated budget
                 </CardDescription>
               </CardHeader>
@@ -1234,10 +1234,10 @@ export default function ClientDashboard() {
           {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="bg-[#fff] rounded-2xl">
               <CardHeader className="px-3 md:px-6">
-                <CardTitle className="font-bold text-[#F4561C] text-lg md:text-xl leading-4 my-custom-class">
+                <CardTitle className="font-bold text-[#F4561C] text-lg md:text-xl leading-4 ">
                   Top Agency Locations
                 </CardTitle>
-                <CardDescription className="text-sm md:text-md my-custom-class text-[#656565] font-normal">
+                <CardDescription className="text-sm md:text-md  text-[#656565] font-normal">
                   Geographic distribution of responding agencies
                 </CardDescription>
               </CardHeader>
@@ -1262,16 +1262,16 @@ export default function ClientDashboard() {
                           <div key={index} className="space-y-1">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
-                                <span className="text-sm font-normal text-[#6B6B6B] my-custom-class">
+                                <span className="text-sm font-normal text-[#6B6B6B] ">
                                   {location.locationName}
                                 </span>
                               </div>
 
                               <div className="flex items-center gap-2">
-                                <span className="text-sm font-normal text-[#6B6B6B] my-custom-class">
+                                <span className="text-sm font-normal text-[#6B6B6B] ">
                                   {location.count}
                                 </span>
-                                <span className="text-xs font-normal text-[#6B6B6B] my-custom-class">
+                                <span className="text-xs font-normal text-[#6B6B6B] ">
                                   ({percentage}%)
                                 </span>
                               </div>
@@ -1294,10 +1294,10 @@ export default function ClientDashboard() {
 
             <Card className="bg-[#fff] rounded-2xl">
               <CardHeader className="px-3 md:px-6">
-                <CardTitle className="font-bold text-[#F4561C] text-lg md:text-xl leading-4 my-custom-class">
+                <CardTitle className="font-bold text-[#F4561C] text-lg md:text-xl leading-4 ">
                   Top Agency Specialties
                 </CardTitle>
-                <CardDescription className="text-sm md:text-md my-custom-class text-[#656565] font-normal">
+                <CardDescription className="text-sm md:text-md  text-[#656565] font-normal">
                   Expertise areas of responding agencies
                 </CardDescription>
               </CardHeader>
@@ -1308,15 +1308,15 @@ export default function ClientDashboard() {
                     <div key={index} className="space-y-1">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-normal text-[#6B6B6B] my-custom-class">
+                          <span className="text-sm font-normal text-[#6B6B6B] ">
                             {specialty.serviceName}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-normal text-[#6B6B6B] my-custom-class">
+                          <span className="text-sm font-normal text-[#6B6B6B] ">
                             {specialty.count}
                           </span>
-                          <span className="text-xs font-normal text-[#6B6B6B] my-custom-class">
+                          <span className="text-xs font-normal text-[#6B6B6B] ">
                             ({specialty.percentage}%)
                           </span>
                         </div>
@@ -1371,7 +1371,7 @@ export default function ClientDashboard() {
             {/* Header */}
             <div className="p-6 pb-0  mt-4 relative">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold my-custom-class text-[#F4561C]">
+                <h2 className="text-xl font-semibold  text-[#F4561C]">
                   {selectedRequirement.title}
                 </h2>
 
@@ -1380,7 +1380,7 @@ export default function ClientDashboard() {
                 </span>
               </div>
 
-              <p className="text-sm text-[#686868] my-custom-class font-normal mt-1">
+              <p className="text-sm text-[#686868]  font-normal mt-1">
                 Posted on{" "}
                 {new Date(selectedRequirement.createdAt).toLocaleDateString()}
               </p>
@@ -1392,14 +1392,14 @@ export default function ClientDashboard() {
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div className="flex items-center gap-2 border-2 border-[#F0F0F0] rounded-lg px-3 py-2">
                   <LuTag className="w-5 h-5" color="#000" />
-                  <span className="my-custom-class font-bold text-xs text-[#000]">
+                  <span className=" font-bold text-xs text-[#000]">
                     Category: {selectedRequirement.category}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
                   <PiCurrencyDollarBold className="w-5 h-5" color="#000" />
-                  <span className="my-custom-class font-semibold text-xs text-[#000]">
+                  <span className=" font-semibold text-xs text-[#000]">
                     Budget: ${selectedRequirement.budgetMin} - $
                     {selectedRequirement.budgetMax}
                   </span>
@@ -1407,14 +1407,14 @@ export default function ClientDashboard() {
 
                 <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
                   <CiCalendar className="w-5 h-5" color="#000" />
-                  <span className="my-custom-class font-semibold text-xs text-[#000]">
+                  <span className=" font-semibold text-xs text-[#000]">
                     Timeline: {selectedRequirement.timeline}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
                   <CiLocationOn className="w-5 h-5" color="#000" />
-                  <span className="my-custom-class font-semibold text-xs text-[#000]">
+                  <span className=" font-semibold text-xs text-[#000]">
                     Location: {selectedRequirement.location || "Remote"}
                   </span>
                 </div>
@@ -1424,7 +1424,7 @@ export default function ClientDashboard() {
 
               {/* Description */}
               <div className="border-b-2 border-[#E4E4E4] pb-6">
-                <h3 className="font-semibold text-[#F4561C] my-custom-class text-lg mb-1">
+                <h3 className="font-semibold text-[#F4561C] text-lg mb-1">
                   Description
                 </h3>
                 <p className="text-sm text-[#656565] leading-relaxed">

@@ -634,7 +634,7 @@ const ProposalsPage = () => {
                   <div className="flex flex-wrap gap-3 mt-3">
                     {/* View Details – ALWAYS */}
                     <Button
-                      className="h-8 px-6 rounded-full bg-blueButton hover:bg-blueButton"
+                      className="primary-button h-[30px]"
                       onClick={() =>
                         router.push(
                           `/agency/dashboard/proposals/${proposal.id}`,
@@ -646,12 +646,12 @@ const ProposalsPage = () => {
 
                     {/* Conditional Second Button */}
                     {proposal.hasConversation ? (
-                      <Button className="h-8 px-6 btn-blackButton">
+                      <Button className="h-[30px] btn-blackButton">
                         View Conversation →
                       </Button>
                     ) : proposal.status === "pending" ? (
                       <Button
-                        className="h-8 px-6 btn-blackButton"
+                        className="h-[30px] btn-blackButton"
                         onClick={() => handleEditProposal(proposal.id)}
                       >
                         Edit Proposal →
@@ -811,7 +811,7 @@ const ProposalsPage = () => {
 
             <div>
               <Button
-                className="h-12 rounded-full hover:bg-orange-400 bg-orangeButton px-8 text-white flex items-center justify-center gap-2"
+                className="h-[30px] primary-button"
                 disabled={isSubmitting}
                 onClick={handleUpdateProposal}
               >

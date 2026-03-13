@@ -380,7 +380,7 @@ const { cms, providers, projects, categories } = data;
                         <Button
                           variant="outline"
                           size="xs"
-                          className="bg-orangeButton text-white rounded-full text-[10px] px-3 py-1"
+                          className="primary-button w-[100px] h-[20px]"
                         >
                           View Details →
                         </Button>
@@ -526,7 +526,7 @@ const { cms, providers, projects, categories } = data;
                           variant="outline"
                           size="xs"
                           asChild
-                          className="bg-orangeButton text-white rounded-full text-[10px] px-3 py-1 hover:bg-[#b62528]"
+                          className="primary-button w-[100px] h-[20px]"
                         >
                           <Link
                             href={`/provider/${provider.id || provider._id}`}
@@ -574,7 +574,7 @@ const { cms, providers, projects, categories } = data;
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-2">
             <Button
               size="lg"
-              className="bg-orangeButton inline-flex w-auto px-6 font-semibold text-sm text-white rounded-full hover:bg-gray-100"
+              className="primary-button  h-[40px]"
               asChild
             >
               <Link href="/register?type=seeker">Post Requirement</Link>
@@ -582,10 +582,10 @@ const { cms, providers, projects, categories } = data;
             <Button
               size="lg"
               variant="outline"
-              className="bg-blueButton inline-flex w-auto px-10 font-semibold text-sm text-white rounded-full hover:bg-gray-100"
+              className="btn-blackButton  h-[40px]"
               asChild
             >
-              <Link href="/register?type=provider">Find Project</Link>
+              <Link href="/register?type=provider">Find Projects</Link>
             </Button>
           </div>
         </div>

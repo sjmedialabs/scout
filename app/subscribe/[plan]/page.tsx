@@ -134,10 +134,7 @@ export default function SubscribePage({ params }: SubscribePageProps) {
                       <Link href="/pricing">
                         <button
                           type="button"
-                          className="h-7 px-3 rounded-full text-xs font-medium
-                                  border bg-black duration-800 cursor-pointer
-                                   text-white
-                                  transition-colors hover:bg-white hover:text-black hover:border-black"
+                          className="h-[25px] w-[70px] bg-black text-white hover:bg-gray-800 rounded-full text-xs"
                         >
                           Change
                         </button>
@@ -226,10 +223,7 @@ export default function SubscribePage({ params }: SubscribePageProps) {
                     {/* Proceed to pay */}
                     <button
                       type="button"
-                      className="h-9 px-8 rounded-full border
-                              bg-[#e0332c] text-white text-[10px] font-medium
-                              hover:bg-white hover:text-black hover:border-black duration-800
-                              transition-colors cursor-pointer"
+                      className="primary-button h-[33px] w-[100px]"
                       onClick={() => {
                         // BACKEND CHECKOUT HOOK (to be implemented)
                         router.push("/register");
@@ -242,10 +236,7 @@ export default function SubscribePage({ params }: SubscribePageProps) {
                     <Link href="/pricing">
                       <button
                         type="button"
-                        className="h-9 px-8 rounded-full border
-                                bg-black text-white text-[10px] font-medium
-                                hover:bg-white hover:text-black hover:border-black duration-800
-                                transition-colors cursor-pointer"
+                        className="h-[33px] w-[100px] bg-black text-white hover:bg-gray-800 rounded-full text-xs"
                       >
                         Cancel / Exit
                       </button>

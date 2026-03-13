@@ -94,7 +94,7 @@ export function HomeHero({ cms }: HomeHeroProps) {
         <div className="w-full  flex flex-col items-center justify-center px-2 sm:px-4 md:px-8">
          <div className="text-center">
            <h1
-            className="text-3xl font-normal  text-white mb-4 max-w-[600px]  text-center  leading-tight"
+            className="text-5xl font-normal  text-white mb-4 max-w-[700px]  text-center  leading-tight"
             style={{
               fontFamily: "'Cinzel', serif",
             }}
@@ -133,7 +133,7 @@ export function HomeHero({ cms }: HomeHeroProps) {
             {/* Popular Searches */}
             <div className="space-y-3 sm:space-y-2 mt-3">
               <div className="flex flex-wrap gap-2 sm:gap-3 justify-center">
-                {categories.map((search, index) => (
+                {cms?.homeBannerQuickSearchTags.map((search, index) => (
                   <Button
                     key={index}
                     variant="outline"

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, use } from "react";
+import { useSearchParams } from "next/navigation";
 import { Pencil, Trash2 } from "lucide-react";
 import {
   Phone,
@@ -144,6 +145,7 @@ const initialMessages: Message[] = [
 export default function MessagesPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [messageInput, setMessageInput] = useState("");
   const [typing, setTyping] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -215,13 +217,30 @@ const [deletingId, setDeletingId] = useState<string | null>(null);
       setTotalUnreadMessagesCount(totalUnreadCount);
 
       // FIX: Pass the specific ID and the data directly
-      if (allConversations.length > 0) {
-        const firstConv = allConversations[0];
-        // Set the active state immediately with the object we already have
-        setDynamicActiveConversation(firstConv);
-        // Fetch messages for this specific ID
-        await fetchMessages(firstConv.conversationId);
-      }
+      // if (allConversations.length > 0) {
+      //   const firstConv = allConversations[0];
+      //   // Set the active state immediately with the object we already have
+      //   setDynamicActiveConversation(firstConv);
+      //   // Fetch messages for this specific ID
+      //   await fetchMessages(firstConv.conversationId);
+      // }
+
+      const conversationIdFromUrl = searchParams.get("conversationId");
+
+if (conversationIdFromUrl) {
+  const found = allConversations.find(
+    (c: any) => c.conversationId === conversationIdFromUrl
+  );
+
+  if (found) {
+    setDynamicActiveConversation(found);
+    await fetchMessages(found.conversationId);
+  }
+} else if (allConversations.length > 0) {
+  const firstConv = allConversations[0];
+  setDynamicActiveConversation(firstConv);
+  await fetchMessages(firstConv.conversationId);
+}
     } catch (err) {
       console.log(err);
       setFailed(true);

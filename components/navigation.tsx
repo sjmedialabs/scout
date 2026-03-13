@@ -470,7 +470,7 @@ const overflowCategories = mainCategories.slice(5);
             {/* Post a Project Button */}
             <div className="hidden lg:flex flex-row gap-2">
               <Button
-                className="bg-orangeButton w-35 h-8 rounded-full"
+                className="primary-button h-[32px]"
                 asChild
               >
                 <Link
@@ -482,7 +482,7 @@ const overflowCategories = mainCategories.slice(5);
                 </Link>
               </Button>
 
-               <Button className="bg-orangeButton mr-3  text-white h-8 rounded-full"  onClick={()=>router.push("/browse")}>
+               <Button className="primary-button h-[32px]"  onClick={()=>router.push("/browse")}>
                 Find Projects
               </Button>
              

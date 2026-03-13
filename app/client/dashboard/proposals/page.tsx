@@ -540,10 +540,10 @@ console.log("Filtered Proposals:::::::",filteredProposals)
     <div className="">
       <div className="flex flex-row justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold my-custom-class text-[#F4561C]">
+          <h1 className="text-2xl font-bold text-[#F4561C]">
           Proposals <span className="text-[#656565] text-[18px]">({filteredProposals?.length || 0})</span> 
         </h1>
-        <p className="text-[#656565]  text-sm font-medium my-custom-class">
+        <p className="text-[#656565]  text-sm font-medium ">
           {selectedRequirement
             ? "Review and manage proposals for the selected requirement"
             : "All proposals received for your projects"}
@@ -663,7 +663,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                 <div>
                   <div className="">
                     {/* <div className="flex justify-between items-center mt-0">
-                      <h3 className="text-lg font-semibold my-custom-class tracking-tight">
+                      <h3 className="text-lg font-semibold tracking-tight">
                         Proposals Received
                       </h3>
                       <div className="text-sm text-muted-foreground">
@@ -1041,6 +1041,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
               </DialogHeader>
               <div className="flex gap-2 justify-end pt-2">
                 <Button
+                className="btn-blackButton"
                   variant="outline"
                   onClick={() => setConfirmDialog({ open: false, proposalId: null, action: null })}
                   disabled={confirmLoading}
@@ -1050,7 +1051,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                 <Button
                   onClick={handleConfirmAcceptReject}
                   disabled={confirmLoading}
-                  className={confirmDialog.action === "reject" ? "bg-[#FF0000] hover:bg-[#FF0000]" : ""}
+                  className={confirmDialog.action === "reject" ? "primary-button" : "primary-button"}
                 >
                   {confirmLoading ? "Please wait..." : "Yes, Continue"}
                 </Button>
@@ -1095,11 +1096,11 @@ console.log("Filtered Proposals:::::::",filteredProposals)
 
                 {/* ✅ FIXED FOOTER */}
                 <div className="px-6 py-4 border-t flex gap-5 shrink-0">
-                  <Button type="submit" disabled={sending} onClick={handleSendMessage} className="bg-[#2C34A1] rounded-full">
+                  <Button type="submit" disabled={sending} onClick={handleSendMessage} className="primary-button">
                     {sending ? "Sending..." : "Send"}
                   </Button>
                   <DialogClose asChild>
-                    <Button className="bg-[#000] rounded-full">Cancel</Button>
+                    <Button className="btn-blackButton">Cancel</Button>
                   </DialogClose>
                 </div>
 

@@ -404,6 +404,27 @@ const handlNegotation=async(proposalId:string)=>{
   }
 };
 
+const downloadFile = async (url: string) => {
+  try {
+    const res = await fetch(url);
+    const blob = await res.blob();
+
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = downloadUrl;
+    link.download = url.split("/").pop() || "file";
+
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(downloadUrl);
+  } catch (err) {
+    console.error("Download failed", err);
+  }
+};
+
   return (
     <div className="space-y-3 ">
 
@@ -524,7 +545,7 @@ const handlNegotation=async(proposalId:string)=>{
           </div>
 
           {/* Tabs: Overview | Deliverables */}
-          <div className="inline-flex bg-[#e6edf5] rounded-full p-1 gap-1 mb-1">
+          <div className="inline-flex bg-[#e6edf5] rounded-full p-1 gap-1 mb-4">
             <button
               type="button"
               onClick={() => setTrackingTab("overview")}
@@ -661,7 +682,7 @@ const handlNegotation=async(proposalId:string)=>{
                                       variant="secondary"
                                       className={`rounded-full text-xs font-medium ${getStatusStyles(milestone.approvalStatus)}`}
                                     >
-                                      {milestone.approvalStatus.charAt(0).toUpperCase() + milestone.approvalStatus.slice(1)}
+                                      {milestone.approvalStatus?.charAt(0).toUpperCase() + milestone.approvalStatus?.slice(1)}
                                     </Badge>
                                 </div>
                                 {milestone?.description && (
@@ -827,16 +848,14 @@ const handlNegotation=async(proposalId:string)=>{
                   <span className="text-sm font-medium text-[#344054] truncate">
                     Document
                   </span>
-                  <span className="text-xs text-[#667085]">Link</span>
+                  {/* <span className="text-xs text-[#667085]">Link</span> */}
                 </div>
-                <a
-                  href={(proposal as any).documentUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-[#1570EF] hover:underline shrink-0"
+                <button
+                  onClick={() => downloadFile((proposal as any).documentUrl)}
+                  className="text-sm text-[#1570EF] hover:underline shrink-0 cursor-pointer"
                 >
                   Download
-                </a>
+                </button>
               </div>
             )}
             {(proposal as any)?.attachments?.map((url: string, i: number) => (
@@ -850,15 +869,12 @@ const handlNegotation=async(proposalId:string)=>{
                     Attachment {i + 1}
                   </span>
                 </div>
-                <a
-                  href={url}
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-[#1570EF] hover:underline shrink-0"
+                <button
+                  onClick={() => downloadFile(url)}
+                  className="text-sm text-[#1570EF] hover:underline shrink-0 cursor-pointer"
                 >
                   Download
-                </a>
+                </button>
               </div>
             ))}
            

@@ -65,15 +65,15 @@ const AgencyPortfolioPage = () => {
     <div className="space-y-5">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>
-          <h1 className="font-bold text-2xl text-[#F54A0C] my-custom-class">
+          <h1 className="font-bold text-2xl text-[#F54A0C] ">
             {providerDetails?.name || " S J Media Labs "} - Portfolio
           </h1>
-          <p className="text-[#656565] text-md mt-0 my-custom-class">
+          <p className="text-[#656565] text-md mt-0 ">
             View previous work and projects completed by this agency
           </p>
         </div>
         <Button
-          className="bg-[#000] text-xs text-[#fff] rounded-full my-custom-class hover:bg-[#000] active:bg-[#000]"
+          className="bg-[#000] text-xs text-[#fff] rounded-full  hover:bg-[#000] active:bg-[#000]"
           onClick={() => router.push("/client/dashboard/proposals")}
         >
           <FaArrowLeftLong color="#fff" className="h-4 w-4" />

@@ -400,10 +400,10 @@ const ClientAnalyticsPage = () => {
   return (
     <div className="space-y-3">
       <div>
-        <h1 className="text-2xl font-bold my-custom-class leading-6 text-[#F4561C]">
+        <h1 className="text-2xl font-bold  leading-6 text-[#F4561C]">
           Project Analytics
         </h1>
-        <p className="text-[#656565] font-medium text-lg my-custom-class">
+        <p className="text-[#656565] font-medium text-lg ">
           Insights into vendor demographics and proposal trends
         </p>
       </div>
@@ -413,12 +413,12 @@ const ClientAnalyticsPage = () => {
         <CardHeader  className="px-0 lg:px-6">
           <CardTitle className="flex items-center gap-0">
             <MdLocationOn className="h-6 w-9" color="#F54A0C" />
-            <span className="text-md lg:text-2xl font-bold my-custom-class text-[#F54A0C]">
+            <span className="text-md lg:text-2xl font-bold text-[#F54A0C]">
               {" "}
               Top Vendor Locations
             </span>
           </CardTitle>
-          <p className="text-sm lg:text-lg text-[#656565] my-custom-class ml-2 lg:ml-3 -mt-2">
+          <p className="text-sm lg:text-lg text-[#656565]  ml-2 lg:ml-3 -mt-2">
             Geographic distribution of vendors responding to your projects
           </p>
         </CardHeader>
@@ -440,16 +440,16 @@ const ClientAnalyticsPage = () => {
                   <div key={index} className="space-y-1">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-[#6B6B6B] my-custom-class">
+                        <span className="text-sm font-bold text-[#6B6B6B] ">
                           {location.locationName}
                         </span>
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-[#6B6B6B] my-custom-class">
+                        <span className="text-sm font-bold text-[#6B6B6B] ">
                           {location.count}
                         </span>
-                        <span className="text-xs font-bold text-[#6B6B6B] my-custom-class">
+                        <span className="text-xs font-bold text-[#6B6B6B] ">
                           ({percentage}%)
                         </span>
                       </div>
@@ -474,11 +474,11 @@ const ClientAnalyticsPage = () => {
         <CardHeader className="px-0 lg:px-6">
           <CardTitle className="flex items-center gap-2">
             <Target className="h-8 w-8" color="#F54A0C" />
-            <span className="text-md lg:text-2xl font-bold my-custom-class text-[#F54A0C]">
+            <span className="text-md lg:text-2xl font-bold  text-[#F54A0C]">
               Top Vendor Specialties
             </span>
           </CardTitle>
-          <p className=" text-sm lg:text-lg text-[#656565] my-custom-class ml-2 -mt-2">
+          <p className=" text-sm lg:text-lg text-[#656565]  ml-2 -mt-2">
             Expertise areas of vendors responding to your projects
           </p>
         </CardHeader>
@@ -487,15 +487,15 @@ const ClientAnalyticsPage = () => {
             <div key={index} className="space-y-1">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-normal text-[#6B6B6B] my-custom-class">
+                  <span className="text-sm font-normal text-[#6B6B6B] ">
                     {specialty.serviceName}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-normal text-[#6B6B6B] my-custom-class">
+                  <span className="text-sm font-normal text-[#6B6B6B] ">
                     {specialty.count}
                   </span>
-                  <span className="text-xs font-normal text-[#6B6B6B] my-custom-class">
+                  <span className="text-xs font-normal text-[#6B6B6B] ">
                     ({specialty.percentage}%)
                   </span>
                 </div>
@@ -518,11 +518,11 @@ const ClientAnalyticsPage = () => {
             <div className="h-8 w-8 flex items-center justify-center border-2 border-[#F4561C]  rounded-md">
               <DollarSign className="h-5 w-5" color="#F4561C" />
             </div>
-            <span className="text-md lg:text-2xl font-bold my-custom-class text-[#F54A0C]">
+            <span className="text-md lg:text-2xl font-bold  text-[#F54A0C]">
               Cost Distribution Analysis
             </span>
           </CardTitle>
-          <p className="text-[#656565] my-custom-class  -mt-2">
+          <p className="text-[#656565]   -mt-2">
             Budget ranges of proposals received vs. your stated budget
           </p>
         </CardHeader>
@@ -530,26 +530,26 @@ const ClientAnalyticsPage = () => {
           <div className="space-y-4  px-0 ">
             {/* <div className="py-4  rounded-lg px-8">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-lg text-[#000] font-bold my-custom-class">
+                <span className="text-lg text-[#000] font-bold ">
                   Your Stated Budget
                 </span>
-                <span className="text-lg font-bold text-[#000] my-custom-class">
+                <span className="text-lg font-bold text-[#000] ">
                   $50,000
                 </span>
               </div>
             </div> */}
             <hr className="border-[1px] border-[#E4E4E4] w-full" />
             <div className="space-y-4 px-0">
-              <h4 className="text-xl font-bold text-[#000] my-custom-class">
+              <h4 className="text-xl font-bold text-[#000] ">
                 Proposal Budget Ranges
               </h4>
               {(costDistributionStats || []).map((item) => (
                 <div key={item.range} className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="font-bold text-xs text-[#6B6B6B] my-custom-class">
+                    <span className="font-bold text-xs text-[#6B6B6B] ">
                       {item.range}
                     </span>
-                    <span className="font-bold text-xs text-[#6B6B6B] my-custom-class">
+                    <span className="font-bold text-xs text-[#6B6B6B] ">
                       {item.count} proposals ({item.percentage}%)
                     </span>
                   </div>
@@ -565,7 +565,7 @@ const ClientAnalyticsPage = () => {
 
             <div className="grid grid-cols-3 gap-4 pt-4 border-t">
               <div className="text-center">
-                <p className="text-sm text-[#6B6B6B] my-custom-class font-bold">
+                <p className="text-sm text-[#6B6B6B] font-bold">
                   Average
                 </p>
                 <p className="text-lg text-[#000] font-bold">
@@ -573,7 +573,7 @@ const ClientAnalyticsPage = () => {
                 </p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-[#6B6B6B] my-custom-class font-bold">
+                <p className="text-sm text-[#6B6B6B] font-bold">
                   Median
                 </p>
                 <p className="text-lg text-[#000] font-bold">
@@ -581,7 +581,7 @@ const ClientAnalyticsPage = () => {
                 </p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-[#6B6B6B] my-custom-class font-bold">
+                <p className="text-sm text-[#6B6B6B]  font-bold">
                   Range
                 </p>
                 <p className="text-lg font-bold text-[#000]">

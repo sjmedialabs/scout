@@ -364,7 +364,7 @@ export default function AgencyDashboard() {
                   </div>
 
                   <div className="flex justify-end">
-                    <button className="bg-[#3C3A3E] hover:bg-[#000] h-[30px] w-[120px] cursor-pointer rounded-full text-white text-xs transition"
+                    <button className="btn-blackButton h-[30px] w-[100px]"
                       onClick={() => router.push("/agency/dashboard/projects")}>
                       View Projects →
                     </button>
@@ -408,7 +408,7 @@ export default function AgencyDashboard() {
                   </div>
 
                   <div className="flex justify-end mt-4">
-                    <button className="bg-[#3C3A3E] hover:bg-[#000] h-[30px] w-[120px] cursor-pointer rounded-full text-white text-xs transition"
+                    <button className="btn-blackButton h-[30px] w-[120px]"
                       onClick={() => router.push("/agency/dashboard/proposals")}>
                       View Proposals →
                     </button>
@@ -441,7 +441,7 @@ export default function AgencyDashboard() {
                   </div>
 
                   <div className="flex justify-end mt-4">
-                    <button className="bg-[#3C3A3E] hover:bg-[#000] h-[30px] w-[120px] cursor-pointer rounded-full text-white text-xs transition"
+                    <button className="btn-blackButton h-[30px] w-[100px]"
                       onClick={() => router.push("/agency/dashboard/leads")} >
                       View Leads →
                     </button>
