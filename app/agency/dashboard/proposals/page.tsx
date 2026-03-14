@@ -551,7 +551,24 @@ const ProposalsPage = () => {
                           : ""}
                       </p>
 
-                      <div className="flex flex-wrap items-center gap-8 mt-2">
+                      {/*These badges are visisble at mobile view only below sm*/}
+                        <div className="flex sm:hidden mt-1 flex-row md:flex-col gap-2 items-start md:items-end">
+                            {proposal.requirement?.category && (
+                              <Badge className="text-[11px] px-3 py-1 rounded-full bg-[#e0e0e0] text-black">
+                                {proposal.requirement.category}
+                              </Badge>
+                            )}
+
+                            <Badge
+                              className={`text-[11px] px-4 py-1 rounded-full font-medium capitalize ${getStatusBadgeClass(
+                                proposal.status,
+                              )}`}
+                            >
+                              {proposal.status ?? "pending"}
+                            </Badge>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-3 sm:gap-8 mt-2">
                         {/* Budget */}
                         <div className="flex items-center gap-3">
                           <div className="h-6 w-6 rounded-full bg-[#F4561C] flex items-center justify-center shrink-0">
@@ -613,7 +630,7 @@ const ProposalsPage = () => {
                     </div>
 
                     {/* RIGHT */}
-                    <div className="flex flex-row md:flex-col gap-2 items-start md:items-end">
+                    <div className="hidden sm:flex flex-row md:flex-col gap-2 items-start md:items-end">
                       {proposal.requirement?.category && (
                         <Badge className="text-[11px] px-3 py-1 rounded-full bg-[#e0e0e0] text-black">
                           {proposal.requirement.category}
@@ -723,7 +740,7 @@ const ProposalsPage = () => {
             </div>
 
             {/* WORK APPROACH */}
-            <div className="space-y-3 h-20">
+            <div className="space-y-3 mt-30 sm:mt-0">
               <label className="text-[14px] font-bold text-[#98A0B4]">
                 Work Approach
               </label>

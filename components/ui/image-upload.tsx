@@ -167,7 +167,7 @@ export function ImageUpload({
 
           <Button
             type="button"
-            className="hover:bg-[#e0332c]"
+            className="primary-button h-[30px]"
             variant="outline"
             size="sm"
             onClick={() => {

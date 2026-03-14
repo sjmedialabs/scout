@@ -237,7 +237,7 @@ const paginatedProviders = filteredProviders.slice(
       </div>
       {/* ---------------- FILTER BAR ---------------- */}
 
-<div className="flex sm:gap-2 gap-4 mb-6 overflow-x-auto max-w-[96vw] w-full">
+<div className="flex sm:gap-2 gap-4 mb-2 overflow-x-auto max-w-[96vw] w-full">
 
   {/* CATEGORY */}
   <div className="lg:min-w-[170px]">

@@ -25,13 +25,13 @@ export default function ContentPoliciesPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-3">
       {/* HEADER */}
       <div>
-        <h1 className="text-3xl font-bold text-orangeButton ">
+        <h1 className="text-xl font-bold text-orangeButton ">
           Content Policies
         </h1>
-        <p className="text-gray-500 text-base max-w-3xl ">
+        <p className="text-gray-500 text-md ">
           Define and manage the platform’s content guidelines. These policies
           help users understand what is allowed, restricted, or prohibited on
           the platform.
@@ -39,8 +39,8 @@ export default function ContentPoliciesPage() {
       </div>
 
       {/* EDITOR CARD */}
-      <Card className="rounded-2xl border shadow-lg bg-white">
-        <CardContent className="p-6 space-y-2 pt-1">
+      <div className="rounded-2xl border shadow-md bg-white">
+        <div className="px-3 space-y-2 py-3">
           {/* Section Title */}
           <div>
             <h2 className="text-lg font-semibold text-orangeButton ">
@@ -73,15 +73,15 @@ export default function ContentPoliciesPage() {
             </Button> */}
 
             <Button
-              className="rounded-xl bg-black text-white hover:bg-gray-900"
+              className="btn-blackButton h-[30px]"
               onClick={handleSave}
               disabled={policyText.trim() === ""}
             >
               Save Policies
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

@@ -45,7 +45,7 @@ const menuItems: MenuItem[] = [
   // { id: "editprofile", label: "EditProfile", icon: Briefcase, path: "/agency/dashboard/editprofile" },
   { id: "portfolio", label: "Portfolio", icon: Briefcase, path: "/agency/dashboard/portfolio" },
   { id: "reviews", label: "Reviews", icon: Star, path: "/agency/dashboard/reviews" },
-  { id: "messages", label: "Messages", icon: MessageSquare, path: "/agency/dashboard/messages" },
+  { id: "chat", label: "Chat", icon: MessageSquare, path: "/agency/dashboard/messages" },
   { id: "find-projects", label: "Find Projects", icon: FileSearch, path: "/agency/dashboard/project-inquiries" },
   { id: "proposals", label: "Proposals", icon: FileText, path: "/agency/dashboard/proposals" },
   { id: "my-projects", label: "My Projects", icon: Briefcase, path: "/agency/dashboard/projects" },

@@ -538,7 +538,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
   }
   return (
     <div className="">
-      <div className="flex flex-row justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
         <div>
           <h1 className="text-2xl font-bold text-[#F4561C]">
           Proposals <span className="text-[#656565] text-[18px]">({filteredProposals?.length || 0})</span> 

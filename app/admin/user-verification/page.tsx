@@ -138,7 +138,7 @@ if (loading) {
 
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-0 space-y-4">
+    <div className="mx-auto max-w-7xl   space-y-2">
       {/* HEADER */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
@@ -193,8 +193,8 @@ if (loading) {
       </div>
 
       {/* TABLE */}
-      <div className="overflow-x-auto rounded-2xl border bg-white shadow-md">
-        <table className="w-full min-w-[900px]">
+      <div className="overflow-x-auto max-w-[95vw] rounded-2xl border bg-white shadow-md">
+        <table className="w-full">
           <thead>
             <tr className="text-left text-sm font-semibold border-b">
               <th className="p-4 ">Company</th>

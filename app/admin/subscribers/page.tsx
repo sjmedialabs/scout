@@ -485,11 +485,11 @@ const [subscriberGrowthData, setSubscriberGrowthData] =
 }, [selectedYear]);
 
   return (
-    <div className="mx-auto max-w-7xl space-y-4 px-4 sm:px-6 lg:px-2">
+    <div className="mx-auto max-w-7xl space-y-4">
       {/* HEADER */}
       <div className="flex items-center justify-between gap-4">
       <div>
-        <h1 className="text-xl font-bold  h-8 text-orangeButton">
+        <h1 className="text-xl font-bold  text-orangeButton">
           Subscribers Management
         </h1>
         <p className="text-gray-500 text-md">
@@ -584,51 +584,54 @@ const [subscriberGrowthData, setSubscriberGrowthData] =
             currentYear={currentYear}
             years={years}
           >
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={subscriberGrowthData}>
-              <defs>
-                <linearGradient id="growthFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#7c7cff" stopOpacity={0.35} />
-                  <stop offset="100%" stopColor="#7c7cff" stopOpacity={0.05} />
-                </linearGradient>
-              </defs>
+         <ResponsiveContainer width="100%" height={300} className={"px-0"}>
+  <AreaChart
+    data={subscriberGrowthData}
+    margin={{ top: 10, right: 10, left: -20, bottom: 0 }} // reduce left space
+  >
+    <defs>
+      <linearGradient id="growthFill" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="#7c7cff" stopOpacity={0.35} />
+        <stop offset="100%" stopColor="#7c7cff" stopOpacity={0.05} />
+      </linearGradient>
+    </defs>
 
-              <CartesianGrid
-                strokeDasharray="3 3"
-                vertical={false}
-                stroke="#e5e7eb"
-              />
+    <CartesianGrid
+      strokeDasharray="3 3"
+      vertical={false}
+      stroke="#e5e7eb"
+    />
 
-              <XAxis
-                dataKey="month"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "#6b7280", fontSize: 12 }}
-              />
+    <XAxis
+      dataKey="month"
+      axisLine={false}
+      tickLine={false}
+      tick={{ fill: "#6b7280", fontSize: 12 }}
+    />
 
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "#6b7280", fontSize: 12 }}
-              />
+    <YAxis
+      axisLine={false}
+      tickLine={false}
+      tick={{ fill: "#6b7280", fontSize: 12 }}
+    />
 
-              <Tooltip />
+    <Tooltip />
 
-              <Area
-                type="monotone"
-                dataKey="value"
-                stroke="#7c7cff"
-                strokeWidth={2.5}
-                fill="url(#growthFill)"
-                dot={{
-                  r: 4,
-                  fill: "#ffffff",
-                  stroke: "#7c7cff",
-                  strokeWidth: 2,
-                }}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+    <Area
+      type="monotone"
+      dataKey="value"
+      stroke="#7c7cff"
+      strokeWidth={2.5}
+      fill="url(#growthFill)"
+      dot={{
+        r: 4,
+        fill: "#ffffff",
+        stroke: "#7c7cff",
+        strokeWidth: 2,
+      }}
+    />
+  </AreaChart>
+</ResponsiveContainer>
 
         </DashboardCard>
       </div>
@@ -636,51 +639,55 @@ const [subscriberGrowthData, setSubscriberGrowthData] =
       {/* CANCELLATIONS */}
 
       <DashboardCard
-  title="Cancellations Trend"
-  selectedYear={selectedYear}
-  setSelectedYear={setSelectedYear}
-  currentYear={currentYear}
-  years={years}
->
-  <ResponsiveContainer width="100%" height={300}>
-    <BarChart data={monthlyCancellationData} barSize={14}>
-      <defs>
-        <linearGradient id="cancelGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#fb7185" />
-          <stop offset="100%" stopColor="#f43f5e" />
-        </linearGradient>
-      </defs>
+        title="Cancellations Trend"
+        selectedYear={selectedYear}
+        setSelectedYear={setSelectedYear}
+        currentYear={currentYear}
+        years={years}
+      >
+        <ResponsiveContainer width="100%" height={300}>
+        <BarChart
+          data={monthlyCancellationData}
+          barSize={14}
+          margin={{ top: 10, right: 10, left: -20, bottom: 0 }}  // reduce left space
+        >
+          <defs>
+            <linearGradient id="cancelGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#fb7185" />
+              <stop offset="100%" stopColor="#f43f5e" />
+            </linearGradient>
+          </defs>
 
-      <CartesianGrid
-        strokeDasharray="3 3"
-        vertical={false}
-        stroke="#e5e7eb"
-      />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            vertical={false}
+            stroke="#e5e7eb"
+          />
 
-      <XAxis
-        dataKey="month"
-        axisLine={false}
-        tickLine={false}
-        tick={{ fill: "#6b7280", fontSize: 12 }}
-      />
+          <XAxis
+            dataKey="month"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#6b7280", fontSize: 12 }}
+          />
 
-      <YAxis
-        axisLine={false}
-        tickLine={false}
-        tick={{ fill: "#6b7280", fontSize: 12 }}
-        allowDecimals={false}
-      />
+          <YAxis
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#6b7280", fontSize: 12 }}
+            allowDecimals={false}
+          />
 
-      <Tooltip />
+          <Tooltip />
 
-      <Bar
-        dataKey="value"
-        radius={[8, 8, 0, 0]}
-        fill="url(#cancelGrad)"
-      />
-    </BarChart>
-  </ResponsiveContainer>
-</DashboardCard>
+          <Bar
+            dataKey="value"
+            radius={[8, 8, 0, 0]}
+            fill="url(#cancelGrad)"
+          />
+        </BarChart>
+      </ResponsiveContainer>
+      </DashboardCard>
 
 
     </div>
@@ -704,11 +711,11 @@ function DashboardCard({
 }) {
 
   return (
-    <Card className="rounded-3xl bg-white p-0 shadow-lg">
-      <CardHeader className="flex flex-row items-center justify-between px-4 pt-4 pb-4">
-        <CardTitle className="text-[22px] font-semibold text-orangeButton ">
+    <div className="rounded-3xl px-0 bg-white p-0 shadow-lg">
+      <div className="flex flex-row items-center justify-between px-4 pt-4 pb-4">
+        <h2 className="text-[22px] font-semibold text-orangeButton ">
           {title}
-        </CardTitle>
+        </h2>
 
         {selectedYear !== undefined && setSelectedYear && currentYear && (
           <Select
@@ -729,12 +736,12 @@ function DashboardCard({
         )}
 
 
-      </CardHeader>
+      </div>
 
-      <CardContent className="px-0">
+      <div className="px-0 ">
         {children}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 

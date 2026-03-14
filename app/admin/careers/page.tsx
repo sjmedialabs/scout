@@ -9,11 +9,13 @@ import { Button } from "@/components/ui/button"
 import { useMemo } from "react"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useRouter } from "next/navigation"
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false })
 import "react-quill/dist/quill.snow.css"
 
 export default function AdminCareersPage() {
+  const router = useRouter();
   const [jobs, setJobs] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [openModal, setOpenModal] = useState(false)
@@ -186,12 +188,12 @@ const formats = [
     <div className="p-0 max-w-7xl">
 
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-1">
         <div>
-          <h1 className="font-bold text-orangeButton text-3xl ">
+          <h1 className="font-bold text-orangeButton text-xl ">
             Job Listing
           </h1>
-          <p>Listed Jobs</p>
+          <p className="text-md">Listed Jobs</p>
         </div>
 
       <Button
@@ -199,7 +201,7 @@ const formats = [
             resetForm()
             setOpenModal(true)
           }}
-          className="rounded-full bg-orange-600 hover:bg-orange-500"
+          className="btn-blackButton h-[30px]"
         >
           Post Job
         </Button>
@@ -208,39 +210,39 @@ const formats = [
       {/* JOB LIST */}
       <div className="space-y-4">
         {jobs.map((job) => (
-          <Card key={job._id} className="p-6 rounded-2xl bg-white shadow-md">
+          <Card key={job._id} className="py-2 px-4 rounded-2xl bg-white shadow-md">
             
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
             <Link href={`/admin/careers/${job.slug}`}>
               <div>
                 <h2 className="font-semibold text-lg cursor-pointer">
                   {job.title}
                 </h2>
             
-            <div className="flex gap-4">
+            <div className="flex gap-4 mt-2">
             <p className="text-sm text-gray-500">
-              <span className="font-semibold text-gray-700">Department:</span> {job.department}
+              <span className="font-medium text-gray-700">Department:</span> {job.department}
             </p>
 
             <p className="text-sm text-gray-500">
-              <span className="font-semibold text-gray-700">Employment Type:</span> {job.employmentType}
+              <span className="font-medium text-gray-700">Employment Type:</span> {job.employmentType}
             </p>
 
             <p className="text-sm text-gray-500">
-              <span className="font-semibold text-gray-700">Location:</span> {job.location}
+              <span className="font-medium text-gray-700">Location:</span> {job.location}
             </p>
           </div>
 
 
-              <span className="inline-block mt-2 text-xs bg-green-400 text-white px-2 py-1 rounded-full">
+              {/* <span className="inline-block mt-2 text-xs bg-green-400 text-white px-2 py-1 rounded-full">
                 Applications: {getCount(job.title)}
-              </span>
+              </span> */}
             </div>
             </Link>
 
             <div className="flex gap-2">
             <Button
-            className="rounded-full bg-black text-white hover:bg-gray-800"
+            className="btn-blackButton h-[30px]"
               variant="outline"
               onClick={() => openEdit(job)}
             >
@@ -248,16 +250,16 @@ const formats = [
             </Button>
 
             <Button
-            className="rounded-full bg-blueButton hover:bg-blue-500 hover:text-white"
+            className="primary-button h-[30px]"
               variant="destructive"
               onClick={() => deleteJob(job._id)}
             >
               Delete
             </Button>
           
-              <Link href={`/admin/careers/${job.title}/applications`}>
-                <Button className="rounded-full bg-orangeButton">Applications</Button>
-              </Link>
+            
+                <Button className="btn-blackButton h-[30px]" onClick={()=>router.push(`/admin/careers/${job.title}/applications`)}>Applications:({getCount(job.title)})</Button>
+              
             </div>
             </div>
             
@@ -276,11 +278,11 @@ const formats = [
           }}
           >
             <div
-              className="bg-white rounded-3xl p-8 w-full max-w-3xl max-h-[90vh] overflow-y-auto relative"
+              className="bg-white rounded-xl  py-4 w-full max-w-3xl max-h-[90vh] overflow-y-auto relative"
               onClick={(e) => e.stopPropagation()}
             >
             <CardHeader>
-              <CardTitle className="text-2xl text-orangeButton">
+              <CardTitle className="text-xl text-orangeButton">
                 {editingJob ? "Edit Job" : "Post Job"}
               </CardTitle>
 
@@ -383,12 +385,12 @@ const formats = [
               <Button 
               onClick={handleSubmit} 
               disabled={loading} 
-              className="w-30 bg-orange-600 text-white rounded-full">
+              className="primary-button h-[30px]">
                 {loading ? "Saving..." : editingJob ? "Update Job" : "Post Job"}
               </Button>
 
               <Button 
-              className="w-30 bg-black text-white rounded-full"
+              className="btn-blackButton h-[30px]"
               variant="outline" 
               onClick={() => setOpenModal(false)}>
                 Cancel

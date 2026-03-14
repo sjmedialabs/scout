@@ -268,14 +268,14 @@ const getFormattedPhone = () => {
   // }
 
   return (
-    <div className="space-y-3 -mt-6">
+    <div className="space-y-3">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-[#c4c3c3] pb-2 gap-4 ">
         {/* Left section */}
         <div className="w-full">
           <h1 className="text-xl font-bold  text-[#F54A0C] ">
             Profile Overview
           </h1>
-          <p className="text-[#656565] text-sm -mt-1 md:text-md  font-normal">
+          <p className="text-[#656565] text-md  md:text-md  font-normal">
             Manage your client profile information
           </p>
         </div>
@@ -287,24 +287,24 @@ const getFormattedPhone = () => {
               <Button
                 variant="outline"
                 onClick={handleCancelEdit}
-                className="h-[30px] w-[100px] rounded-3xl bg-[#E8E8E8]"
+                className="h-[30px]  rounded-3xl bg-[#E8E8E8]"
               >
-                <LuCircleX className="h-4 w-4 mr-1" />
+                <LuCircleX className="h-4 w-4" />
                 Cancel
               </Button>
 
               <Button
                 onClick={handleSaveProfile}
-                className="h-[30px] w-[140px] rounded-3xl bg-[#000]"
+                className="primary-button h-[30px]"
               >
-                <Save className="h-4 w-4 mr-1" />
+                <Save className="h-4 w-4" />
                 Save Changes
               </Button>
             </>
           ) : (
             <Button
               onClick={() => setIsEditingProfile(true)}
-              className="h-[30px] w-[140px] rounded-3xl bg-[#000] hover"
+              className="btn-blackButton h-[30px]"
             >
               <Edit className="h-4 w-4 mr-1" />
               Edit Profile

@@ -467,7 +467,7 @@ console.log("Caluclated pie data is::::::",pieData)
 
         <Button
           onClick={() => setFilterOpen(!filterOpen)}
-          className="btn-blackButton h-[30px]"
+          className="btn-blackButton h-[30px] max-w-fit"
         >
           <Filter className="w-3 h-3" />
           Filter by Date
@@ -475,7 +475,7 @@ console.log("Caluclated pie data is::::::",pieData)
       </div>
 
       {filterOpen && (
-  <div className="bg-white border rounded-2xl p-4 shadow-md flex flex-wrap gap-4 items-center ">
+  <div className="bg-white border rounded-2xl p-4 shadow-md flex max-w-[95vw] overflow-x-auto gap-4 items-center ">
     
    {/* Year */}
 <div>
@@ -531,7 +531,7 @@ console.log("Caluclated pie data is::::::",pieData)
       <label className="text-md font-semibold text-gray-500">From</label>
       <Input
         type="date"
-        className="border rounded px-2 h-9 border-gray-200 text-xs"
+        className="border min-w-[160px] rounded px-2 h-9 border-gray-200 text-xs"
         onChange={(e) =>
           setDateFilter({ ...dateFilter, from: e.target.value })
         }
@@ -543,7 +543,7 @@ console.log("Caluclated pie data is::::::",pieData)
       <label className="text-md text-gray-500 font-semibold">To</label>
       <Input
         type="date"
-        className="border border-gray-200 h-9 rounded px-2 py-1"
+        className="border border-gray-200 min-w-[160px] h-9 rounded px-2 py-1"
         onChange={(e) =>
           setDateFilter({ ...dateFilter, to: e.target.value })
         }
@@ -594,13 +594,13 @@ console.log("Caluclated pie data is::::::",pieData)
 
       {/* ---------------- MRR TREND ---------------- */}
       
-      <div className="bg-white rounded-2xl p-6 shadow-md border">
-  <h3 className="text-xl font-semibold text-orangeButton mb-3">
+      <div className="bg-white rounded-2xl p-0 py-3 shadow-md border">
+  <h3 className="text-xl font-semibold text-orangeButton mb-3 ml-5">
     MRR Growth Trend
   </h3>
 
   <div className="h-[340px]">
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height="100%" className={"px-0"}>
       <AreaChart
         data={monthlyRcurringRevenueGrowth}
         margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
@@ -673,12 +673,12 @@ console.log("Caluclated pie data is::::::",pieData)
       {/* ---------------- BOTTOM GRAPHS ---------------- */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Revenue by Plan */}
-        <div className="bg-white rounded-2xl p-6 border shadow-md">
-          <h3 className="text-xl font-semibold  text-orangeButton mb-2">
+        <div className="bg-white rounded-2xl p-0 py-3 border shadow-md">
+          <h3 className="text-xl font-semibold  text-orangeButton mb-2 ml-4">
             Revenue by plan
           </h3>
 
-          <ResponsiveContainer width="100%" height={420}>
+          <ResponsiveContainer width="100%" height={420} className={"px-0"}>
             <BarChart
               data={revenueByPlan}
               barGap={6}
@@ -732,55 +732,58 @@ console.log("Caluclated pie data is::::::",pieData)
 
 
         {/* Revenue Distribution */}
-        <div className="bg-white rounded-2xl p-6 shadow-md border">
-          <h3 className="text-xl font-semibold  text-orangeButton mb-6">
+        <div className="bg-white rounded-2xl p-0 py-4 px-4 shadow-md border">
+          <h3 className="text-xl font-semibold  text-orangeButton mb-0 ">
             Revenue by distribution
           </h3>
 
           <div className=" md:flex-row items-center gap-10">
             {/* PIE CHART */}
-            <div className="w-full md:w-[420px] h-[360px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <RePieChart>
-                  <Pie
-                    data={pieData}
-                    dataKey="value"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={150}
-                    stroke="none"
-                    labelLine={false}
-                    label={({ cx, cy, midAngle, innerRadius, outerRadius, name, value }) => {
-                      const RADIAN = Math.PI / 180;
-                      const radius = innerRadius + (outerRadius - innerRadius) * 0.6;
-                      const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                      const y = cy + radius * Math.sin(-midAngle * RADIAN);
+            {/* PIE CHART */}
+<div className="w-full md:w-[420px] h-[360px]">
+  <ResponsiveContainer width="100%" height="100%">
+    <RePieChart>
+      <Pie
+        data={pieData}
+        dataKey="value"
+        cx="50%"
+        cy="50%"
+        outerRadius={150}
+        stroke="none"
+        labelLine={false}
+        label={({ cx, cy, midAngle, innerRadius, outerRadius, name, value }) => {
+          if (value === 0) return null; // prevent overlapping labels
 
-                      return (
-                        <text
-                          x={x}
-                          y={y}
-                          textAnchor="middle"
-                          dominantBaseline="central"
-                          fill="#ffffff"
-                        >
-                          <tspan x={x} dy="-4" fontSize="10">
-                            {name}
-                          </tspan>
-                          <tspan x={x} dy="18" fontSize="14" fontWeight="600">
-                            {value}
-                          </tspan>
-                        </text>
-                      );
-                    }}
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={index} fill={entry.color} />
-                    ))}
-                  </Pie>
-                </RePieChart>
-              </ResponsiveContainer>
-            </div>
+          const RADIAN = Math.PI / 180;
+          const radius = innerRadius + (outerRadius - innerRadius) * 0.6;
+          const x = cx + radius * Math.cos(-midAngle * RADIAN);
+          const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+          return (
+            <text
+              x={x}
+              y={y}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fill="#ffffff"
+            >
+              <tspan x={x} dy="-4" fontSize="10">
+                {name}
+              </tspan>
+              <tspan x={x} dy="18" fontSize="14" fontWeight="600">
+                {value}
+              </tspan>
+            </text>
+          );
+        }}
+      >
+        {pieData.map((entry, index) => (
+          <Cell key={index} fill={entry.color} />
+        ))}
+      </Pie>
+    </RePieChart>
+  </ResponsiveContainer>
+</div>
 
             {/* LEGEND */}
             <div className="gap-2 min-w-10 grid grid-cols-2">
@@ -808,7 +811,7 @@ console.log("Caluclated pie data is::::::",pieData)
 /* ---------------- KPI CARD ---------------- */
 function KpiCard({ title, value, note, noteColor, icon }: any) {
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-md flex justify-between items-start">
+    <div className="bg-white rounded-2xl px-4 py-3 shadow-md flex justify-between items-start">
       <div>
         <p className="text-black text-sm font-bold">{title}</p>
         <p className="text-3xl font-bold mt-3">{value}</p>

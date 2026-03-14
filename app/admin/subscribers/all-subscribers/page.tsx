@@ -158,7 +158,7 @@ export default function AllSubscribersPage() {
 
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-0 space-y-2">
+    <div className="mx-auto max-w-7xl space-y-2">
       {/* HEADER */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
@@ -184,46 +184,63 @@ export default function AllSubscribersPage() {
       </div>
 
       {/* FILTERS */}
-      <div className="flex flex-row  gap-4">
-        <div className="border rounded-full h-[35px] lg:w-100">
+      <div className="flex items-center -mb-0 gap-4 w-full overflow-x-auto max-w-[95vw] pb-1">
+
+        {/* Search */}
+        <div className="border rounded-full h-[35px] min-w-[220px] flex-shrink-0 flex-1">
           <Input
             placeholder="Search Subscribers"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className=" rounded-full w-full h-[35px] text-xs  placeholder:text-gray-500"
+            className="rounded-full w-full h-[35px] text-xs placeholder:text-gray-500"
           />
         </div>
-        <div className="">
+
+        {/* Status */}
+        <div className="min-w-[160px] flex-shrink-0">
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="rounded-full h-[40px] text-xs border border-gray-200 w-full lg:w-48 ">
+            <SelectTrigger className="rounded-full h-[40px] text-xs border border-gray-200 w-full">
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
-            <SelectContent className="">
-              <SelectItem value="all">All Status</SelectItem>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
               <SelectItem value="active">Active</SelectItem>
               <SelectItem value="inactive">Inactive</SelectItem>
-              {/* <SelectItem value="suspended">Suspended</SelectItem> */}
             </SelectContent>
           </Select>
         </div>
 
-        <div className="">
+        {/* Role */}
+        <div className="min-w-[160px] flex-shrink-0">
           <Select value={role} onValueChange={(v) => setRole(v as any)}>
-            <SelectTrigger className="border border-gray-200 rounded-full h-[40px] text-xs lg:w-48 ">
+            <SelectTrigger className="border border-gray-200 rounded-full h-[40px] text-xs w-full">
               <SelectValue placeholder="All Roles" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Users</SelectItem>
+              <SelectItem value="all">All</SelectItem>
               <SelectItem value="client">Clients</SelectItem>
               <SelectItem value="agency">Agencies</SelectItem>
             </SelectContent>
           </Select>
         </div>
+
+        {/* Clear Filters */}
+        <Button
+          onClick={() => {
+            setSearch("");
+            setStatus("all");
+            setRole("all");
+          }}
+          className="btn-blackButton h-[30px]"
+        >
+          Clear Filters
+        </Button>
+
       </div>
 
       {/* TABLE */}
-      <div className="overflow-x-auto rounded-2xl border bg-white shadow-md">
-        <table className="w-full min-w-[900px]">
+      <div className="overflow-x-auto max-w-[95vw] rounded-2xl border bg-white shadow-md">
+        <table className="w-full">
           <thead>
             <tr className="text-left text-sm font-semibold border-b">
               <th className="p-4 ">Company</th>
