@@ -17,36 +17,45 @@ export default function PricingSnapshot({ provider }: PricingSnapshotProps) {
       </h3>
 
       {/* Content */}
-      <div className="flex flex-col sm:flex-row justify-between gap-6">
+      <div className="flex flex-wrap flex-row justify-between gap-6">
         {/* Min project size */}
-        <div className="flex flex-col gap-1 pl-3">
-          <span className="text-[10px] font-semibold">
-            Min. project size
-          </span>
-          <span className="text-[16px] text-center font-bold text-black">
-            ${provider.minAmount ?? 0}+
-          </span>
-        </div>
+          <div className="flex flex-row sm:flex-col gap-1">
+            <span className="text-[10px] font-semibold">
+              Min. project size
+            </span>
 
-        {/* Avg hourly rate */}
-        <div className="flex flex-col gap-1">
-          <span className="text-[10px] font-semibold">
-            Avg. hourly rate
-          </span>
-          <span className="text-[16px] font-bold text-center text-black">
-            {provider.hourlyRate ?? "—"} / hr
-          </span>
-        </div>
+            <span className="text-xs sm:hidden">:</span>
 
-        {/* Rating for cost */}
-        <div className="flex flex-col gap-1">
-          <span className="text-[10px] font-semibold">
-            Rating for cost
-          </span>
-          <span className="text-[16px] font-bold text-center text-black">
-            {provider.costRating ?? 0} / 5
-          </span>
-        </div>
+            <span className="text-[10px] text-gray-600 sm:text-[16px] text-center font-bold sm:text-black">
+              ${provider.minAmount ?? 0}+
+            </span>
+          </div>
+
+          {/* Avg hourly rate */}
+          <div className="flex flex-row sm:flex-col gap-1">
+            <span className="text-[10px] font-semibold">
+              Avg. hourly rate
+            </span>
+
+            <span className="text-xs sm:hidden">:</span>
+
+            <span className="text-[10px] text-gray-600 sm:text-[16px] text-center font-bold sm:text-black">
+              {provider.hourlyRate ?? "—"} / hr
+            </span>
+          </div>
+
+          {/* Rating for cost */}
+          <div className="flex flex-row sm:flex-col gap-1">
+            <span className="text-[10px] font-semibold">
+              Rating for cost
+            </span>
+
+            <span className="text-xs sm:hidden">:</span>
+
+            <span className="text-[10px] text-gray-600 sm:text-[16px] text-center font-bold sm:text-black">
+              {provider.costRating ?? 0} / 5
+            </span>
+          </div>
       </div>
     </div>
   )

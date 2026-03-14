@@ -186,14 +186,14 @@ const isValidPhone = (phone) => {
   if (!cms) return <p className="text-center py-10">Loading...</p>;
 
   return (
-    <div className=" space-y-6">
+    <div className=" space-y-0">
      
  
 
       <Tabs defaultValue="home" className="w-full">
          <div className="sticky top-16  bg-white pb-3">
           <div className="flex flex-row justify-between items-center">
-            <h1 className="text-2xl font-bold text-orangeButton">
+            <h1 className="text-xl font-bold text-orangeButton">
               CMS Management
             </h1>
 
@@ -206,57 +206,58 @@ const isValidPhone = (phone) => {
             </Button>
           </div>
 
-        
-          <TabsList className="inline-flex bg-[#e6edf5] rounded-full p-1 gap-1">
-            
-            <TabsTrigger
-              value="home"
-              className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
-            >
-              Home
-            </TabsTrigger>
+          <div className="max-w-[100vw] overflow-x-auto -mb-4 mt-2 ">
+            <TabsList className="inline-flex bg-[#e6edf5]  rounded-full p-1 gap-1">
+              
+              <TabsTrigger
+                value="home"
+                className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
+              >
+                Home
+              </TabsTrigger>
 
-            <TabsTrigger
-              value="about"
-              className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
-            >
-              About
-            </TabsTrigger>
+              <TabsTrigger
+                value="about"
+                className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
+              >
+                About
+              </TabsTrigger>
 
-            <TabsTrigger
-              value="contact"
-              className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
-            >
-              Contact
-            </TabsTrigger>
+              <TabsTrigger
+                value="contact"
+                className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
+              >
+                Contact
+              </TabsTrigger>
 
-            <TabsTrigger
-              value="help-center"
-              className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
-            >
-              Help Center
-            </TabsTrigger>
+              <TabsTrigger
+                value="help-center"
+                className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
+              >
+                Help Center
+              </TabsTrigger>
 
-            <TabsTrigger
-              value="privacy-policy"
-              className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
-            >
-              Privacy Policy
-            </TabsTrigger>
+              <TabsTrigger
+                value="privacy-policy"
+                className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
+              >
+                Privacy Policy
+              </TabsTrigger>
 
-            <TabsTrigger
-              value="term-services"
-              className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
-            >
-              Terms & Services
-            </TabsTrigger>
+              <TabsTrigger
+                value="term-services"
+                className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
+              >
+                Terms & Services
+              </TabsTrigger>
 
-          </TabsList>
+            </TabsList>
+          </div>
 
           </div>
        
 
-         <div className="max-h-[90vh] overflow-y-auto">
+         <div className="max-h-[90vh] overflow-y-auto max-w-[100vw] overflow-x-auto">
            {/* ─────────────────────────────── HOME TAB ─────────────────────────────── */}
         <TabsContent value="home" className="space-y-6">
           {/* HERO SECTION */}

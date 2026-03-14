@@ -105,20 +105,20 @@ export default function ModerationPage() {
     <div className="space-y-4">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-orangeButton ">
+        <h1 className="text-xl font-bold text-orangeButton ">
           Reported Content
         </h1>
-        <p className="text-gray-500 ">
+        <p className="text-gray-500 text-md">
           Platform management and oversight
         </p>
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white p-4 rounded-xl shadow border flex gap-3 items-center">
+      <div className="flex gap-3 items-center" >
         <Search className="w-4 h-4 ml-2 text-gray-500 absolute" />
         <Input
           placeholder="Search reports by type, reason, reporter..."
-          className="w-full pl-8 placeholder:pl-2 placeholder:text-500 border shadow relative placeholder:text-xs"
+          className="w-full pl-8 border-gray-400 rounded-full placeholder:pl-2 placeholder:text-500 border shadow relative placeholder:text-xs"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -232,11 +232,11 @@ export default function ModerationPage() {
           
         </table>
 
-        {filteredReports.length === 0 && (
+        {/* {filteredReports.length === 0 && (
           <p className="text-center py-8 text-gray-500">
             No reports found.
           </p>
-        )}
+        )} */}
       </div>
 
       {/*view modal*/}

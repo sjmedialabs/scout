@@ -115,25 +115,62 @@ export default function ServicesPage() {
 useEffect(() => {
   if (!categories.length || !providers.length) return;
 
-  // CATEGORY SELECTED (old behaviour)
-  if (categoryId && !subCategoryId) {
-    setOpenParent(categoryId);
-    setOpenChild(null);
-    setActiveService(null);
-    setActiveServiceId(null);
-    return;
-  }
+      // CATEGORY SELECTED (old behaviour)
+      if (categoryId && !subCategoryId) {
+        setOpenParent(categoryId);
+        setOpenChild(null);
+        setActiveService(null);
+        setActiveServiceId(null);
+        return;
+      }
 
-  // SERVICE SELECTED (subcategory query)
-  if (subCategoryId) {
-    let foundService: any = null;
-    let parentCategory: any = null;
-    let childCategory: any = null;
+      // SERVICE SELECTED (subcategory query)
+      if (subCategoryId) {
+        let foundService: any = null;
+        let parentCategory: any = null;
+        let childCategory: any = null;
 
-    categories.forEach((parent: any) => {
-      parent.children?.forEach((child: any) => {
-        child.items?.forEach((service: any) => {
-          if (service._id === subCategoryId) {
+        categories.forEach((parent: any) => {
+          parent.children?.forEach((child: any) => {
+            child.items?.forEach((service: any) => {
+              if (service._id === subCategoryId) {
+                foundService = service;
+                parentCategory = parent;
+                childCategory = child;
+              }
+            });
+          });
+        });
+        
+
+        
+        if (foundService) {
+          setOpenParent(parentCategory._id);
+          setOpenChild(childCategory._id);
+          setActiveService(foundService.title);
+          setActiveServiceId(foundService._id);
+
+          // filter providers
+        const filtered = providers.filter((provider: any) =>
+      provider.services?.includes(foundService.title)
+    );
+
+    setFilteredProviders([...filtered]);
+        }
+      }
+
+      // 🔹 SEARCH TERM LOGIC
+  if (searchTerm) {
+    let foundService = null;
+    let parentCategory = null;
+    let childCategory = null;
+
+    categories.forEach((parent) => {
+      parent.children?.forEach((child) => {
+        child.items?.forEach((service) => {
+          if (
+            service.title.toLowerCase().includes(searchTerm.toLowerCase())
+          ) {
             foundService = service;
             parentCategory = parent;
             childCategory = child;
@@ -142,23 +179,22 @@ useEffect(() => {
       });
     });
 
-    
     if (foundService) {
       setOpenParent(parentCategory._id);
       setOpenChild(childCategory._id);
       setActiveService(foundService.title);
       setActiveServiceId(foundService._id);
 
-      // filter providers
-     const filtered = providers.filter((provider: any) =>
-  provider.services?.includes(foundService.title)
-);
+      const filtered = providers.filter((provider) =>
+        provider.services?.includes(foundService.title)
+      );
 
-setFilteredProviders([...filtered]);
+      setFilteredProviders([...filtered]);
     }
   }
+
   
-}, [categories, providers, categoryId, subCategoryId]);
+}, [categories, providers, categoryId, subCategoryId,searchTerm]);
  
 useEffect(() => {
  
@@ -628,11 +664,11 @@ useEffect(() => {
                           Verified
                         </span>
                       )}
-                      {/* {p.isFeatured && (
+                      {p.isFeatured && (
                             <span className="bg-[#F54A0C] inline-flex items-center rounded-full border font-bold px-2 py-0 text-[10px] text-white">
                               Featured
                             </span>
-                          )} */}
+                          )}
                     </div>
 
                     {/* RIGHT — Rating */}

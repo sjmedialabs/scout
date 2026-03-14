@@ -33,7 +33,7 @@ export const adminMenu = [
   // ===== CONTENT & MODERATION =====
   { id: "moderation", label: "Content Moderation", icon: AlertTriangle },
   { id: "reported-content", label: "Reported Content", icon: FileText },
-  { id: "content-policies", label: "Content Policies", icon: Shield },
+  // { id: "content-policies", label: "Content Policies", icon: Shield },
   // { id: "automated-filters", label: "Automated Filters", icon: Database },
   { id: "contentMang", label: "Web Content Management", icon: Database },
 

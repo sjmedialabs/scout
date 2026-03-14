@@ -81,63 +81,57 @@ export default function NotificationsPage() {
 
       {/* Notifications Card */}
       {!resLoading && !failed && dynamicNotifications.length !== 0 ? (
-        <Card className="rounded-xl bg-[#f7f7f7]">
-          <CardHeader className="px-4 -mt-3">
-            <CardTitle className="text-xl  font-semibold">
-              Notifications
-            </CardTitle>
-          </CardHeader>
+        <div className="">
+  
+  
 
-          <CardContent className="space-y-2 px-4 -mt-4 ">
-            {dynamicNotifications.map((item) => (
-              <div
-                key={item._id}
-                className="flex items-center justify-between gap-4 bg-white rounded-xl px-4 py-4"
-              >
-                {/* Left */}
-                <div className="flex items-start gap-3">
-                  {/* {item.type === "user" ? (
-                  <img
-                    src={item.image}
-                    alt="avatar"
-                    className="h-8 w-8 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="h-8 w-8 rounded-full border flex items-center justify-center">
-                    <Bell className="h-4 w-4 text-gray-400" />
-                  </div>
+  {/* Notifications List */}
+  <div className="space-y-4">
+    {dynamicNotifications.map((item) => (
+      <div
+        key={item._id}
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white rounded-xl px-5 py-4 shadow-sm"
+      >
+        {/* LEFT */}
+        <div className="flex items-start gap-4">
+          {item.image ? (
+            <img
+              src={item.image}
+              alt="avatar"
+              className="h-9 w-9 rounded-full object-cover"
+            />
+          ) : (
+            <div className="h-9 w-9 rounded-full bg-gray-100 flex items-center justify-center">
+              <Bell className="h-4 w-4 text-gray-400" />
+            </div>
+          )}
 
-                )} */}
-                  <img
-                    src={item.image}
-                    alt="avatar"
-                    className="h-8 w-8 rounded-full object-cover"
-                  />
+          <div>
+            <p className="text-sm font-medium text-gray-900">
+              {item.message}
+            </p>
 
-                  <div>
-                    <p className="text-sm font-medium leading-snug">
-                      {item.message}
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      {new Date(item.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
+            <p className="text-xs text-gray-400 mt-1">
+              {new Date(item.createdAt).toLocaleDateString()}
+            </p>
+          </div>
+        </div>
 
-                {/* Right */}
-                <Button
-                  variant="secondary"
-                  className="btn-blackButton h-[30px] w-[40px]"
-                  onClick={() =>
-                    handleMarkNotificationAsRead(item._id, item.linkUrl)
-                  }
-                >
-                  {"View"}
-                </Button>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+        {/* RIGHT */}
+        <Button
+          variant="secondary"
+          className="rounded-xl bg-gray-100 text-black h-[34px] px-4"
+          onClick={() =>
+            handleMarkNotificationAsRead(item._id, item.linkUrl)
+          }
+        >
+          View
+        </Button>
+      </div>
+    ))}
+  </div>
+
+</div>
       ) : (
         <div className="text-center">
           {!resLoading && !failed && dynamicNotifications.length === 0 && (

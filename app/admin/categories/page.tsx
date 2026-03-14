@@ -182,20 +182,22 @@ const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
 
 
   return (
-    <div className="space-y-10">
-      <h1 className="text-3xl font-bold text-orangeButton  h-1">Service Category Management</h1>
-      <p className="text-gray-500 h-1">Manage categories → subcategories → service items.</p>
+    <div className="space-y-1">
+     <div>
+       <h1 className="text-xl font-bold text-orangeButton">Service Category Management</h1>
+      <p className="text-gray-500 ">Manage categories → subcategories → service items.</p>
+     </div>
 
       {/* ADD MAIN CATEGORY */}
-      <div className="bg-white p-4 rounded-2xl border shadow-md space-y-6">
-        <div className="flex gap-3">
+      <div className="">
+        <div className="flex items-center gap-3">
           <Input
           className="rounded-2xl border-gray-200 placeholder:text-gray-500"
             placeholder="Enter new category..."
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value)}
           />
-          <Button className="flex items-center gap-2 rounded-full bg-orangeButton" onClick={addMainCategory}>
+          <Button className="primary-button h-[40px]" onClick={addMainCategory}>
             <PlusCircle className="w-4 h-4" /> Add Category
           </Button>
         </div>
@@ -204,7 +206,7 @@ const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
       {/* DISPLAY CATEGORIES */}
       <div className="space-y-6">
         {categories.map((cat) => (
-          <div key={cat._id} className="bg-white p-6 border rounded-2xl shadow-md">
+          <div key={cat._id} className="bg-white px-2 py-3 border rounded-2xl shadow-md">
 {/* MAIN CATEGORY HEADER */}
 <div className="flex justify-between items-center">
 
@@ -304,7 +306,7 @@ const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
             />
 
 {/* SUBCATEGORIES LIST */}
-<div className="pl-6 mt-4 space-y-4">
+<div className=" mt-4 space-y-4">
   {cat.children.map((sub, subIndex) => (
      <div
         key={subIndex}
@@ -406,7 +408,7 @@ const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
       />
 
       {/* SERVICE ITEMS LIST */}
-      <div className="flex flex-wrap gap-2 mt-3">
+      <div className="flex flex-col  sm:flex-row sm:flex-wrap gap-2 mt-3">
         {sub.items.map((item, itemIndex) => (
           <div key={itemIndex} className="flex items-center gap-2">
 
@@ -432,7 +434,7 @@ const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
               <>
                 <Button
                   size="sm"
-                  className="rounded-full bg-orangeButton"
+                  className="primary-button" 
                   onClick={async () => {
                     const updated = { ...cat };
                     updated.children[subIndex].items[itemIndex].title =
@@ -449,7 +451,7 @@ const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
                 </Button>
 
                 <Button
-                className="bg-black text-white rounded-full hover:bg-gray-500"
+                className="btn-blackButton"
                   size="sm"
                   variant="outline"
                   onClick={() => setEditingItem(null)}
@@ -583,7 +585,7 @@ function AddInput({
         onChange={(e) => setValue(e.target.value)}
       />
       <Button
-        className="flex items-center gap-2 rounded-full bg-orangeButton"
+        className="primary-button h-[35px]"
         onClick={() => {
           if (!value.trim()) return;
           onAdd(value);

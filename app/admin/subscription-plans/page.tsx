@@ -251,14 +251,14 @@ export default function SubscriptionPlansPage() {
                   isPopular ? "border-gray-900 shadow-xl" : ""
                 }`}
               >
-                {isPopular && (
+                {/* {isPopular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <span className="flex items-center gap-1 bg-gray-900  text-white text-xs px-3 py-1 rounded-full">
                       <Star className="w-3 h-3 fill-white text-white" />
                       Most Popular
                     </span>
                   </div>
-                )}
+                )} */}
 
                 <h3 className="text-xl font-semibold text-center ">
                   {editingId === plan._id ? (
@@ -273,7 +273,7 @@ export default function SubscriptionPlansPage() {
                           ),
                         )
                       }
-                      className="text-center"
+                      className="border-gray-300 rounded-2xl placeholder:text-gray-500"
                     />
                   ) : (
                     plan.title
@@ -286,6 +286,7 @@ export default function SubscriptionPlansPage() {
                       <Input
                         type="number"
                         value={plan.pricePerMonth}
+                        className="border-gray-300 rounded-2xl placeholder:text-gray-500"
                         onChange={(e) =>
                           setPlans((prev) =>
                             prev.map((p) =>
@@ -302,6 +303,7 @@ export default function SubscriptionPlansPage() {
                       <Input
                         type="number"
                         value={plan.pricePerYear}
+                        className="border-gray-300 rounded-2xl placeholder:text-gray-500"
                         onChange={(e) =>
                           setPlans((prev) =>
                             prev.map((p) =>
@@ -340,7 +342,7 @@ export default function SubscriptionPlansPage() {
                         )
                       }
                       placeholder="Enter plan description"
-                      className="text-center border-gray-300 rounded-xl"
+                      className="border-gray-300 rounded-2xl placeholder:text-gray-500"
                     />
                   ) : (
                     <p className="text-gray-500 text-sm">
@@ -353,6 +355,7 @@ export default function SubscriptionPlansPage() {
                   {editingId === plan._id ? (
                     <Input
                       value={plan.features.join(", ")}
+                      className="border-gray-300 rounded-2xl placeholder:text-gray-500"
                       onChange={(e) =>
                         setPlans((prev) =>
                           prev.map((p) =>
@@ -398,7 +401,7 @@ export default function SubscriptionPlansPage() {
                   {editingId === plan._id ? (
                     <>
                       <Button
-                        className="bg-green-600 hover:bg-green-700"
+                        className="primary-button h-[30px]"
                         onClick={() => saveEdit(plan._id, plan)}
                       >
                         Save
@@ -406,6 +409,7 @@ export default function SubscriptionPlansPage() {
                       <Button
                         variant="outline"
                         onClick={() => setEditingId(null)}
+                        className="btn-blackButton h-[30px]"
                       >
                         Cancel
                       </Button>

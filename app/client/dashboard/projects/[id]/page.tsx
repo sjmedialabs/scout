@@ -588,9 +588,7 @@ const downloadFile = async (url: string) => {
                                 >
                                   {proposal.agency?.name}
                                 </h3>
-                                 <p className="text-[#939191] font-normal text-xs line-clamp-2">
-                                {proposal.proposalDescription}
-                              </p>
+                                
 
                                 {/* <p className="text-sm ml-1 -mt-1 text-[#939191] font-normal">
                                   {proposal.agency?.name}

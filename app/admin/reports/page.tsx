@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import {
   BarChart,
+  ResponsiveContainer,
   Bar,
   XAxis,
   YAxis,
@@ -1271,7 +1272,7 @@ const getARPU = (payments) => {
   return (
     <div className="space-y-4 ">
       {/* ---------- Header --------- */}
-      <div className="flex items-center mb-2 justify-between">
+      <div className="flex flex-col items-start sm:flex-row  sm:items-center mb-2 justify-between">
         <div>
           <h1 className="text-xl -mb-1 text-orangeButton font-bold">Reports & Analytics</h1>
           <p className="text-gray-500 text-md">
@@ -1327,7 +1328,7 @@ const getARPU = (payments) => {
     </div>
 
       {/* ---------- Tabs ---------- */}
-      <div className="bg-gray-100 rounded-full p-1 flex w-fit">
+      <div className="bg-gray-100 overflow-x-auto max-w-[95vw] rounded-full p-1 flex w-fit">
         {TABS.map((tab) => (
           <button
             key={tab}
@@ -1497,7 +1498,7 @@ function ChartCard({
 }
 
 /* ---------------- Revenue Chart ---------------- */
-function RevenueChart({revenueData,yAxisMax,yAxisTicks}) {
+function RevenueChart({ revenueData, yAxisMax, yAxisTicks }) {
   return (
     <ChartContainer
       config={{
@@ -1505,49 +1506,58 @@ function RevenueChart({revenueData,yAxisMax,yAxisTicks}) {
           label: "Revenue",
         },
       }}
-      className="h-64"
+      className="h-64 w-full"
     >
-      <BarChart data={revenueData} barCategoryGap={20}>
-        {/* Gradient Definition */}
-        <defs>
-          <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="-13.56%" stopColor="#FD749B" />
-            <stop offset="158.3%" stopColor="#281AC8" />
-          </linearGradient>
-        </defs>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart
+          data={revenueData}
+          barCategoryGap={20}
+          margin={{ top: 10, right: 10, left: -20, bottom: 0 }} // removes left space
+        >
+          {/* Gradient Definition */}
+          <defs>
+            <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="-13.56%" stopColor="#FD749B" />
+              <stop offset="158.3%" stopColor="#281AC8" />
+            </linearGradient>
+          </defs>
 
-        <CartesianGrid vertical={false} />
-        <XAxis
-          dataKey="month"
-          tick={{ fill: "#858585", fontSize: 10, className: "text-gray-300" }}
-          axisLine={true}
-          tickLine={false}
-        />
+          <CartesianGrid vertical={false} />
 
-        <YAxis
-        domain={[0, yAxisMax]}
-        ticks={yAxisTicks}
-        allowDecimals={false}
-        tick={{ fill: "#858585", fontSize: 10 }}
-        axisLine={true}
-        tickLine={false}
-      />
-        <ChartTooltip content={<ChartTooltipContent />} />
+          <XAxis
+            dataKey="month"
+            tick={{ fill: "#858585", fontSize: 10, className: "text-gray-300" }}
+            axisLine={true}
+            tickLine={false}
+          />
 
-        <Bar
-          dataKey="revenue"
-          fill="url(#revenueGradient)"
-          radius={[10, 10, 0, 0]}
-          barSize={8}   // 👈 decreases bar width
-        />
-      </BarChart>
+          <YAxis
+            domain={[0, yAxisMax]}
+            ticks={yAxisTicks}
+            allowDecimals={false}
+            tick={{ fill: "#858585", fontSize: 10 }}
+            axisLine={true}
+            tickLine={false}
+          />
+
+          <ChartTooltip content={<ChartTooltipContent />} />
+
+          <Bar
+            dataKey="revenue"
+            fill="url(#revenueGradient)"
+            radius={[10, 10, 0, 0]}
+            barSize={8}
+          />
+        </BarChart>
+      </ResponsiveContainer>
     </ChartContainer>
   )
 }
 
 
+
 /* ---------------- User Growth Chart ---------------- */
-function UserGrowthChart({userData,yAxisMax,yAxisTicks}) {
+function UserGrowthChart({ userData, yAxisMax, yAxisTicks }) {
   return (
     <ChartContainer
       config={{
@@ -1555,80 +1565,93 @@ function UserGrowthChart({userData,yAxisMax,yAxisTicks}) {
           label: "Users",
         },
       }}
-      className="h-64"
+      className="h-64 w-full"
     >
-      <BarChart data={userData} barCategoryGap={20}>
-        <defs>
-          <linearGradient id="userGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="-13.56%" stopColor="#FD749B" />
-            <stop offset="158.3%" stopColor="#281AC8" />
-          </linearGradient>
-        </defs>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart
+          data={userData}
+          barCategoryGap={20}
+          margin={{ top: 10, right: 10, left: -20, bottom: 0 }} // remove left space
+        >
+          <defs>
+            <linearGradient id="userGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="-13.56%" stopColor="#FD749B" />
+              <stop offset="158.3%" stopColor="#281AC8" />
+            </linearGradient>
+          </defs>
 
-        <CartesianGrid vertical={false} />
-        <XAxis
-          dataKey="month"
-          tick={{ fill: "#858585", fontSize: 10, className: "text-gray-300" }}
-          axisLine={true}
-          tickLine={false}
-        />
+          <CartesianGrid vertical={false} />
 
-       <YAxis
-        domain={[0, yAxisMax]}
-        ticks={yAxisTicks}
-        allowDecimals={false}
-        tick={{ fill: "#858585", fontSize: 10 }}
-        axisLine={true}
-        tickLine={false}
-      />
+          <XAxis
+            dataKey="month"
+            tick={{ fill: "#858585", fontSize: 10, className: "text-gray-300" }}
+            axisLine={true}
+            tickLine={false}
+          />
 
+          <YAxis
+            domain={[0, yAxisMax]}
+            ticks={yAxisTicks}
+            allowDecimals={false}
+            tick={{ fill: "#858585", fontSize: 10 }}
+            axisLine={true}
+            tickLine={false}
+          />
 
-        <ChartTooltip content={<ChartTooltipContent />} />
+          <ChartTooltip content={<ChartTooltipContent />} />
 
-        <Bar
-          dataKey="users"
-          fill="url(#userGradient)"
-          radius={[10, 10, 0, 0]}
-          barSize={8}   // 👈 slimmer bars
-        />
-      </BarChart>
+          <Bar
+            dataKey="users"
+            fill="url(#userGradient)"
+            radius={[10, 10, 0, 0]}
+            barSize={8}
+          />
+        </BarChart>
+      </ResponsiveContainer>
     </ChartContainer>
   )
 }
-function UserGrowthChart2({userGrowthData}) {
+
+function UserGrowthChart2({ userGrowthData }) {
   return (
     <ChartContainer
       className="h-72 w-full"
       config={{ users: { label: "Users" } }}
     >
-      <LineChart data={userGrowthData}>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart
+          data={userGrowthData}
+          margin={{ top: 10, right: 10, left: -20, bottom: 0 }} // removes left space
+        >
+          <CartesianGrid strokeDasharray="3 3" vertical={false} />
 
-        <XAxis
-          dataKey="month"
-          axisLine
-          tickLine={false}
-          tick={{ fill: "#9CA3AF", fontSize: 10 }}
-        />
+          <XAxis
+            dataKey="month"
+            axisLine
+            tickLine={false}
+            tick={{ fill: "#9CA3AF", fontSize: 10 }}
+          />
 
-        <YAxis
-          axisLine
-          tickLine={false}
-          tick={{ fill: "#9CA3AF", fontSize: 10 }}
-        />
+          <YAxis
+            axisLine
+            tickLine={false}
+            tick={{ fill: "#9CA3AF", fontSize: 10 }}
+          />
 
-        <ChartTooltip content={<ChartTooltipContent />} />
+          <ChartTooltip content={<ChartTooltipContent />} />
 
-        <Line
-          type="monotone"
-          dataKey="users"
-          stroke="#F43F5E"
-          strokeWidth={2}
-          dot={false}
-          activeDot={{ r: 5 }}
-        />
-      </LineChart>
+          <Line
+            type="monotone"
+            dataKey="users"
+            stroke="#F43F5E"
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 5 }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
     </ChartContainer>
   )
 }
+
 

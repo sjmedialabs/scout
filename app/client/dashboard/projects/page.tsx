@@ -653,112 +653,119 @@ const paginatedRequirements = filteredRequirements?.slice(
         </Button> */}
       </div>
 
-      <div className="w-full rounded-xl max-w-[96vw] overflow-x-auto">
-        {/* search filters section*/}
-        <div className="flex flex-row  lg:p-0 lg:py-2 lg:px-0 xl:px-0 gap-1 xl:gap-3 items-center max-w-[96vw] lg:max-w-full overflow-x-auto">
+        <div className="w-full rounded-xl max-w-[96vw] overflow-x-auto">
+          {/* search filters section*/}
+        <div className="w-full overflow-x-auto">
+          <div className="flex flex-nowrap items-center gap-2 xl:gap-3 min-w-max">
 
-          {/*  Search */}
-          <div className="relative min-w-[150px] lg:min-w-0">
-            <input
-              type="text"
-              placeholder="Search projects..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full h-[35px] mt-0.5 placeholder:text-gray-500 placeholder:text-sm border border-[#D0D5DD] rounded-full pl-10 pr-4 py-2 text-sm focus:outline-none"
-            />
-            <svg
-              className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
+            {/* Search */}
+            <div className="relative min-w-[200px] lg:min-w-[220px] w-full">
+              <input
+                type="text"
+                placeholder="Search projects..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full h-[35px] placeholder:text-gray-500 placeholder:text-sm border border-[#D0D5DD] rounded-full pl-10 pr-4 text-sm focus:outline-none"
+              />
+
+              <svg
+                className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </div>
+
+            {/* Status Filter */}
+            <div className="min-w-[160px]">
+              <Select
+                value={selectedStatus}
+                onValueChange={(value) => setSelectedStatus(value)}
+              >
+                <SelectTrigger
+                  className={`h-[35px] data-[placeholder]:text-gray-500 w-full border border-[#D0D5DD] rounded-full px-3 text-sm ${
+                    !selectedStatus ? "text-gray-500" : "text-black"
+                  }`}
+                >
+                  <SelectValue placeholder="Select Status" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  <SelectItem value="All">All</SelectItem>
+                  <SelectItem value="UnderReview">Under Review</SelectItem>
+                  <SelectItem value="NotApproved">Rejected</SelectItem>
+                  <SelectItem value="Open">Open</SelectItem>
+                  <SelectItem value="Closed">Closed</SelectItem>
+                  <SelectItem value="Allocated">Accepted</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Category */}
+            <div className="min-w-[180px]">
+              <ServiceDropdown
+                value={selectedCategory}
+                onChange={(value) => setSelectedCategory(value)}
+                triggerClassName="border border-[#D0D5DD] rounded-full w-full h-[35px]"
+                triggerSpanClassName="text-[#98A0B4] text-sm"
+              />
+            </div>
+
+            {/* Start Date */}
+            <div className="min-w-[150px]">
+              <input
+                type={startInputType}
+                value={startDate}
+                max={endDate}
+                placeholder="Start date"
+                onFocus={() => setStartInputType("date")}
+                onBlur={() => {
+                  if (!startDate) setStartInputType("text");
+                }}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full max-w-[160px] h-[35px] border border-[#D0D5DD] rounded-full px-3 text-sm placeholder:text-gray-500 focus:outline-none"
+              />
+            </div>
+
+            {/* End Date */}
+            <div className="min-w-[150px]">
+              <input
+                type={endInputType}
+                value={endDate}
+                min={startDate}
+                placeholder="End date"
+                onFocus={() => setEndInputType("date")}
+                onBlur={() => {
+                  if (!endDate) setEndInputType("text");
+                }}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full max-w-[160px] h-[35px] border border-[#D0D5DD] rounded-full px-3 text-sm placeholder:text-gray-500 focus:outline-none"
+              />
+            </div>
+
+            {/* Clear Button */}
+            <div className="min-w-[80px]">
+              <Button
+                className="btn-blackButton h-[33px] w-full"
+                onClick={() => {
+                  setSearchTerm("");
+                  setSelectedStatus("");
+                  setSelectedCategory("");
+                  setStartDate("");
+                  setStartInputType("text");
+                  setEndDate("");
+                  setEndInputType("text");
+                }}
+              >
+                Clear
+              </Button>
+            </div>
+
           </div>
-
-          {/*  Status Filter */}
-          <div className="min-w-[150px] lg:min-w-0">
-         <Select
-            value={selectedStatus}
-            onValueChange={(value) => setSelectedStatus(value)}
-          >
-            <SelectTrigger
-              className={`w-[135px] h-[35px] mt-0.5 border data-[placeholder]:text-gray-500 border-[#D0D5DD] rounded-full px-3 text-sm focus:outline-none ${
-                !selectedStatus ? "text-gray-500" : "text-black"
-              }`}
-            >
-              <SelectValue placeholder="Select Status" />
-            </SelectTrigger>
-
-            <SelectContent>
-              <SelectItem value="All">All</SelectItem>
-              <SelectItem value="UnderReview">UnderReview</SelectItem>
-              <SelectItem value="NotApproved">Rejected</SelectItem>
-              <SelectItem value="Open">Open</SelectItem>
-              <SelectItem value="Closed">Closed</SelectItem>
-              <SelectItem value="Allocated">Accepted</SelectItem>
-            </SelectContent>
-          </Select>
-          </div>
-
-          {/* Category Filter */}
-          <div className="min-w-[150px] lg:min-w-[150px]">
-            <ServiceDropdown
-              value={selectedCategory}
-              onChange={(value) => setSelectedCategory(value)}
-              triggerClassName="border -mt-0 border-[#D0D5DD] text-[#000000] rounded-full p-2"
-              triggerSpanClassName="text-[#98A0B4] text-sm"
-            />
-          </div>
-
-          {/*  Start Date */}
-          <div className="lg:min-w-0 ">
-            <input
-              type={startInputType}
-              value={startDate}
-              max={endDate}
-              placeholder="Select start date"
-              onFocus={() => setStartInputType("date")}
-              onBlur={() => {
-                if (!startDate) setStartInputType("text");
-              }}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="placeholder:text-gray-500 placeholder:text-sm w-[80px] xl:w-full -mt-0.5 h-[35px] border border-[#D0D5DD] rounded-full p-2  text-sm focus:outline-none"
-            />
-          </div>
-
-          {/*  End Date */}
-          <div className=" lg:min-w-0">
-            <input
-              type={endInputType}
-              value={endDate}
-              min={startDate}
-              placeholder="Select end date"
-              onFocus={() => setEndInputType("date")}
-              onBlur={() => {
-                if (!endDate) setEndInputType("text");
-              }}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="placeholder:text-gray-500 placeholder:text-sm w-[80px] xl:w-full -mt-0.5 h-[35px] border border-[#D0D5DD] rounded-full  p-2 text-sm focus:outline-none"
-            />
-          </div>
-
-          <div>
-            <Button className="btn-blackButton w-[50px] h-[33px]" onClick={()=>{
-          setSearchTerm("");
-         setSelectedStatus(""); // fixed
-          setSelectedCategory("");
-          setStartDate("");
-          setStartInputType("text");
-          setEndDate("");
-          setEndInputType("text");
-        }}>
-          Clear 
-        </Button>
-          </div>
-
         </div>
         {/* <Button className="bg-black rounded-[8px] h-[30px] w-[60px] mt-1" onClick={()=>{
           setSearchTerm("");
@@ -775,7 +782,7 @@ const paginatedRequirements = filteredRequirements?.slice(
 
 
         {/*projects table */}
-        <div className="mt-3">
+        <div className="mt-1">
         {/* projects table */}
         {(filteredRequirements || []).length !== 0 ? (
           <>
@@ -933,9 +940,9 @@ const paginatedRequirements = filteredRequirements?.slice(
               {paginatedRequirements?.map((project) => (
             <div
               key={project._id}
-              className="border-1 px-0 bg-[#fafafa] border-[#CFCACA] rounded-2xl mb-2"
+              className="border-1 mr-3 md:mr-0 px-0 bg-[#fafafa] border-[#CFCACA] rounded-2xl mb-2"
             >
-              <div className="px-4 md:px-4 py-3">
+              <div className="px-2  md:px-4 py-3">
                 <div className="flex justify-between items-start -mb-2">
                   {/* <Badge className="bg-[#F54A0C] text-xs rounded-full">
                     {project.proposals} proposals recieved

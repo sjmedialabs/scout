@@ -354,20 +354,20 @@ export default function FinancialReportsPage() {
 
 
 return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold text-orangeButton ">
+        <h1 className="text-xl font-bold text-orangeButton ">
           Revenue & Analytics
         </h1>
-        <p className="text-gray-500 max-w-xl">
+        <p className="text-gray-500 text-md">
           Track revenue metrics, customer analytics, and market insights for your
           B2B sharing platform
         </p>
       </div>
 
       {/* Section Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
         <h2 className="text-xl font-semibold text-orangeButton ">
           Monthly Recurring Revenue (MRR)
         </h2>
@@ -378,7 +378,7 @@ return (
         >
           <SelectTrigger className="
                 bg-[#f5f5f5]
-                h-12
+                max-h-[30px]
                 w-[180px]
                 rounded-full
                 shadow-none
@@ -403,7 +403,7 @@ return (
           </SelectContent>
         </Select>
 
-        <Button className="bg-black text-white rounded-full px-4 py-2 text-sm flex items-center gap-2" onClick={downloadExcelReport}>
+        <Button className="btn-blackButton h-[30px]" onClick={downloadExcelReport}>
           <Download className="w-4 h-4" />
           Download Reports
         </Button>
@@ -412,7 +412,7 @@ return (
 
       {/* MRR Table */}
       <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto max-w-[95vw]">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b">

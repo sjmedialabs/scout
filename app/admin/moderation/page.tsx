@@ -24,6 +24,13 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@radix-ui/react-label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // --------------------
 // TYPES
@@ -207,26 +214,26 @@ if (resLoading) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       {/* HEADER */}
       <div>
-        <h1 className="text-3xl font-bold text-orangeButton ">
+        <h1 className="text-xl font-bold text-orangeButton ">
           Content Moderation
         </h1>
-        <p className="text-gray-500 ">
+        <p className="text-gray-500 text-md">
           Review and moderate reported content
         </p>
       </div>
 
       {/* FILTERS (UNCHANGED) */}
-      <div className="bg-white p-4 rounded-2xl border shadow-sm flex flex-col lg:flex-row gap-4 items-center">
-        <div className="relative w-full lg:w-1/3">
+      <div className="flex flex-row justify-start items-center gap-2 overflow-x-auto max-w-[95vw]">
+        <div className="relative w-full ">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
             placeholder="Search reports..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 border-gray-200 rounded-lg h-8"
+            className="pl-9 min-w-[300px] h-[35px] border-gray-200 rounded-full placeholder:text-gray-400"
           />
         </div>
 
@@ -243,19 +250,24 @@ if (resLoading) {
           ))}
         </select> */}
 
-        <select
-          className="w-full lg:w-1/5 border rounded-lg px-3 py-2 text-sm"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          <option value={"all"}>All</option>
-          <option value={"UnderReview"}>Pending</option>
-          <option value={"Open"}>Accepted</option>
-          <option value={"NotApproved"}>Rejected</option>
-        </select>
+        <Select
+  value={statusFilter}
+  onValueChange={(value) => setStatusFilter(value)}
+>
+  <SelectTrigger className="w-full rounded-full min-w-[100px] max-w-[300px] border-gray-200">
+    <SelectValue placeholder="Select Status" />
+  </SelectTrigger>
+
+  <SelectContent>
+    <SelectItem value="all">All</SelectItem>
+    <SelectItem value="UnderReview">Pending</SelectItem>
+    <SelectItem value="Open">Accepted</SelectItem>
+    <SelectItem value="NotApproved">Rejected</SelectItem>
+  </SelectContent>
+</Select>
 
         <Button
-          className=" bg-black text-white rounded-full px-6"
+          className="btn-blackButton h-[30px]"
           onClick={clearFilters}
         >
           Clear filter
@@ -269,8 +281,11 @@ if (resLoading) {
         {/* LEFT */}
        {
         filteredRequirements.map((eachItem)=>(
-            <div key={eachItem._id} className="rounded-2xl border border-[#e6e6e6] bg-white shadow-sm p-6 flex flex-col  mb-4">
-              <div className="flex items-center gap-3 mb-2">
+            <div key={eachItem._id} className="rounded-2xl border border-[#e6e6e6] bg-white shadow-sm px-4 py-3 flex flex-col  mb-4">
+              <div className="flex items-center justify-between gap-3 mb-0">
+                 <h3 className="text-xl font-semibold text-[#2c34a1]">
+                {eachItem.title}
+                </h3>
                 <Badge className="rounded-full bg-[#eef7fe] text-[#2c34a1]">
                   {eachItem.category}
                 </Badge>
@@ -282,19 +297,17 @@ if (resLoading) {
                 )} */}
               </div>
 
-              <h3 className="text-xl font-semibold text-[#2c34a1]">
-                {eachItem.title}
-              </h3>
+             
 
-              <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+              <p className="mt-0 text-xs text-gray-600 leading-relaxed">
                 {eachItem.description}
               </p>
             
-            <div className="flex flex-col-3 mt-3 gap-10  w-full">
+            <div className="flex flex-col sm:flex-row mt-1 gap-2 sm:gap-10  w-full">
               <div className="flex items-center gap-2 text-sm">
                 <DollarSign className="h-4 w-4 text-[#ff4d00]" />
                 <span className="font-semibold">
-                  ₹{eachItem.budgetMin.toLocaleString()} – ₹
+                  {eachItem.budgetMin.toLocaleString()} – 
                   {eachItem.budgetMax.toLocaleString()}
                 </span>
               </div>
@@ -322,9 +335,9 @@ if (resLoading) {
             </div>
           {
             eachItem.status==="UnderReview" && (
-                <div className="flex-col-2 mt-3  w-full">
+                <div className="flex-col-2 mt-2  w-full">
             <Button
-              className="lg:ml-auto bg-orangeButton text-white rounded-full px-6 mr-3"
+              className="bg-[#39A935] h-[30px] mr-2  rounded-full text-xs font-bold hover:bg-[#39A935] active:bg-[#39A935]"
               onClick={() => acceptHandel(eachItem._id)}
               disabled={acceptingId === eachItem._id}
             >
@@ -333,7 +346,7 @@ if (resLoading) {
 
 
             <Button
-              className="lg:ml-auto bg-black text-white rounded-full px-6"
+             className="bg-[#FF0000] h-[30px] rounded-full text-xs font-bold hover:bg-[#FF0000] active:bg-[#FF0000]"
               onClick={() => {
                 setRejectId(eachItem._id);
                 setShowModel(true);
@@ -368,31 +381,33 @@ if (resLoading) {
               </DialogTitle>
             </DialogHeader> */}
 
-            <form onSubmit={()=>handleReject()} className="space-y-6">
+            <form onSubmit={()=>handleReject()} className="space-y-0">
               <div className="space-y-2">
                 <Label
                   htmlFor="title"
-                  className="text-[#000]  text-[14px] font-bold"
+                  className="text-[#000] text-[14px] font-bold"
                 >
                   Message
                 </Label>
+
                 <Textarea
                   id="title"
                   value={rejectMsg}
+                  maxLength={100}
                   className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
-                  onChange={(e) =>
-                    setRejectMsg(e.target.value)
-                  }
+                  onChange={(e) => setRejectMsg(e.target.value)}
                   rows={4}
-                  cols={20}
                   placeholder="e.g., Enter your reason for rejecting the requirement"
                   required
-                >
+                />
 
-                </Textarea>
+                {/* Character Count */}
+                <div className="flex justify-end text-xs text-gray-500">
+                  {rejectMsg.length}/100
+                </div>
               </div>
 
-              <div className="flex gap-4 pt-4">
+              <div className="flex gap-4 mt-0">
                 <DialogClose>
                   <Button className=" bg-[#000] hover:bg-[#000] active:bg-[#000] rounded-full">
                     Cancle
