@@ -1107,7 +1107,7 @@ const toggleFavorite = (conversationId: string) => {
               </div>
 
               {/* Message Input */}
-              <div className="px-6 py-0 border-t mb-[20px]">
+              <div className="px-6 py-0 border-t mb-[20px] sticky bottom-0">
                 <div className="mb-2">
                   {uploading && <span>Uploading...</span>}
                   {uplodedUrl.url && (
