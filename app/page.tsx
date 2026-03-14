@@ -555,7 +555,7 @@ const { cms, providers, projects, categories } = data;
                 size={"lg"}
                 asChild
               >
-                <Link href="/providers">View All Providers →</Link>
+                <Link href="/services">View All Providers →</Link>
               </Button>
             </div>
           </div>

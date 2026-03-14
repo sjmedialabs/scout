@@ -527,10 +527,16 @@ const downloadFile = async (url: string) => {
                 variant="outline"
                 size="sm"
                 className="rounded-full gap-1.5"
-                onClick={() => router.push("/client/dashboard/proposals")}
+                onClick={() => {
+                      if (from) {
+                        router.back(); // goes to previous page
+                      } else {
+                        router.push("/client/dashboard/proposals");
+                      }
+                    }}
               >
                 <MoveLeft className="h-4 w-4" />
-                Back to Proposals
+               {from?"Back to projects":"Back to proposals"}
               </Button>
               <Button
                 variant="default"

@@ -105,10 +105,10 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
   return (
     <div className="space-y-6">
       <section>
-        <div className="py-4 mb-6 flex items-center justify-between">
+        <div className=" mb-2 flex items-center justify-between">
           <div>
-          <h1 className="text-4xl font-bold text-orangeButton">User Management</h1>
-          <p className="text-gray-500 text-xl">Manage platform users and their access</p>
+          <h1 className="text-xl font-bold text-orangeButton">User Management</h1>
+          <p className="text-gray-500 text-md">Manage platform users and their access</p>
           </div>
                   <div className="flex flex-row justify-center items-center gap-4">
           {/* <Button className="bg-orangeButton rounded-full text-white mt-4 hover:bg-orange-600 flex items-center gap-2">
@@ -121,31 +121,37 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
         </div>
         <div>
           {/* Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="relative rounded-2xl border border-gray-200 h-12">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search users..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 h-full border-none rounded-2xl"
-              />
+          <div className="flex flex-row justify-between gap-3  mb-2">
+           <div className="relative rounded-full w-full h-[35px] border border-gray-200">
+  <Search
+    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
+    color="gray"
+  />
+  <Input
+    placeholder="Search users..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="pl-10 h-full border-none rounded-full placeholder:text-gray-500"
+  />
             </div>
 
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="rounded-2xl border border-gray-200 h-12 min-h-12 py-0 flex items-center">
-                <SelectValue placeholder="All Roles" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value="client">Clients</SelectItem>
-                <SelectItem value="agency">Agencies</SelectItem>
-                <SelectItem value="admin">Admins</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="w-full">
+              <Select value={roleFilter} onValueChange={setRoleFilter}>
+                <SelectTrigger className="rounded-full h-[40px] text-xs w-full border data-[placeholder]:text-gray-500 border-gray-200 px-3 py-0 flex items-center">
+                  <SelectValue placeholder="All Roles" />
+                </SelectTrigger>
 
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="rounded-2xl border border-gray-200 h-12 min-h-12 py-0 flex items-center">
+                <SelectContent>
+                  <SelectItem value="all">All Roles</SelectItem>
+                  <SelectItem value="client">Clients</SelectItem>
+                  <SelectItem value="agency">Agencies</SelectItem>
+                  <SelectItem value="admin">Admins</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="w-full">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="rounded-full h-[40px] border text-xs border-gray-200  py-0 flex items-center">
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
@@ -154,6 +160,7 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
                 <SelectItem value="inactive">InActive</SelectItem>
               </SelectContent>
             </Select>
+            </div>
 
             <Button
               variant="outline"
@@ -162,7 +169,7 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
                 setRoleFilter("all")
                 setStatusFilter("all")
               }}
-              className="rounded-full h-12 bg-[#F4F4F4]"
+              className="rounded-full btn-blackButton h-[35px]"
             >
               Clear Filters
             </Button>
@@ -172,14 +179,14 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
           <div className="border p-4 rounded-2xl">
             <Table>
               <TableHeader className="font-bold">
-                <TableRow className="font-extrabold">
-                  <TableHead className="font-extrabold">User</TableHead>
-                  <TableHead className="font-extrabold">Role</TableHead>
-                  <TableHead className="font-extrabold">Status</TableHead>
-                  <TableHead className="font-extrabold">Subscription</TableHead>
-                  <TableHead className="font-extrabold">Joined</TableHead>
-                  <TableHead className="font-extrabold">Last Login</TableHead>
-                  <TableHead className="font-extrabold">Actions</TableHead>
+                <TableRow className="font-bold">
+                  <TableHead className="font-bold">User</TableHead>
+                  <TableHead className="font-bold">Role</TableHead>
+                  <TableHead className="font-bold">Status</TableHead>
+                  <TableHead className="font-bold">Subscription</TableHead>
+                  <TableHead className="font-bold">Joined</TableHead>
+                  <TableHead className="font-bold">Last Login</TableHead>
+                  <TableHead className="font-bold">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -194,7 +201,7 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
                     </TableCell>
                     <TableCell>
                       <Badge className={getRoleColor(user.role)} variant="secondary">
-                        {user.role}
+                        {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                       </Badge>
                     </TableCell>
                     <TableCell>
