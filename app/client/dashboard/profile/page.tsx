@@ -90,13 +90,13 @@ const styles = {
   input:
     "border rounded-[8px] bg-[#f2f1f6] h-7 mt-0.5 border-[#D0D5DD] placeholder:text-gray-300",
  
-  label:"text-[#000000] font-bold text-xs mb-0 my-custom-class ml-1 -mb-0.5",
+  label:"text-[#000000] font-bold text-xs mb-0 ml-1 -mb-0.5",
 
   inputCardContainer:
     "border rounded-[8px] h-7 mt-0.5 bg-[#f2f1f6] border-[#D0D5DD] placeholder:text-gray-300",
 
   paraTag:
-    "text-xs py-1 my-custom-class ml-[10px]",
+    "text-xs py-1  ml-[10px]",
 
   descriptionText:
     "text-gray-500 text-sm",
@@ -272,10 +272,10 @@ const getFormattedPhone = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-[#c4c3c3] pb-2 gap-4 ">
         {/* Left section */}
         <div className="w-full">
-          <h1 className="text-xl font-bold my-custom-class text-[#F54A0C] ">
+          <h1 className="text-xl font-bold  text-[#F54A0C] ">
             Profile Overview
           </h1>
-          <p className="text-[#656565] text-sm -mt-1 md:text-md my-custom-class font-normal">
+          <p className="text-[#656565] text-sm -mt-1 md:text-md  font-normal">
             Manage your client profile information
           </p>
         </div>
@@ -317,7 +317,7 @@ const getFormattedPhone = () => {
         {/* Profile Overview Card */}
         <Card className="lg:col-span-1 bg-[#fff] rounded-[24px] ">
           <CardHeader>
-            {/* <CardTitle className="-mt-3 text-center text-[#F54A0C]  font-bold text-[14px] my-custom-class">
+            {/* <CardTitle className="-mt-3 text-center text-[#F54A0C]  font-bold text-[14px] ">
               Profile Overview
             </CardTitle> */}
           </CardHeader>
@@ -344,16 +344,16 @@ const getFormattedPhone = () => {
                   />
                 </div>
               )}
-              <h3 className="text-md font-bold my-custom-class text-[#F54A0C]">
+              <h3 className="text-md font-bold  text-[#F54A0C]">
                 {profileData.name}
               </h3>
-              <p className="text-xs   text-[#656565] my-custom-class font-normal">
+              <p className="text-xs   text-[#656565] font-normal">
                 {profileData.position}
               </p>
-              <p className="text-xs   text-[#656565] my-custom-class font-normal">
+              <p className="text-xs   text-[#656565]  font-normal">
                 {profileData.companyName}
               </p>
-              <div className="flex gap-2 mt-3 my-custom-class">
+              <div className="flex gap-2 mt-3 ">
                 {/* <Badge className="bg-[#39A935] text-[#fff] h-[30px] w-[90px] font-light rounded-3xl">
                   Active User
                 </Badge> */}
@@ -391,10 +391,10 @@ const getFormattedPhone = () => {
         {/* Profile Details */}
         <Card className="lg:col-span-2 bg-[#fff] rounded-[24px] border-gray-100 shadow-md">
           <CardHeader>
-            <CardTitle className="-mt-3 text-[#e0332c] border-b border-b-gray-200 font-semibold text-[14px] my-custom-class">
+            <CardTitle className="-mt-3 text-[#e0332c] border-b border-b-gray-200 font-semibold text-[14px]">
               Profile Details
             </CardTitle>
-            {/* <CardDescription className="text-[12px] font-normal text-[#656565] -mt-3 my-custom-class">
+            {/* <CardDescription className="text-[12px] font-normal text-[#656565] -mt-3 ">
               {isEditingProfile
                 ? "Edit your profile information"
                 : "Your profile information"}

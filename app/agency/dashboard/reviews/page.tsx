@@ -134,20 +134,58 @@ const ReviewsPage = () => {
                 key={review._id}
                 className="border  border-gray-200 rounded-3xl p-3 bg-white shadow-sm"
               >
-                {/* TOP */}
-                <div className="flex flex-row justify-between gap-6">
+                <div className="">
+                    {/* <h4 className="font-bold">By</h4> */}
 
-                  {/* LEFT CONTENT */}
-                  <div className="flex-1">
+                    
+
+                    <div className=" flex justify-between">
+                      {/* <FaCircleUser className="h-5 w-5" /> */}
+                      
+                        <div className="flex ">
+                          {/* <FaCircleUser className="h-6 w-6" /> */}
+                        <span className="text-lg text-black font-bold">
+                        {review.client?.name}
+                      </span>
+                      </div>
+                      
                       <Badge
                     variant="outline"
-                    className="text-[10px] border-[#DEDEDE] mb-1 bg-[#EDEDED] rounded-full h-[25px] px-3"
+                    className="text-[10px] border-[#DEDEDE] bg-[#EDEDED] rounded-full h-[25px] px-3"
                   >
                     {review.project.category}
                   </Badge>
-
-                    {/* <h3 className="text-lg font-bold">The Review</h3> */}
+                    </div>
+                    <div className="flex items-center w-full justify-between">
+                        <div>
+                      <p className="text-xs text-gray-500">
+                      {review.client?.position}
+                      </p> 
+                      </div>
+                      <div>
+                      <div className="flex items-center gap-1">
                     
+                    <span className="text-sm font-bold text-[#898383]">
+                      {review.rating || 0}
+                    </span>
+                    
+                    <RatingStars rating={review.rating || 0} />
+                    
+                    {/* <p className="text-sm"> */}
+                      {/* <span className="font-semibold">
+                        {review.rating || 0}
+                      </span>
+                      <span className="text-[#898383]">
+                        {" "}({reviews.length})
+                      </span> */}
+                    {/* </p> */}
+                  </div>
+                  </div>
+                      </div>
+                      
+                  </div>
+              
+                <div className="flex justify-between items-center">
                     <p className="text-xs text-[#b2b2b2]">
                       {formatDate(review.createdAt)}
                     </p>
@@ -155,37 +193,18 @@ const ReviewsPage = () => {
                     {/* <h4 className="font-semibold mt-3">
                       Feedback summary
                     </h4>
-
                     <p className="text-sm text-[#9c9c9c] mt-1 leading-relaxed">
                       {review.content}
                     </p> */}
-                  </div>
-
-                  {/* RIGHT RATING */}
-                  <div className="flex flex-col items-end min-w-[120px]">
-                    <span className="text-2xl font-bold text-[#898383]">
-                      {review.rating || 0}
-                    </span>
-
-                    <RatingStars rating={review.rating || 0} />
-
-                    <p className="text-sm">
-                      {/* <span className="font-semibold">
-                        {review.rating || 0}
-                      </span>
-                      <span className="text-[#898383]">
-                        {" "}({reviews.length})
-                      </span> */}
-                    </p>
-                  </div>
+                    
                 </div>
 
                 {/*Review Content */}
 
                 <div>
-                    <h4 className="text-lg font-semibold">
+                    {/* <h4 className="text-lg font-semibold">
                       Feedback summary
-                    </h4>
+                    </h4> */}
 
                     <p className="text-sm text-[#9c9c9c] ">
                       {review.content}
@@ -196,27 +215,7 @@ const ReviewsPage = () => {
                 <div className="flex :flex-row justify-between gap-6">
 
                   {/* REVIEWER */}
-                  <div className="">
-                    {/* <h4 className="font-bold">By</h4> */}
-
-                    
-
-                    <div className=" text-[#bdbdbd] mt-1">
-                      {/* <FaCircleUser className="h-5 w-5" /> */}
-                      <div>
-                        <div className="flex gap-2">
-                          <FaCircleUser className="h-5 w-5" />
-                        <span className="text-sm font-medium">
-                        {review.client?.name}
-                      </span>
-                      </div>
-                      <p className="text-xs pl-7 text-[#b2b2b2]">
-                      {review.client?.position}
-                      </p> 
-                      </div>
-                    </div>
-                      
-                  </div>
+                  
 
                     {/* ACTION */}
                     {review.response && Object.keys(review.response).length === 0 && (
@@ -226,8 +225,8 @@ const ReviewsPage = () => {
                             setSelectedReview(review);
                             setIsModalOpen(true);
                           }}
-                          className="flex w-fit items-center gap-1 px-2 cursor-pointer py-1 h-[30px] text-xs text-sm rounded-full
-                              border border-slate-400 text-[#FF4D00] hover:bg-[#FFF1EB]"
+                          className="flex w-fit primary-button items-center gap-1 px-2  h-[25px] text-xs! 
+                             "
                         >
                           <MessageSquareText className="h-3 w-3" />
                           Respond to Review

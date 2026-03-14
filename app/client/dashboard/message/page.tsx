@@ -721,7 +721,7 @@ const toggleFavorite = (conversationId: string) => {
   <div className="space-y-2 -mt-2 ">
     {/* Header */}
     {/* <div>
-      <h1 className="text-xl lg:text-3xl font-bold text-orangeButton my-custum-class">
+      <h1 className="text-xl lg:text-3xl font-bold text-orangeButton ">
         Messages
       </h1>
       <p className="text-gray-500 text-md lg:text-xl">

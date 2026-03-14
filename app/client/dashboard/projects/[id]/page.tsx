@@ -429,6 +429,27 @@ const textareaClass =
   }
 };
 
+const downloadFile = async (url: string) => {
+  try {
+    const res = await fetch(url);
+    const blob = await res.blob();
+
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = downloadUrl;
+    link.download = url.split("/").pop() || "file";
+
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(downloadUrl);
+  } catch (err) {
+    console.error("Download failed", err);
+  }
+};
+
   return (
     <div className="">
       
@@ -441,7 +462,7 @@ const textareaClass =
         <div className="flex flex-col justify-center items-center text-center min-h-100">
           <h1 className="text-center font-semibold">
             Failed to Retrive the data
-          </h1> 
+          </h1>
           <Button
             onClick={loadData}
             className="h-[40px] mt-2 w-[90px] bg-[#2C34A1] text-[#fff]"
@@ -496,7 +517,7 @@ const textareaClass =
                         focus:ring-0
                       
                         
-                        max-w-[160px]
+                        max-w-40
                         max-h-[25px]
                         
                        
@@ -903,7 +924,7 @@ const textareaClass =
                 <p className="text-sm font-medium text-[#344054]">Project Progress</p>
                 <div className="h-2 w-full rounded-full bg-[#E4E7EC] overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-[#101828] transition-all"
+                    className="h-full rounded-full bg-blueButton transition-all"
                     style={{ width: `${Math.min(100, progress)}%` }}
                   />
                 </div>
@@ -941,7 +962,7 @@ const textareaClass =
 
       {/* ===================== OVERVIEW TAB ===================== */}
       {trackingTab === "overview" && (
-      <Card className="rounded-[14px] border border-[#E4E7EC] bg-white shadow-sm">
+      <Card className="rounded-[14px] border border-[#E4E7EC] bg-white shadow-sm mt-2">
         <CardContent className="px-6 md:px-4">
           <h2 className="text-lg font-semibold text-[#101828] mb-4">Milestones</h2>
           <p className="text-sm text-[#667085] mb-4">
@@ -977,8 +998,8 @@ const textareaClass =
                           variant="secondary"
                           className={`rounded-full text-xs font-medium ${getStatusStyles(milestone.approvalStatus)}`}
                         >
-                          {status}
-                        </Badge>
+                        {status}
+                      </Badge>
                     </div>
                     {milestone?.description && (
                       <p className="text-xs text-[#667085] mt-1">{milestone.description}</p>
@@ -1030,7 +1051,9 @@ const textareaClass =
                       >
                         Accept
                       </Button>
-                      <Button
+                      {
+                        milestone.approvalStatus!=="revision_requested" && (
+                          <Button
                         size="sm"
                         variant="outline"
                         className="rounded-full text-xs border-[#E4E7EC]"
@@ -1038,6 +1061,8 @@ const textareaClass =
                       >
                         Request Revision
                       </Button>
+                        )
+                      }
                     </div>
                   )}
                 </div>
@@ -1050,7 +1075,7 @@ const textareaClass =
 
       {/* ===================== DELIVERABLES TAB ===================== */}
       {trackingTab === "deliverables" && (
-      <Card className="rounded-[14px] border border-[#E4E7EC] bg-white shadow-sm">
+      <Card className="rounded-[14px] border border-[#E4E7EC] bg-white shadow-sm mt-2">
         <CardContent className="px-6 md:px-4">
           <h2 className="text-lg font-semibold text-[#101828] mb-4">Deliverables</h2>
           <p className="text-sm text-[#667085] mb-4">
@@ -1064,16 +1089,14 @@ const textareaClass =
                   <span className="text-sm font-medium text-[#344054] truncate">
                     Document
                   </span>
-                  <span className="text-xs text-[#667085]">Link</span>
+                  {/* <span className="text-xs text-[#667085]">Link</span> */}
                 </div>
-                <a
-                  href={(acceptedProposal as any).documentUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-[#1570EF] hover:underline shrink-0"
-                >
-                  Download
-                </a>
+                <button
+                    onClick={() => downloadFile((acceptedProposal as any).documentUrl)}
+                    className="text-sm text-[#1570EF] hover:underline shrink-0 cursor-pointer"
+                  >
+                    Download
+                  </button>
               </div>
             )}
             {(acceptedProposal as any)?.attachments?.map((url: string, i: number) => (
@@ -1087,7 +1110,7 @@ const textareaClass =
                     Attachment {i + 1}
                   </span>
                 </div>
-                <a
+                {/* <a
                   href={url}
                   download
                   target="_blank"
@@ -1095,7 +1118,13 @@ const textareaClass =
                   className="text-sm text-[#1570EF] hover:underline shrink-0"
                 >
                   Download
-                </a>
+                </a> */}
+                <button
+                  onClick={() => downloadFile(url)}
+                  className="text-sm text-[#1570EF] hover:underline shrink-0 cursor-pointer"
+                >
+                  Download
+                </button>
               </div>
             ))}
             {((acceptedProposal as any)?.milestones || []).map((milestone: any, mi: number) => (
@@ -1108,14 +1137,13 @@ const textareaClass =
                         {milestone.title || `Milestone ${mi + 1}`} – link
                       </span>
                     </div>
-                    <a
-                      href={milestone.deliverableUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-[#1570EF] hover:underline shrink-0"
+                    <button
+                      onClick={() => downloadFile(milestone.deliverableUrl)}
+                      className="text-sm text-[#1570EF] hover:underline shrink-0 cursor-pointer"
                     >
                       Download
-                    </a>
+                    </button>
+                    
                   </div>
                 )}
                 {milestone?.deliverableDocuments?.map((url: string, di: number) => (
@@ -1129,15 +1157,14 @@ const textareaClass =
                         {milestone.title || `Milestone ${mi + 1}`} – document {di + 1}
                       </span>
                     </div>
-                    <a
-                      href={url}
-                      download
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-[#1570EF] hover:underline shrink-0"
+
+                    <button
+                      onClick={() => downloadFile(url)}
+                      className="text-sm text-[#1570EF] hover:underline shrink-0 cursor-pointer"
                     >
                       Download
-                    </a>
+                    </button>
+
                   </div>
                 ))}
               </div>

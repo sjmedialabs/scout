@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge"
 export default function FocusAreasCard({provider}) {
   console.log("Recieved props :::",provider)
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
 
       {/* Focus Areas */}
       <div className="shadow-md rounded-2xl border border-orange-100 bg-white p-5 space-y-1">

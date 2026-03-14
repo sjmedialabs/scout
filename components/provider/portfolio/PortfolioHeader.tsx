@@ -1,14 +1,14 @@
 export default function PortfolioHeader() {
   return (
-    <div className="space-y-2 h-15">
+    <div className="space-y-1 h-15">
       {/* Title */}
-      <h1 className="text-[24px] h-6 font-bold text-orangeButton"
+      <h1 className="text-xl h-6 font-bold text-orangeButton"
       >
         Portfolio
       </h1>
 
       {/* Subtitle */}
-      <p className="text-[18px] text-gray-500">
+      <p className="text-md text-gray-500">
         Showcase your work and achievements
       </p>
 

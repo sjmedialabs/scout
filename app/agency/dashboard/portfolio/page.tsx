@@ -93,14 +93,14 @@ export default function ProviderPortfolioPage() {
   if (!provider) return null;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-3">
       {/* Header */}
       <PortfolioHeader />
 
       {/* Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-3">
           <CompanyOverviewCard provider={provider} />
           <ServiceLines provider={provider} />
           <PricingSnapshot provider={provider} />
@@ -122,7 +122,7 @@ export default function ProviderPortfolioPage() {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-3">
           <FocusAreasCard provider={provider} />
         </div>
       </div>

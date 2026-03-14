@@ -98,7 +98,7 @@ export default function ProjectCard({
           <span>{data.progress}% Complete</span>
         </div>
 
-        <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
           <div
             className="h-full bg-[#F4561C] transition-all duration-500 rounded-full"
             style={{ width: `${data.progress}%` }}
@@ -109,7 +109,7 @@ export default function ProjectCard({
       {/* Button */}
       <button
         onClick={()=>router.push("/agency/dashboard/projects")}
-        className="bg-[#3C3A3E] mt-2 hover:bg-[#000] h-[30px] w-[120px] cursor-pointer rounded-full text-white text-xs transition" 
+        className="primary-button h-[30px] w-[120px]" 
       >
         View Project →
       </button>

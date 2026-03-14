@@ -377,7 +377,7 @@ const RequirementsPage = () => {
   }
   return (
     <div className="space-y-6">
-      <div className="my-custom-class">
+      <div className="">
         <h1 className="text-3xl font-bold text-[#F4561C] tracking-tight">
           My Requirements
         </h1>
@@ -416,7 +416,7 @@ const RequirementsPage = () => {
             {/* Header */}
             <div className="p-6 pb-0  mt-4 relative">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold my-custom-class text-[#F4561C]">
+                <h2 className="text-xl font-semibold  text-[#F4561C]">
                   {selectedRequirement.title}
                 </h2>
 
@@ -425,7 +425,7 @@ const RequirementsPage = () => {
                 </span>
               </div>
 
-              <p className="text-sm text-[#686868] my-custom-class font-normal mt-1">
+              <p className="text-sm text-[#686868]  font-normal mt-1">
                 Posted on{" "}
                 {new Date(selectedRequirement.createdAt).toLocaleDateString()}
               </p>
@@ -437,14 +437,14 @@ const RequirementsPage = () => {
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div className="flex items-center gap-2 border-2 border-[#F0F0F0] rounded-lg px-3 py-2">
                   <LuTag className="w-5 h-5" color="#000" />
-                  <span className="my-custom-class font-bold text-xs text-[#000]">
+                  <span className=" font-bold text-xs text-[#000]">
                     Category: {selectedRequirement.category}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
                   <PiCurrencyDollarBold className="w-5 h-5" color="#000" />
-                  <span className="my-custom-class font-semibold text-xs text-[#000]">
+                  <span className=" font-semibold text-xs text-[#000]">
                     Budget: ${selectedRequirement.budgetMin} - $
                     {selectedRequirement.budgetMax}
                   </span>
@@ -452,14 +452,14 @@ const RequirementsPage = () => {
 
                 <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
                   <CiCalendar className="w-5 h-5" color="#000" />
-                  <span className="my-custom-class font-semibold text-xs text-[#000]">
+                  <span className=" font-semibold text-xs text-[#000]">
                     Timeline: {selectedRequirement.timeline}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
                   <CiLocationOn className="w-5 h-5" color="#000" />
-                  <span className="my-custom-class font-semibold text-xs text-[#000]">
+                  <span className="font-semibold text-xs text-[#000]">
                     Location: {selectedRequirement.location || "Remote"}
                   </span>
                 </div>
@@ -469,7 +469,7 @@ const RequirementsPage = () => {
 
               {/* Description */}
               <div className="border-b-2 border-[#E4E4E4] pb-6">
-                <h3 className="font-semibold text-[#F4561C] my-custom-class text-lg mb-1">
+                <h3 className="font-semibold text-[#F4561C] text-lg mb-1">
                   Description
                 </h3>
                 <p className="text-sm text-[#656565] leading-relaxed">

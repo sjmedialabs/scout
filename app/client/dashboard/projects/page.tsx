@@ -525,17 +525,38 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
       case "underreview":
         return "bg-blue-500 text-[#fff]"
       case "open":
-        return "bg-[#CFEED2] text-[#39761E]";
+        return "bg-[#1C96F4] text-[#fff]"; 
       case "shortlisted":
         return "bg-[#D2E4FF] text-[#1E82C1]";
       case "allocated":
-        return "bg-[#1C96F4] text-[#fff]";
+        return  "bg-[#CFEED2] text-[#39761E]";
       case "negotiation":
         return "bg-[#FCF6E3] text-[#AF905D]";
       case "closed":
         return "bg-gray-100 text-gray-800";
       default:
         return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "notapproved":
+        return "Rejected"
+      case "underreview":
+        return "Under Review"
+      case "open":
+        return "Open";
+      case "shortlisted":
+        return "Shortlisted";
+      case "allocated":
+        return "Accepted";
+      case "negotiation":
+        return "Negotiation";
+      case "closed":
+        return "Closed";
+      default:
+        return "Under Review";
     }
   };
  
@@ -613,28 +634,28 @@ const paginatedRequirements = filteredRequirements?.slice(
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-0">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center ">
         <div>
           <h1 className="text-xl font-bold text-[#fa3200]  leading-6">
             Projects
           </h1>
-          <p className="text-md text-[#2e2f48] font-normal my-custom-class mt-0">
+          <p className="text-md text-[#2e2f48] font-normal mt-0">
             Manage your projects and track progress
           </p>
         </div>
-        <Button
+        {/* <Button
           onClick={() => router.push("/client/dashboard/post-requirement")}
           className="bg-orangeButton h-[35px] text-xs mt-2 md:mt-0 rounded-full "
         >
           <Plus className="h-4 w-4" />
           Add New Project
-        </Button>
+        </Button> */}
       </div>
 
       <div className="w-full rounded-xl max-w-[96vw] overflow-x-auto">
         {/* search filters section*/}
-        <div className="flex flex-row p-2 lg:p-0 lg:py-4 lg:px-0 xl:px-0 gap-1 xl:gap-3 items-center max-w-[96vw] lg:max-w-full overflow-x-auto">
+        <div className="flex flex-row  lg:p-0 lg:py-2 lg:px-0 xl:px-0 gap-1 xl:gap-3 items-center max-w-[96vw] lg:max-w-full overflow-x-auto">
 
           {/*  Search */}
           <div className="relative min-w-[150px] lg:min-w-0">
@@ -677,7 +698,7 @@ const paginatedRequirements = filteredRequirements?.slice(
               <SelectItem value="NotApproved">Rejected</SelectItem>
               <SelectItem value="Open">Open</SelectItem>
               <SelectItem value="Closed">Closed</SelectItem>
-              <SelectItem value="Allocated">Allocated</SelectItem>
+              <SelectItem value="Allocated">Accepted</SelectItem>
             </SelectContent>
           </Select>
           </div>
@@ -725,7 +746,7 @@ const paginatedRequirements = filteredRequirements?.slice(
           </div>
 
           <div>
-            <Button className="bg-[#000] rounded-full h-[30px] w-[60px] mt-0" onClick={()=>{
+            <Button className="btn-blackButton w-[50px] h-[33px]" onClick={()=>{
           setSearchTerm("");
          setSelectedStatus(""); // fixed
           setSelectedCategory("");
@@ -926,7 +947,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                   <Badge
                     className={`text-xs rounded-full ${getBgColor(project.status)}`}
                   >
-                    {project.status}
+                    {getStatusText(project.status)}
                   </Badge>
                   
                 </div>

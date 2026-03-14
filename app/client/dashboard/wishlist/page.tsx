@@ -195,10 +195,10 @@ const WishListPage = () => {
   return (
     <div className="space-y-3">
       <div>
-        <h1 className="text-3xl text-[#F4561C] my-custom-class leading-6">
+        <h1 className="text-xl text-[#F4561C]  font-bold">
           Wish List
         </h1>
-        <p className="text-lg text-[#656565] my-custom-class mt-0">
+        <p className="text-md text-[#656565]  mt-0">
           Compare vendors side-by-side to make informed decisions
         </p>
       </div>

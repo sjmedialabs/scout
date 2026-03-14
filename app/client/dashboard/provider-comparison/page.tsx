@@ -512,10 +512,10 @@ const ProviderComparisonPage = () => {
         <CardHeader>
           <div className="flex flex-row flex-wrap justify-between items-center">
             <div>
-              <CardTitle className="text-[#333333] text-md lg:text-2xl font-bold my-custom-class leading-6">
+              <CardTitle className="text-[#333333] text-md lg:text-2xl font-bold  leading-6">
                 Select Vendors to Compare
               </CardTitle>
-              <CardDescription className="text-sm lg:text-md text-[#333333] font-normal my-custom-class">
+              <CardDescription className="text-sm lg:text-md text-[#333333] font-normal ">
                 Choose up to 3 vendors to compare their ratings and proposals
               </CardDescription>
             </div>
@@ -624,7 +624,7 @@ const ProviderComparisonPage = () => {
                   {/* Quality Rating */}
                   <div className="space-y-1 mb-4">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-[#6B6B6B] font-bold text-md my-custom-class">
+                      <span className="text-[#6B6B6B] font-bold text-md ">
                         Quality
                       </span>
                       <span className="font-bold text-[#6B6B6B] text-md">
@@ -644,7 +644,7 @@ const ProviderComparisonPage = () => {
                   {/* Schedule Rating */}
                   <div className="space-y-1 mb-4">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-[#6B6B6B] font-bold text-md my-custom-class">
+                      <span className="text-[#6B6B6B] font-bold text-md ">
                         Schedule
                       </span>
                       <span className="font-bold text-[#6B6B6B] text-md">
@@ -664,7 +664,7 @@ const ProviderComparisonPage = () => {
                   {/* Cost Rating */}
                   <div className="space-y-1 mb-4">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-[#6B6B6B] font-bold text-md my-custom-class">
+                      <span className="text-[#6B6B6B] font-bold text-md ">
                         Cost
                       </span>
                       <span className="font-bold text-[#6B6B6B] text-md">
@@ -684,7 +684,7 @@ const ProviderComparisonPage = () => {
                   {/* Willing to Refer */}
                   <div className="space-y-1 mb-4">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-[#6B6B6B] font-bold text-md my-custom-class">
+                      <span className="text-[#6B6B6B] font-bold text-md ">
                         Willing to Refer
                       </span>
                       <span className="font-bold text-[#6B6B6B] text-md">
@@ -709,13 +709,13 @@ const ProviderComparisonPage = () => {
                     Key Strengths
                   </h4>
                   <div className="flex flex-wrap gap-2">
-                    <Badge variant="secondary" className="bg-[#1C96F4] rounded-full text-xs my-custom-class min-h-[40px] min-w-[100px] text-[#fff]">Fast Delivery</Badge>
-                        <Badge variant="secondary" className="bg-[#1C96F4] rounded-full text-xs my-custom-class min-h-[40px] min-w-[100px] text-[#fff]">Great Communication</Badge>
-                        <Badge variant="secondary" className="bg-[#1C96F4] rounded-full text-xs my-custom-class min-h-[40px] min-w-[100px] text-[#fff]">High Quality</Badge>
+                    <Badge variant="secondary" className="bg-[#1C96F4] rounded-full text-xs  min-h-[40px] min-w-[100px] text-[#fff]">Fast Delivery</Badge>
+                        <Badge variant="secondary" className="bg-[#1C96F4] rounded-full text-xs  min-h-[40px] min-w-[100px] text-[#fff]">Great Communication</Badge>
+                        <Badge variant="secondary" className="bg-[#1C96F4] rounded-full text-xs  min-h-[40px] min-w-[100px] text-[#fff]">High Quality</Badge>
                     {(proposal.keyHighlights || []).map((item) => (
                       <Badge
                         variant="secondary"
-                        className="bg-[#1C96F4] rounded-full text-xs my-custom-class min-h-[40px] min-w-[100px] text-[#fff]"
+                        className="bg-[#1C96F4] rounded-full text-xs min-h-[40px] min-w-[100px] text-[#fff]"
                       >
                         {item}
                       </Badge>

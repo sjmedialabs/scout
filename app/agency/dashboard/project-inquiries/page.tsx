@@ -155,12 +155,12 @@ const ProjectInquiriesPage = () => {
     );
   }
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       <div className="pb-4 border-b border-gray-200">
-        <h1 className="text-2xl font-semibold text-orangeButton">
+        <h1 className="text-xl font-bold text-orangeButton">
           Find Projects
         </h1>
-        <p className="text-sm text-gray-500 mt-0">
+        <p className="text-md text-gray-500 mt-0">
           Browse and respond to client projects
         </p>
       </div>

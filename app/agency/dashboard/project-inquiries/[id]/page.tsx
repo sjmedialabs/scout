@@ -475,7 +475,7 @@ export default function SubmitProposalPage() {
 
             <div>
               <Button
-                className="h-12 rounded-full hover:bg-orange-400 bg-orangeButton px-8 text-white flex items-center justify-center gap-2"
+                className="primary-button"
                 disabled={isSubmitting}
                 onClick={handleSubmitProposal}
               >

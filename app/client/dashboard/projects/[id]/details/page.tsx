@@ -58,9 +58,9 @@ export default function RequirementDetailsPage() {
 
         {/* Title */}
        <div className="flex flex-row justify-between">
-         <h1 className="text-xl md:text-3xl font-semibold text-gray-800">
+         <h2 className="text-xl md:text-2xl font-semibold text-[#f54a0c]">
            {project.title}
-         </h1>
+         </h2>
          <div>
             <Badge
             variant="outline"
@@ -74,20 +74,20 @@ export default function RequirementDetailsPage() {
         {/* Grid Info */}
         <div className="grid md:grid-cols-2 gap-6">
 
-          <div>
-            <label className="text-gray-600 font-medium">
-              Budget Range ($)
+          <div className="flex  gap-2">
+            <label className=" font-bold">
+              Budget Range:- 
             </label>
-            <div className="mt-0 bg-gray-100 rounded-xl text-sm  px-3 py-4 text-gray-700">
+            <div className=" mt-0.5 text-sm  text-gray-700">
               $ {project.budgetMin} - $ {project.budgetMax}
             </div>
           </div>
 
-          <div>
-            <label className="text-gray-600 font-medium">
-              Estimated Timeline
+          <div  className="flex  gap-2">
+            <label className=" font-bold">
+              Estimated Timeline:- 
             </label>
-            <div className="mt-0 bg-gray-100 rounded-xl text-sm  px-3 py-4 text-gray-700">
+            <div className="mt-0.5 text-sm text-gray-700">
               {project.timeline}
             </div>
           </div>
@@ -104,11 +104,11 @@ export default function RequirementDetailsPage() {
         </div> */}
 
         {/* Description */}
-        <div>
-          <label className="text-gray-600 font-medium">
-            Project Description
+        <div className="flex gap-2">
+          <label className="font-bold">
+            Project Description:- 
           </label>
-          <div className="mt-0 bg-gray-100 rounded-xl text-sm  px-3 py-4 text-gray-700">
+          <div className="mt-0 text-sm text-gray-700">
             {project.description}
           </div>
         </div>
@@ -116,15 +116,22 @@ export default function RequirementDetailsPage() {
         {/* Attachments */}
         {project.attachmentUrls?.length > 0 && (
           <div>
-            <label className="text-gray-600 font-medium">
-              Attachments
+            <label className=" font-bold">
+              Attachments:- 
             </label>
 
-            <div className="mt-4 flex flex-wrap gap-4">
+            <div className="mt-2 flex flex-wrap gap-4">
               {project.attachmentUrls.map((url: string, index: number) => (
                 <div
                   key={index}
-                  onClick={() => window.open(url, "_blank")}
+                  onClick={() => {
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = "";
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
                   className="cursor-pointer flex items-center gap-3 bg-gray-100 px-4 py-3 rounded-xl hover:bg-gray-200 transition"
                 >
                   <FileText className="h-5 w-5 text-gray-600" />
@@ -146,9 +153,9 @@ export default function RequirementDetailsPage() {
             onClick={() =>
               router.push("/client/dashboard/projects")
             }
-            className="flex items-center cursor-pointer gap-2 text-gray-600 hover:text-black"
+            className="flex items-center text-sm cursor-pointer gap-2 text-gray-600 hover:text-black"
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft size={14} />
             Back to projects
           </button>
         </div>
