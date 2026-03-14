@@ -544,7 +544,7 @@ const getStatusText = (status: string) => {
                         key={project.id}
                         className="rounded-2xl h-[100%] pt-1 shadow-sm transition hover:shadow-md bg-white"
                       >
-                        <CardContent className="pl-3 ">
+                        <CardContent className="p-3 ">
 
                           {/* Top Section */}
                           <div className="flex justify-between items-start">
@@ -1167,11 +1167,11 @@ const getStatusText = (status: string) => {
         <div>
           {dynamicCompletedProjects.length !== 0 ? (
             <div>
-              <div className="space-y-0 grid grid-cols-1 gap-2">
+              <div className="space-y-0 grid grid-cols-1 gap-4">
                 {paginatedCompletedProjects.map((project) => (
                   <Card
                     key={project.id}
-                    className="rounded-2xl h-[100%] p-3 shadow-sm transition hover:shadow-md bg-white"
+                    className="rounded-2xl h-[100%] pt-1 shadow-sm transition hover:shadow-md bg-white"
                   >
                     <CardContent className="p-3">
 
@@ -1183,7 +1183,7 @@ const getStatusText = (status: string) => {
                           </div> */}
 
                           <div>
-                            <h3 className="font-semibold text-gray-800 text-base">
+                            <h3 className="font-semibold text-gray-800 text-[15px]">
                               {project.requirement.title}
                             </h3>
                             <p className="text-xs text-gray-500">
@@ -1204,17 +1204,17 @@ const getStatusText = (status: string) => {
                       </div>
 
                       {/* Divider */}
-                      <div className="border-t border-gray-200 my-3" />
+                      {/* <div className="border-t border-gray-200 my-3" /> */}
 
                       {/* Details Section */}
-                      <div className="grid grid-cols-2 text-sm text-gray-600">
+                      <div className="grid grid-cols-1 mt-2 mb-2 text-sm text-gray-600">
                         {/* Left Column */}
-                        <div className="space-y-4 pr-4 border-r border-gray-200">
+                        <div className="flex flex-row justify-between flex-wrap gap-2 items-center">
 
                           {/* Budget */}
                           <div className="flex items-center gap-2">
-                            <div className="p-2 rounded-full bg-[#F54A0C]">
-                              <DollarSign size={14} className="text-white" />
+                            <div className="p-1 rounded-full bg-[#F54A0C]">
+                              <DollarSign size={12} className="text-white" />
                             </div>
                             <span>
                               ${project.proposedBudget.toLocaleString()}
@@ -1223,60 +1223,61 @@ const getStatusText = (status: string) => {
 
                           {/* Timeline */}
                           <div className="flex items-center gap-2">
-                            <div className="p-2 rounded-full bg-[#F54A0C]">
-                              <Calendar size={14} className="text-white" />
+                            <div className="p-1 rounded-full bg-[#F54A0C]">
+                              <Calendar size={12} className="text-white" />
                             </div>
                             <span>{project.proposedTimeline}</span>
                           </div>
-                        </div>
+                        
 
                         {/* Right Column */}
-                        <div className="space-y-4 pl-4">
+                        
 
                           {/* Milestones Count */}
                           <div className="flex items-center gap-2">
-                            <div className="p-2 rounded-full bg-[#F54A0C]">
-                              <Tag size={14} className="text-white" />
+                            <div className="p-1 rounded-full bg-[#F54A0C]">
+                              <Tag size={12} className="text-white" />
                             </div>
                             <span>{project.milestones.length} Milestones</span>
                           </div>
 
                           {/* Status Text */}
                           <div className="flex items-center gap-2">
-                            <div className="p-2 rounded-full bg-[#F54A0C]">
-                              <Clock size={14} className="text-white" />
+                            <div className="p-1 rounded-full bg-[#F54A0C]">
+                              <Clock size={12} className="text-white" />
                             </div>
                             <span className="capitalize">{project.status}</span>
                           </div>
-                        </div>
+                      </div>
                       </div>
 
-                      <div className="border-t border-gray-200 my-3" />
+                      {/* <div className="border-t border-gray-200 my-3" /> */}
 
                       {/* Progress */}
-                      <div>
-                        <div className="flex justify-end text-xs text-gray-500 mb-1">
-                          <span>
-                            {calculateProgress(project.milestones) || 0}% Complete
-                          </span>
-                        </div>
+                      <div className="justify-between items-center mb-1  mt-1 flex">
+                            
 
-                        <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-[#6366F1] transition-all duration-500 rounded-full"
-                            style={{
-                              width: `${calculateProgress(project.milestones) || 0}%`,
-                            }}
-                          />
-                        </div>
-                      </div>
+                            <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-[#6366F1] transition-all duration-500 rounded-full"
+                                style={{
+                                  width: `${calculateProgress(project.milestones) || 0}%`,
+                                }}
+                              />
+                            </div>
+                            <div className="flex min-w-22 justify-end text-xs text-gray-500 ">
+                              <span>
+                                {calculateProgress(project.milestones) || 0}% Complete
+                              </span>
+                            </div>
+                          </div>
 
                       {/* Milestones Pills */}
-                      <div className="mt-3 flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2">
                         {project.milestones.map((m, i) => (
                           <span
                             key={i}
-                            className={`px-4 py-1 rounded-full text-xs border ${
+                            className={`px-4 py-0 rounded-full text-xs border ${
                               m?.completed
                                 ? "bg-gray-100 text-gray-400"
                                 : "bg-white text-gray-900"
@@ -1288,9 +1289,9 @@ const getStatusText = (status: string) => {
                       </div>
 
                       {/* Buttons */}
-                      <div className="mt-4 flex flex-wrap gap-2">
+                      <div className="mt-2 -mb-3  flex flex-wrap gap-3">
                         <Button
-                          className="btn-blackButton h-[30px]"
+                          className="btn-blackButton h-[25px] text-[12px]!"
                           onClick={() => handleMessageClient(project)}
                         >
                           <MessageSquare className="h-3 w-3" />
@@ -1299,7 +1300,7 @@ const getStatusText = (status: string) => {
 
                         <Button
                           variant="outline"
-                          className="primary-button h-[30px]"
+                          className="primary-button h-[25px]"
                           onClick={() =>
                             router.push(`/agency/dashboard/proposals/${project.id}`)
                           }
