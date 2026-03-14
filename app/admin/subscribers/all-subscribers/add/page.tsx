@@ -12,7 +12,10 @@ import {
 } from "@/components/ui/select";
 import { authFetch } from "@/lib/auth-fetch";
 
+import { useRouter } from "next/navigation";
+
 export default function AddSubscriberPage() {
+  const router=useRouter()
 
    const [form, setForm] = useState({
     company: "",
@@ -56,13 +59,21 @@ export default function AddSubscriberPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-2 py-0">
       {/* HEADER */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-orangeButton h-8 ">
-          Add New Subscriber
-        </h1>
-        <p className="text-gray-500 text-xl mt-1">
-          Enter below information
-        </p>
+      <div className="mb-2 flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-xl font-bold text-orangeButton  ">
+            Add New Subscriber
+          </h1>
+          <p className="text-gray-500 text-md">
+            Enter below information
+          </p>
+        </div>
+        <div>
+          <Button className="BackButton h-[30px]" onClick={()=>router.push("/admin/subscribers/all-subscribers")}>
+            Back to subcribers
+          </Button>
+
+        </div>
       </div>
 
       {/* SUCCESS MESSAGE */}
@@ -84,10 +95,11 @@ export default function AddSubscriberPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Company Name */}
         <div className="space-y-2">
-          <label className="text-sm  m font-bold text-gray-400">
+          <label className="text-sm   font-bold text-gray-400">
             Company Name
           </label>
           <Input 
+          value={form.company}
           onChange={(e) => handleChange("company", e.target.value)}
           className="placeholder:text-gray-500 border-gray-300 rounded-xl  placeholder:text-xs" 
           placeholder="Enter Company Name" />
@@ -99,6 +111,7 @@ export default function AddSubscriberPage() {
             Email address
           </label>
           <Input 
+          value={form.email}
           onChange={(e) => handleChange("email", e.target.value)}
           className="placeholder:text-gray-500 border-gray-300 rounded-xl  placeholder:text-xs" 
           placeholder="Enter email address" 
@@ -111,14 +124,14 @@ export default function AddSubscriberPage() {
       <div className="flex items-center gap-4 mt-10">
         <Button 
         type="submit"
-        className="bg-orange-600 hover:bg-orange-500 text-white px-6 rounded-full">
+        className="primary-button h-[30px]">
           Add Subscriber
         </Button>
 
         <Button
           type="button"
           variant="outline"
-          className="bg-black text-white hover:bg-black/70 px-8 rounded-full"
+          className="btn-blackButton h-[30px]"
           onClick={() =>
               setForm({
                 company: "",

@@ -487,17 +487,17 @@ const [subscriberGrowthData, setSubscriberGrowthData] =
   return (
     <div className="mx-auto max-w-7xl space-y-4 px-4 sm:px-6 lg:px-2">
       {/* HEADER */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-center justify-between gap-4">
       <div>
-        <h1 className="text-3xl font-bold  h-8 text-orangeButton">
+        <h1 className="text-xl font-bold  h-8 text-orangeButton">
           Subscribers Management
         </h1>
-        <p className="text-gray-500 ">
+        <p className="text-gray-500 text-md">
           Welcome back to your B2B management console
         </p>
       </div>
        <Link href="/admin/subscribers/all-subscribers">
-        <Button className="bg-orangeButton rounded-2xl hover:bg-orangeButton/90">
+        <Button className="primary-button h-[30px]">
           All Subscribers 
           <ArrowRight className="h-4 w-4" />
         </Button>
@@ -507,8 +507,8 @@ const [subscriberGrowthData, setSubscriberGrowthData] =
       {/* KPI CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
         {stats.map((item) => (
-          <Card key={item.title} className="relative bg-white rounded-3xl py-2 pb-0 shadow-lg border-none">
-            <CardHeader className="flex flex-row h-2 items-start justify-between">
+          <Card key={item.title} className="relative bg-white rounded-2xl py-2 pb-0 shadow-md border-none px-0">
+            <CardHeader className="flex flex-row h-2 items-start justify-between px-4">
               <CardTitle className="text-sm font-bold ">
                 {item.title}
               </CardTitle>
@@ -516,7 +516,7 @@ const [subscriberGrowthData, setSubscriberGrowthData] =
                 {item.icon}
               </div>
             </CardHeader>
-            <CardContent className="pt-2 pb-6">
+            <CardContent className="pt-2 px-4 pb-3">
               <div className="text-2xl font-bold ">{item.value}</div>
               <p className={`mt-2  text-xs ${item.color ?? "text-green-600"}`}>
                 {item.sub}
@@ -705,7 +705,7 @@ function DashboardCard({
 
   return (
     <Card className="rounded-3xl bg-white p-0 shadow-lg">
-      <CardHeader className="flex flex-row items-center justify-between px-10 pt-4 pb-4">
+      <CardHeader className="flex flex-row items-center justify-between px-4 pt-4 pb-4">
         <CardTitle className="text-[22px] font-semibold text-orangeButton ">
           {title}
         </CardTitle>
@@ -731,7 +731,7 @@ function DashboardCard({
 
       </CardHeader>
 
-      <CardContent className="px-2">
+      <CardContent className="px-0">
         {children}
       </CardContent>
     </Card>

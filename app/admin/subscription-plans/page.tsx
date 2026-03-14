@@ -142,10 +142,10 @@ export default function SubscriptionPlansPage() {
     <div className="space-y-6">
       {/* HEADER */}
       <div>
-        <h1 className="text-3xl font-bold  text-orangeButton">
+        <h1 className="text-xl font-bold  text-orangeButton">
           Subscription Plans
         </h1>
-        <p className="text-gray-500 text-lg ">
+        <p className="text-gray-500 text-md ">
           Select the perfect plan for your business needs. Upgrade or downgrade
           at any time.
         </p>
@@ -167,7 +167,7 @@ export default function SubscriptionPlansPage() {
           />
 
           <Button
-          className={`${freeTrailSending?"bg-orange-400 cursor-not-allowed":"bg-orangeButton cursor-pointer"} rounded-2xl h-8 hover:bg-orange-600`} disabled={freeTrailSending}
+          className={`${freeTrailSending?"bg-orange-400 cursor-not-allowed":"bg-orangeButton cursor-pointer"} primary-button h-[30px]`} disabled={freeTrailSending}
           onClick={freeTrailProposalCountUpdate}
         >
            {`${freeTrailSending?"Updating...":"Update"}`}
@@ -227,7 +227,7 @@ export default function SubscriptionPlansPage() {
         </div>
 
         <Button
-          className="bg-orangeButton rounded-2xl h-8 hover:bg-orange-600"
+          className="primary-button h-[30px]"
           onClick={addPlan}
         >
           Add Plan
