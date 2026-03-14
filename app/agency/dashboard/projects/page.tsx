@@ -33,8 +33,8 @@ import { authFetch } from "@/lib/auth-fetch";
 
 const ProjectsPage = () => {
   const [projectTab, setProjectTab] = useState<
-    "active" | "completed" | "invitations"
-  >("active");
+    "all" | "active" | "completed" | "invitations"
+>("all");
 
   const [dynamicActiveProjects, setDynamicActiveProjects] = useState<any[]>([]);
   const [dynamicCompletedProjects, setDynamicCompletedProjects] = useState<
@@ -63,6 +63,24 @@ const ProjectsPage = () => {
 
 const [activePage, setActivePage] = useState(1);
 const [completedPage, setCompletedPage] = useState(1);
+const allProjects = [
+  ...dynamicActiveProjects,
+  ...dynamicCompletedProjects,
+];
+
+const [allPage, setAllPage] = useState(1);
+
+const totalAllPages = Math.ceil(
+  allProjects.length / ITEMS_PER_PAGE
+);
+
+const paginatedAllProjects = allProjects.slice(
+  (allPage - 1) * ITEMS_PER_PAGE,
+  allPage * ITEMS_PER_PAGE
+);
+
+
+
 
 // Active Pagination
 const totalActivePages = Math.ceil(
@@ -83,6 +101,8 @@ const paginatedCompletedProjects = dynamicCompletedProjects.slice(
   (completedPage - 1) * ITEMS_PER_PAGE,
   completedPage * ITEMS_PER_PAGE
 );
+
+
 
   const updateProgress = async () => {
     if (!selectedProject) return;
@@ -308,7 +328,7 @@ const addMilestoneToProject = async () => {
 
       {/* TABS */}
       <div className="inline-flex bg-[#e6edf5] rounded-full mb-3 p-1 gap-1">
-        {["active", "completed"].map((tab) => (
+        {["all", "active", "completed"].map((tab) => (
           <button
             key={tab}
             onClick={() => setProjectTab(tab as any)}
@@ -318,14 +338,164 @@ const addMilestoneToProject = async () => {
                 : "text-gray-700 my-custom-class"
             }`}
           >
-            {tab === "active"
+            {/* {tab === "active"
               ? "Active Projects"
               : tab === "completed"
                 ? "Completed Projects"
-                : "Project invitations"}
+                : "Project invitations"} */}
+                {tab === "all"
+                ? "All Projects"
+                : tab === "active"
+                ? "Active Projects"
+                : "Completed Projects"}
           </button>
         ))}
       </div>
+
+      {projectTab === "all" && (
+  <div>
+    {allProjects.length !== 0 ? (
+      <div className="space-y-5 grid grid-cols-1 gap-4">
+        {paginatedAllProjects.map((project) => (
+          <Card
+            key={project.id}
+            className="rounded-2xl h-[100%] p-1 shadow-sm transition hover:shadow-md bg-white"
+          >
+            <CardContent className="p-3">
+
+              {/* EXACT same UI as active project card */}
+
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="font-semibold text-gray-800 text-base">
+                    {project.requirement.title}
+                  </h3>
+                  <p className="text-xs text-gray-500">
+                    {project.client.name} • {project.client.companyName}
+                  </p>
+                </div>
+
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
+                    project.status === "accepted"
+                      ? "bg-green-100 text-green-600"
+                      : "bg-green-100 text-green-600"
+                  }`}
+                >
+                  {project.status === "accepted" ? "Active" : "Completed"}
+                </span>
+              </div>
+
+              <div className="border-t border-gray-200 my-3" />
+
+              {/* Budget + Timeline */}
+              <div className="flex flex-row justify-between flex-wrap gap-2 items-center">
+
+                <div className="flex items-center gap-2">
+                  <div className="p-2 rounded-full bg-[#F54A0C]">
+                    <DollarSign size={14} className="text-white" />
+                  </div>
+                  <span>
+                    ${project.proposedBudget.toLocaleString()}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="p-2 rounded-full bg-[#F54A0C]">
+                    <Calendar size={14} className="text-white" />
+                  </div>
+                  <span>{project.proposedTimeline}</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="p-2 rounded-full bg-[#F54A0C]">
+                    <Tag size={14} className="text-white" />
+                  </div>
+                  <span>{project.milestones.length} Milestones</span>
+                </div>
+
+              </div>
+
+              <div className="border-t border-gray-200 my-3" />
+
+              {/* Progress */}
+              <div>
+                <div className="flex justify-end text-xs text-gray-500 mb-1">
+                  <span>
+                    {calculateProgress(project.milestones) || 0}% Complete
+                  </span>
+                </div>
+
+                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-[#6366F1] transition-all duration-500 rounded-full"
+                    style={{
+                      width: `${calculateProgress(project.milestones) || 0}%`,
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Milestones */}
+              <div className="mt-3 flex flex-wrap gap-2">
+                {project.milestones.map((m, i) => (
+                  <span
+                    key={i}
+                    className={`px-4 py-1 rounded-full text-xs border ${
+                      m?.completed
+                        ? "bg-gray-100 text-gray-400"
+                        : "bg-white text-gray-900"
+                    }`}
+                  >
+                    {m.title}
+                  </span>
+                ))}
+              </div>
+
+            </CardContent>
+          </Card>
+        ))}
+        {totalAllPages > 1 && (
+  <div className="flex justify-center gap-2 mt-2">
+    <button
+      disabled={allPage === 1}
+      onClick={() => setAllPage((p) => p - 1)}
+      className="px-3 py-1 rounded-md border text-sm disabled:opacity-40"
+    >
+      Prev
+    </button>
+
+    {[...Array(totalAllPages)].map((_, i) => (
+      <button
+        key={i}
+        onClick={() => setAllPage(i + 1)}
+        className={`px-3 py-1 rounded-md text-sm ${
+          allPage === i + 1
+            ? "bg-orangeButton text-white"
+            : "border"
+        }`}
+      >
+        {i + 1}
+      </button>
+    ))}
+
+    <button
+      disabled={allPage === totalAllPages}
+      onClick={() => setAllPage((p) => p + 1)}
+      className="px-3 py-1 rounded-md border text-sm disabled:opacity-40"
+    >
+      Next
+    </button>
+  </div>
+)}
+      </div>
+    ) : (
+      <p className="text-gray-500 text-center text-[30px] my-15">
+        No Projects
+      </p>
+    )}
+  </div>
+)}
 
       {/* ACTIVE PROJECTS */}
       {projectTab === "active" && (

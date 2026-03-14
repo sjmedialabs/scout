@@ -888,7 +888,7 @@ const toggleFavorite = (conversationId: string) => {
             <Card className="rounded-2xl min-h-[85vh] px-0  py-0  flex flex-col justify-between bg-white border-0 shadow-none">
 
               {/* Chat Header */}
-              <div className="flex items-start flex-wrap justify-between bg-[#f9f9f9] px-3 py-1 border-b">
+              <div className="flex items-start flex-wrap justify-between bg-[#f9f9f9] px-3 py-1 border-b sticky top-0 z-10">
                 <div className="flex items-center gap-3">
 
                   {/* Mobile Back Button */}
@@ -1077,7 +1077,7 @@ const toggleFavorite = (conversationId: string) => {
               </div>
 
               {/* Message Input */}
-              <div className="px-6 py-0 border-t ">
+              <div className="px-6 py-0 border-t sticky bottom-0 bg-white z-10">
                 <div className="mb-2">
                   {uploading && <span>Uploading...</span>}
                   {uplodedUrl.url && (
