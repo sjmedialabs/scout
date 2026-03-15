@@ -388,10 +388,12 @@ const getStatusText = (status: string) => {
         ))}
       </div>
 
+
+     {/* All Projects */}
       {projectTab === "all" && (
   <div>
     {allProjects.length !== 0 ? (
-      <div className="space-y-5 grid grid-cols-1 gap-4">
+      <div className="space-y-2 grid grid-cols-1 gap-4">
         {paginatedAllProjects.map((project) => (
           <Card
             key={project.id}
@@ -422,14 +424,14 @@ const getStatusText = (status: string) => {
                 </span>
               </div>
 
-              <div className="border-t border-gray-200 my-3" />
+              <div className=" border-gray-200 my-1" />
 
               {/* Budget + Timeline */}
               <div className="flex flex-row justify-between flex-wrap gap-2 items-center">
 
                 <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-full bg-[#F54A0C]">
-                    <DollarSign size={14} className="text-white" />
+                  <div className="p-1 rounded-full bg-[#F54A0C]">
+                    <DollarSign size={12} className="text-white" />
                   </div>
                   <span>
                     ${project.proposedBudget.toLocaleString()}
@@ -437,22 +439,22 @@ const getStatusText = (status: string) => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-full bg-[#F54A0C]">
-                    <Calendar size={14} className="text-white" />
+                  <div className="p-1 rounded-full bg-[#F54A0C]">
+                    <Calendar size={12} className="text-white" />
                   </div>
                   <span>{project.proposedTimeline}</span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-full bg-[#F54A0C]">
-                    <Tag size={14} className="text-white" />
+                  <div className="p-1 rounded-full bg-[#F54A0C]">
+                    <Tag size={12} className="text-white" />
                   </div>
                   <span>{project.milestones.length} Milestones</span>
                 </div>
 
               </div>
 
-              <div className="border-t border-gray-200 my-3" />
+              <div className=" border-gray-200 my-0" />
 
               {/* Progress */}
               <div>
@@ -487,6 +489,70 @@ const getStatusText = (status: string) => {
                   </span>
                 ))}
               </div>
+              {/* Buttons */}
+<div className="mt-2 -mb-3 flex flex-wrap gap-3">
+
+  <Button
+    className="btn-blackButton h-[25px] text-[12px]!"
+    onClick={() => handleMessageClient(project)}
+  >
+    <MessageSquare className="h-3 w-3" />
+    Message Client
+  </Button>
+
+  <Button
+    variant="outline"
+    className="h-[25px] primary-button"
+    onClick={() =>
+      router.push(`/agency/dashboard/proposals/${project.id}`)
+    }
+  >
+    <Eye className="h-3 w-3" />
+    View Details
+  </Button>
+
+  {/* ACTIVE PROJECT BUTTONS */}
+  {project.status === "accepted" && (
+    <>
+      <Button
+        variant="outline"
+        className="btn-blackButton h-[25px]"
+        onClick={() => {
+          setSelectedProject(project)
+          setMilestonesDraft(
+            project.milestones.map((m: any) => ({
+              title: m.title,
+              description: m.description,
+              amount: m.amount,
+              duration: m.duration,
+              completed: m.completed ?? false,
+              approvalStatus: m.approvalStatus || "pending",
+              deliverableUrl: m.deliverableUrl,
+              deliverableDocuments: m.deliverableDocuments || [],
+              id: m._id
+            })),
+          )
+          setIsProgressModalOpen(true)
+        }}
+      >
+        <Edit className="h-3 w-3 " />
+        Update Progress
+      </Button>
+
+      <Button
+        variant="outline"
+        className="rounded-full h-[25px] w-[130px] text-xs bg-gray-200"
+        onClick={() => {
+          setSelectedProject(project);
+          setIsAddMilestoneOpen(true);
+        }}
+      >
+        + Add Milestone
+      </Button>
+    </>
+  )}
+
+</div>
 
             </CardContent>
           </Card>
@@ -580,7 +646,7 @@ const getStatusText = (status: string) => {
                           {/* Details Section */}
                           <div className="grid grid-cols-1 mt-2 mb-2 text-sm text-gray-600">
                             {/* Left Column */}
-                            <div className="flex flex-row justify-between flex-wrap gap-2 items-center">
+                            <div className="grid grid-cols-4 justify-between gap-2 items-center">
 
                               {/* Budget */}
                               <div className="flex items-center gap-2">
@@ -613,12 +679,13 @@ const getStatusText = (status: string) => {
                               </div>
 
                               {/* Status Text */}
-                              <div className="flex items-center gap-2">
+                              {/* <div className="flex items-center gap-2">
                                 <div className="p-1 rounded-full bg-[#F54A0C]">
                                   <Clock size={12} className="text-white" />
                                 </div>
                                 <span className="capitalize">{project.status}</span>
-                              </div>
+                              </div> */}
+
                             </div>
                           </div>
 
@@ -1209,7 +1276,7 @@ const getStatusText = (status: string) => {
                       {/* Details Section */}
                       <div className="grid grid-cols-1 mt-2 mb-2 text-sm text-gray-600">
                         {/* Left Column */}
-                        <div className="flex flex-row justify-between flex-wrap gap-2 items-center">
+                        <div className="grid grid-cols-4 justify-between  gap-2 items-center">
 
                           {/* Budget */}
                           <div className="flex items-center gap-2">
@@ -1242,12 +1309,12 @@ const getStatusText = (status: string) => {
                           </div>
 
                           {/* Status Text */}
-                          <div className="flex items-center gap-2">
+                          {/* <div className="flex items-center gap-2">
                             <div className="p-1 rounded-full bg-[#F54A0C]">
                               <Clock size={12} className="text-white" />
                             </div>
                             <span className="capitalize">{project.status}</span>
-                          </div>
+                          </div> */}
                       </div>
                       </div>
 
