@@ -231,10 +231,10 @@ export default async function AboutPage() {
             {cms?. aboutBottomSectionSubTitle || "Whether you're looking for services or offering them, we'd love to have you in our community."}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg"  style={{borderRadius:"26px",fontSize:"14px",backgroundColor:" #F54A0C"}} asChild>
+            <Button size="lg"  className="primary-button h-[30px]" asChild>
               <Link href="/register">Get Started Today</Link>
             </Button>
-            <Button size="lg"  style={{borderRadius:"26px",fontSize:"14px",backgroundColor:" #000"}} asChild>
+            <Button size="lg"  className="btn-blackButton h-[30px]" asChild>
               <Link href="/contact">Contact Us</Link>
             </Button>
           </div>
