@@ -66,23 +66,26 @@ export default function Sidebar({
 
   return (
     <>
-      {isMobileOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden"
-          onClick={() => setIsMobileOpen(false)}
-        />
-      )}
+      <div
+        aria-hidden="true"
+        className={`
+          fixed inset-0 z-30 lg:hidden transition-opacity duration-300 ease-out
+          ${isMobileOpen ? "bg-black/50 opacity-100 backdrop-blur-sm" : "bg-transparent opacity-0 pointer-events-none"}
+        `}
+        onClick={() => setIsMobileOpen(false)}
+      />
 
       <aside
         className={`
-          fixed inset-y-0 left-0 z-40 
+          fixed inset-y-0 left-0 z-40
           bg-[#3C3A3E] text-[#fff]
           border-r border-[#e4dff6]
-          flex flex-col transition-all duration-300 ease-in-out
+          flex flex-col
+          transform transition-[transform] duration-300 ease-out will-change-transform
           ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
           lg:translate-x-0
           ${isCollapsed ? "lg:w-20" : "lg:w-60"}
-          w-60 
+          w-[min(80vw,320px)] sm:w-60
         `}
       >
         {/* HEADER */}
@@ -101,15 +104,19 @@ export default function Sidebar({
 
           {isMobileOpen ? (
             <button
+              type="button"
               onClick={() => setIsMobileOpen(false)}
-              className="p-2 rounded-lg hover:bg-[#3C3A3E] lg:hidden"
+              className="flex items-center justify-center min-h-[48px] min-w-[48px] rounded-lg lg:hidden touch-manipulation"
+              aria-label="Close menu"
             >
               <X className="h-5 w-5" />
             </button>
           ) : (
             <button
+              type="button"
               onClick={() => setIsCollapsed((prev) => !prev)}
-              className="p-2 rounded-lg hover:bg-[#3C3A3E] hidden lg:block"
+              className="hidden lg:flex items-center justify-center min-h-[48px] min-w-[48px] rounded-lg touch-manipulation"
+              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               <ChevronRight
                 className={`h-5 w-5 transition-transform ${
@@ -134,19 +141,16 @@ export default function Sidebar({
   return (
     <button
       key={item.id}
+      type="button"
       onClick={() => handleMenuClick(item)}
       className={`
-        w-full flex items-center gap-3 px-3 py-2 text-sm
-        transition-colors cursor-pointer
-        ${
-          isActive
-            ? "text-[#F54A0C] rounded-[8px]"
-            : "text-[#fff] rounded-[8px]"
-        }
+        w-full flex items-center gap-3 min-h-[48px] px-3 py-2 text-sm
+        transition-colors cursor-pointer rounded-[8px] touch-manipulation
+        ${isActive ? "text-[#F54A0C]" : "text-[#fff]"}
       `}
     >
-      <item.icon className="h-4 w-4 shrink-0" />
-      {!isCollapsed && item.label}
+      <item.icon className="h-5 w-5 shrink-0" />
+      {!isCollapsed && <span className="text-left">{item.label}</span>}
     </button>
   );
 })}
@@ -169,9 +173,9 @@ export default function Sidebar({
                   "/agency/dashboard/account/subscriptions"
                 )
               }
-              className={`justify-start bg-[#2C34A1]  text-white text-xs hover:bg-[#2C34A1] rounded-full ${isCollapsed&&"w-fit"}`}
+              className={`justify-start min-h-[48px] bg-[#2C34A1] text-white text-xs hover:bg-[#2C34A1] rounded-full touch-manipulation ${isCollapsed ? "min-w-[48px] px-0" : ""}`}
             >
-              <Settings className="h-4 w-4 " />
+              <Settings className="h-4 w-4 shrink-0" />
               {!isCollapsed && "Upgrade Plan"}
             </Button>
 
@@ -179,9 +183,9 @@ export default function Sidebar({
               size="sm"
               variant="destructive"
               onClick={handleLogout}
-              className={`justify-start  rounded-full text-xs bg-[#F54A0C] ${isCollapsed&&"w-fit"}`}
+              className={`justify-start min-h-[48px] rounded-full text-xs bg-[#F54A0C] touch-manipulation ${isCollapsed ? "min-w-[48px] px-0" : ""}`}
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-4 w-4 shrink-0" />
               {!isCollapsed && "Logout"}
             </Button>
           </div>

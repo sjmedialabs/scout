@@ -515,13 +515,6 @@ const overflowCategories = mainCategories.slice(5);
                     >
                       Login as Agency
                     </button>
-
-                    <button
-                      onClick={() => router.push("/login?role=admin")}
-                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
-                    >
-                      Login as Admin
-                    </button>
                   </div>
                 )}
               </div>
@@ -571,16 +564,6 @@ const overflowCategories = mainCategories.slice(5);
                       className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
                     >
                       Login as Agency
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        router.push("/login?role=admin");
-                        setOpenMenu(null);
-                      }}
-                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                    >
-                      Login as Admin
                     </button>
                   </div>
                 )}

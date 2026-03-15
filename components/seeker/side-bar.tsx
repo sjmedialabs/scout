@@ -91,21 +91,24 @@ export default function ClientSidebar({
 
   return (
     <>
-      {/* Overlay (mobile only) */}
-      {isOpen && (
-        <div
-          onClick={onClose}
-          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
-        />
-      )}
+      {/* Overlay (mobile only) - smooth animation */}
+      <div
+        aria-hidden="true"
+        onClick={onClose}
+        className={cn(
+          "fixed inset-0 z-40 lg:hidden transition-opacity duration-300 ease-out",
+          isOpen ? "bg-black/40 opacity-100" : "bg-transparent opacity-0 pointer-events-none"
+        )}
+      />
 
       <aside
         className={cn(
-          "fixed z-50 inset-y-0 left-0 bg-card border-r border-border flex flex-col transform transition-all duration-300",
+          "fixed z-50 inset-y-0 left-0 bg-card border-r border-border flex flex-col",
+          "transform transition-[transform] duration-300 ease-out will-change-transform",
           isOpen ? "translate-x-0" : "-translate-x-full",
           "lg:translate-x-0 lg:static lg:z-auto",
           collapsed ? "lg:w-20" : "lg:w-60",
-          "w-80"
+          "w-[min(80vw,320px)] sm:w-80"
         )}
       >
         {/* Header */}
@@ -142,15 +145,25 @@ export default function ClientSidebar({
             </div>
           )}
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <button
+              type="button"
               onClick={() => setCollapsed(!collapsed)}
-              className={`hidden lg:block cursor-pointer ${collapsed?"ml-[15px]":""}`}
+              className={cn(
+                "hidden lg:flex items-center justify-center min-h-[48px] min-w-[48px] cursor-pointer rounded-lg touch-manipulation",
+                collapsed ? "ml-[15px]" : ""
+              )}
+              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
-              <PanelLeft className="h-5 w-5 mt-[4px] text-[#8480a8]" />
+              <PanelLeft className="h-5 w-5 text-[#8480a8]" />
             </button>
 
-            <button onClick={onClose} className="lg:hidden">
+            <button
+              type="button"
+              onClick={onClose}
+              className="lg:hidden flex items-center justify-center min-h-[48px] min-w-[48px] rounded-lg touch-manipulation"
+              aria-label="Close menu"
+            >
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -162,22 +175,23 @@ export default function ClientSidebar({
           [-ms-overflow-style:none]        
           [&::-webkit-scrollbar]:hidden"
         >
-          <nav className="space-y-2">
+          <nav className="space-y-1">
             {menuItems.map((item) => (
               <button
                 key={item.id}
+                type="button"
                 onClick={() => handleMenuClick(item)}
                 className={cn(
-                  "cursor-pointer flex items-center gap-1 p-3 text-sm rounded-lg text-[#fff] w-full",
+                  "cursor-pointer flex items-center gap-3 min-h-[48px] px-3 py-3 text-sm rounded-lg text-[#fff] w-full touch-manipulation",
                   pathname === item.path ||
                   (item.path !== "/client/dashboard" && pathname.startsWith(item.path!))
                     ? " text-[#F54A0C] rounded-[8px]"
                     : "",
-                  collapsed ? "justify-center" : ""
+                  collapsed ? "justify-center px-0" : ""
                 )}
               >
-                <item.icon className="h-4 w-4" />
-                {!collapsed && item.label}
+                <item.icon className="h-5 w-5 shrink-0" />
+                {!collapsed && <span className="text-left">{item.label}</span>}
               </button>
             ))}
           </nav>
@@ -205,11 +219,11 @@ export default function ClientSidebar({
             size="sm"
             onClick={handleLogout}
             className={cn(
-              " primary-button flex items-center justify-center",
-              collapsed ? "w-12 h-12 p-0" : "w-full"
+              "primary-button flex items-center justify-center min-h-[48px] touch-manipulation",
+              collapsed ? "w-12 h-12 p-0 min-w-[48px]" : "w-full"
             )}
           >
-            <LogOut className="h-4 w-4" />
+            <LogOut className="h-4 w-4 shrink-0" />
             {!collapsed && <span className="ml-2">Logout</span>}
           </Button>
         </div>

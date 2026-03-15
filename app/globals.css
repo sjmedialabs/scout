@@ -131,6 +131,13 @@
     @apply bg-background text-foreground;
   }
 
+  /* Global button style: max-height 40px, font-size 12px */
+  button,
+  [role="button"] {
+    max-height: 40px;
+    font-size: 12px;
+  }
+
   /* Adding site-wide form element consistency */
   .spark-form-field {
     @apply w-full;
@@ -169,11 +176,10 @@
   background-color: transparent;
   color: #000;
   border: 1px solid #232a85;
-  border-radius: 9999px; /* rounded-full */
-  height: 25px;
+  border-radius: 9999px;
+  max-height: 40px;
   width: 110px;
-   /* mb-3 = 0.75rem = 12px */
-  font-size: 12px; /* text-xs */
+  font-size: 12px;
 }
 
 .BackButton:hover {
@@ -192,10 +198,11 @@
   color: white;
 }
 
-.secondary-button{
+.secondary-button {
   background-color: var(--blueButton);
   color: white;
   transition: all 0.2s ease;
+  max-height: 40px;
   font-size: 12px;
   cursor: pointer;
   border-radius: 9999px;
@@ -215,10 +222,11 @@
   color: white;
 }
 
-.btn-blackButton{
+.btn-blackButton {
   background-color: #2C34A1;
   color: white;
   transition: all 0.2s ease;
+  max-height: 40px;
   font-size: 12px;
   cursor: pointer;
   border-radius: 9999px;
@@ -228,16 +236,18 @@
    color: white;
 }
 
-.primary-button{
-   background-color: var(--orangeButton);
+/* Primary button: single consistent primary color (blue) across the app */
+.primary-button {
+  background-color: var(--blueButton);
   color: white;
   transition: all 0.2s ease;
+  max-height: 40px;
   font-size: 12px;
   border-radius: 9999px;
   cursor: pointer;
 }
-.primary-button:hover{
-  background-color: var(--hoverOrangeButton);
+.primary-button:hover {
+  background-color: var(--hoverBlueButton);
   color: white;
 }
 .text-blueButton {

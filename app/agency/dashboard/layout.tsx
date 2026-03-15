@@ -1,11 +1,12 @@
 "use client"
 import type React from "react"
 import Sidebar from "@/components/provider/side-bar"
+import { ResponsiveLayout } from "@/components/layout"
 import { useAuth } from "@/contexts/auth-context"
 import { useRouter, usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { authFetch } from "@/lib/auth-fetch"
-import { Menu } from "lucide-react";
+import { Menu } from "lucide-react"
 import AgencyHeader from "@/components/provider/agency-header"
 import {
   Home,
@@ -141,12 +142,13 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
     <div className="min-h-screen flex flex-col lg:flex-row bg-background">
 
       {/* MOBILE TOP BAR */}
-      <header className="lg:hidden fixed top-0  left-0 bg-[#fff] right-0 h-14  border-b z-40 flex items-center justify-between px-0">
-
-        <div className="flex items-center gap-3 ml-3">
+      <header className="lg:hidden fixed top-0 left-0 right-0 min-h-[56px] bg-[#fff] border-b z-40 flex items-center justify-between px-3 sm:px-4">
+        <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={() => setIsMobileOpen(true)}
-            className="p-2  rounded-lg hover:bg-accent"
+            className="flex items-center justify-center min-h-[48px] min-w-[48px] -ml-1 rounded-lg hover:bg-accent touch-manipulation"
+            aria-label="Open menu"
           >
             <Menu className="h-6 w-6" />
           </button>
@@ -192,9 +194,9 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
             </div>
           </div>
 
-        <div className="px-6 py-3 bg-[#fff]">
-          {children}
-        </div>
+        <ResponsiveLayout>
+          <div className="bg-[#fff]">{children}</div>
+        </ResponsiveLayout>
 
       </main>
 </div>

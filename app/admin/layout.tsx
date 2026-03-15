@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AdminSidebar } from "./components/AdminSidebar";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import AdminHeader from "./components/AdminHeader";
+import { ResponsiveLayout } from "@/components/layout";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
 
@@ -33,8 +34,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {/* Header */}
           <AdminHeader onMenuClick={() => setMobileOpen(true)} />
 
-          <main className="px-4 py-3">
-            {children}
+          <main className="flex-1 flex flex-col min-h-0">
+            <ResponsiveLayout>{children}</ResponsiveLayout>
           </main>
         </div>
 

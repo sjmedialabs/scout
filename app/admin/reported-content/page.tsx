@@ -7,9 +7,7 @@ import { Input } from "@/components/ui/input";
 
 import { AlertTriangle, Search, Check, X,Calendar, Eye} from "lucide-react";
 
-import { mockReportedContent } from "@/lib/mock-data";
 import { authFetch } from "@/lib/auth-fetch";
-
 import {
   Dialog,
   DialogContent,
@@ -17,80 +15,113 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { ResponsiveTable } from "@/components/layout";
 
-// Report type interface
 interface ReportItem {
-  id: string;
-  type: string;
+  _id: string;
   reason: string;
-  status: "pending" | "resolved" | "dismissed";
+  description?: string;
+  status: string;
   createdAt: string;
-  reporter: string;
-  itemId: string;
+  reportedBy: { name?: string; email?: string; role?: string };
+  reportedTo?: { name?: string; email?: string; role?: string };
 }
 
-export default function ModerationPage() {
+export default function ReportedContentPage() {
   const [reports, setReports] = useState<ReportItem[]>([]);
   const [search, setSearch] = useState("");
-  const[resLoading,setResLoading]=useState(false);
-  const[failed,setFailed]=useState(false)
+  const [resLoading, setResLoading] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<ReportItem | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [reportToDelete, setReportToDelete] = useState<ReportItem | null>(null);
 
-  const[open,setOpen]=useState(false);
-  const[selectedReport,setSelectedReport]=useState();
-
-
-   async function loadReports() {
+  async function loadReports() {
     setResLoading(true);
     setFailed(false);
-      try{
-        const res = await authFetch("/api/reported-content");
-        if(!res.ok) throw new Error();
-        const data = await res.json();
-
-        setReports(data.reports);
-      }catch(error){
-           console.log("Failed to fetch the reports::::",error)
-           setFailed(false);
-      }finally{
-        setResLoading(false)
-      }
+    try {
+      const res = await authFetch("/api/reported-content");
+      if (!res.ok) throw new Error("Failed to fetch");
+      const data = await res.json();
+      setReports(data.reports || []);
+    } catch (error) {
+      console.error("Failed to fetch reports:", error);
+      setFailed(true);
+    } finally {
+      setResLoading(false);
     }
-  
-  
+  }
+
   useEffect(() => {
     loadReports();
   }, []);
-  
 
-  const resolveReport = (id: string, action: "approve" | "reject") => {
-    setReports((prev) =>
-      prev.map((r) =>
-        r.id === id
-          ? {
-              ...r,
-              status: action === "approve" ? "resolved" : "dismissed",
-            }
-          : r,
-      ),
-    );
+  async function handleApprove(report: ReportItem) {
+    setActionLoading(report._id);
+    try {
+      const res = await authFetch(`/api/reported-content/${report._id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "approve" }),
+      });
+      if (res.ok) await loadReports();
+    } finally {
+      setActionLoading(null);
+    }
+  }
 
-    console.log(
-      `Report ${id} ${action === "approve" ? "approved" : "rejected"}`,
-    );
-  };
+  async function handleIgnore(report: ReportItem) {
+    setActionLoading(report._id);
+    try {
+      const res = await authFetch(`/api/reported-content/${report._id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "ignore" }),
+      });
+      if (res.ok) await loadReports();
+    } finally {
+      setActionLoading(null);
+    }
+  }
+
+  function openDeleteConfirm(report: ReportItem) {
+    setReportToDelete(report);
+    setDeleteDialogOpen(true);
+  }
+
+  async function confirmDelete() {
+    if (!reportToDelete) return;
+    setActionLoading(reportToDelete._id);
+    try {
+      const res = await authFetch(`/api/reported-content/${reportToDelete._id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setDeleteDialogOpen(false);
+        setReportToDelete(null);
+        await loadReports();
+      }
+    } finally {
+      setActionLoading(null);
+    }
+  }
 
   const filteredReports = reports.filter(
     (r) =>
-      r.reason.toLowerCase().includes(search.toLowerCase()) ||
-      r.reportedBy?.name?.toLowerCase().includes(search.toLowerCase()),
+      r.reason?.toLowerCase().includes(search.toLowerCase()) ||
+      (typeof r.reportedBy === "object" && r.reportedBy?.name?.toLowerCase().includes(search.toLowerCase())),
   );
 
   if (resLoading) {
@@ -125,8 +156,9 @@ export default function ModerationPage() {
       </div>
 
       {/* Reports Table */}
-      <div className="bg-white rounded-2xl border shadow-lg overflow-x-auto">
-        <table className="w-full min-w-[900px] text-sm">
+      <div className="bg-white rounded-2xl border shadow-lg">
+        <ResponsiveTable scrollOnMobile>
+          <table className="w-full min-w-[600px] text-sm">
           <thead className="border-b border-red-100">
             <tr className="text-left">
               {/* <th className="px-6 py-4 font-semibold text-black ">Type</th> */}
@@ -152,72 +184,73 @@ export default function ModerationPage() {
                       key={report._id}
                       className="border-b border-red-100 hover:bg-gray-50 transition"
                     >
-                      {/* Type */}
-                      {/* <td className="px-6 py-4">
-                        <Badge className="bg-[#dbd9f0] text-[#4a37d6]  rounded-md px-3 py-1">
-                          {report.type}
-                        </Badge>
-                      </td> */}
-
-                      {/* Reason */}
                       <td className="px-6 py-4">
                         <p className="font-semibold text-black ">
                           {report.reason}
                         </p>
                         <p className="text-sm text-gray-500 ">
-                          Reported by {report.reportedBy.name}
+                          Reported by {typeof report.reportedBy === "object" ? report.reportedBy?.name : "—"}
                         </p>
                       </td>
-
-                      {/* Status */}
                       <td className="px-6 py-4">
-                        <span className="inline-flex px-4 py-1  text-sm font-medium bg-yellow-200 text-yellow-800 rounded-sm">
+                        <span className={`inline-flex px-4 py-1 text-sm font-medium rounded-sm ${
+                          report.status === "resolved" ? "bg-green-200 text-green-800" :
+                          report.status === "dismissed" ? "bg-gray-200 text-gray-700" :
+                          "bg-yellow-200 text-yellow-800"
+                        }`}>
                           {report.status}
                         </span>
                       </td>
-
-                      {/*Role */}
-
                       <td className="px-6 py-4">
-                        <Badge className="bg-green-50 text-green-500 rounded-full">{report.reportedBy.role}</Badge>
+                        <Badge className="bg-green-50 text-green-500 rounded-full">
+                          {typeof report.reportedBy === "object" ? report.reportedBy?.role : "—"}
+                        </Badge>
                       </td>
-
-                      {/* Date */}
-                      <td className="px-6 py-4 text-black  flex gap-2 items-center">
-                        <Calendar className="w-4 h-4 text-gray-900" />
-                        <span>
-                        {new Date(report.createdAt).toLocaleDateString("en-IN")}
-                        </span>
+                      <td className="px-6 py-4 text-black flex gap-2 items-center">
+                        <Calendar className="w-4 h-4 text-gray-900 shrink-0" />
+                        <span>{new Date(report.createdAt).toLocaleDateString("en-IN")}</span>
                       </td>
-
-                      {/* Actions */}
                       <td className="px-6 py-4">
-                        <div className="flex justify-center gap-6 text-black">
-                          <button onClick={()=>{
-                            setOpen(true)
-                            setSelectedReport(report)
-                            }}
-                            className="cursor-pointer"
-                            >
+                        <div className="flex justify-center gap-2 flex-wrap">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            onClick={() => { setOpen(true); setSelectedReport(report); }}
+                            title="View Content"
+                          >
                             <Eye className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() =>
-                              resolveReport(report.id, "approve")
-                            }
-                            className="hover:text-green-600"
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 hover:text-green-600"
+                            onClick={() => handleApprove(report)}
+                            disabled={actionLoading === report._id || report.status === "resolved"}
+                            title="Approve"
                           >
                             <Check className="w-5 h-5" />
-                          </button>
-
-                          <button
-                            onClick={() =>
-                              resolveReport(report.id, "reject")
-                            }
-                            className="hover:text-red-600"
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 hover:text-amber-600"
+                            onClick={() => handleIgnore(report)}
+                            disabled={actionLoading === report._id || report.status === "dismissed"}
+                            title="Ignore Report"
                           >
                             <X className="w-5 h-5" />
-                          </button>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 hover:text-red-600"
+                            onClick={() => openDeleteConfirm(report)}
+                            disabled={actionLoading === report._id}
+                            title="Remove / Delete"
+                          >
+                            <AlertTriangle className="w-5 h-5" />
+                          </Button>
                         </div>
                       </td>
                     </tr>
@@ -231,6 +264,7 @@ export default function ModerationPage() {
             }
           
         </table>
+        </ResponsiveTable>
 
         {/* {filteredReports.length === 0 && (
           <p className="text-center py-8 text-gray-500">
@@ -239,39 +273,50 @@ export default function ModerationPage() {
         )} */}
       </div>
 
-      {/*view modal*/}
+      {/* View Content modal */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-[#F54A0C]">Report Content</DialogTitle>
+          </DialogHeader>
+          {selectedReport && (
+            <>
+              <div className="rounded-md border border-[#D0D5DD] px-3 py-2 text-sm bg-gray-50">
+                <span className="font-medium">Reason:</span> {selectedReport.reason}
+              </div>
+              <div className="rounded-md border border-[#D0D5DD] px-3 py-2 text-sm bg-gray-50 whitespace-pre-wrap">
+                <span className="font-medium">Description:</span> {selectedReport.description || "—"}
+              </div>
+            </>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-       {
-        open && (
-          <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-[#F54A0C]">Report Content</DialogTitle>
-        </DialogHeader>
-
-        {/* Reason dropdown */}
-        <div className="rounded-md border border-[#D0D5DD] px-3 py-2 text-sm bg-gray-50">
-          {selectedReport?.reason}
-        </div>
-
-        {/* Description */}
-        <div className="rounded-md border border-[#D0D5DD] px-3 py-2 text-sm bg-gray-50 whitespace-pre-wrap">
-          {selectedReport?.description}
-        </div>
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={()=>setOpen(false)}
-            
-          >
-            Cancel
-          </Button>
-         
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-        )
-       }
+      {/* Delete confirmation */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove report?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this report. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

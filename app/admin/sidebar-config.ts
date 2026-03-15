@@ -14,6 +14,7 @@ export const adminMenu = [
 
   // ===== USER MANAGEMENT =====
   { id: "users", label: "All Users", icon: Users },
+  { id: "leads", label: "Leads", icon: MessageSquare },
   // { id: "role-management", label: "Role Management", icon: Shield },
   { id: "user-verification", label: "User Verification", icon: UserCheck },
   // { id: "user-activity", label: "User Activity", icon: Activity },

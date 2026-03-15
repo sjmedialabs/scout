@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import { timeAgo } from "../times-ago"
 import { authFetch } from "@/lib/auth-fetch";
 import { useRouter } from "next/navigation";
-import { error } from "console";
 import { useAuth } from "@/contexts/auth-context"
 import { Button } from "../ui/button";
 
@@ -116,17 +115,17 @@ const profileRef = useRef<HTMLDivElement>(null);
 
 
   return (
-    <header className="flex items-center justify-between p-2 px-[23px] mb-0 border-b border-border bg-[#fff] ">
+    <header className="flex items-center justify-between min-h-[56px] sm:min-h-[60px] py-2 px-3 sm:px-4 md:px-5 lg:px-6 border-b border-border bg-[#fff]">
       
-      {/* 🔹 Left Section */}
-      <div className="flex items-center gap-3">
-        
-        {/* Mobile Sidebar Button */}
+      {/* Left: hamburger (mobile) */}
+      <div className="flex items-center gap-2">
         <button
+          type="button"
           onClick={onMenuClick}
-          className="lg:hidden"
+          className="lg:hidden flex items-center justify-center min-h-[48px] min-w-[48px] -ml-2 rounded-lg touch-manipulation"
+          aria-label="Open menu"
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="h-6 w-6" />
         </button>
 
         {/* <h1 className="text-lg font-semibold">
@@ -134,31 +133,25 @@ const profileRef = useRef<HTMLDivElement>(null);
         </h1> */}
       </div>
 
-      {/* 🔹 Right Section - Notifications */}
-      <div className="flex flex-row gap-5 items-center">
-        {/*post requirement button */}
+      {/* Right: Post requirement, Notifications, Profile */}
+      <div className="flex flex-row gap-1 sm:gap-2 items-center">
         <div className="hidden lg:block">
           <Button
             size="sm"
-            className={cn(
-              "rounded-2xl text-xs bg-[#2C34A1] text-white border-none hover:bg-[#232a85] flex items-center justify-center",
-             
-            )}
-            onClick={()=>router.push("/client/dashboard/post-requirement")}
-            
+            className="rounded-2xl text-xs bg-[#2C34A1] text-white border-none hover:bg-[#232a85] min-h-[48px] px-4 touch-manipulation"
+            onClick={() => router.push("/client/dashboard/post-requirement")}
           >
-            {/* <Plus className="h-4 w-4" /> */}
-              <span className="ml-2">Post Requirement</span>
+            <span className="ml-2">Post Requirement</span>
           </Button>
-
         </div>
-        {/* Notification symbol */}
-        <div className="relative mt-3  mr-0  " ref={notificationRef}>
-        <button
-          onClick={() => setDropdownOpen(!dropdownOpen)}
-          className="relative cursor-pointer"
-        >
-          <Bell className="h-6 w-6 text-gray-700" />
+        <div className="relative" ref={notificationRef}>
+          <button
+            type="button"
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="relative flex items-center justify-center min-h-[48px] min-w-[48px] rounded-lg touch-manipulation"
+            aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
+          >
+            <Bell className="h-6 w-6 text-gray-700" />
 
           {/* 🔹 Unread Count Badge */}
           {unreadCount > 0 && (
@@ -217,40 +210,48 @@ const profileRef = useRef<HTMLDivElement>(null);
         )}
         </div>
 
-        {/* Profile Dropdown */}
-        <div className="relative  mr-0 " ref={profileRef}>
+        {/* Profile */}
+        <div className="relative" ref={profileRef}>
           <button
+            type="button"
             onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-            className="flex items-center gap-2 cursor-pointer"
+            className="flex items-center justify-center min-h-[48px] min-w-[48px] rounded-full bg-gray-200 hover:bg-gray-300 touch-manipulation"
+            aria-label="Profile menu"
           >
-            <div className="h-9 w-9 rounded-full bg-gray-300 flex items-center justify-center">
-             {/* {seekerData?.image?<img src={seekerData.image} alt="Profile" className="h-8 w-8 rounded-full object-cover" /> : <User className="h-4 w-4 text-gray-700" />} */}
-             <User className="h-5 w-5 text-gray-700" />
-            </div>
+            {/* seekerData?.image ? <img src={seekerData.image} alt="" className="h-8 w-8 rounded-full object-cover" /> : */}
+            <User className="h-5 w-5 text-gray-700" />
           </button>
 
           {profileDropdownOpen && (
             <div className="absolute right-0 mt-3 w-48 bg-white shadow-lg rounded-lg border z-50">
-              <div className="flex flex-row p-4 text-sm border-b hover:bg-gray-50 cursor-pointer" onClick={()=>router.push("/client/dashboard/profile")}>
-                <CircleUserRound className="h-5 w-5 "/>
+              <button
+                type="button"
+                className="flex flex-row items-center min-h-[48px] w-full px-4 text-sm border-b hover:bg-gray-50 cursor-pointer text-left touch-manipulation"
+                onClick={() => { router.push("/client/dashboard/profile"); setProfileDropdownOpen(false); }}
+              >
+                <CircleUserRound className="h-5 w-5 shrink-0" />
                 <span className="ml-2">Profile</span>
-              </div>
+              </button>
               {/* <div className="p-3 text-sm border-b hover:bg-gray-50 cursor-pointer">
                 Settings
               </div> */}
-              <div className="p-4 flex flex-row text-sm border-b hover:bg-gray-50 cursor-pointer" onClick={handleLogout}>
-                <LogOut className="h-5 w-5" color="#FF0000" />
-                <span className="ml-2 text-[#FF0000]">Logout</span>
-              </div>
-
-              {/*Post requirement buttton in the mobile view only */}
-              <div
-                className="p-4 flex flex-row text-sm hover:bg-gray-50 cursor-pointer lg:hidden"
-                onClick={() => router.push("/client/dashboard/post-requirement")}
+              <button
+                type="button"
+                className="flex flex-row items-center min-h-[48px] w-full px-4 text-sm border-b hover:bg-gray-50 cursor-pointer text-left touch-manipulation"
+                onClick={() => { handleLogout(); setProfileDropdownOpen(false); }}
               >
-                <Plus className="h-4 w-4" />
+                <LogOut className="h-5 w-5 shrink-0" color="#FF0000" />
+                <span className="ml-2 text-[#FF0000]">Logout</span>
+              </button>
+
+              <button
+                type="button"
+                className="flex flex-row items-center min-h-[48px] w-full px-4 text-sm hover:bg-gray-50 cursor-pointer text-left lg:hidden touch-manipulation"
+                onClick={() => { router.push("/client/dashboard/post-requirement"); setProfileDropdownOpen(false); }}
+              >
+                <Plus className="h-4 w-4 shrink-0" />
                 <span className="ml-2">Post Requirement</span>
-              </div>
+              </button>
             </div>
           )}
         </div>

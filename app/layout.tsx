@@ -38,7 +38,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} ${plusJakarta.variable}`}>
-      <body className="font-sans antialiased">
+      <body className="font-sans antialiased overflow-x-hidden">
 <ClientLayout>{children}</ClientLayout>
       </body>
     </html>

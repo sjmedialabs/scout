@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import ClientSidebar from "@/components/seeker/side-bar";
-import ClientHeader from "@/components/seeker/clientHeader"; // 👈 import this
+import ClientHeader from "@/components/seeker/clientHeader";
+import { ResponsiveLayout } from "@/components/layout";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 
@@ -43,8 +44,8 @@ export default function ClientDashboardLayout({
             />
 
             {/* Main */}
-            <main className="flex-1 overflow-y-auto px-4 py-3 bg-[#fff]">
-              {children}
+            <main className="flex-1 flex flex-col min-h-0 bg-[#fff]">
+              <ResponsiveLayout>{children}</ResponsiveLayout>
             </main>
           </div>
         </div>

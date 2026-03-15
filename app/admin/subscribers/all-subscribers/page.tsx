@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Calendar, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { MobileFilterBar } from "@/components/layout";
 
 /* ---------------- TYPES ---------------- */
 
@@ -184,58 +185,54 @@ export default function AllSubscribersPage() {
       </div>
 
       {/* FILTERS */}
-      <div className="flex items-center -mb-0 gap-4 w-full overflow-x-auto max-w-[95vw] pb-1">
-
-        {/* Search */}
-        <div className="border rounded-full h-[35px] min-w-[220px] flex-shrink-0 flex-1">
-          <Input
-            placeholder="Search Subscribers"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="rounded-full w-full h-[35px] text-xs placeholder:text-gray-500"
-          />
-        </div>
-
-        {/* Status */}
-        <div className="min-w-[160px] flex-shrink-0">
-          <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="rounded-full h-[40px] text-xs border border-gray-200 w-full">
-              <SelectValue placeholder="All Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Role */}
-        <div className="min-w-[160px] flex-shrink-0">
-          <Select value={role} onValueChange={(v) => setRole(v as any)}>
-            <SelectTrigger className="border border-gray-200 rounded-full h-[40px] text-xs w-full">
-              <SelectValue placeholder="All Roles" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="client">Clients</SelectItem>
-              <SelectItem value="agency">Agencies</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Clear Filters */}
-        <Button
-          onClick={() => {
-            setSearch("");
-            setStatus("all");
-            setRole("all");
-          }}
-          className="btn-blackButton h-[30px]"
+      <div className="w-full pb-1">
+        <MobileFilterBar
+          searchSlot={
+            <Input
+              placeholder="Search Subscribers"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="rounded-full w-full h-[35px] text-xs placeholder:text-gray-500 border border-gray-200"
+            />
+          }
+          activeFilterCount={(status !== "all" ? 1 : 0) + (role !== "all" ? 1 : 0)}
+          sheetTitle="Filter subscribers"
         >
-          Clear Filters
-        </Button>
-
+          <div className="w-full md:w-auto min-w-0 md:min-w-[160px]">
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger className="rounded-full h-[40px] text-xs border border-gray-200 w-full">
+                <SelectValue placeholder="All Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="w-full md:w-auto min-w-0 md:min-w-[160px]">
+            <Select value={role} onValueChange={(v) => setRole(v as any)}>
+              <SelectTrigger className="border border-gray-200 rounded-full h-[40px] text-xs w-full">
+                <SelectValue placeholder="All Roles" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="client">Clients</SelectItem>
+                <SelectItem value="agency">Agencies</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Button
+            onClick={() => {
+              setSearch("");
+              setStatus("all");
+              setRole("all");
+            }}
+            className="btn-blackButton h-[30px] w-full md:w-auto"
+          >
+            Clear Filters
+          </Button>
+        </MobileFilterBar>
       </div>
 
       {/* TABLE */}

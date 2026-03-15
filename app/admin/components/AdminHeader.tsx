@@ -83,12 +83,15 @@ export default function AdminHeader({ onMenuClick }: Props) {
   const unreadCount = notifications.length;
 
   return (
-    <header className="flex items-center justify-between p-4 border-b bg-white sticky top-0 z-40">
-      
-      {/* 🔹 Left Section */}
-      <div className="flex items-center gap-3">
-        <button onClick={onMenuClick} className="lg:hidden">
-          <Menu className="h-5 w-5" />
+    <header className="flex items-center justify-between min-h-[56px] sm:min-h-[60px] py-2 px-3 sm:px-4 md:px-5 lg:px-6 border-b bg-white sticky top-0 z-40">
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={onMenuClick}
+          className="lg:hidden flex items-center justify-center min-h-[48px] min-w-[48px] -ml-2 rounded-lg touch-manipulation"
+          aria-label="Open menu"
+        >
+          <Menu className="h-6 w-6" />
         </button>
 
         {/* <h1 className="text-lg font-semibold text-gray-800">
@@ -96,11 +99,12 @@ export default function AdminHeader({ onMenuClick }: Props) {
         </h1> */}
       </div>
 
-      {/* 🔹 Right Section */}
-      <div className="relative mr-2" ref={dropdownRef}>
+      <div className="relative" ref={dropdownRef}>
         <button
+          type="button"
           onClick={() => setDropdownOpen(!dropdownOpen)}
-          className="relative"
+          className="flex items-center justify-center min-h-[48px] min-w-[48px] rounded-lg touch-manipulation"
+          aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
         >
           <Bell className="h-6 w-6 text-gray-700" />
 

@@ -56,28 +56,27 @@ export function AdminSidebar({
 
   return (
     <>
-      {/* Mobile Overlay */}
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
-          onClick={onMobileToggle}
-        />
-      )}
+      <div
+        aria-hidden="true"
+        className={`
+          fixed inset-0 z-40 lg:hidden transition-opacity duration-300 ease-out
+          ${mobileOpen ? "bg-black/40 opacity-100" : "bg-transparent opacity-0 pointer-events-none"}
+        `}
+        onClick={onMobileToggle}
+      />
 
-     <aside
-  className={`
-    fixed top-0 left-0 h-full z-50
-    bg-[#3C3A3E] text-[#fff] border-r
-    flex flex-col
-    transition-all duration-300
-
-    ${collapsed ? "w-20" : "w-64"}
-
-    lg:translate-x-0
-    ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
-    lg:translate-x-0
-  `}
->
+      <aside
+        className={`
+          fixed top-0 left-0 h-full z-50
+          bg-[#3C3A3E] text-[#fff] border-r
+          flex flex-col
+          transform transition-[transform] duration-300 ease-out will-change-transform
+          ${collapsed ? "lg:w-20" : "lg:w-64"}
+          w-[min(80vw,320px)] sm:w-64
+          lg:translate-x-0
+          ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
+        `}
+      >
   {/* HEADER (Fixed) */}
   <div className="px-3 py-2 border-b flex justify-between items-center shrink-0">
     {!collapsed && (
@@ -87,9 +86,13 @@ export function AdminSidebar({
        <img src="/scoutFooterLogo.png" className="h-[45px] w-[120px]"/>
     )}
 
-    {/* Desktop Chevron */}
-    <div className="hidden lg:block items-center mt-5">
-      <button onClick={onCollapseToggle} className="cursor-pointer">
+    <div className="hidden lg:flex items-center">
+      <button
+        type="button"
+        onClick={onCollapseToggle}
+        className="flex items-center justify-center min-h-[48px] min-w-[48px] rounded-lg touch-manipulation"
+        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+      >
         {collapsed ? (
           <ChevronRight className="w-5 h-5" />
         ) : (
@@ -98,9 +101,13 @@ export function AdminSidebar({
       </button>
     </div>
 
-    {/* Mobile Close */}
     <div className="lg:hidden">
-      <button onClick={onMobileToggle}>
+      <button
+        type="button"
+        onClick={onMobileToggle}
+        className="flex items-center justify-center min-h-[48px] min-w-[48px] rounded-lg touch-manipulation"
+        aria-label="Close menu"
+      >
         <X className="w-5 h-5" />
       </button>
     </div>
@@ -124,21 +131,17 @@ export function AdminSidebar({
             key={item.id}
             href={`/admin/${item.id}`}
             onClick={() => {
-              if (window.innerWidth < 1024) {
-                onMobileToggle(); 
+              if (typeof window !== "undefined" && window.innerWidth < 1024) {
+                onMobileToggle();
               }
             }}
             className={`
-              flex items-center gap-3 px-3 py-2 text-sm
-              ${
-                isActive
-                  ? "text-[#F54A0C] rounded-[8px]"
-                  : "text-[#fff] rounded-[8px]"
-              }
+              flex items-center gap-3 min-h-[48px] px-3 py-2 text-sm rounded-[8px] touch-manipulation
+              ${isActive ? "text-[#F54A0C]" : "text-[#fff]"}
             `}
           >
-            <item.icon className="w-4 h-4" />
-            {!collapsed && <span>{item.label}</span>}
+            <item.icon className="w-5 h-5 shrink-0" />
+            {!collapsed && <span className="text-left">{item.label}</span>}
           </Link>
         );
       })}
@@ -150,16 +153,15 @@ export function AdminSidebar({
     <Button
       variant="outline"
       className="
-        flex items-center justify-center gap-2
-        px-2 h-[30px] w-full
-        text-white bg-orange-600
+        flex items-center justify-center gap-2 min-h-[48px] w-full
+        px-2 text-white bg-orange-600
         hover:bg-orange-600 hover:text-white
-        rounded-full border-none
+        rounded-full border-none touch-manipulation
         active:bg-orange-500
       "
       onClick={handleLogout}
     >
-      <LogOut className="w-3 h-3" />
+      <LogOut className="w-4 h-4 shrink-0" />
       {!collapsed && (
         <span className="text-xs font-medium">Logout</span>
       )}

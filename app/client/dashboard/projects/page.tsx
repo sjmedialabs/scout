@@ -112,6 +112,7 @@ import {
 } from "@/components/ui/popover";
 import { authFetch } from "@/lib/auth-fetch";
 import ServiceDropdown from "@/components/select-category-filter";
+import { MobileFilterBar } from "@/components/layout";
 const statusOptions = [
   "All",
   "UnderReview",
@@ -653,13 +654,9 @@ const paginatedRequirements = filteredRequirements?.slice(
         </Button> */}
       </div>
 
-        <div className="w-full rounded-xl max-w-[96vw] overflow-x-auto">
-          {/* search filters section*/}
-        <div className="w-full overflow-x-auto">
-          <div className="flex flex-nowrap items-center gap-2 xl:gap-3 min-w-max">
-
-            {/* Search */}
-            <div className="relative min-w-[200px] lg:min-w-[220px] w-full">
+        <MobileFilterBar
+          searchSlot={
+            <div className="relative w-full">
               <input
                 type="text"
                 placeholder="Search projects..."
@@ -667,7 +664,6 @@ const paginatedRequirements = filteredRequirements?.slice(
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full h-[35px] placeholder:text-gray-500 placeholder:text-sm border border-[#D0D5DD] rounded-full pl-10 pr-4 text-sm focus:outline-none"
               />
-
               <svg
                 className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
                 fill="none"
@@ -679,94 +675,94 @@ const paginatedRequirements = filteredRequirements?.slice(
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
             </div>
-
-            {/* Status Filter */}
-            <div className="min-w-[160px]">
-              <Select
-                value={selectedStatus}
-                onValueChange={(value) => setSelectedStatus(value)}
+          }
+          activeFilterCount={
+            (selectedStatus && selectedStatus !== "All" ? 1 : 0) +
+            (selectedCategory ? 1 : 0) +
+            (startDate ? 1 : 0) +
+            (endDate ? 1 : 0)
+          }
+          sheetTitle="Filter projects"
+        >
+          {/* Status */}
+          <div className="min-w-[160px] w-full md:w-auto">
+            <Select value={selectedStatus} onValueChange={(value) => setSelectedStatus(value)}>
+              <SelectTrigger
+                className={`h-[35px] data-[placeholder]:text-gray-500 w-full border border-[#D0D5DD] rounded-full px-3 text-sm ${
+                  !selectedStatus ? "text-gray-500" : "text-black"
+                }`}
               >
-                <SelectTrigger
-                  className={`h-[35px] data-[placeholder]:text-gray-500 w-full border border-[#D0D5DD] rounded-full px-3 text-sm ${
-                    !selectedStatus ? "text-gray-500" : "text-black"
-                  }`}
-                >
-                  <SelectValue placeholder="Select Status" />
-                </SelectTrigger>
-
-                <SelectContent>
-                  <SelectItem value="All">All</SelectItem>
-                  <SelectItem value="UnderReview">Under Review</SelectItem>
-                  <SelectItem value="NotApproved">Rejected</SelectItem>
-                  <SelectItem value="Open">Open</SelectItem>
-                  <SelectItem value="Closed">Closed</SelectItem>
-                  <SelectItem value="Allocated">Accepted</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Category */}
-            <div className="min-w-[180px]">
-              <ServiceDropdown
-                value={selectedCategory}
-                onChange={(value) => setSelectedCategory(value)}
-                triggerClassName="border border-[#D0D5DD] rounded-full w-full h-[35px]"
-                triggerSpanClassName="text-[#98A0B4] text-sm"
-              />
-            </div>
-
-            {/* Start Date */}
-            <div className="min-w-[150px]">
-              <input
-                type={startInputType}
-                value={startDate}
-                max={endDate}
-                placeholder="Start date"
-                onFocus={() => setStartInputType("date")}
-                onBlur={() => {
-                  if (!startDate) setStartInputType("text");
-                }}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-full max-w-[160px] h-[35px] border border-[#D0D5DD] rounded-full px-3 text-sm placeholder:text-gray-500 focus:outline-none"
-              />
-            </div>
-
-            {/* End Date */}
-            <div className="min-w-[150px]">
-              <input
-                type={endInputType}
-                value={endDate}
-                min={startDate}
-                placeholder="End date"
-                onFocus={() => setEndInputType("date")}
-                onBlur={() => {
-                  if (!endDate) setEndInputType("text");
-                }}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="w-full max-w-[160px] h-[35px] border border-[#D0D5DD] rounded-full px-3 text-sm placeholder:text-gray-500 focus:outline-none"
-              />
-            </div>
-
-            {/* Clear Button */}
-            <div className="min-w-[80px]">
-              <Button
-                className="btn-blackButton h-[33px] w-full"
-                onClick={() => {
-                  setSearchTerm("");
-                  setSelectedStatus("");
-                  setSelectedCategory("");
-                  setStartDate("");
-                  setStartInputType("text");
-                  setEndDate("");
-                  setEndInputType("text");
-                }}
-              >
-                Clear
-              </Button>
-            </div>
-
+                <SelectValue placeholder="Select Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">All</SelectItem>
+                <SelectItem value="UnderReview">Under Review</SelectItem>
+                <SelectItem value="NotApproved">Rejected</SelectItem>
+                <SelectItem value="Open">Open</SelectItem>
+                <SelectItem value="Closed">Closed</SelectItem>
+                <SelectItem value="Allocated">Accepted</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        </div>
+
+          {/* Category */}
+          <div className="min-w-[180px] w-full md:w-auto">
+            <ServiceDropdown
+              value={selectedCategory}
+              onChange={(value) => setSelectedCategory(value)}
+              triggerClassName="border border-[#D0D5DD] rounded-full w-full h-[35px]"
+              triggerSpanClassName="text-[#98A0B4] text-sm"
+            />
+          </div>
+
+          {/* Start Date */}
+          <div className="min-w-[150px] w-full md:w-auto">
+            <input
+              type={startInputType}
+              value={startDate}
+              max={endDate}
+              placeholder="Start date"
+              onFocus={() => setStartInputType("date")}
+              onBlur={() => {
+                if (!startDate) setStartInputType("text");
+              }}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="w-full max-w-[160px] md:max-w-none h-[35px] border border-[#D0D5DD] rounded-full px-3 text-sm placeholder:text-gray-500 focus:outline-none"
+            />
+          </div>
+
+          {/* End Date */}
+          <div className="min-w-[150px] w-full md:w-auto">
+            <input
+              type={endInputType}
+              value={endDate}
+              min={startDate}
+              placeholder="End date"
+              onFocus={() => setEndInputType("date")}
+              onBlur={() => {
+                if (!endDate) setEndInputType("text");
+              }}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="w-full max-w-[160px] md:max-w-none h-[35px] border border-[#D0D5DD] rounded-full px-3 text-sm placeholder:text-gray-500 focus:outline-none"
+            />
+          </div>
+
+          {/* Clear */}
+          <Button
+            className="btn-blackButton h-[33px] w-full md:w-auto md:min-w-[80px]"
+            onClick={() => {
+              setSearchTerm("");
+              setSelectedStatus("");
+              setSelectedCategory("");
+              setStartDate("");
+              setStartInputType("text");
+              setEndDate("");
+              setEndInputType("text");
+            }}
+          >
+            Clear
+          </Button>
+        </MobileFilterBar>
         {/* <Button className="bg-black rounded-[8px] h-[30px] w-[60px] mt-1" onClick={()=>{
           setSearchTerm("");
          setSelectedStatus(""); // fixed
@@ -1146,9 +1142,6 @@ const paginatedRequirements = filteredRequirements?.slice(
           </div>
         )}
       </div>
-        
-      </div>
-      
 
       {showCreateProject && (
         <Dialog open={showCreateProject} onOpenChange={setShowCreateProject}>

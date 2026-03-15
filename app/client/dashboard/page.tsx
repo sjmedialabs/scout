@@ -117,6 +117,7 @@ import { FaArrowRightLong } from "react-icons/fa6";
 
 
 import StatCard from "@/components/seeker/dashboardCard";
+import { ResponsiveContainer, ResponsiveGrid } from "@/components/layout";
 import { Check, Clock } from "lucide-react"
 
 const token =
@@ -872,10 +873,7 @@ export default function ClientDashboard() {
 
   return (
     <div className="flex h-full">
-      {/* Left Sidebar */}
- 
-      {/* Main Content */}
-      <div className="flex-1  overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none]  [&::-webkit-scrollbar]:hidden">
+      <ResponsiveContainer fullWidth className="flex-1 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         <div className="space-y-2">
           <div className="border-b border-[#E5E7EB] pb-2">
             <h1 className="text-2xl font-semibold text-[#111827] flex items-center gap-2">
@@ -887,7 +885,7 @@ export default function ClientDashboard() {
           </div>
 
           {/* Summary cards row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
+          <ResponsiveGrid colsSm={1} colsMd={2} colsLg={4} gap="gap-3" className="mt-4">
             <Card className="bg-white rounded-2xl shadow-sm border border-[#E5E7EB]">
               <CardHeader className="flex flex-row -mt-3 items-center justify-between space-y-0">
                 <CardTitle className="text-sm font-semibold text-[#111827]">
@@ -903,7 +901,7 @@ export default function ClientDashboard() {
                 </p>
                 <Button
                   variant="outline"
-                  className="btn-blackButton h-[30px]"
+                  className="btn-blackButton touch-manipulation"
                   onClick={() => router.push("/client/dashboard/projects")}
                 >
                   Total Projects →
@@ -926,7 +924,7 @@ export default function ClientDashboard() {
                 </p>
                 <Button
                   variant="outline"
-                  className="btn-blackButton h-[30px]"
+                  className="btn-blackButton touch-manipulation"
                   onClick={() => router.push("/client/dashboard/proposals")}
                 >
                   Total Proposals →
@@ -949,7 +947,7 @@ export default function ClientDashboard() {
                 </p>
                 <Button
                   variant="outline"
-                  className="btn-blackButton h-[30px]"
+                  className="btn-blackButton touch-manipulation"
                   onClick={() =>
                     router.push("/client/dashboard/proposals?status=shortlisted")
                   }
@@ -974,7 +972,7 @@ export default function ClientDashboard() {
                 </p>
                 <Button
                   variant="outline"
-                  className="btn-blackButton h-[30px]"
+                  className="btn-blackButton touch-manipulation"
                   onClick={() =>
                     router.push("/client/dashboard/proposals?status=accepted")
                   }
@@ -983,7 +981,7 @@ export default function ClientDashboard() {
                 </Button>
               </CardContent>
             </Card>
-          </div>
+          </ResponsiveGrid>
 
           {/* Projects overview list — max 10 here, rest via View All */}
           <div className="mt-1 space-y-2">
@@ -1363,7 +1361,7 @@ export default function ClientDashboard() {
             </div>
           </div> */}
         </div>
-      </div>
+      </ResponsiveContainer>
 
       {showDetailsModal && selectedRequirement && (
         <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>

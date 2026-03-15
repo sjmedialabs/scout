@@ -17,6 +17,7 @@ import RatingStars from "@/components/rating-star";
 import ServiceDropdown from "@/components/select-category-filter";
 import { authFetch } from "@/lib/auth-fetch";
 import { useAuth } from "@/contexts/auth-context";
+import { MobileFilterBar } from "@/components/layout";
 
 export default function ServicesPage() {
   const { user, loading } = useAuth();
@@ -236,119 +237,52 @@ const paginatedProviders = filteredProviders.slice(
       <h1 className="font-bold text-[#fa3200] text-xl">Find Agencies</h1>
       </div>
       {/* ---------------- FILTER BAR ---------------- */}
-
-<div className="flex sm:gap-2 gap-4 mb-2 overflow-x-auto max-w-[96vw] w-full">
-
-  {/* CATEGORY */}
-  <div className="lg:min-w-[170px]">
-  <ServiceDropdown
-    value={selectedCategory}
-    onChange={(v) => setSelectedCategory(v)}
-    placeholder="Category"
-   triggerClassName="
-             mt-0
-             rounded-xl
-             max-h-[30px]
-            bg-[#F3F1FA] cursor-pointer
-            border border-[#E3E1F3]
-            text-[#3A3A55]
-           
-          "
-    triggerSpanClassName="text-gray-500 text-xs"
-    hoverClassName="bg-blue-50 text-[#3c41c6] hover:bg-blue-100"
-  />
-  </div>
-
-
-  {[
-    {
-      value: ratingFilter,
-      set: setRatingFilter,
-      placeholder: "Rating",
-      icon: <Star size={16} className="text-[#9B96C8]" />,
-    },
-    {
-      value: priceFilter,
-      set: setPriceFilter,
-      placeholder: "Price",
-      icon: <DollarSign size={16} className="text-[#9B96C8]" />,
-    },
-    {
-      value: projectFilter,
-      set: setProjectFilter,
-      placeholder: "Projects",
-      icon: <Layers size={16} className="text-[#9B96C8]" />,
-    },
-    
-  ].map((f, i) => (
-    <Select key={i} value={f.value} onValueChange={f.set}>
-        <SelectTrigger
- className="
-             rounded-xl
-             max-h-[30px]
-            bg-[#F3F1FA] cursor-pointer
-            border border-[#E3E1F3]
-            text-[#3A3A55]
-            px-3 text-xs
-            data-[placeholder]:text-gray-500
-            shadow-sm
-            [&>span]:flex
-            [&>span]:items-center
-            [&>span]:gap-1.5
-          "
->
-  <span>
-    {f.icon}
-    <SelectValue placeholder={f.placeholder} />
-  </span>
-</SelectTrigger>
-
-      <SelectContent>
-        <SelectItem value="high-to-low">High → Low</SelectItem>
-        <SelectItem value="low-to-high">Low → High</SelectItem>
-      </SelectContent>
-    </Select>
-  ))}
-
-  
-     <Select
-      value={teamSizeFilter}
-      onValueChange={(value) => setTeamSizeFilter(value)}>
-        <SelectTrigger
-          className="
-             rounded-xl
-             max-h-[30px]
-            bg-[#F3F1FA] cursor-pointer
-            border border-[#E3E1F3]
-            text-[#3A3A55]
-            px-3 text-xs
-            data-[placeholder]:text-gray-500
-            shadow-sm
-            [&>span]:flex
-            [&>span]:items-center
-            [&>span]:gap-1.5
-          "
+      <div className="mb-2 w-full">
+        <MobileFilterBar
+          activeFilterCount={
+            (selectedCategory ? 1 : 0) +
+            (ratingFilter ? 1 : 0) +
+            (priceFilter ? 1 : 0) +
+            (projectFilter ? 1 : 0) +
+            (teamSizeFilter ? 1 : 0)
+          }
+          sheetTitle="Filter agencies"
         >
-          <span>
-            <Users size={16} className="text-[#9B96C8]" />
-            <SelectValue placeholder="Team" />
-          </span>
-        </SelectTrigger>
-
+          <div className="w-full md:w-auto lg:min-w-[170px]">
+            <ServiceDropdown
+              value={selectedCategory}
+              onChange={(v) => setSelectedCategory(v)}
+              placeholder="Category"
+              triggerClassName="mt-0 rounded-xl max-h-[30px] bg-[#F3F1FA] cursor-pointer border border-[#E3E1F3] text-[#3A3A55] w-full"
+              triggerSpanClassName="text-gray-500 text-xs"
+              hoverClassName="bg-blue-50 text-[#3c41c6] hover:bg-blue-100"
+            />
+          </div>
+          {[
+            { value: ratingFilter, set: setRatingFilter, placeholder: "Rating", icon: <Star size={16} className="text-[#9B96C8]" /> },
+            { value: priceFilter, set: setPriceFilter, placeholder: "Price", icon: <DollarSign size={16} className="text-[#9B96C8]" /> },
+            { value: projectFilter, set: setProjectFilter, placeholder: "Projects", icon: <Layers size={16} className="text-[#9B96C8]" /> },
+          ].map((f, i) => (
+            <Select key={i} value={f.value} onValueChange={f.set}>
+              <SelectTrigger className="rounded-xl max-h-[30px] bg-[#F3F1FA] cursor-pointer border border-[#E3E1F3] text-[#3A3A55] px-3 text-xs data-[placeholder]:text-gray-500 shadow-sm w-full md:w-auto [&>span]:flex [&>span]:items-center [&>span]:gap-1.5">
+                <span>{f.icon}<SelectValue placeholder={f.placeholder} /></span>
+              </SelectTrigger>
               <SelectContent>
-                {
-                  employeeSizes.map((size) => (
-                  <SelectItem key={size} value={size}>
-                      {size}
-                  </SelectItem>
-                    ))
-                            
-                  }
+                <SelectItem value="high-to-low">High → Low</SelectItem>
+                <SelectItem value="low-to-high">Low → High</SelectItem>
               </SelectContent>
             </Select>
-            
-
-          {/* CLEAR FILTER */}
+          ))}
+          <Select value={teamSizeFilter} onValueChange={(value) => setTeamSizeFilter(value)}>
+            <SelectTrigger className="rounded-xl max-h-[30px] bg-[#F3F1FA] cursor-pointer border border-[#E3E1F3] text-[#3A3A55] px-3 text-xs data-[placeholder]:text-gray-500 shadow-sm w-full md:w-auto [&>span]:flex [&>span]:items-center [&>span]:gap-1.5">
+              <span><Users size={16} className="text-[#9B96C8]" /><SelectValue placeholder="Team" /></span>
+            </SelectTrigger>
+            <SelectContent>
+              {employeeSizes.map((size) => (
+                <SelectItem key={size} value={size}>{size}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Button
             onClick={() => {
               setSelectedCategory(null);
@@ -357,14 +291,12 @@ const paginatedProviders = filteredProviders.slice(
               setProjectFilter("");
               setTeamSizeFilter("");
             }}
-            className="
-             btn-blackButton
-              h-[30px]
-            "
+            className="btn-blackButton h-[30px] w-full md:w-auto"
           >
             Clear
           </Button>
-        </div>
+        </MobileFilterBar>
+      </div>
 
       {/* ---------------- PROVIDER LIST ---------------- */}
       <div className="grid grid-cols-1 mr-3 md:mr-0 md:grid-cols-2 lg:grid-cols-4 gap-3 ">

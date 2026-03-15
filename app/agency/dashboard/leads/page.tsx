@@ -42,7 +42,8 @@ import { useState,useEffect,useMemo,useRef } from "react"
 import { Lead,Requirement } from "@/lib/types"
 import { authFetch } from "@/lib/auth-fetch"
 import { BrowseRequirements } from "@/components/provider/browse-requirements";
-import { useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation";
+import { MobileFilterBar } from "@/components/layout"
 
 const LeadGenerationPage = () => {
   const searchParams = useSearchParams();
@@ -319,85 +320,79 @@ Dropped Leads
 
 </div>
             {/* 🔹 Filters */}
-            <div className=" mb-4 max-w-[95vw] overflow-x-auto">
-                  <div className="flex items-center gap-3 ">
-
-                      {/* Search */}
-                      <Input
-                      placeholder="Search name or email..."
-                      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-full placeholder:text-gray-400"
-                      value={search}
-                      onChange={(e) => {
-                          setSearch(e.target.value)
-                          setCurrentPage(1)
-                      }}
-                      />
-
-                      {/* Status Filter */}
-                      <Select
-                      value={statusFilter}
-                      onValueChange={(value) => {
-                          setStatusFilter(value === "all" ? "" : value)
-                          setCurrentPage(1)
-                      }}
-                      
-                      >
-                      <SelectTrigger className="h-9 min-w-[150px] max-w-[220px] data-[placeholder]:text-gray-400 border border-gray-400 rounded-full text-[#000]">
-                          <SelectValue placeholder="Filter by Status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                          <SelectItem value="all">All</SelectItem>
-                          <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="contacted">Contacted</SelectItem>
-                          <SelectItem value="won">Won</SelectItem>
-                          <SelectItem value="dropped">Dropped</SelectItem>
-                      </SelectContent>
-                      </Select>
-
-                      {/* Start Date */}
-                      <Input
-                      type={startDate ? "date" : "text"}
-                      placeholder="Filter by Start Date"
-                      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-full placeholder:text-gray-400"
-                      value={startDate}
-                      onFocus={(e) => (e.target.type = "date")}
-                      onBlur={(e) => {
-                          if (!startDate) e.target.type = "text"
-                      }}
-                      onChange={(e) => setStartDate(e.target.value)}
-                      />
-
-                      {/* End Date */}
-                      <Input
-                      type={endDate ? "date" : "text"}
-                      placeholder="Filter by End Date"
-                      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-full placeholder:text-gray-400"
-                      value={endDate}
-                      onFocus={(e) => (e.target.type = "date")}
-                      onBlur={(e) => {
-                          if (!endDate) e.target.type = "text"
-                      }}
-                      onChange={(e) => setEndDate(e.target.value)}
-                      />
-
-                      {/* Clear Button */}
-                      <Button
-                       className="
-                        h-9 btn-blackButton rounded-xl
-                        
-                      "
-                      onClick={() => {
-                          setSearch("")
-                          setStatusFilter("")
-                          setStartDate("")
-                          setEndDate("")
-                      }}
-                      >
-                      Clear
-                      </Button>
-
-                  </div>
-              </div>
+            <div className="mb-4 w-full">
+              <MobileFilterBar
+                searchSlot={
+                  <Input
+                    placeholder="Search name or email..."
+                    className="h-9 w-full border border-gray-400 rounded-full placeholder:text-gray-400"
+                    value={search}
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                }
+                activeFilterCount={
+                  (statusFilter ? 1 : 0) + (startDate ? 1 : 0) + (endDate ? 1 : 0)
+                }
+                sheetTitle="Filter leads"
+              >
+                <div className="w-full md:w-auto min-w-0">
+                  <Select
+                    value={statusFilter || "all"}
+                    onValueChange={(value) => {
+                      setStatusFilter(value === "all" ? "" : value);
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <SelectTrigger className="h-9 w-full md:min-w-[150px] md:max-w-[220px] data-[placeholder]:text-gray-400 border border-gray-400 rounded-full text-[#000]">
+                      <SelectValue placeholder="Filter by Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="contacted">Contacted</SelectItem>
+                      <SelectItem value="won">Won</SelectItem>
+                      <SelectItem value="dropped">Dropped</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Input
+                  type={startDate ? "date" : "text"}
+                  placeholder="Filter by Start Date"
+                  className="h-9 w-full md:min-w-[150px] md:max-w-[220px] border border-gray-400 rounded-full placeholder:text-gray-400"
+                  value={startDate}
+                  onFocus={(e) => (e.target.type = "date")}
+                  onBlur={(e) => {
+                    if (!startDate) e.target.type = "text";
+                  }}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+                <Input
+                  type={endDate ? "date" : "text"}
+                  placeholder="Filter by End Date"
+                  className="h-9 w-full md:min-w-[150px] md:max-w-[220px] border border-gray-400 rounded-full placeholder:text-gray-400"
+                  value={endDate}
+                  onFocus={(e) => (e.target.type = "date")}
+                  onBlur={(e) => {
+                    if (!endDate) e.target.type = "text";
+                  }}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+                <Button
+                  className="h-9 btn-blackButton rounded-xl w-full md:w-auto"
+                  onClick={() => {
+                    setSearch("");
+                    setStatusFilter("");
+                    setStartDate("");
+                    setEndDate("");
+                  }}
+                >
+                  Clear
+                </Button>
+              </MobileFilterBar>
+            </div>
 
             {/* 🔹 Table */}
             <div className="bg-white rounded-lg  shadow-sm max-w-[95vw] overflow-x-auto overflow-y-visible">

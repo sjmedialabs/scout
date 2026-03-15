@@ -15,7 +15,7 @@ const ReportedContentSchema = new Schema(
 
     status: {
       type: String,
-      enum: ["pending", "reviewed", "resolved"],
+      enum: ["pending", "reviewed", "resolved", "dismissed"],
       default: "pending",
     },
 
