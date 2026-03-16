@@ -165,6 +165,8 @@ export default function MessagesPage() {
   const [isMobile, setIsMobile] = useState(false);
 const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
 
+console.log("Active Conversation is::::",dynamicActiveConversation);
+
   const [resLoading, setResLoading] = useState(false);
   const [chatLaoding, setChatLoading] = useState(false);
   const [sendMsgLoading, setSendMsgLoading] = useState(false);
@@ -1174,7 +1176,7 @@ const toggleFavorite = (conversationId: string) => {
             </div>
           )}
         </>
-      )}
+      )} 
     </div>
 
     {/* Modal */}
@@ -1183,9 +1185,9 @@ const toggleFavorite = (conversationId: string) => {
         open={open}
         onClose={() => setOpen(false)}
         reportedTo={`${
-          filteredDynamicConversation[0].participantsAre[0] === user.id
-            ? filteredDynamicConversation[0].participantsAre[1]
-            : filteredDynamicConversation[0].participantsAre[0]
+          dynamicActiveConversation.participantsAre[0] === user.id
+            ? dynamicActiveConversation.participantsAre[1]
+            : dynamicActiveConversation.participantsAre[0]
         }`}
       />
     )}

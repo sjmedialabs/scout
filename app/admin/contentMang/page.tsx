@@ -191,7 +191,7 @@ const isValidPhone = (phone) => {
  
 
       <Tabs defaultValue="home" className="w-full">
-         <div className="sticky top-16  bg-white pb-3">
+         <div className="sticky  bg-white pb-3">
           <div className="flex flex-row justify-between items-center">
             <h1 className="text-xl font-bold text-orangeButton">
               CMS Management
