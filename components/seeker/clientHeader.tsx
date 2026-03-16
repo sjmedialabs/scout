@@ -138,7 +138,7 @@ const profileRef = useRef<HTMLDivElement>(null);
         <div className="hidden lg:block">
           <Button
             size="sm"
-            className="rounded-2xl text-xs bg-[#2C34A1] text-white border-none hover:bg-[#232a85] min-h-[48px] px-4 touch-manipulation"
+            className="btn-blackButton h-[40px]"
             onClick={() => router.push("/client/dashboard/post-requirement")}
           >
             <span className="ml-2">Post Requirement</span>

@@ -391,213 +391,213 @@ const getStatusText = (status: string) => {
 
      {/* All Projects */}
       {projectTab === "all" && (
-  <div>
-    {allProjects.length !== 0 ? (
-      <div className="space-y-2 grid grid-cols-1 gap-4">
-        {paginatedAllProjects.map((project) => (
-          <Card
-            key={project.id}
-            className="rounded-2xl h-[100%] p-1 shadow-sm transition hover:shadow-md bg-white"
-          >
-            <CardContent className="p-3">
-
-              {/* EXACT same UI as active project card */}
-
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="font-semibold text-gray-800 text-base">
-                    {project.requirement.title}
-                  </h3>
-                  <p className="text-xs text-gray-500">
-                    {project.client.name} • {project.client.companyName}
-                  </p>
-                </div>
-
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
-                    project.status === "accepted"
-                      ? "bg-green-100 text-green-600"
-                      : "bg-green-100 text-green-600"
-                  }`}
+        <div>
+          {allProjects.length !== 0 ? (
+            <div className="space-y-2 grid grid-cols-1 gap-4">
+              {paginatedAllProjects.map((project) => (
+                <Card
+                  key={project.id}
+                  className="rounded-2xl h-[100%] p-1 shadow-sm transition hover:shadow-md bg-white"
                 >
-                  {project.status === "accepted" ? "Active" : "Completed"}
-                </span>
-              </div>
+                  <CardContent className="p-3">
 
-              <div className=" border-gray-200 my-1" />
+                    {/* EXACT same UI as active project card */}
 
-              {/* Budget + Timeline */}
-              <div className="flex flex-row justify-between flex-wrap gap-2 items-center">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-semibold text-gray-800 text-base">
+                          {project.requirement.title}
+                        </h3>
+                        <p className="text-xs text-gray-500">
+                          {project.client.name} • {project.client.companyName}
+                        </p>
+                      </div>
 
-                <div className="flex items-center gap-2">
-                  <div className="p-1 rounded-full bg-[#F54A0C]">
-                    <DollarSign size={12} className="text-white" />
-                  </div>
-                  <span>
-                    ${project.proposedBudget.toLocaleString()}
-                  </span>
-                </div>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
+                          project.status === "accepted"
+                            ? "bg-green-100 text-green-600"
+                            : "bg-green-100 text-green-600"
+                        }`}
+                      >
+                        {project.status === "accepted" ? "Active" : "Completed"}
+                      </span>
+                    </div>
 
-                <div className="flex items-center gap-2">
-                  <div className="p-1 rounded-full bg-[#F54A0C]">
-                    <Calendar size={12} className="text-white" />
-                  </div>
-                  <span>{project.proposedTimeline}</span>
-                </div>
+                    <div className=" border-gray-200 my-1" />
 
-                <div className="flex items-center gap-2">
-                  <div className="p-1 rounded-full bg-[#F54A0C]">
-                    <Tag size={12} className="text-white" />
-                  </div>
-                  <span>{project.milestones.length} Milestones</span>
-                </div>
+                    {/* Budget + Timeline */}
+                    <div className="flex flex-row justify-between flex-wrap gap-2 items-center">
 
-              </div>
+                      <div className="flex items-center gap-2">
+                        <div className="p-1 rounded-full bg-[#F54A0C]">
+                          <DollarSign size={12} className="text-white" />
+                        </div>
+                        <span>
+                          ${project.proposedBudget.toLocaleString()}
+                        </span>
+                      </div>
 
-              <div className=" border-gray-200 my-0" />
+                      <div className="flex items-center gap-2">
+                        <div className="p-1 rounded-full bg-[#F54A0C]">
+                          <Calendar size={12} className="text-white" />
+                        </div>
+                        <span>{project.proposedTimeline}</span>
+                      </div>
 
-              {/* Progress */}
-              <div>
-                <div className="flex justify-end text-xs text-gray-500 mb-1">
-                  <span>
-                    {calculateProgress(project.milestones) || 0}% Complete
-                  </span>
-                </div>
+                      <div className="flex items-center gap-2">
+                        <div className="p-1 rounded-full bg-[#F54A0C]">
+                          <Tag size={12} className="text-white" />
+                        </div>
+                        <span>{project.milestones.length} Milestones</span>
+                      </div>
 
-                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-[#6366F1] transition-all duration-500 rounded-full"
-                    style={{
-                      width: `${calculateProgress(project.milestones) || 0}%`,
-                    }}
-                  />
-                </div>
-              </div>
+                    </div>
 
-              {/* Milestones */}
-              <div className="mt-3 flex flex-wrap gap-2">
-                {project.milestones.map((m, i) => (
-                  <span
-                    key={i}
-                    className={`px-4 py-1 rounded-full text-xs border ${
-                      m?.completed
-                        ? "bg-gray-100 text-gray-400"
-                        : "bg-white text-gray-900"
-                    }`}
-                  >
-                    {m.title}
-                  </span>
-                ))}
-              </div>
-              {/* Buttons */}
-<div className="mt-2 -mb-3 flex flex-wrap gap-3">
+                    <div className=" border-gray-200 my-0" />
 
-  <Button
-    className="btn-blackButton h-[25px] text-[12px]!"
-    onClick={() => handleMessageClient(project)}
-  >
-    <MessageSquare className="h-3 w-3" />
-    Message Client
-  </Button>
+                    {/* Progress */}
+                    <div>
+                      <div className="flex justify-end text-xs text-gray-500 mb-1">
+                        <span>
+                          {calculateProgress(project.milestones) || 0}% Complete
+                        </span>
+                      </div>
 
-  <Button
-    variant="outline"
-    className="h-[25px] primary-button"
-    onClick={() =>
-      router.push(`/agency/dashboard/proposals/${project.id}`)
-    }
-  >
-    <Eye className="h-3 w-3" />
-    View Details
-  </Button>
+                      <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-[#6366F1] transition-all duration-500 rounded-full"
+                          style={{
+                            width: `${calculateProgress(project.milestones) || 0}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
 
-  {/* ACTIVE PROJECT BUTTONS */}
-  {project.status === "accepted" && (
-    <>
-      <Button
-        variant="outline"
-        className="btn-blackButton h-[25px]"
-        onClick={() => {
-          setSelectedProject(project)
-          setMilestonesDraft(
-            project.milestones.map((m: any) => ({
-              title: m.title,
-              description: m.description,
-              amount: m.amount,
-              duration: m.duration,
-              completed: m.completed ?? false,
-              approvalStatus: m.approvalStatus || "pending",
-              deliverableUrl: m.deliverableUrl,
-              deliverableDocuments: m.deliverableDocuments || [],
-              id: m._id
-            })),
-          )
-          setIsProgressModalOpen(true)
-        }}
-      >
-        <Edit className="h-3 w-3 " />
-        Update Progress
-      </Button>
+                    {/* Milestones */}
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {project.milestones.map((m, i) => (
+                        <span
+                          key={i}
+                          className={`px-4 py-1 rounded-full text-xs border ${
+                            m?.completed
+                              ? "bg-gray-100 text-gray-400"
+                              : "bg-white text-gray-900"
+                          }`}
+                        >
+                          {m.title}
+                        </span>
+                      ))}
+                    </div>
+                    {/* Buttons */}
+      <div className="mt-2 -mb-3 flex flex-wrap gap-3">
 
-      <Button
-        variant="outline"
-        className="rounded-full h-[25px] w-[130px] text-xs bg-gray-200"
-        onClick={() => {
-          setSelectedProject(project);
-          setIsAddMilestoneOpen(true);
-        }}
-      >
-        + Add Milestone
-      </Button>
-    </>
-  )}
+        <Button
+          className="btn-blackButton h-[25px] text-[12px]!"
+          onClick={() => handleMessageClient(project)}
+        >
+          <MessageSquare className="h-3 w-3" />
+          Message Client
+        </Button>
 
-</div>
+        <Button
+          variant="outline"
+          className="h-[25px] primary-button"
+          onClick={() =>
+            router.push(`/agency/dashboard/proposals/${project.id}?from=projects`)
+          }
+        >
+          <Eye className="h-3 w-3" />
+          View Details
+        </Button>
 
-            </CardContent>
-          </Card>
-        ))}
-        {totalAllPages > 1 && (
-  <div className="flex justify-center gap-2 mt-2">
-    <button
-      disabled={allPage === 1}
-      onClick={() => setAllPage((p) => p - 1)}
-      className="px-3 py-1 rounded-md border text-sm disabled:opacity-40"
-    >
-      Prev
-    </button>
+        {/* ACTIVE PROJECT BUTTONS */}
+        {project.status === "accepted" && (
+          <>
+            <Button
+              variant="outline"
+              className="btn-blackButton h-[25px]"
+              onClick={() => {
+                setSelectedProject(project)
+                setMilestonesDraft(
+                  project.milestones.map((m: any) => ({
+                    title: m.title,
+                    description: m.description,
+                    amount: m.amount,
+                    duration: m.duration,
+                    completed: m.completed ?? false,
+                    approvalStatus: m.approvalStatus || "pending",
+                    deliverableUrl: m.deliverableUrl,
+                    deliverableDocuments: m.deliverableDocuments || [],
+                    id: m._id
+                  })),
+                )
+                setIsProgressModalOpen(true)
+              }}
+            >
+              <Edit className="h-3 w-3 " />
+              Update Progress
+            </Button>
 
-    {[...Array(totalAllPages)].map((_, i) => (
-      <button
-        key={i}
-        onClick={() => setAllPage(i + 1)}
-        className={`px-3 py-1 rounded-md text-sm ${
-          allPage === i + 1
-            ? "bg-orangeButton text-white"
-            : "border"
-        }`}
-      >
-        {i + 1}
-      </button>
-    ))}
+            <Button
+              variant="outline"
+              className="rounded-full h-[25px] w-[130px] text-xs bg-gray-200"
+              onClick={() => {
+                setSelectedProject(project);
+                setIsAddMilestoneOpen(true);
+              }}
+            >
+              + Add Milestone
+            </Button>
+          </>
+        )}
 
-    <button
-      disabled={allPage === totalAllPages}
-      onClick={() => setAllPage((p) => p + 1)}
-      className="px-3 py-1 rounded-md border text-sm disabled:opacity-40"
-    >
-      Next
-    </button>
-  </div>
-)}
       </div>
-    ) : (
-      <p className="text-gray-500 text-center text-[30px] my-15">
-        No Projects
-      </p>
-    )}
-  </div>
-)}
+
+                  </CardContent>
+                </Card>
+              ))}
+              {totalAllPages > 1 && (
+        <div className="flex justify-center gap-2 mt-2">
+          <button
+            disabled={allPage === 1}
+            onClick={() => setAllPage((p) => p - 1)}
+            className="px-3 py-1 rounded-md border text-sm disabled:opacity-40"
+          >
+            Prev
+          </button>
+
+          {[...Array(totalAllPages)].map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setAllPage(i + 1)}
+              className={`px-3 py-1 rounded-md text-sm ${
+                allPage === i + 1
+                  ? "bg-orangeButton text-white"
+                  : "border"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          <button
+            disabled={allPage === totalAllPages}
+            onClick={() => setAllPage((p) => p + 1)}
+            className="px-3 py-1 rounded-md border text-sm disabled:opacity-40"
+          >
+            Next
+          </button>
+        </div>
+      )}
+            </div>
+          ) : (
+            <p className="text-gray-500 text-center text-[30px] my-15">
+              No Projects
+            </p>
+          )}
+        </div>
+      )}
 
       {/* ACTIVE PROJECTS */}
       {projectTab === "active" && (
@@ -740,7 +740,7 @@ const getStatusText = (status: string) => {
                               variant="outline"
                               className="h-[25px] primary-button"
                               onClick={() =>
-                                router.push(`/agency/dashboard/proposals/${project.id}`)
+                                router.push(`/agency/dashboard/proposals/${project.id}?from=projects`)
                               }
                             >
                               <Eye className="h-3 w-3" />
@@ -788,401 +788,9 @@ const getStatusText = (status: string) => {
                     ))}
 
 
-                 {isProgressModalOpen && selectedProject && (
-                  <Dialog open={isProgressModalOpen} onOpenChange={setIsProgressModalOpen}>
-                    <DialogContent className="sm:max-w-lg max-h-[90vh]">
-                      <DialogHeader>
-                        <DialogTitle>Update Project Progress</DialogTitle>
-                      </DialogHeader>
+                 
 
-                      {/* Milestones */}
-                      <div className="space-y-3 max-h-[300px] overflow-y-auto">
-                        {milestonesDraft.map((m,index) => (
-                          <div
-                            key={m.id}
-                            className="flex flex-col gap-2 border rounded-xl p-3"
-                          >
-                            <div className="flex items-center justify-between  gap-3">
-                              <div className="flex flex-col">
-                                <span
-                                className={`text-sm flex-1 ${
-                                  m.completed ? "line-through text-gray-400" : ""
-                                }`}
-                              >
-                                {m.title}
-                              </span>
-                               <Badge
-                                variant="secondary"
-                                className={`rounded-full text-xs font-medium ${getStatusStyles(m.approvalStatus)}`}
-                              >
-                                {getStatusText(m.approvalStatus)}
-                              </Badge>
-
-                              </div>
-
-                              {!m.completed && m.approvalStatus !== "approved" && m.approvalStatus!="waiting_approval" && (
-                                <div className="flex flex-col">
-                                  <Button
-                                    type="button"
-                                    size="sm"
-                                    variant="outline" 
-                                    className="rounded-full text-xs h-7"
-                                    onClick={() => {
-                                      setMilestonesDraft((prev) =>
-                                        prev.map((milestone) =>
-                                          milestone.id === m.id
-                                            ? { ...milestone, approvalStatus: "waiting_approval" }
-                                            : milestone
-                                        )
-                                      );
-                                    }}
-                                  >
-                                    {m.approvalStatus === "waiting_approval"
-                                      ? "Waiting approval"
-                                      : "Seek approval"}
-                                  </Button>
-
-                                  <Button
-                                    type="button"
-                                    size="sm"
-                                    variant="outline"
-                                    className="rounded-full text-xs h-[25px] hover:bg-transparent hover:text-red-500 mt-2 border-red-400 text-red-500"
-                                    onClick={() => {
-                                      setMilestonesDraft((prev) =>
-                                        prev.filter((milestone) => milestone.id !== m.id)
-                                      );
-                                    }}
-                                  >
-                                    Remove
-                                  </Button>
-                                </div>
-                              )}
-                            </div>
-
-                            {(m.approvalStatus === "waiting_approval" ||
-                              m.approvalStatus === "revision_requested") && (
-                              <span className="text-xs text-[#667085]">
-                                {m.approvalStatus === "revision_requested"
-                                  ? "Client requested revision"
-                                  : "Sent for client approval"}
-                              </span>
-                            )}
-
-                            {!m.completed && (
-                              <div className="ml-0 flex flex-col gap-1">
-                                {m.deliverableDocuments.length > 0 && (
-                                  <div className="flex flex-row items-center flex-wrap gap-2">
-                                    {m.deliverableDocuments.map((url: string, i: number) => (
-                                      <div
-                                        key={i}
-                                        className="flex items-center gap-2 bg-[#2F80ED] text-white text-xs px-3 py-1 rounded-md"
-                                      >
-                                        <a
-                                          href={url}
-                                          download
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="flex items-center gap-1 max-w-[100px]"
-                                        >
-                                          <File className="h-3.5 w-3 text-white shrink-0" />
-
-                                          <span className="truncate mt-0.5 text-xs">
-                                            {url}
-                                          </span>
-                                        </a>
-
-                                        <button
-                                          type="button"
-                                          className="ml-1 text-white cursor-pointer hover:text-gray-200"
-                                          onClick={() => {
-                                            setMilestonesDraft((prev) =>
-                                              prev.map((milestone) =>
-                                                milestone.id === m.id
-                                                  ? {
-                                                      ...milestone,
-                                                      deliverableDocuments:
-                                                        milestone.deliverableDocuments.filter(
-                                                          (_: string, docIndex: number) =>
-                                                            docIndex !== i
-                                                        ),
-                                                    }
-                                                  : milestone
-                                              )
-                                            );
-                                          }}
-                                        >
-                                          ✕
-                                        </button>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-
-                                <label className="text-xs text-[#667085]">
-                                  Deliverable Files (optional)
-                                </label>
-
-                                {/* Find this section inside milestonesDraft.map((m, index) => ... ) */}
-                                <PdfUpload
-                                // 1. Change key to use the index to ensure uniqueness during the render loop
-                                key={`milestone-upload-${index}`} 
-                                uploadId={`file-input-${m.id}`}
-                                maxSizeMB={10}
-                                placeholderText="Upload Deliverable Files"
-                                onUploadSuccess={(url) => {
-                                  // Log here to see which ID is being targeted at the MOMENT of success
-                                  console.log("Updating milestone ID:", m.id, "with URL:", url);
-                                  setMilestonesDraft((prev) =>
-                                    prev.map((milestone, i) =>
-                                      // 2. Use index (i) comparison instead of id (m.id)
-                                      i === index
-                                        ? {
-                                            ...milestone,
-                                            deliverableDocuments: [
-                                              ...milestone.deliverableDocuments,
-                                              url,
-                                            ],
-                                          }
-                                        : milestone
-                                    )
-                                  );
-                                }}
-                                />
-                              </div>
-                            )}
-                          </div>
-                        ))}
-
-                        {/* Add New Milestone */}
-                        {/* <div className="border rounded-xl p-3 mt-3 flex flex-col gap-2">
-                          <span className="text-sm font-medium">Add New Milestone</span>
-
-                          <input
-                            type="text"
-                            placeholder="Milestone Title"
-                            maxLength={50}
-                            value={newMilestone.title}
-                            onChange={(e) =>
-                              setNewMilestone({ ...newMilestone, title: e.target.value })
-                            }
-                            className="rounded-lg border border-[#E4E7EC] px-2 py-1.5 text-sm"
-                          />
-
-                          <div className="flex flex-col">
-                            <textarea
-                              placeholder="Milestone Description"
-                              maxLength={50}
-                              value={newMilestone.description}
-                              onChange={(e) =>
-                                setNewMilestone({
-                                  ...newMilestone,
-                                  description: e.target.value,
-                                })
-                              }
-                              className="rounded-lg border border-[#E4E7EC] px-2 py-1.5 text-sm resize-none"
-                            />
-
-                            <span className="text-[11px] text-right text-gray-400 mt-1 ml-1">
-                              {newMilestone.description.length}/50
-                            </span>
-                          </div>
-
-                          {newMilestone.deliverableDocuments.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                              {newMilestone.deliverableDocuments.map((url, i) => (
-                                <div
-                                  key={i}
-                                  className="flex items-center gap-2 bg-[#2F80ED] text-white text-xs px-3 py-1 rounded-md"
-                                >
-                                  <a
-                                    href={url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="truncate max-w-[100px]"
-                                  >
-                                    {url}
-                                  </a>
-
-                                  <button
-                                    type="button"
-                                    className="cursor-pointer"
-                                    onClick={() => {
-                                      const updated =
-                                        newMilestone.deliverableDocuments.filter(
-                                          (_, index) => index !== i
-                                        );
-
-                                      setNewMilestone({
-                                        ...newMilestone,
-                                        deliverableDocuments: updated,
-                                      });
-                                    }}
-                                  >
-                                    ✕
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-
-                          <PdfUpload
-                            key="new-milestone-upload"
-                            maxSizeMB={10}
-                            placeholderText="Upload Deliverable Files"
-                            onUploadSuccess={(url) => {
-                              setNewMilestone((prev) => ({
-                                ...prev,
-                                deliverableDocuments: [...prev.deliverableDocuments, url],
-                              }));
-                            }}
-                          />
-
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="outline"
-                            className="w-fit mt-1 rounded-full text-xs h-7"
-                            onClick={handleAddMilestone}
-                          >
-                            Add Milestone
-                          </Button>
-                        </div> */}
-                      </div>
-
-                      <DialogFooter className="gap-2">
-                        <Button className="btn-blackButton" variant="outline" onClick={() => setIsProgressModalOpen(false)}>
-                          Cancel
-                        </Button>
-
-                        <Button
-                          className="primary-button"
-                          disabled={updating}
-                          onClick={updateProgress}
-                        >
-                          {updating ? "Updating..." : "Update Progress"}
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                )}
-
-                {
-                  isAddMilestoneOpen && selectedProject &&(
-                  <Dialog open={isAddMilestoneOpen} onOpenChange={setIsAddMilestoneOpen}>
-                    <DialogContent className="sm:max-w-lg">
-                      <DialogHeader>
-                        <DialogTitle>Add New Milestone</DialogTitle>
-                      </DialogHeader>
-
-                      <div className="flex flex-col gap-3">
-
-                        {/* Title */}
-                        <input
-                          type="text"
-                          placeholder="Milestone Title"
-                          value={newMilestone.title}
-                          onChange={(e) =>
-                            setNewMilestone({
-                              ...newMilestone,
-                              title: e.target.value,
-                            })
-                          }
-                          className="rounded-lg border border-[#E4E7EC] px-3 py-2 text-sm"
-                        />
-
-                        {/* Description */}
-                        <div className="flex flex-col">
-                          <textarea
-                            placeholder="Milestone Description"
-                            maxLength={50}
-                            value={newMilestone.description}
-                            onChange={(e) =>
-                              setNewMilestone({
-                                ...newMilestone,
-                                description: e.target.value,
-                              })
-                            }
-                            className="rounded-lg border border-[#E4E7EC] px-3 py-2 text-sm resize-none"
-                          />
-
-                          <span className="text-[11px] text-right text-gray-400 mt-1 ml-1">
-                            {newMilestone.description.length}/50
-                          </span>
-                        </div>
-
-                        {/* Uploaded Docs */}
-                        {newMilestone.deliverableDocuments.length > 0 && (
-                          <div className="flex flex-wrap gap-2">
-                            {newMilestone.deliverableDocuments.map((url, i) => (
-                              <div
-                                key={i}
-                                className="flex items-center gap-2 bg-[#2F80ED] text-white text-xs px-3 py-1 rounded-md"
-                              >
-                                <a
-                                  href={url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="truncate max-w-[120px]"
-                                >
-                                  {url}
-                                </a>
-
-                                <button
-                                  onClick={() =>
-                                    setNewMilestone({
-                                      ...newMilestoneData,
-                                      deliverableDocuments:
-                                        newMilestoneData.deliverableDocuments.filter(
-                                          (_, index) => index !== i
-                                        ),
-                                    })
-                                  }
-                                >
-                                  ✕
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Upload */}
-                        {/* <PdfUpload
-                          maxSizeMB={10}
-                          placeholderText="Upload Deliverable Files"
-                          onUploadSuccess={(url) => {
-                            setNewMilestone((prev) => ({
-                              ...prev,
-                              deliverableDocuments: [
-                                ...prev.deliverableDocuments,
-                                url,
-                              ],
-                            }));
-                          }}
-                        /> */}
-                      </div>
-
-                      <DialogFooter>
-                        <Button
-                          variant="outline"
-                          onClick={() => setIsAddMilestoneOpen(false)}
-                          className="h-[30px] text-xs"
-                        >
-                          Cancel
-                        </Button>
-
-                        <Button
-                          className="bg-[#2C34A1] h-[30px] text-xs"
-                          onClick={addMilestoneToProject}
-                          disabled={updating}
-                          
-                        >
-                          {updating ? "Updating..." : "Add Milestone"}
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                  )
-                }
+                
                 </div>
                 {/*pagination */}
               {totalActivePages > 1 && (
@@ -1369,7 +977,7 @@ const getStatusText = (status: string) => {
                           variant="outline"
                           className="primary-button h-[25px]"
                           onClick={() =>
-                            router.push(`/agency/dashboard/proposals/${project.id}`)
+                            router.push(`/agency/dashboard/proposals/${project.id}?from=projects`)
                           }
                         >
                           <Eye size={16} />
@@ -1444,6 +1052,401 @@ const getStatusText = (status: string) => {
         </div>
       )}
 
+      {isProgressModalOpen && selectedProject && (
+        <Dialog open={isProgressModalOpen} onOpenChange={setIsProgressModalOpen}>
+          <DialogContent className="sm:max-w-lg max-h-[90vh]">
+            <DialogHeader>
+              <DialogTitle>Update Project Progress</DialogTitle>
+            </DialogHeader>
+
+            {/* Milestones */}
+            <div className="space-y-3 max-h-[300px] overflow-y-auto">
+              {milestonesDraft.map((m,index) => (
+                <div
+                  key={m.id}
+                  className="flex flex-col gap-2 border rounded-xl p-3"
+                >
+                  <div className="flex items-center justify-between  gap-3">
+                    <div className="flex flex-col">
+                      <span
+                      className={`text-sm flex-1 ${
+                        m.completed ? "line-through text-gray-400" : ""
+                      }`}
+                    >
+                      {m.title}
+                    </span>
+                      <Badge
+                      variant="secondary"
+                      className={`rounded-full text-xs font-medium ${getStatusStyles(m.approvalStatus)}`}
+                    >
+                      {getStatusText(m.approvalStatus)}
+                    </Badge>
+
+                    </div>
+
+                    {!m.completed && m.approvalStatus !== "approved" && m.approvalStatus!="waiting_approval" && (
+                      <div className="flex flex-col">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline" 
+                          className="rounded-full text-xs h-7"
+                          onClick={() => {
+                            setMilestonesDraft((prev) =>
+                              prev.map((milestone) =>
+                                milestone.id === m.id
+                                  ? { ...milestone, approvalStatus: "waiting_approval" }
+                                  : milestone
+                              )
+                            );
+                          }}
+                        >
+                          {m.approvalStatus === "waiting_approval"
+                            ? "Waiting approval"
+                            : "Seek approval"}
+                        </Button>
+
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="rounded-full text-xs h-[25px] hover:bg-transparent hover:text-red-500 mt-2 border-red-400 text-red-500"
+                          onClick={() => {
+                            setMilestonesDraft((prev) =>
+                              prev.filter((milestone) => milestone.id !== m.id)
+                            );
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+
+                  {(m.approvalStatus === "waiting_approval" ||
+                    m.approvalStatus === "revision_requested") && (
+                    <span className="text-xs text-[#667085]">
+                      {m.approvalStatus === "revision_requested"
+                        ? "Client requested revision"
+                        : "Sent for client approval"}
+                    </span>
+                  )}
+
+                  {!m.completed && (
+                    <div className="ml-0 flex flex-col gap-1">
+                      {m.deliverableDocuments.length > 0 && (
+                        <div className="flex flex-row items-center flex-wrap gap-2">
+                          {m.deliverableDocuments.map((url: string, i: number) => (
+                            <div
+                              key={i}
+                              className="flex items-center gap-2 bg-[#2F80ED] text-white text-xs px-3 py-1 rounded-md"
+                            >
+                              <a
+                                href={url}
+                                download
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1 max-w-[100px]"
+                              >
+                                <File className="h-3.5 w-3 text-white shrink-0" />
+
+                                <span className="truncate mt-0.5 text-xs">
+                                  {url}
+                                </span>
+                              </a>
+
+                              <button
+                                type="button"
+                                className="ml-1 text-white cursor-pointer hover:text-gray-200"
+                                onClick={() => {
+                                  setMilestonesDraft((prev) =>
+                                    prev.map((milestone) =>
+                                      milestone.id === m.id
+                                        ? {
+                                            ...milestone,
+                                            deliverableDocuments:
+                                              milestone.deliverableDocuments.filter(
+                                                (_: string, docIndex: number) =>
+                                                  docIndex !== i
+                                              ),
+                                          }
+                                        : milestone
+                                    )
+                                  );
+                                }}
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <label className="text-xs text-[#667085]">
+                        Deliverable Files (optional)
+                      </label>
+
+                      {/* Find this section inside milestonesDraft.map((m, index) => ... ) */}
+                      <PdfUpload
+                      // 1. Change key to use the index to ensure uniqueness during the render loop
+                      key={`milestone-upload-${index}`} 
+                      uploadId={`file-input-${m.id}`}
+                      maxSizeMB={10}
+                      placeholderText="Upload Deliverable Files"
+                      onUploadSuccess={(url) => {
+                        // Log here to see which ID is being targeted at the MOMENT of success
+                        console.log("Updating milestone ID:", m.id, "with URL:", url);
+                        setMilestonesDraft((prev) =>
+                          prev.map((milestone, i) =>
+                            // 2. Use index (i) comparison instead of id (m.id)
+                            i === index
+                              ? {
+                                  ...milestone,
+                                  deliverableDocuments: [
+                                    ...milestone.deliverableDocuments,
+                                    url,
+                                  ],
+                                }
+                              : milestone
+                          )
+                        );
+                      }}
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {/* Add New Milestone */}
+              {/* <div className="border rounded-xl p-3 mt-3 flex flex-col gap-2">
+                <span className="text-sm font-medium">Add New Milestone</span>
+
+                <input
+                  type="text"
+                  placeholder="Milestone Title"
+                  maxLength={50}
+                  value={newMilestone.title}
+                  onChange={(e) =>
+                    setNewMilestone({ ...newMilestone, title: e.target.value })
+                  }
+                  className="rounded-lg border border-[#E4E7EC] px-2 py-1.5 text-sm"
+                />
+
+                <div className="flex flex-col">
+                  <textarea
+                    placeholder="Milestone Description"
+                    maxLength={50}
+                    value={newMilestone.description}
+                    onChange={(e) =>
+                      setNewMilestone({
+                        ...newMilestone,
+                        description: e.target.value,
+                      })
+                    }
+                    className="rounded-lg border border-[#E4E7EC] px-2 py-1.5 text-sm resize-none"
+                  />
+
+                  <span className="text-[11px] text-right text-gray-400 mt-1 ml-1">
+                    {newMilestone.description.length}/50
+                  </span>
+                </div>
+
+                {newMilestone.deliverableDocuments.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {newMilestone.deliverableDocuments.map((url, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-2 bg-[#2F80ED] text-white text-xs px-3 py-1 rounded-md"
+                      >
+                        <a
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="truncate max-w-[100px]"
+                        >
+                          {url}
+                        </a>
+
+                        <button
+                          type="button"
+                          className="cursor-pointer"
+                          onClick={() => {
+                            const updated =
+                              newMilestone.deliverableDocuments.filter(
+                                (_, index) => index !== i
+                              );
+
+                            setNewMilestone({
+                              ...newMilestone,
+                              deliverableDocuments: updated,
+                            });
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <PdfUpload
+                  key="new-milestone-upload"
+                  maxSizeMB={10}
+                  placeholderText="Upload Deliverable Files"
+                  onUploadSuccess={(url) => {
+                    setNewMilestone((prev) => ({
+                      ...prev,
+                      deliverableDocuments: [...prev.deliverableDocuments, url],
+                    }));
+                  }}
+                />
+
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="w-fit mt-1 rounded-full text-xs h-7"
+                  onClick={handleAddMilestone}
+                >
+                  Add Milestone
+                </Button>
+              </div> */}
+            </div>
+
+            <DialogFooter className="gap-2">
+              <Button className="btn-blackButton" variant="outline" onClick={() => setIsProgressModalOpen(false)}>
+                Cancel
+              </Button>
+
+              <Button
+                className="primary-button"
+                disabled={updating}
+                onClick={updateProgress}
+              >
+                {updating ? "Updating..." : "Update Progress"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
+     {
+      isAddMilestoneOpen && selectedProject &&(
+      <Dialog open={isAddMilestoneOpen} onOpenChange={setIsAddMilestoneOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Add New Milestone</DialogTitle>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-3">
+
+            {/* Title */}
+            <input
+              type="text"
+              placeholder="Milestone Title"
+              value={newMilestone.title}
+              onChange={(e) =>
+                setNewMilestone({
+                  ...newMilestone,
+                  title: e.target.value,
+                })
+              }
+              className="rounded-lg border border-[#E4E7EC] px-3 py-2 text-sm"
+            />
+
+            {/* Description */}
+            <div className="flex flex-col">
+              <textarea
+                placeholder="Milestone Description"
+                maxLength={50}
+                value={newMilestone.description}
+                onChange={(e) =>
+                  setNewMilestone({
+                    ...newMilestone,
+                    description: e.target.value,
+                  })
+                }
+                className="rounded-lg border border-[#E4E7EC] px-3 py-2 text-sm resize-none"
+              />
+
+              <span className="text-[11px] text-right text-gray-400 mt-1 ml-1">
+                {newMilestone.description.length}/50
+              </span>
+            </div>
+
+            {/* Uploaded Docs */}
+            {newMilestone.deliverableDocuments.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {newMilestone.deliverableDocuments.map((url, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-2 bg-[#2F80ED] text-white text-xs px-3 py-1 rounded-md"
+                  >
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="truncate max-w-[120px]"
+                    >
+                      {url}
+                    </a>
+
+                    <button
+                      onClick={() =>
+                        setNewMilestone({
+                          ...newMilestoneData,
+                          deliverableDocuments:
+                            newMilestoneData.deliverableDocuments.filter(
+                              (_, index) => index !== i
+                            ),
+                        })
+                      }
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Upload */}
+            {/* <PdfUpload
+              maxSizeMB={10}
+              placeholderText="Upload Deliverable Files"
+              onUploadSuccess={(url) => {
+                setNewMilestone((prev) => ({
+                  ...prev,
+                  deliverableDocuments: [
+                    ...prev.deliverableDocuments,
+                    url,
+                  ],
+                }));
+              }}
+            /> */}
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsAddMilestoneOpen(false)}
+              className="h-[30px] text-xs"
+            >
+              Cancel
+            </Button>
+
+            <Button
+              className="bg-[#2C34A1] h-[30px] text-xs"
+              onClick={addMilestoneToProject}
+              disabled={updating}
+              
+            >
+              {updating ? "Updating..." : "Add Milestone"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      )
+    }
       
       
     </div>

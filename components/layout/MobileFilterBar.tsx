@@ -42,13 +42,19 @@ export function MobileFilterBar({
   return (
     <div className={cn("w-full", className)}>
       {/* Desktop: single row, no scroll */}
-      <div className="hidden md:flex flex-wrap items-center gap-2 xl:gap-3 w-full">
-        {searchSlot && <div className="min-w-[200px] lg:min-w-[220px] flex-1 max-w-[280px]">{searchSlot}</div>}
-        {children}
+      <div className="hidden lg:block w-full overflow-x-auto">
+  <div className="flex items-center gap-2 xl:gap-3 min-w-max">
+    {searchSlot && (
+      <div className="min-w-[200px] lg:min-w-[220px] max-w-[280px] shrink-0">
+        {searchSlot}
       </div>
+    )}
+    {children}
+  </div>
+</div>
 
       {/* Mobile: search + Filters button; filters in sheet */}
-      <div className="md:hidden flex flex-col gap-3">
+      <div className="lg:hidden flex flex-col gap-3">
         <div className="flex flex-col sm:flex-row gap-2 w-full">
           {searchSlot && <div className="w-full flex-1 min-w-0">{searchSlot}</div>}
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
