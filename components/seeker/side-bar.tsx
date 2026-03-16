@@ -219,7 +219,7 @@ export default function ClientSidebar({
             size="sm"
             onClick={handleLogout}
             className={cn(
-              "primary-button flex items-center justify-center min-h-[48px] touch-manipulation",
+              "primary-button flex items-center justify-center min-h-[40px] touch-manipulation",
               collapsed ? "w-12 h-12 p-0 min-w-[48px]" : "w-full"
             )}
           >

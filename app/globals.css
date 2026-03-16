@@ -238,7 +238,7 @@
 
 /* Primary button: single consistent primary color (blue) across the app */
 .primary-button {
-  background-color: var(--blueButton);
+  background-color: var(--orangeButton);
   color: white;
   transition: all 0.2s ease;
   max-height: 40px;
@@ -247,7 +247,7 @@
   cursor: pointer;
 }
 .primary-button:hover {
-  background-color: var(--hoverBlueButton);
+  background-color: var(--hoverOrangeButton);
   color: white;
 }
 .text-blueButton {

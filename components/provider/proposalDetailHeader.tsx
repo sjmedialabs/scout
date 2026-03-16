@@ -3,10 +3,11 @@
 import { MoveLeft, File } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useRouter,useSearchParams } from "next/navigation";
 
 import countries from "i18n-iso-countries";
 import en from "i18n-iso-countries/langs/en.json";
+
 
 countries.registerLocale(en);
 
@@ -23,6 +24,9 @@ export default function ProposalHeader({
 }: Props) {
     console.log("Recieved Props::::",proposal)
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const from=searchParams.get("from") || "";
+
 
   const getCountryIso = (countryName?: string) => {
     if (!countryName) return "";
@@ -42,11 +46,11 @@ export default function ProposalHeader({
         </h1>
 
         <Button
-          className="BackButton"
-          onClick={() => router.push(buttonUrl)}
+          className="BackButton h-[30px]"
+          onClick={() => (from?router.back():router.push(buttonUrl))}
         >
           {/* <MoveLeft className="h-4 w-4" /> */}
-          {buttonText}
+          {from?"Back to projects":buttonText}
         </Button>
       </div>
 

@@ -108,7 +108,7 @@ import {
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger,
+  PopoverTrigger, 
 } from "@/components/ui/popover";
 import { authFetch } from "@/lib/auth-fetch";
 import ServiceDropdown from "@/components/select-category-filter";
@@ -653,7 +653,7 @@ const paginatedRequirements = filteredRequirements?.slice(
           Add New Project
         </Button> */}
       </div>
-
+ 
         <MobileFilterBar
           searchSlot={
             <div className="relative w-full">
@@ -716,7 +716,7 @@ const paginatedRequirements = filteredRequirements?.slice(
           </div>
 
           {/* Start Date */}
-          <div className="min-w-[150px] w-full md:w-auto">
+          <div className="min-w-[150px] w-full">
             <input
               type={startInputType}
               value={startDate}
@@ -727,12 +727,12 @@ const paginatedRequirements = filteredRequirements?.slice(
                 if (!startDate) setStartInputType("text");
               }}
               onChange={(e) => setStartDate(e.target.value)}
-              className="w-full max-w-[160px] md:max-w-none h-[35px] border border-[#D0D5DD] rounded-full px-3 text-sm placeholder:text-gray-500 focus:outline-none"
+              className="w-full  md:max-w-none h-[35px] border border-[#D0D5DD] rounded-full px-3 text-sm placeholder:text-gray-500 focus:outline-none"
             />
           </div>
 
           {/* End Date */}
-          <div className="min-w-[150px] w-full md:w-auto">
+          <div className="min-w-[150px] w-full">
             <input
               type={endInputType}
               value={endDate}
@@ -743,7 +743,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                 if (!endDate) setEndInputType("text");
               }}
               onChange={(e) => setEndDate(e.target.value)}
-              className="w-full max-w-[160px] md:max-w-none h-[35px] border border-[#D0D5DD] rounded-full px-3 text-sm placeholder:text-gray-500 focus:outline-none"
+              className="w-full  md:max-w-none h-[35px] border border-[#D0D5DD] rounded-full px-3 text-sm placeholder:text-gray-500 focus:outline-none"
             />
           </div>
 
@@ -1081,7 +1081,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                 
                 {
               (project.status==="NotApproved") && (
-                <p className="teext-md text-red-500 mt-5">{project?.notApprovedMsg}</p>
+                <p className="text-sm text-red-500 mt-1">{project?.notApprovedMsg}</p>
               )
               }
               </div>

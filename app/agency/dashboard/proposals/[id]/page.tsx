@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter,useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -33,6 +33,8 @@ countries.registerLocale(en);
 
 export default function ProposalViewDetailsPage() {
   const { id } = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from");
   const router = useRouter();
   const { user, loading } = useAuth();
 
@@ -328,14 +330,18 @@ export default function ProposalViewDetailsPage() {
               {/* Action Buttons */}
               <div className="flex flex-col border-t border-gray-400 sm:flex-row justify-between items-center gap-4 mt-3 pt-0">
                 <a
-                  className="flex flex-row items-center mt-3 cursor-pointer gap-1"
-                  href="/agency/dashboard/proposals"
-                >
-                  <ChevronLeft size={20} className="text-gray-400" />
-                  <span className="text-xs underline text-gray-400">
-                    Back to proposals
-                  </span>
-                </a>
+                    className="flex flex-row items-center mt-3 cursor-pointer gap-1"
+                    onClick={() =>
+                      from
+                        ? router.back()
+                        : router.push("/agency/dashboard/proposals")
+                    }
+                  >
+                    <ChevronLeft size={20} className="text-gray-400" />
+                    <span className="text-xs underline text-gray-400">
+                      {from ? "Back to Projects" : "Back to Proposals"}
+                    </span>
+                  </a>
                
                 
               </div>

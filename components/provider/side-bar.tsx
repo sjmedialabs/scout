@@ -173,7 +173,7 @@ export default function Sidebar({
                   "/agency/dashboard/account/subscriptions"
                 )
               }
-              className={`justify-start min-h-[48px] bg-[#2C34A1] text-white text-xs hover:bg-[#2C34A1] rounded-full touch-manipulation ${isCollapsed ? "min-w-[48px] px-0" : ""}`}
+              className={`justify-start bg-[#2C34A1]  text-white text-xs hover:bg-[#2C34A1] rounded-full ${isCollapsed&&"w-fit"}`}
             >
               <Settings className="h-4 w-4 shrink-0" />
               {!isCollapsed && "Upgrade Plan"}
@@ -183,7 +183,7 @@ export default function Sidebar({
               size="sm"
               variant="destructive"
               onClick={handleLogout}
-              className={`justify-start min-h-[48px] rounded-full text-xs bg-[#F54A0C] touch-manipulation ${isCollapsed ? "min-w-[48px] px-0" : ""}`}
+              className={`justify-start  rounded-full text-xs bg-[#F54A0C] ${isCollapsed&&"w-fit"}`}
             >
               <LogOut className="h-4 w-4 shrink-0" />
               {!isCollapsed && "Logout"}
