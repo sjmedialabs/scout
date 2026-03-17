@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth/jwt";
 
 import ReportedContent from "@/models/ReportedContent";
 import Notification from "@/models/Notification";
+import User from "@/models/User";
 
 export async function POST(request: NextRequest) {
   try {
@@ -71,6 +72,29 @@ export async function POST(request: NextRequest) {
     //   userRole: "admin",
     //   triggeredBy: user.userId,
     // });
+
+     // 1. Fetch all admins
+          const admins = await User.find(
+            { role: "admin" },
+            { _id: 1 }
+          ).lean();
+    
+          // 2. Create notifications for admins
+          if (admins.length > 0) {
+            const adminNotifications = admins.map((admin) => ({
+              userId: admin._id, // receiver (admin)
+              triggeredBy: user.userId, // client who posted
+              title: "New Content Reported",
+              message: `A user has reported content for reason: ${reason}.`,
+              type: "content_reported",
+              userRole: "admin", 
+              linkUrl: `/admin/reported-content`, // adjust route if needed
+              sourceId: report._id,
+              isRead: false,
+            }));
+    
+            await Notification.insertMany(adminNotifications);
+          }
 
     return NextResponse.json(
       { success: true, report },

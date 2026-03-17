@@ -203,9 +203,9 @@ export default function ProviderProfilePage({
             </div>
             </div>
             {/* buttons section */}
-            <div className="flex flex-col justify-center gap-1">
+            <div className="flex flex-col justify-center items-end gap-1">
               
-                {/* <Button
+                <Button
                   size="lg"
                   onClick={() => setOpen(true)}
                   className="bg-white  text-[#2C34A1] hover:bg-white/90 text-sm font-semibold  active:bg-white  rounded-3xl"
@@ -220,7 +220,7 @@ export default function ProviderProfilePage({
                   open={open}
                   onClose={() => setOpen(false)}
                   userId={providerDetails.userId}    
-                  /> */}
+                  />
 
               
               {providerDetails?.website && (
