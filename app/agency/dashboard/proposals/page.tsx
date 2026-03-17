@@ -761,17 +761,16 @@ const ProposalsPage = () => {
               />
             </div>
 
-            <div className="space-y-3 mt-5 h-22">
-              <label className="text-[14px] font-bold text-[#98A0B4]">
+            <div className="space-y-2 mt-5">
+              <label className="block text-[14px] font-bold text-[#98A0B4]">
                 Cover Letter
               </label>
-
               <Textarea
                 value={coverLetter}
                 onChange={(e) => setCoverLetter(e.target.value)}
                 rows={6}
                 placeholder="Describe your methodology, Technologies you will use, and how you will approach this project...."
-                className="rounded-xl border-gray-200 text-[16px] leading-[1.6] placeholder:text-[12px] placeholder:text-[#98A0B4]"
+                className="rounded-xl border border-gray-200 text-[16px] leading-[1.6] placeholder:text-[12px] placeholder:text-[#98A0B4] w-full px-3 py-2"
               />
             </div>
 
@@ -828,7 +827,7 @@ const ProposalsPage = () => {
 
             <div>
               <Button
-                className="h-[30px] primary-button"
+                className="min-h-[44px] primary-button"
                 disabled={isSubmitting}
                 onClick={handleUpdateProposal}
               >

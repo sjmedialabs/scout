@@ -129,7 +129,8 @@ export default function ProviderProfilePage({
             <div>
               <img
                 src={providerDetails.logo || "/provider4.jpg"}
-                className="h-20 md:h-45 w-24 md:w-48  rounded-2xl"
+                alt=""
+                className="h-20 w-20 sm:h-24 sm:w-24 md:h-32 md:w-40 rounded-2xl object-contain bg-white/10 shrink-0"
               />
             </div>
             <div className="flex-1">

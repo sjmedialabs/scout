@@ -25,7 +25,7 @@ export default function HelpSidebar() {
             </Link>
           </li>
           <li>
-            <Link href="/search" className="font-medium hover:underline">
+            <Link href="/services" className="font-medium hover:underline">
             Find a Service Provider
             </Link>
             </li>

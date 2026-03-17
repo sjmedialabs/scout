@@ -150,7 +150,7 @@ setSubscriptions(activePlans);
           {/* Pricing Cards */}
           {
             !loading && !failed && subscriptions.length > 0 && (
-              <div className="grid md:grid-cols-3 gap-8 mb-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-8 md:mb-12 max-w-full overflow-hidden">
             {subscriptions.map((plan) => {
               const selected = selectedId === plan._id
               const {price, label } = getDisplayPrice(plan)
@@ -170,7 +170,7 @@ setSubscriptions(activePlans);
                    "border border-gray-500 bg-neutral-10 shadow-[0_1px_3px_rgb(0,0,0,0.03)]",
                   "hover:-translate-y-1 py-3 hover:shadow-xl hover:bg-white",
                   selected ? "bg-zinc-50 ring-1 ring-zinc-200 border-slate-300" : "",
-                  + "flex flex-col justify-between h-full ",
+                  + "flex flex-col justify-between h-full min-w-0",
                  ].join(" ")}
                 >
                   {/* {{false && plan.popular && (

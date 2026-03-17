@@ -155,11 +155,11 @@ export default async function AboutPage() {
 {cms?.aboutTeamSubtitle}
 </h5>
 
-          <div className="flex  gap-10 justify-center items-start  mt-[30px]">
+          <div className="flex gap-6 md:gap-10 justify-start md:justify-center items-start mt-6 md:mt-8 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent snap-x snap-mandatory">
             {cms?.aboutTeam?.map((member: any, i: number) => (
             <div
               key={i}
-              className="relative flex flex-col justify-end h-[400px] w-full max-w-[300px] min-w-[250px]  overflow-hidden"
+              className="relative flex flex-col justify-end h-[360px] w-[280px] min-w-[280px] max-w-[300px] overflow-hidden shrink-0 snap-center rounded-lg"
               style={{
                 backgroundImage: `url("${member.image}")`,
                 backgroundSize: "cover",
@@ -196,24 +196,18 @@ export default async function AboutPage() {
           </div>
 
           {/* Values Grid */}
-          <div className="flex justify-center gap-10 max-w-6xl  mx-auto text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10 max-w-6xl mx-auto text-center px-2">
             {cms?.aboutValues?.map((item : any, i : number) => (
-              <div key={i} className="flex flex-col items-center">
-                
-                {/* Icon */}
+              <div key={i} className="flex flex-col items-center min-w-0">
                 <img 
                   src={item.imageUrl ?? "/placeholder.png"} 
                   alt={item.title} 
-                  className="h-12 w-10 mb-4"
+                  className="h-12 w-10 mb-4 shrink-0"
                 />
-
-                {/* Title */}
-                <h3 className="text-lg font-semibold text-[#F54A0C] mb-2">
+                <h3 className="text-base md:text-lg font-semibold text-[#F54A0C] mb-2">
                   {item.title}
                 </h3>
-
-                {/* Description */}
-                <p className=" text-[12px] font-semibold text-[#b2b2b2] leading-relaxed max-w-[220px]">
+                <p className="text-xs md:text-sm font-semibold text-[#b2b2b2] leading-relaxed max-w-[260px] break-words">
                   {item.description}
                 </p>
               </div>
