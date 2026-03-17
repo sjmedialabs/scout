@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap');
 @custom-variant dark (&:is(.dark *));
 
@@ -83,8 +86,8 @@
 }
 
 @theme inline {
-  --font-sans: "Cinzel", sans-serif;
-  --font-mono: "Cinzel", sans-serif;
+  --font-sans: "Poppins", sans-serif;
+  --font-mono: "Poppins", sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -236,7 +239,7 @@
    color: white;
 }
 
-/* Primary button: single consistent primary color (blue) across the app */
+/* Primary button = Orange (design system) */
 .primary-button {
   background-color: var(--orangeButton);
   color: white;
@@ -249,6 +252,13 @@
 .primary-button:hover {
   background-color: var(--hoverOrangeButton);
   color: white;
+}
+.primary-button:active {
+  opacity: 0.95;
+}
+.primary-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 .text-blueButton {
   color: var(--blueButton);

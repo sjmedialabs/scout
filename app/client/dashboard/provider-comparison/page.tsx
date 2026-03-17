@@ -775,7 +775,7 @@ const ProviderComparisonPage = () => {
             {/* 🔹 FILTER + CONTENT (Scrollable) */}
             <div className="flex-1  overflow-y-auto px-6">
               {/* Filter */}
-              <div className=" lg:grid lg:grid-cols-2 gap-5 w-full">
+              <div className="flex flex-col gap-4 sm:gap-5 lg:grid lg:grid-cols-2 w-full">
                 <div className="relative w-full min-w-0">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input

@@ -217,7 +217,7 @@ export function BrowseRequirements({
 </MobileFilterBar>
 </div>
       {/* TABLE VIEW */}
-      <div className="border rounded-xl max-w-[95vw] overflow-x-auto bg-white">
+      <div className="border rounded-xl w-full max-w-[95vw] overflow-x-auto bg-white mx-auto px-px sm:px-0">
         <table className="w-full text-sm">
           <thead className="bg-gray-100 text-left">
             <tr>
@@ -239,7 +239,9 @@ export function BrowseRequirements({
                   {formatDate(req.createdAt)}
                 </td>
 
-                <td className="p-4 font-medium">
+                <td 
+                onClick= {() => router.push(`/agency/dashboard/project-inquiries/${req._id}`)}
+                className="p-4 font-medium cursor-pointer hover:text-blue-500">
                   {req.title}
                 </td>
 

@@ -74,8 +74,8 @@ export default function JobDetailsPage({
         </div>
 
         {/* RIGHT SIDEBAR */}
-        <div className="lg:sticky h-fit">
-          <div className="bg-[#eef1f6] rounded-3xl overflow-hidden">
+        <div className="lg:sticky lg:top-4 h-fit order-first lg:order-none">
+          <div className="bg-[#eef1f6] rounded-2xl sm:rounded-3xl overflow-hidden">
             <div className="divide-y text-sm text-gray-500 space-y-0">
               <div className="p-6">
                 <p className="font-bold">Date Posted</p>
@@ -100,11 +100,15 @@ export default function JobDetailsPage({
             </div>
 
             {/* CTA */}
-            <button 
-            onClick={() => setOpen(true)}
-            className="w-full min-h-[60px] cursor-pointer bg-orange-600 hover:bg-orange-500 transition text-white text-sm">
-              Apply Now
-            </button>
+            <div className="p-4 sm:p-6 flex flex-col sm:flex-row gap-3 justify-end">
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                className="w-full sm:w-auto min-h-[44px] px-6 bg-orange-600 hover:bg-orange-500 transition text-white text-base font-medium rounded-lg"
+              >
+                Apply Now
+              </button>
+            </div>
           </div>
         </div>
       </div>

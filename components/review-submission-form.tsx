@@ -109,11 +109,11 @@ export function ReviewSubmissionForm({
             </CardContent>
           </Card>
 
-          <div className="flex gap-3">
-            <Button type="submit" className="flex-1" disabled={ratings.overall === 0}>
+          <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
+            <Button type="submit" className="flex-1 min-h-[44px]" disabled={ratings.overall === 0}>
               Submit Review
             </Button>
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" className="min-h-[44px]" onClick={onClose}>
               Cancel
             </Button>
           </div>
