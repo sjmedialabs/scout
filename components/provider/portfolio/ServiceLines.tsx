@@ -44,9 +44,9 @@ export default function ServiceLines({ provider }: ServiceLinesProps) {
               {service}
             </span>
 
-            <span className="text-[12px] font-semibold text-black">
+            {/* <span className="text-[12px] font-semibold text-black">
               {percentage}%
-            </span>
+            </span> */}
           </div>
         ))}
       </div>

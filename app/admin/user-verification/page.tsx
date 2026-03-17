@@ -166,7 +166,7 @@ if (loading) {
         </div>
         <div className="">
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="rounded-full h-[40px] w-[120px] border text-xs border-gray-200  py-0 flex items-center ">
+            <SelectTrigger className="rounded-full h-[40px] w-[120px] border text-xs border-gray-200 text-gray-500 py-0 flex items-center ">
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
             <SelectContent className="">

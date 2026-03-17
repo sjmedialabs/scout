@@ -72,6 +72,11 @@ export function BrowseRequirements({
   useEffect(()=>{
     let tempFilteredRequirements = [...requirements]
 
+    // Remove already submitted proposals
+      // tempFilteredRequirements = tempFilteredRequirements.filter(
+      //   (eachItem) => !eachItem.isProposalSubmitted 
+      // )
+
     // Budget Filter
     if (searchTerm) {
       tempFilteredRequirements = tempFilteredRequirements.filter(
@@ -108,6 +113,8 @@ export function BrowseRequirements({
     setCurrentPage(1)
 
   },[serviceFilter,searchTerm,startDate,endDate])
+
+
   const handleClear = () => {
     setServiceFilter("")
     setSearchTerm(undefined)
@@ -145,7 +152,7 @@ export function BrowseRequirements({
     <div className="min-h-screen">
 
       {/* FILTER BAR */}
-<div className="max-w-[95vw] overflow-x-auto">
+<div className="max-w-[95vw] overflow-x-auto mb-3">
    <MobileFilterBar className="max-w-[95vw] overflow-x-auto"
   searchSlot={
     <div className="w-full">
@@ -257,17 +264,23 @@ export function BrowseRequirements({
                 </td>
 
                 <td className="p-4">
-                  <Button
-                    size="sm"
-                    className=" primary-button"
-                    onClick={() =>
-                      router.push(
-                        `/agency/dashboard/project-inquiries/${req._id}`
-                      )
-                    }
-                  >
-                    Submit Proposal
-                  </Button>
+                  {Boolean(req.hasSubmittedProposal) ? (
+                    <span className="inline-block px-8 cursor-not-allowed py-2 text-xs font-medium rounded-full bg-gray-200 text-gray-600">
+                      Submitted
+                    </span>
+                  ) : (
+                    <Button
+                      size="sm"
+                      className="primary-button"
+                      onClick={() =>
+                        router.push(
+                          `/agency/dashboard/project-inquiries/${req._id}`
+                        )
+                      }
+                    >
+                      Submit Proposal
+                    </Button>
+                  )}
                 </td>
               </tr>
             ))}

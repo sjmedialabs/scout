@@ -256,7 +256,7 @@ export default function ProviderProfilePage({
 
           {/* Sidebar */}
           <div className="space-y-6 lg:h-screen ">
-            <FocusAreasCard provider={providerDetails} />
+            <FocusAreasCard provider={providerDetails} reviews={reviews} />
           </div>
         </div>
     </div>
