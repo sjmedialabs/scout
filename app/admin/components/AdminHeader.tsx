@@ -26,21 +26,23 @@ export default function AdminHeader({ onMenuClick }: Props) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // 🔹 Fetch Admin Notifications
-  // const fetchNotifications = async () => {
-  //   try {
-  //     const res = await authFetch(`/api/admin/notifications`);
-  //     const data = await res.json();
+  //  Fetch Admin Notifications
+  const fetchNotifications = async () => {
+    try {
+      const res = await authFetch(`/api/notifications`);
+      const data = await res.json();
+      // console.log("Fetched Super admin notifications:::",data.data)
 
-  //     setNotifications((data.data || []).filter((n: Notification) => !n.isRead));
-  //   } catch (error) {
-  //     console.error("Failed to fetch admin notifications", error);
-  //   }
-  // };
+      setNotifications((data.data || []).filter((n: Notification) => !n.isRead));
+    } catch (error) {
+      console.error("Failed to fetch admin notifications", error);
+    }
+  };
 
-  // useEffect(() => {
-  //   fetchNotifications();
-  // }, []);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
 
   // 🔹 Close dropdown on outside click
   useEffect(() => {
@@ -62,7 +64,7 @@ export default function AdminHeader({ onMenuClick }: Props) {
     const selected = notifications.find((n) => n._id === id);
 
     try {
-      const res = await authFetch(`/api/admin/notifications/${id}`, {
+      const res = await authFetch(`/api/notifications/${id}`, {
         method: "PUT",
       });
 
@@ -99,21 +101,21 @@ export default function AdminHeader({ onMenuClick }: Props) {
         </h1> */}
       </div>
 
-      <div className="relative" ref={dropdownRef}>
-        <button
-          type="button"
-          onClick={() => setDropdownOpen(!dropdownOpen)}
-          className="flex items-center justify-center min-h-[48px] min-w-[48px] rounded-lg touch-manipulation"
-          aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
-        >
-          <Bell className="h-6 w-6 text-gray-700" />
+      <div className="relative mt-3  mr-2" ref={dropdownRef}>
+       <button
+  type="button"
+  onClick={() => setDropdownOpen(!dropdownOpen)}
+ className="relative cursor-pointer"
+  aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
+>
+  <Bell className="h-6 w-6 text-gray-700" />
 
-          {/* {unreadCount > 0 && (
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-              {unreadCount}
-            </span>
-          )} */}
-        </button>
+  {unreadCount > 0 && (
+    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+      {unreadCount}
+    </span>
+  )}
+</button>
 
         {dropdownOpen && (
           <div className="absolute right-0 mt-3 w-80 bg-white shadow-lg rounded-lg border z-50 max-h-96 overflow-y-auto">

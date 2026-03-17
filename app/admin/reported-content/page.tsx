@@ -278,7 +278,7 @@ export default function ReportedContentPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0"
+                            className="h-8 w-8 p-0 active:bg-transparent hover:bg-transparent hover:text-amber-600"
                             onClick={() => { setOpen(true); setSelectedReport(report); }}
                             title="View Content"
                           >
@@ -287,7 +287,7 @@ export default function ReportedContentPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0 hover:text-green-600"
+                            className="h-8 w-8 p-0 active:bg-transparent hover:bg-transparent hover:text-green-600"
                             onClick={() => handleApprove(report)}
                             disabled={actionLoading === report._id || report.status === "resolved"}
                             title="Approve"
@@ -297,7 +297,7 @@ export default function ReportedContentPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0 hover:text-amber-600"
+                            className="h-8 w-8 p-0 active:bg-transparent hover:bg-transparent hover:text-red-500"
                             onClick={() => openDeleteConfirm(report)}
                             // disabled={actionLoading === report._id || report.status === "dismissed"}
                             title="Delete Report"
@@ -307,19 +307,19 @@ export default function ReportedContentPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0 hover:text-amber-600"
+                            className="h-8 w-8 p-0 active:bg-transparent hover:bg-transparent hover:text-amber-600"
                             onClick={() => {
                               setSelectedReport(report);
                               setOpenMailModal(true);
                             }}
                             title="Send Mail"
                           >
-                            <Mail className="w-5 h-5 text-gray-500 hover:text-black" />
+                            <Mail className="w-5 h-5 active:bg-transparent hover:text-amber-500 hover:bg-transparent" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0 hover:text-red-600"
+                            className="h-8 w-8 p-0 active:bg-transparent hover:bg-transparent hover:text-red-600"
                             onClick={() => openSuspendAccountConfirm(report)}
                              disabled={actionLoading === report._id || report.status === "resolved"}
                             title="Suspend Account"
@@ -365,7 +365,7 @@ export default function ReportedContentPage() {
             </>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button variant="outline" className="primary-button h-[30px]" onClick={() => setOpen(false)}>
               Close
             </Button>
           </DialogFooter>

@@ -252,147 +252,159 @@ useEffect(() => {
      
       
         <div className="min-h-screen">
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
 
-<Card className="shadow-lg bg-white rounded-2xl flex flex-col gap-2">
-<CardHeader className="flex flex-row items-center justify-between pb-2">
-<CardTitle className="text-sm font-medium text-gray-500">
-Total Leads
-</CardTitle>
-<div className="bg-gray-100 rounded-full p-2">
-<Users className="w-5 h-5 text-orangeButton"/>
-</div>
-</CardHeader>
-<CardContent>
-<div className="text-2xl font-bold">
-{leadStats.total}
-</div>
-</CardContent>
-</Card>
-
-
-<Card className="shadow-lg bg-white rounded-2xl flex flex-col gap-2">
-<CardHeader className="flex flex-row items-center justify-between pb-2">
-<CardTitle className="text-sm font-medium text-gray-500">
-Contacted Leads
-</CardTitle>
-<div className="bg-gray-100 rounded-full p-2">
-<MessageSquare className="w-5 h-5 text-orangeButton"/></div>
-</CardHeader>
-<CardContent>
-<div className="text-2xl font-bold">
-{leadStats.contacted}
-</div>
-</CardContent>
-</Card>
+          <Card className="shadow-lg bg-white rounded-2xl flex flex-col gap-2">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardTitle className="text-sm font-medium text-gray-500">
+          Total Leads
+          </CardTitle>
+          <div className="bg-gray-100 rounded-full p-2">
+          <Users className="w-5 h-5 text-orangeButton"/>
+          </div>
+          </CardHeader>
+          <CardContent>
+          <div className="text-2xl font-bold">
+          {leadStats.total}
+          </div>
+          </CardContent>
+          </Card>
 
 
-<Card className="shadow-lg bg-white rounded-2xl flex flex-col gap-2">
-<CardHeader className="flex flex-row items-center justify-between pb-2">
-<CardTitle className="text-sm font-medium text-gray-500">
-Won Leads
-</CardTitle>
-<div className="bg-gray-100 rounded-full p-2">
-<CheckCircle className="w-5 h-5 text-orangeButton"/></div>
-</CardHeader>
-<CardContent>
-<div className="text-2xl font-bold">
-{leadStats.won}
-</div>
-</CardContent>
-</Card>
+          <Card className="shadow-lg bg-white rounded-2xl flex flex-col gap-2">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardTitle className="text-sm font-medium text-gray-500">
+          Contacted Leads
+          </CardTitle>
+          <div className="bg-gray-100 rounded-full p-2">
+          <MessageSquare className="w-5 h-5 text-orangeButton"/></div>
+          </CardHeader>
+          <CardContent>
+          <div className="text-2xl font-bold">
+          {leadStats.contacted}
+          </div>
+          </CardContent>
+          </Card>
 
 
-<Card className="shadow-lg bg-white rounded-2xl flex flex-col gap-2">
-<CardHeader className="flex flex-row items-center justify-between pb-2">
-<CardTitle className="text-sm font-medium text-gray-500">
-Dropped Leads
-</CardTitle>
-<div className="bg-gray-100 rounded-full p-2">
-<Target className="w-5 h-5 text-orangeButton"/></div>
-</CardHeader>
-<CardContent>
-<div className="text-2xl font-bold">
-{leadStats.dropped}
-</div>
-</CardContent>
-</Card>
+          <Card className="shadow-lg bg-white rounded-2xl flex flex-col gap-2">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardTitle className="text-sm font-medium text-gray-500">
+          Won Leads
+          </CardTitle>
+          <div className="bg-gray-100 rounded-full p-2">
+          <CheckCircle className="w-5 h-5 text-orangeButton"/></div>
+          </CardHeader>
+          <CardContent>
+          <div className="text-2xl font-bold">
+          {leadStats.won}
+          </div>
+          </CardContent>
+          </Card>
 
-</div>
+
+          <Card className="shadow-lg bg-white rounded-2xl flex flex-col gap-2">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardTitle className="text-sm font-medium text-gray-500">
+          Dropped Leads
+          </CardTitle>
+          <div className="bg-gray-100 rounded-full p-2">
+          <Target className="w-5 h-5 text-orangeButton"/></div>
+          </CardHeader>
+          <CardContent>
+          <div className="text-2xl font-bold">
+          {leadStats.dropped}
+          </div>
+          </CardContent>
+          </Card>
+
+          </div>
             {/* 🔹 Filters */}
-            <div className="mb-4 w-full">
-              <MobileFilterBar
-                searchSlot={
-                  <Input
-                    placeholder="Search name or email..."
-                    className="h-9 w-full border border-gray-400 rounded-full placeholder:text-gray-400"
-                    value={search}
-                    onChange={(e) => {
-                      setSearch(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                  />
-                }
-                activeFilterCount={
-                  (statusFilter ? 1 : 0) + (startDate ? 1 : 0) + (endDate ? 1 : 0)
-                }
-                sheetTitle="Filter leads"
-              >
-                <div className="w-full md:w-auto min-w-0">
-                  <Select
-                    value={statusFilter || "all"}
-                    onValueChange={(value) => {
-                      setStatusFilter(value === "all" ? "" : value);
-                      setCurrentPage(1);
-                    }}
-                  >
-                    <SelectTrigger className="h-9 w-full md:min-w-[150px] md:max-w-[220px] data-[placeholder]:text-gray-400 border border-gray-400 rounded-full text-[#000]">
-                      <SelectValue placeholder="Filter by Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="contacted">Contacted</SelectItem>
-                      <SelectItem value="won">Won</SelectItem>
-                      <SelectItem value="dropped">Dropped</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Input
-                  type={startDate ? "date" : "text"}
-                  placeholder="Filter by Start Date"
-                  className="h-9 w-full md:min-w-[150px] md:max-w-[220px] border border-gray-400 rounded-full placeholder:text-gray-400"
-                  value={startDate}
-                  onFocus={(e) => (e.target.type = "date")}
-                  onBlur={(e) => {
-                    if (!startDate) e.target.type = "text";
-                  }}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-                <Input
-                  type={endDate ? "date" : "text"}
-                  placeholder="Filter by End Date"
-                  className="h-9 w-full md:min-w-[150px] md:max-w-[220px] border border-gray-400 rounded-full placeholder:text-gray-400"
-                  value={endDate}
-                  onFocus={(e) => (e.target.type = "date")}
-                  onBlur={(e) => {
-                    if (!endDate) e.target.type = "text";
-                  }}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
-                <Button
-                  className="h-9 btn-blackButton rounded-xl w-full md:w-auto"
-                  onClick={() => {
-                    setSearch("");
-                    setStatusFilter("");
-                    setStartDate("");
-                    setEndDate("");
-                  }}
-                >
-                  Clear
-                </Button>
-              </MobileFilterBar>
-            </div>
+          <div className="mb-4 w-full">
+  <MobileFilterBar
+    searchSlot={
+      <Input
+        placeholder="Search name or email..."
+        className="h-9 w-full border border-gray-400 rounded-full placeholder:text-gray-400"
+        value={search}
+        onChange={(e) => {
+          setSearch(e.target.value);
+          setCurrentPage(1);
+        }}
+      />
+    }
+    activeFilterCount={
+      (statusFilter ? 1 : 0) + (startDate ? 1 : 0) + (endDate ? 1 : 0)
+    }
+    sheetTitle="Filter leads"
+  >
+    {/* FLEX ROW WITH EQUAL WIDTH */}
+    <div className="flex flex-col md:flex-row w-full gap-2">
+
+      {/* STATUS */}
+      <div className="w-full flex-1">
+        <Select
+          value={statusFilter || "all"}
+          onValueChange={(value) => {
+            setStatusFilter(value === "all" ? "" : value);
+            setCurrentPage(1);
+          }}
+        >
+          <SelectTrigger className="h-9 w-full border border-gray-400 rounded-full text-[#000]">
+            <SelectValue placeholder="Filter by Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="pending">Pending</SelectItem>
+            <SelectItem value="contacted">Contacted</SelectItem>
+            <SelectItem value="won">Won</SelectItem>
+            <SelectItem value="dropped">Dropped</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* START DATE */}
+      <Input
+        type={startDate ? "date" : "text"}
+        placeholder="Start Date"
+        className="h-9 w-full flex-1 border border-gray-400 rounded-full placeholder:text-gray-400"
+        value={startDate}
+        onFocus={(e) => (e.target.type = "date")}
+        onBlur={(e) => {
+          if (!startDate) e.target.type = "text";
+        }}
+        onChange={(e) => setStartDate(e.target.value)}
+      />
+
+      {/* END DATE */}
+      <Input
+        type={endDate ? "date" : "text"}
+        placeholder="End Date"
+        className="h-9 w-full flex-1 border border-gray-400 rounded-full placeholder:text-gray-400"
+        value={endDate}
+        onFocus={(e) => (e.target.type = "date")}
+        onBlur={(e) => {
+          if (!endDate) e.target.type = "text";
+        }}
+        onChange={(e) => setEndDate(e.target.value)}
+      />
+
+      {/* CLEAR BUTTON */}
+      <Button
+        className="h-9 btn-blackButton rounded-xl"
+        onClick={() => {
+          setSearch("");
+          setStatusFilter("");
+          setStartDate("");
+          setEndDate("");
+        }}
+      >
+        Clear
+      </Button>
+
+    </div>
+  </MobileFilterBar>
+</div>
 
             {/* 🔹 Table */}
             <div className="bg-white rounded-lg  shadow-sm max-w-[95vw] overflow-x-auto overflow-y-visible">
@@ -492,16 +504,16 @@ Dropped Leads
                                   {lead.status === "contacted" && (
                                     <>
                                       <button
-                                        onClick={() => updateStatus(lead._id, "closed")}
+                                        onClick={() => updateStatus(lead._id, "won")}
                                         className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
                                       >
-                                        Closed
+                                       Won
                                       </button>
                                       <button
-                                        onClick={() => updateStatus(lead._id, "lost")}
+                                        onClick={() => updateStatus(lead._id, "dropped")}
                                         className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
                                       >
-                                        Lost
+                                        Dropped
                                       </button>
                                     </>
                                   )}
@@ -538,73 +550,71 @@ Dropped Leads
 
             {/* 🔹 View Modal */}
               <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogContent className="min-w-2xl max-w-7xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
+                <DialogContent className="min-w-2xl max-w-7xl max-h-[90vh] overflow-y-auto [&>button]:cursor-pointer">
+                  {/* <DialogHeader>
                     <DialogTitle className="text-xl font-semibold">
                       Lead Details
                     </DialogTitle>
-                  </DialogHeader>
+                  </DialogHeader> */}
 
-                {selectedLead && (
-                    <div className="space-y-10 text-sm w-full">
+                  {selectedLead && (
+                    <div className="space-y-5 text-sm w-full">
 
                       {/* ================= CONTACT INFORMATION ================= */}
-                      <div className="space-y-6">
-                      <div className="flex flex-row justify-between border-b pb-2 items-center">
-                        <h3 className="text-lg font-semibold ">
-                          Contact Information
-                        </h3>
-                        <div>
+                      <div className="space-y-6 mt-2">
+                        <div className="flex flex-row justify-between border-b pb-2 items-center">
+                          <h3 className="text-lg text-orangeButton font-semibold">
+                            Contact Information
+                          </h3>
                           <span
-                              className={`px-3 py-1 rounded-full text-xs capitalize ${getStatusStyles(
-                                selectedLead.status
-                              )}`}
-                            >
-                              {selectedLead.status}
-                            </span>
+                            className={`px-3 py-1 rounded-full text-xs capitalize ${getStatusStyles(
+                              selectedLead.status
+                            )}`}
+                          >
+                            {selectedLead.status}
+                          </span>
                         </div>
-                      </div>
 
-                        <div className="grid grid-cols-2 gap-6">
+                        <div className="grid grid-cols-2 gap-3">
 
                           {/* Full Name */}
                           <div>
-                            <label className="block text-sm font-medium mb-1">
-                              Full Name
+                            <label className="block text-sm font-semibold mb-1">
+                              Full Name:{" "}
+                              <span className="text-gray-500 font-medium">
+                                {selectedLead.name}
+                              </span>
                             </label>
-                            <div className="bg-gray-100 border rounded-md px-3 py-2">
-                              {selectedLead.name}
-                            </div>
                           </div>
 
                           {/* Email */}
                           <div>
-                            <label className="block text-sm font-medium mb-1">
-                              Email
+                            <label className="block text-sm font-semibold mb-1">
+                              Email:{" "}
+                              <span className="text-gray-500 font-medium">
+                                {selectedLead.email}
+                              </span>
                             </label>
-                            <div className="bg-gray-100 border rounded-md px-3 py-2">
-                              {selectedLead.email}
-                            </div>
                           </div>
 
                           {/* Mobile */}
                           <div>
-                            <label className="block text-sm font-medium mb-1">
-                              Mobile
+                            <label className="block text-sm font-semibold mb-1">
+                              Mobile:{" "}
+                              <span className="text-gray-500 font-medium">
+                                {selectedLead.countryCode} {selectedLead.contactNumber}
+                              </span>
                             </label>
-                            <div className="bg-gray-100 border rounded-md px-3 py-2">
-                              {selectedLead.countryCode}
-                            </div>
                           </div>
 
                           {/* Country */}
                           <div>
-                            <label className="block text-sm font-medium mb-1">
-                              Country
+                            <label className="block text-sm font-semibold mb-1">
+                              Country:{" "}
+                              <span className="text-gray-500 font-medium">
+                                {selectedLead.country}
+                              </span>
                             </label>
-                            <div className="bg-gray-100 border rounded-md px-3 py-2">
-                              {selectedLead.country}
-                            </div>
                           </div>
                         </div>
                       </div>
@@ -616,7 +626,7 @@ Dropped Leads
                         selectedLead.minbudget ||
                         selectedLead.timeline) && (
                         <div className="space-y-6">
-                          <h3 className="text-lg font-semibold border-b pb-2">
+                          <h3 className="text-lg text-orangeButton font-semibold border-b pb-2">
                             Project Information
                           </h3>
 
@@ -624,56 +634,56 @@ Dropped Leads
 
                             {selectedLead.projectTitle && (
                               <div>
-                                <label className="block text-sm font-medium mb-1">
-                                  Project Title
+                                <label className="block text-sm font-semibold mb-1">
+                                  Project Title:{" "}
+                                  <span className="text-gray-500 font-medium">
+                                    {selectedLead.projectTitle}
+                                  </span>
                                 </label>
-                                <div className="bg-gray-100 border rounded-md px-3 py-2">
-                                  {selectedLead.projectTitle}
-                                </div>
                               </div>
                             )}
 
                             {selectedLead.category && (
                               <div>
-                                <label className="block text-sm font-medium mb-1">
-                                  Category
+                                <label className="block text-sm font-semibold mb-1">
+                                  Category:{" "}
+                                  <span className="text-gray-500 font-medium">
+                                    {selectedLead.category}
+                                  </span>
                                 </label>
-                                <div className="bg-gray-100 border rounded-md px-3 py-2">
-                                  {selectedLead.category}
-                                </div>
                               </div>
                             )}
 
                             {(selectedLead.minbudget || selectedLead.maxbudget) && (
                               <div>
-                                <label className="block text-sm font-medium mb-1">
-                                  Budget Range
+                                <label className="block text-sm font-semibold mb-1">
+                                  Budget Range:{" "}
+                                  <span className="text-gray-500 font-medium">
+                                    ₹{selectedLead.minbudget} - ₹{selectedLead.maxbudget}
+                                  </span>
                                 </label>
-                                <div className="bg-gray-100 border rounded-md px-3 py-2">
-                                  ₹{selectedLead.minbudget} - ₹{selectedLead.maxbudget}
-                                </div>
                               </div>
                             )}
 
                             {selectedLead.timeline && (
                               <div>
-                                <label className="block text-sm font-medium mb-1">
-                                  Timeline
+                                <label className="block text-sm font-semibold mb-1">
+                                  Timeline:{" "}
+                                  <span className="text-gray-500 font-medium">
+                                    {selectedLead.timeline}
+                                  </span>
                                 </label>
-                                <div className="bg-gray-100 border rounded-md px-3 py-2">
-                                  {selectedLead.timeline}
-                                </div>
                               </div>
                             )}
 
                             {selectedLead.description && (
                               <div className="col-span-2">
-                                <label className="block text-sm font-medium mb-1">
-                                  Project Description
+                                <label className="block text-sm font-semibold mb-1">
+                                  Project Description:{" "}
+                                  <span className="text-gray-500 font-medium block mt-1 leading-relaxed">
+                                    {selectedLead.description}
+                                  </span>
                                 </label>
-                                <div className="bg-gray-100 border rounded-md px-3 py-3 leading-relaxed">
-                                  {selectedLead.description}
-                                </div>
                               </div>
                             )}
                           </div>
@@ -686,9 +696,9 @@ Dropped Leads
                           <h3 className="text-lg font-semibold border-b pb-2">
                             Client Message
                           </h3>
-                          <div className="bg-gray-100 border rounded-md px-3 py-3 leading-relaxed">
+                          <p className="text-gray-500 leading-relaxed">
                             {selectedLead.message}
-                          </div>
+                          </p>
                         </div>
                       )}
 
@@ -710,7 +720,7 @@ Dropped Leads
                                     <div className="flex items-center gap-3">
                                       <FileText className="w-5 h-5 text-gray-500" />
                                       <p className="text-sm font-medium truncate max-w-[300px]">
-                                        Attachments {index+1}
+                                        Attachment {index + 1}
                                       </p>
                                     </div>
 
@@ -728,39 +738,11 @@ Dropped Leads
                             </div>
                           </div>
                         )}
-
-                      {/* ================= STATUS ================= */}
-                      {/* <div className="space-y-4">
-                        <h3 className="text-lg font-semibold border-b pb-2">
-                          Lead Status
-                        </h3>
-
-                        <div className="grid grid-cols-2 gap-6">
-                          <div>
-                            <label className="block text-sm font-medium mb-1">
-                              Current Status
-                            </label>
-                            <div className="bg-gray-100 border rounded-md px-3 py-2 capitalize">
-                              {selectedLead.status}
-                            </div>
-                          </div>
-
-                          <div>
-                            <label className="block text-sm font-medium mb-1">
-                              Created At
-                            </label>
-                            <div className="bg-gray-100 border rounded-md px-3 py-2">
-                              {new Date(selectedLead.createdAt).toLocaleString()}
-                            </div>
-                          </div>
-                        </div>
-                      </div> */}
-
                     </div>
                   )}
                 </DialogContent>
               </Dialog>
-     </div>
+           </div>
       
      
 

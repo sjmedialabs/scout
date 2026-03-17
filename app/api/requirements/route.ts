@@ -6,6 +6,7 @@ import Seeker from "@/models/Seeker";
 import { error } from "console";
 import mongoose from "mongoose";
 import Notification from "@/models/Notification";
+import User from "@/models/User";
 import Provider from "@/models/Provider";
 
 // GET Requirements
@@ -108,18 +109,18 @@ export async function POST(req: NextRequest) {
       timeline: body.timeline,
       description: body.description,
       attachmentUrls: body.attachmentUrls,
-      clientId: user.userId, // 👈 IMPORTANT: logged-in client
+      clientId: user.userId, //  IMPORTANT: logged-in client
     });
 
     console.log("newReq", newReq);
 
     // Fetch only providers whose services match the category
-    const providersMatchedServices = await Provider.find(
-      {
-        services: { $in: [newReq.category] }, //  array match
-      },
-      { userId: 1 },
-    ).lean();
+    // const providersMatchedServices = await Provider.find(
+    //   {
+    //     services: { $in: [newReq.category] }, //  array match
+    //   },
+    //   { userId: 1 },
+    // ).lean();
 
     // Create notifications
     // if (providersMatchedServices.length > 0) {
@@ -137,6 +138,29 @@ export async function POST(req: NextRequest) {
 
     //   await Notification.insertMany(notifications);
     // }
+
+    // 1. Fetch all admins
+      const admins = await User.find(
+        { role: "admin" },
+        { _id: 1 }
+      ).lean();
+
+      // 2. Create notifications for admins
+      if (admins.length > 0) {
+        const adminNotifications = admins.map((admin) => ({
+          userId: admin._id, // receiver (admin)
+          triggeredBy: user.userId, // client who posted
+          title: "New Requirement Posted",
+          message: `A client has posted a new requirement in ${newReq.category}.`,
+          type: "NEW_REQUIREMENT_ADMIN",
+          userRole: "admin", 
+          linkUrl: `/admin/moderation`, // adjust route if needed
+          sourceId: newReq._id,
+          isRead: false,
+        }));
+
+        await Notification.insertMany(adminNotifications);
+      }
 
     return NextResponse.json({
       success: true,

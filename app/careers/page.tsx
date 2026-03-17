@@ -2,7 +2,9 @@
 
 import Link from "next/link"
 import { useEffect, useState } from "react"
+
 import ApplyJobModal from "@/components/ApplyJobModal"
+import { Button } from "@/components/ui/button"
 
 export default function CareersPage() {
   const [jobs, setJobs] = useState<any[]>([])
@@ -72,15 +74,15 @@ export default function CareersPage() {
 
             {/* CTA */}
             <div className="lg:w-auto">
-              <button 
+              <Button 
               onClick={(e) => {
                 e.preventDefault()
                 setSelectedJob(job.title)
                 setOpen(true)
               }}
-              className="bg-orange-600 hover:bg-orange-500 transition text-white text-xs font-medium px-6 py-3 rounded-full">
+              className="primary-button h-[30px]">
                 Apply Now
-              </button>
+              </Button>
             </div>
           </div>
           </Link>

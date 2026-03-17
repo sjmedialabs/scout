@@ -34,7 +34,7 @@ export default function JobDetailsPage({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         
         {/* LEFT CONTENT */}
-        <div className=" ml-6 lg:col-span-2">
+        <div className="  lg:col-span-2">
           {/* Title */}
           <h1 className="text-4xl font-medium text-orangeButton mb-4">
             {job.title}
@@ -68,7 +68,7 @@ export default function JobDetailsPage({
           </h2>
 
           <div
-            className="list-disc pl-5 space-y-2 text-gray-400 text-sm"
+            className="list-disc  space-y-2 text-gray-400 text-sm"
             dangerouslySetInnerHTML={{ __html: job.skills }}
           />
         </div>

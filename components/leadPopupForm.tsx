@@ -228,15 +228,15 @@ export default function ContactProviderModal({
               }
             /> */}
              <ServiceDropdown
-                              value={form.category}
-                              onChange={(value) =>
-                                setForm((p) => ({ ...p, category: value }))
-                              }
-                              placeholder="Select service"
-                              triggerClassName="border-2 border-gray-400 text-[#000] rounded-[8px] p-4
-                                  text-xs"
-                              triggerSpanClassName="text-[#000]"
-                            />
+              value={form.category}
+              onChange={(value) =>
+                setForm((p) => ({ ...p, category: value }))
+              }
+              placeholder="Select service"
+              triggerClassName="border-2 border-gray-400 text-[#000] rounded-[8px] p-4
+                  text-xs"
+              triggerSpanClassName="text-[#000]"
+            />
           </div>
 
           {/* Description */}
@@ -378,7 +378,7 @@ export default function ContactProviderModal({
           <Button
             onClick={handleSubmit}
             disabled={loading}
-            className="w-[120px]"
+            className="primary-button h-[30px] max-w-[180px]"
           >
             {loading ? "Sending..." : "Submit"}
           </Button>

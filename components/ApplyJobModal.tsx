@@ -1,6 +1,15 @@
 "use client"
 
 import { useState } from "react"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 type ApplyJobModalProps = {
   isOpen: boolean
@@ -152,7 +161,7 @@ export default function ApplyJobModal({
   /* ---------------- UI ---------------- */
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-3xl w-full max-w-3xl p-8 relative max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-xl w-full max-w-3xl px-4 py-3 relative max-h-[90vh] overflow-y-auto">
 
         {/* Close */}
         <button
@@ -166,7 +175,7 @@ export default function ApplyJobModal({
           ✕
         </button>
 
-        <h2 className="text-3xl font-semibold mb-4">
+        <h2 className="text-xl text-[#F54A0C] font-semibold mb-4">
           Apply for {jobTitle}
         </h2>
 
@@ -177,18 +186,19 @@ export default function ApplyJobModal({
         ) : (
           <form
             onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 gap-3"
           >
             {/* First Name */}
             <div>
               <label className="text-sm font-medium">
                 First Name <span className="text-red-500">*</span>
               </label>
-              <input
+              <Input
                 name="firstName"
                 value={form.firstName}
                 onChange={handleChange}
-                className="w-full border rounded-xl px-4 py-3"
+                className="w-full border border-gray-400 rounded-xl px-4 py-3 placeholder:text-gray-400"
+                placeholder="Enter your first name"
               />
               {errors.firstName && (
                 <p className="text-red-500 text-xs">{errors.firstName}</p>
@@ -200,11 +210,12 @@ export default function ApplyJobModal({
               <label className="text-sm font-medium">
                 Last Name <span className="text-red-500">*</span>
               </label>
-              <input
+              <Input
                 name="lastName"
                 value={form.lastName}
                 onChange={handleChange}
-                className="w-full border rounded-xl px-4 py-3"
+                className="w-full border border-gray-400 rounded-xl px-4 py-3 placeholder:text-gray-400"
+                placeholder="Enter your last name"
               />
               {errors.lastName && (
                 <p className="text-red-500 text-xs">{errors.lastName}</p>
@@ -216,11 +227,12 @@ export default function ApplyJobModal({
               <label className="text-sm font-medium">
                 Phone <span className="text-red-500">*</span>
               </label>
-              <input
+              <Input
                 name="phone"
                 value={form.phone}
                 onChange={handleChange}
-                className="w-full border rounded-xl px-4 py-3"
+                 className="w-full border border-gray-400 rounded-xl px-4 py-3 placeholder:text-gray-400"
+                 placeholder="Enter your mobile number"
               />
               {errors.phone && (
                 <p className="text-red-500 text-xs">{errors.phone}</p>
@@ -232,11 +244,12 @@ export default function ApplyJobModal({
               <label className="text-sm font-medium">
                 Alternate Phone <span className="text-gray-400">(Optional)</span>
               </label>
-              <input
+              <Input
                 name="altPhone"
                 value={form.altPhone}
                 onChange={handleChange}
-                className="w-full border rounded-xl px-4 py-3"
+                  className="w-full border border-gray-400 rounded-xl px-4 py-3 placeholder:text-gray-400"
+                  placeholder="Enter your alternate mobile number"
               />
             </div>
 
@@ -245,11 +258,12 @@ export default function ApplyJobModal({
               <label className="text-sm font-medium">
                 Email <span className="text-red-500">*</span>
               </label>
-              <input
+              <Input
                 name="email"
                 value={form.email}
                 onChange={handleChange}
-                className="w-full border rounded-xl px-4 py-3"
+                 className="w-full border border-gray-400 rounded-xl px-4 py-3 placeholder:text-gray-400"
+                 placeholder="Enter your email"
               />
               {errors.email && (
                 <p className="text-red-500 text-xs">{errors.email}</p>
@@ -261,19 +275,26 @@ export default function ApplyJobModal({
               <label className="text-sm font-medium">
                 Gender <span className="text-red-500">*</span>
               </label>
-              <select
-                name="gender"
+
+              <Select
                 value={form.gender}
-                onChange={handleChange}
-                className="w-full border rounded-xl px-4 py-3"
+                onValueChange={(value) =>
+                  setForm((prev) => ({ ...prev, gender: value }))
+                }
               >
-                <option value="">Select</option>
-                <option>Male</option>
-                <option>Female</option>
-                <option>Other</option>
-              </select>
+                <SelectTrigger className="w-full border border-gray-400 data-[placeholder]:text-gray-400 rounded-xl px-4 py-3 h-[48px]">
+                  <SelectValue placeholder="Select gender" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  <SelectItem value="Male">Male</SelectItem>
+                  <SelectItem value="Female">Female</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+
               {errors.gender && (
-                <p className="text-red-500 text-xs">{errors.gender}</p>
+                <p className="text-red-500 text-xs mt-1">{errors.gender}</p>
               )}
             </div>
 
@@ -282,11 +303,12 @@ export default function ApplyJobModal({
               <label className="text-sm font-medium">
                 Qualification <span className="text-red-500">*</span>
               </label>
-              <input
+              <Input
                 name="qualification"
                 value={form.qualification}
                 onChange={handleChange}
-                className="w-full border rounded-xl px-4 py-3"
+                className="w-full border border-gray-400 rounded-xl px-4 py-3 placeholder:text-gray-400"
+                placeholder="Enter your qualification"
               />
               {errors.qualification && (
                 <p className="text-red-500 text-xs">{errors.qualification}</p>
@@ -298,11 +320,12 @@ export default function ApplyJobModal({
               <label className="text-sm font-medium">
                 Passed Out Year <span className="text-red-500">*</span>
               </label>
-              <input
+              <Input
                 name="passedOutYear"
                 value={form.passedOutYear}
                 onChange={handleChange}
-                className="w-full border rounded-xl px-4 py-3"
+                className="w-full border border-gray-400 rounded-xl px-4 py-3 placeholder:text-gray-400"
+                placeholder="Enter your passed out year"
               />
               {errors.passedOutYear && (
                 <p className="text-red-500 text-xs">{errors.passedOutYear}</p>
@@ -314,11 +337,12 @@ export default function ApplyJobModal({
               <label className="text-sm font-medium">
                 Experience <span className="text-red-500">*</span>
               </label>
-              <input
+              <Input
                 name="experience"
                 value={form.experience}
                 onChange={handleChange}
-                className="w-full border rounded-xl px-4 py-3"
+                className="w-full border border-gray-400 rounded-xl px-4 py-3 placeholder:text-gray-400"
+                placeholder="Enter your experience"
               />
               {errors.experience && (
                 <p className="text-red-500 text-xs">{errors.experience}</p>
@@ -330,14 +354,15 @@ export default function ApplyJobModal({
               <label className="text-sm font-medium">
                 Resume (PDF) <span className="text-red-500">*</span>
               </label>
-              <div className="bg-gray-100 border rounded-xl px-4 py-3">
-                <input
+              
+                <Input
                   type="file"
                   accept="application/pdf"
                   name="resume"
                   onChange={handleChange}
+                  className="w-full border border-gray-400 rounded-xl placeholder:text-gray-400"
                 />
-              </div>
+              
               <p className="text-xs text-gray-500 mt-1">
                 PDF only • Max size 2MB
               </p>
@@ -354,14 +379,15 @@ export default function ApplyJobModal({
               <label className="text-sm font-medium">
                 Cover Letter (PDF) <span className="text-gray-400">(Optional)</span>
               </label>
-              <div className="bg-gray-100 border rounded-xl px-4 py-3">
-                <input
+             
+                <Input
                   type="file"
                   accept="application/pdf"
                   name="coverLetter"
                   onChange={handleChange}
+                  className="w-full border border-gray-400 rounded-xl placeholder:text-gray-400"
                 />
-              </div>
+              
               <p className="text-xs text-gray-500 mt-1">
                 PDF only • Max size 2MB
               </p>
@@ -371,19 +397,16 @@ export default function ApplyJobModal({
             </div>
 
             {/* Submit */}
-            <div className="md:col-span-2">
-              <button
+           
+              <Button
                 type="submit"
                 disabled={loading}
-                className={`w-full py-4 rounded-full text-lg text-white transition ${
-                  loading
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-orange-600 hover:bg-orange-500"
-                }`}
+                className="primary-button h-[30px] max-w-[180px]"
+              
               >
                 {loading ? "Submitting..." : "Submit Application"}
-              </button>
-            </div>
+              </Button>
+            
           </form>
         )}
       </div>
