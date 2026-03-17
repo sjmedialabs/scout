@@ -51,6 +51,7 @@ export interface Requirement {
   seekerId: string
   attachments?: string[]
   notApprovedMsg:String
+  hasSubmittedProposal?: boolean
 }
 
 export interface Proposal {

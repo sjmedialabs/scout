@@ -81,13 +81,14 @@ const ProjectInquiriesPage = () => {
     setResLoading(true);
     setFailed(false);
     try {
-      const res = await authFetch("/api/requirements");
+      const res = await authFetch("/api/requirements/agency");
       const UserRes = await authFetch(`/api/users/${user.id}`)
       const freeTrailRes=await authFetch("/api/free-trail-config")
       const userData=await UserRes.json();
       const freeTrailData=await freeTrailRes.json();
       if (res.ok) {
         const data = await res.json();
+        console.log("Fetched updated Requriments::::::", data.requirements)
 
         setRequirements(
           data.requirements.filter(

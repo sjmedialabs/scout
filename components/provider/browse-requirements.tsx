@@ -264,17 +264,23 @@ export function BrowseRequirements({
                 </td>
 
                 <td className="p-4">
-                  <Button
-                    size="sm"
-                    className=" primary-button"
-                    onClick={() =>
-                      router.push(
-                        `/agency/dashboard/project-inquiries/${req._id}`
-                      )
-                    }
-                  >
-                    Submit Proposal
-                  </Button>
+                  {Boolean(req.hasSubmittedProposal) ? (
+                    <span className="inline-block px-8 cursor-not-allowed py-2 text-xs font-medium rounded-full bg-gray-200 text-gray-600">
+                      Submitted
+                    </span>
+                  ) : (
+                    <Button
+                      size="sm"
+                      className="primary-button"
+                      onClick={() =>
+                        router.push(
+                          `/agency/dashboard/project-inquiries/${req._id}`
+                        )
+                      }
+                    >
+                      Submit Proposal
+                    </Button>
+                  )}
                 </td>
               </tr>
             ))}
