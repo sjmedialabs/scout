@@ -204,11 +204,11 @@ export function CompanyProfileEditor({
       newErrors.website = "Please enter a valid URL";
     }
 
-    if (!formData.salesEmail?.trim()) {
-      newErrors.salesEmail = "Sales email is required";
-    } else if (!validateEmail(formData.salesEmail)) {
-      newErrors.salesEmail = "Please enter a valid email address";
-    }
+    // if (!formData.salesEmail?.trim()) {
+    //   newErrors.salesEmail = "Sales email is required";
+    // } else if (!validateEmail(formData.salesEmail)) {
+    //   newErrors.salesEmail = "Please enter a valid email address";
+    // }
 
     if (!formData.foundedYear) {
       newErrors.foundedYear = "Founded year is required";
@@ -250,11 +250,12 @@ export function CompanyProfileEditor({
     }
 
     setErrors(newErrors);
+    console.log("Errrors :::::",newErrors)
 
     if (Object.keys(newErrors).length === 0) {
       console.log("Calling save Profile:::");
 
-      const payload = {
+      const payload = { 
         name: formData.companyName, // schema: name
         tagline: formData.tagline,
         description: formData.description,
@@ -588,7 +589,7 @@ export function CompanyProfileEditor({
       setShowTestimonialForm(false);
     }
   };
-  console.log("edit Testimonial Id is::::", editTestimonialId);
+  
   const editTestimonialItem = (id: string) => {
     const item = formData.testimonials.find((t) => (t._id || t.id) === id);
     if (item) {
@@ -1171,7 +1172,7 @@ export function CompanyProfileEditor({
               htmlFor="min-project-size"
               className="text-sm font-inter text-[#98A0B4] font-semibold"
             >
-              Min Project Size
+              Min Project Price
             </Label>
             <Input
               id="min-project-size"
