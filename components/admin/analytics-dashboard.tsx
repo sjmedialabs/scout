@@ -321,9 +321,9 @@ interface AnalyticsDashboardProps {
 
     {/* Agency */}
     <div className="flex items-center gap-3">
-      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold">
+      {/* <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold">
         {provider.name?.charAt(0)}
-      </div>
+      </div> */}
 
       <div>
         <div className="font-semibold">{provider.name}</div>

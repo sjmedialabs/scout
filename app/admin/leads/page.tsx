@@ -141,7 +141,7 @@ export default function AdminLeadsPage() {
         placeholder="Search by name, email, phone..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full h-9 border border-gray-200 rounded-full placeholder:text-gray-500 text-sm"
+        className="w-full h-9 px-2 border border-gray-200 rounded-full placeholder:text-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100"
       />
     </div>
         }
@@ -156,12 +156,12 @@ export default function AdminLeadsPage() {
               setPage(1);
             }}
           >
-            <SelectTrigger className="h-9  md:min-w-[140px] border border-gray-200 rounded-full px-3 text-sm">
-              <SelectValue placeholder="All" />
+            <SelectTrigger className="h-9 text-gray-500 md:min-w-[140px] border border-gray-200 rounded-full px-3 text-sm">
+              <SelectValue  placeholder="All" />
             </SelectTrigger>
 
             <SelectContent>
-              <SelectItem value="all">All</SelectItem>
+              <SelectItem  value="all">All</SelectItem>
               <SelectItem value="new">New</SelectItem>
               <SelectItem value="contacted">Contacted</SelectItem>
             </SelectContent>

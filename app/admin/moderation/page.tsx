@@ -233,7 +233,7 @@ if (resLoading) {
             placeholder="Search reports..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 min-w-[300px] h-[35px] border-gray-200 rounded-full placeholder:text-gray-400"
+            className="pl-9 min-w-[300px] h-[35px] border-gray-200 rounded-full placeholder:text-gray-500"
           />
         </div>
 
@@ -254,7 +254,7 @@ if (resLoading) {
   value={statusFilter}
   onValueChange={(value) => setStatusFilter(value)}
 >
-  <SelectTrigger className="w-full rounded-full min-w-[100px] max-w-[300px] border-gray-200">
+  <SelectTrigger className="w-full text-gray-500 rounded-full min-w-[100px] max-w-[300px] border-gray-200">
     <SelectValue placeholder="Select Status" />
   </SelectTrigger>
 

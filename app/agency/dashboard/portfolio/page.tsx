@@ -123,7 +123,7 @@ export default function ProviderPortfolioPage() {
 
         {/* Sidebar */}
         <div className="space-y-3">
-          <FocusAreasCard provider={provider} />
+          <FocusAreasCard provider={provider} reviews={reviews} />
         </div>
       </div>
     </div>
