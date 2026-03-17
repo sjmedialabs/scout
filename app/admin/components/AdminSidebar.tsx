@@ -153,7 +153,7 @@ export function AdminSidebar({
     <Button
       variant="outline"
       className="
-        flex items-center justify-center gap-2 min-h-[48px] w-full
+        flex items-center justify-center gap-2 [40px] w-full
         px-2 text-white bg-orange-600
         hover:bg-orange-600 hover:text-white
         rounded-full border-none touch-manipulation

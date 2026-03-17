@@ -123,7 +123,7 @@ export default function ProviderProfilePage({
           height: "350px",
         }}
       >
-        <div className="max-w-7xl px-20 flex justify-start   lg:py-12 ">
+        <div className="max-w-7xl px-6 lg:px-20 flex justify-start   lg:py-12 ">
           <div className="flex flex-col md:flex-row justify-center md:items-center gap-6">
             <div className="flex flex-row gap-4 items-center">
             <div>

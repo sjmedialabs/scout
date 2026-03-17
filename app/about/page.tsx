@@ -155,7 +155,7 @@ export default async function AboutPage() {
 {cms?.aboutTeamSubtitle}
 </h5>
 
-          <div className="flex gap-6 md:gap-10 justify-start md:justify-center items-start mt-6 md:mt-8 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent snap-x snap-mandatory">
+          <div className="flex flex-col justify-center items-center gap-3 md:flex-row md:justify-start md:items-center  mt-[20px]">
             {cms?.aboutTeam?.map((member: any, i: number) => (
             <div
               key={i}
@@ -196,7 +196,7 @@ export default async function AboutPage() {
           </div>
 
           {/* Values Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10 max-w-6xl mx-auto text-center px-2">
+          <div className="grid grid-cols-1 md:grid-cols-4 text-center gap-4">
             {cms?.aboutValues?.map((item : any, i : number) => (
               <div key={i} className="flex flex-col items-center min-w-0">
                 <img 

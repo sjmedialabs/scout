@@ -7,6 +7,7 @@ import { Check, Star } from "lucide-react"
 import Link from "next/link"
 import { subscriptionPlans } from "@/lib/subscription-plans"
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 interface CmsPlan {
   _id: string
@@ -22,6 +23,7 @@ interface CmsPlan {
 
 
 export default function PricingPage() {
+  const router=useRouter();
   const [isAnnual, setIsAnnual] = useState(true)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [cmsFeatures, setCmsFeatures] = useState<Record<string, string[]>>({})
@@ -159,9 +161,9 @@ setSubscriptions(activePlans);
               return (
                 <Card
                   key={plan._id}
-                  role="button"
+                  
                   tabIndex={0}
-                  onClick={() => setSelectedId(plan._id)}                  
+                onClick={() =>router.push(`/agency/dashboard/account/subscriptions/${plan._id}?billing=${isAnnual ? "yearly" : "monthly"}`)}            
                   onKeyDown={(e) => 
                     (e.key === "Enter" || e.key === " ") && 
                     setSelectedId(plan._id)}

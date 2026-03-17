@@ -69,6 +69,7 @@ const EditProfile = () => {
         body: JSON.stringify(recievedData),
       });
       const data = await response.json();
+      console.log("Save profile data:::::",data)
       if (response.ok) {
         toast.success("Successfully updated the profile details");
       }

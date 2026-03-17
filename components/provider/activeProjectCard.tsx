@@ -109,7 +109,7 @@ export default function ProjectCard({
       {/* Button */}
       <button
         onClick={()=>router.push("/agency/dashboard/projects")}
-        className="primary-button h-[30px] w-[120px]" 
+        className="btn-blackButton h-[30px] w-[120px]" 
       >
         View Project →
       </button>

@@ -1153,9 +1153,9 @@ const toggleFavorite = (conversationId: string) => {
         open={open}
         onClose={() => setOpen(false)}
         reportedTo={`${
-          filteredDynamicConversation[0].participantsAre[0] === user.id
-            ? filteredDynamicConversation[0].participantsAre[1]
-            : filteredDynamicConversation[0].participantsAre[0]
+          dynamicActiveConversation.participantsAre[0] === user.id
+            ? dynamicActiveConversation.participantsAre[1]
+            : dynamicActiveConversation.participantsAre[0]
         }`}
       />
     )}

@@ -8,6 +8,13 @@ import { authFetch } from "@/lib/auth-fetch";
 import { ResponsiveTable } from "@/components/layout";
 import { MobileFilterBar } from "@/components/layout";
 import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -129,27 +136,43 @@ export default function AdminLeadsPage() {
 
       <MobileFilterBar
         searchSlot={
-          <Input
-            placeholder="Search by name, email, phone..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-9 border border-gray-200 rounded-full placeholder:text-gray-500 text-sm"
-          />
+          <div className="w-full flex-1">
+      <Input
+        placeholder="Search by name, email, phone..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="w-full h-9 border border-gray-200 rounded-full placeholder:text-gray-500 text-sm"
+      />
+    </div>
         }
         activeFilterCount={statusFilter !== "all" ? 1 : 0}
         sheetTitle="Filter leads"
       >
         <div className="w-full md:w-auto">
-          <select
+          <Select
             value={statusFilter}
-            onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-            className="h-9 w-full md:min-w-[140px] border border-gray-200 rounded-full px-3 text-sm"
+            onValueChange={(value) => {
+              setStatusFilter(value);
+              setPage(1);
+            }}
           >
-            <option value="all">All</option>
-            <option value="new">New</option>
-            <option value="contacted">Contacted</option>
-          </select>
+            <SelectTrigger className="h-9  md:min-w-[140px] border border-gray-200 rounded-full px-3 text-sm">
+              <SelectValue placeholder="All" />
+            </SelectTrigger>
+
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="new">New</SelectItem>
+              <SelectItem value="contacted">Contacted</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
+        <Button className="btn-blackButton h-[30px]" onClick={()=>{
+          setSearch("");
+          setStatusFilter("all")
+        }}>
+          Clear
+        </Button>
       </MobileFilterBar>
 
       {loading ? (
@@ -210,7 +233,11 @@ export default function AdminLeadsPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8"
+                            className={`h-8 hover:bg-transparent active:bg-transparent ${
+                                      actionLoading === lead._id || (lead.status || "new") === "contacted"
+                                        ? "cursor-not-allowed pacity-50"
+                                        : "cursor-pointer"
+                                    }`}
                             onClick={() => handleMarkContacted(lead)}
                             disabled={
                               actionLoading === lead._id || (lead.status || "new") === "contacted"
@@ -222,7 +249,7 @@ export default function AdminLeadsPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 text-red-600 hover:text-red-700"
+                            className="h-8 text-red-600 hover:text-red-700 hover:bg-transparent active:bg-transparent"
                             onClick={() => openDeleteConfirm(lead)}
                             disabled={actionLoading === lead._id}
                             title="Delete lead"

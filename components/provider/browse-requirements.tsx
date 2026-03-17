@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import type { Requirement } from "@/lib/types"
 import ServiceDropdown from "../select-category-filter"
+import { MobileFilterBar } from "@/components/layout";
 
 interface BrowseRequirementsProps {
   requirements: Requirement[]
@@ -144,69 +145,76 @@ export function BrowseRequirements({
     <div className="min-h-screen">
 
       {/* FILTER BAR */}
-  <div className=" mb-3 max-w-[95vw] overflow-x-auto">
-  <div className="flex items-center gap-3">
-
-    {/* Minimum Budget */}
-    <Input
+<div className="max-w-[95vw] overflow-x-auto">
+   <MobileFilterBar className="max-w-[95vw] overflow-x-auto"
+  searchSlot={
+    <div className="w-full">
+      <Input
       type="number"
       value={searchTerm}
       min={1}
       placeholder="Minimum Budget"
-      onChange={(e) =>
-        setSearchTerm(parseInt(e.target.value))
-      }
-      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-full placeholder:text-[#6a7282]"
-    />
-
-    {/* Service */}
-    <div>
-      <ServiceDropdown
-      value={serviceFilter}
-      onChange={(value) => setServiceFilter(value)}
-      triggerClassName="h-9 min-w-[150px]  mt-0 max-w-[220px] border border-gray-400 rounded-full text-gray-400"
-      triggerSpanClassName="text-sm text-gray-400"
+      onChange={(e) => setSearchTerm(parseInt(e.target.value))}
+      className="w-full h-[35px] placeholder:text-gray-500 placeholder:text-sm border border-[#D0D5DD] rounded-full px-4 text-sm focus:outline-none"
     />
     </div>
+  }
+  activeFilterCount={
+    (searchTerm ? 1 : 0) +
+    (serviceFilter ? 1 : 0) +
+    (startDate ? 1 : 0) +
+    (endDate ? 1 : 0)
+  }
+  sheetTitle="Filter projects"
+>
+  {/* Service */}
+  <div className="min-w-[180px] w-full mb-1">
+    <ServiceDropdown
+      value={serviceFilter}
+      onChange={(value) => setServiceFilter(value)}
+      triggerClassName="border border-[#D0D5DD] rounded-full w-full h-[35px]"
+      triggerSpanClassName="text-[#98A0B4] text-sm"
+    />
+  </div>
 
-    {/* Start Date */}
+  {/* Start Date */}
+  <div className="min-w-[150px] w-full">
     <Input
       type={startDate ? "date" : "text"}
       placeholder="Filter by Start Date"
-      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-full placeholder:text-[#6a7282]"
       value={startDate}
       onFocus={(e) => (e.target.type = "date")}
       onBlur={(e) => {
-        if (!startDate) e.target.type = "text"
+        if (!startDate) e.target.type = "text";
       }}
       onChange={(e) => setStartDate(e.target.value)}
+      className="w-full h-[35px] border border-[#D0D5DD] rounded-full px-3 text-sm placeholder:text-gray-500 focus:outline-none"
     />
+  </div>
 
-    {/* End Date */}
+  {/* End Date */}
+  <div className="min-w-[150px] w-full">
     <Input
       type={endDate ? "date" : "text"}
       placeholder="Filter by End Date"
-      className="h-9 min-w-[150px] max-w-[220px] border border-gray-400 rounded-full placeholder:text-[#6a7282]"
       value={endDate}
       onFocus={(e) => (e.target.type = "date")}
       onBlur={(e) => {
-        if (!endDate) e.target.type = "text"
+        if (!endDate) e.target.type = "text";
       }}
       onChange={(e) => setEndDate(e.target.value)}
+      className="w-full h-[35px] border border-[#D0D5DD] rounded-full px-3 text-sm placeholder:text-gray-500 focus:outline-none"
     />
-
-    {/* Clear Button */}
-    <Button
-       className="
-              h-9 btn-blackButton
-              
-            "
-      onClick={handleClear}
-    >
-      Clear
-    </Button>
-
   </div>
+
+  {/* Clear */}
+  <Button
+    className="btn-blackButton h-[33px] w-full md:w-auto md:min-w-[80px]"
+    onClick={handleClear}
+  >
+    Clear
+  </Button>
+</MobileFilterBar>
 </div>
       {/* TABLE VIEW */}
       <div className="border rounded-xl w-full max-w-[95vw] overflow-x-auto bg-white mx-auto px-px sm:px-0">
@@ -231,7 +239,9 @@ export function BrowseRequirements({
                   {formatDate(req.createdAt)}
                 </td>
 
-                <td className="p-4 font-medium">
+                <td 
+                onClick= {() => router.push(`/agency/dashboard/project-inquiries/${req._id}`)}
+                className="p-4 font-medium cursor-pointer hover:text-blue-500">
                   {req.title}
                 </td>
 

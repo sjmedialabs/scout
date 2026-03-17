@@ -436,7 +436,7 @@ const overflowCategories = mainCategories.slice(5);
         {sub.items?.map((child: any) => (
           <li key={child.slug}>
             <Link
-              href={`/services/${child.slug}`}
+              href={`/services?subcategory=${child._id}`}
               className="text-xs text-gray-500 hover:text-slate-900 cursor-pointer"
             >
               {child.title}
@@ -603,7 +603,7 @@ const overflowCategories = mainCategories.slice(5);
                       {parent.items?.map((child: any) => (
                         <li key={child.slug}>
                           <Link
-                            href={`/services/${child.slug}`}
+                            href={`/services?subcategory=${child._id}`}
                             className="text-xs text-gray-500 hover:text-slate-900"
                             onClick={() => {
                               setMobileMenuOpen(false);
