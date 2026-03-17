@@ -239,7 +239,9 @@ export function BrowseRequirements({
                   {formatDate(req.createdAt)}
                 </td>
 
-                <td className="p-4 font-medium">
+                <td 
+                onClick= {() => router.push(`/agency/dashboard/project-inquiries/${req._id}`)}
+                className="p-4 font-medium cursor-pointer hover:text-blue-500">
                   {req.title}
                 </td>
 
