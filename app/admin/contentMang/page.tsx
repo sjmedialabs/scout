@@ -33,6 +33,15 @@ export default function ContentManagementPage() {
   const [message, setMessage] = useState("");
   const[quickSearchTag,setQuickSearchTag]=useState("")
 
+  //------------blogs-----------------------
+  const [blogs, setBlogs] = useState(cms?.blogs || []);
+  const [blogForm, setBlogForm] = useState({
+    title: "",
+    description: "",
+    image: "",
+  });
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+
   const modules = useMemo(() => ({
   toolbar: [
     [{ header: [1, 2, 3, false] }],
@@ -64,6 +73,7 @@ const formats = [
       const res = await authFetch("/api/cms");
       const data = await res.json();
       setCMS(data.data || {});
+      setBlogs(data.data?.blogs || []);
     }
     load();
   }, []);
@@ -164,7 +174,7 @@ const formats = [
     const res = await authFetch("/api/cms", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(cms),
+      body: JSON.stringify({...cms,blogs}),
     });
 
     const data = await res.json();
@@ -173,6 +183,38 @@ const formats = [
     console.log("CMS save response:", data);
     setLoading(false);
   };
+
+  const handleAddOrUpdateBlog = () => {
+  if (editIndex !== null) {
+    // UPDATE
+    const updated = [...blogs];
+    updated[editIndex] = blogForm;
+    setBlogs(updated);
+    updateField("blogs", updated);
+    setEditIndex(null);
+  } else {
+    // ADD (new blog goes to TOP)
+    if(!blogForm.title.trim() || !blogForm.description.trim() || !blogForm.image.trim()){
+      alert("Image,Title and Description are required")
+      return;
+    }
+    const updated = [blogForm, ...blogs];
+    setBlogs(updated);
+    updateField("blogs", updated);
+  }
+
+  // Reset form
+  setBlogForm({ title: "", description: "", image: "" });
+};
+const handleDeleteBlog = (index: number) => {
+  const updated = blogs.filter((_, i) => i !== index);
+  setBlogs(updated);
+  updateField("blogs", updated);
+};
+const handleEditBlog = (index: number) => {
+  setBlogForm(blogs[index]);
+  setEditIndex(index);
+};
 
   const isValidEmail = (email) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -191,7 +233,7 @@ const isValidPhone = (phone) => {
  
 
       <Tabs defaultValue="home" className="w-full">
-         <div className="sticky top-16  bg-white pb-3">
+         <div className="sticky  bg-white pb-3">
           <div className="flex flex-row justify-between items-center">
             <h1 className="text-xl font-bold text-orangeButton">
               CMS Management
@@ -249,6 +291,12 @@ const isValidPhone = (phone) => {
                 className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
               >
                 Terms & Services
+              </TabsTrigger>
+              <TabsTrigger
+                value="blogs"
+                className="px-4 py-2 text-sm rounded-full transition data-[state=active]:bg-[#F54A0C] data-[state=active]:text-white"
+              >
+                Blogs
               </TabsTrigger>
 
             </TabsList>
@@ -1449,6 +1497,102 @@ const isValidPhone = (phone) => {
               </div>
             ))}
           </section>
+        </TabsContent>
+
+        {/*--------------------------------------Blogs content--------------- */}
+        <TabsContent value="blogs" className="space-y-6">
+
+          <div>
+
+            {/* adding blogs */}
+            <section className="border p-4 mb-3 rounded space-y-4">
+              <h2 className="text-xl font-semibold text-[#F4561C]">
+                {editIndex !== null ? "Edit Blog" : "Add Blog"}
+              </h2>
+
+              {/* IMAGE */}
+              <ImageUpload
+                value={blogForm.image}
+                onChange={(url) =>
+                  setBlogForm((prev) => ({ ...prev, image: url }))
+                }
+                description="Upload blog image"
+                previewClassName="w-100 h-24"
+              />
+
+              {/* TITLE */}
+              <Input
+                placeholder="Title"
+                value={blogForm.title}
+                onChange={(e) =>
+                  setBlogForm((prev) => ({ ...prev, title: e.target.value }))
+                }
+                className="border-gray-200 rounded-xl placeholder:text-gray-400"
+              />
+
+              {/* DESCRIPTION */}
+              <ReactQuill
+                value={blogForm.description}
+                onChange={(value) =>
+                  setBlogForm((prev) => ({ ...prev, description: value }))
+                }
+                modules={modules}
+                formats={formats}
+                placeholder="Enter description"
+              />
+
+              <Button
+                className="btn-blackButton h-[35px]"
+                onClick={handleAddOrUpdateBlog}
+              >
+                {editIndex !== null ? "Save Changes" : "+ Add Blog"}
+              </Button>
+            </section>
+
+            <section className="space-y-4 mb-2">
+              {/* <h2 className="text-xl font-semibold">Blogs</h2> */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {blogs.map((blog, index) => (
+                  <div
+                    key={index}
+                    className="border rounded-xl p-4 shadow-sm flex flex-col gap-3"
+                  >
+                    <img
+                      src={blog.image}
+                      alt="blog"
+                      className="w-full h-40 object-cover rounded-lg"
+                    />
+
+                    <h3 className="text-lg font-semibold">{blog.title}</h3>
+
+                    <div
+                      className="text-sm text-gray-600 [&_ul]:list-disc [&_ul]:ml-5 [&_li]:mb-1"
+                      dangerouslySetInnerHTML={{ __html: blog.description }}
+                    />
+
+                    <div className="flex gap-2 mt-auto">
+                      <Button
+                        className="btn-blackButton h-[30px]"
+                        onClick={() => handleEditBlog(index)}
+                      >
+                        Edit
+                      </Button>
+
+                      <Button
+                        className="primary-button h-[30px]"
+                        onClick={() => handleDeleteBlog(index)}
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+            
+
+          </div>
+
         </TabsContent>
 
          </div>

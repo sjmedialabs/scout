@@ -885,10 +885,10 @@ const toggleFavorite = (conversationId: string) => {
           {!resLoading &&
           !failed &&
           dynamicActiveConversation ? (
-            <Card className="rounded-2xl min-h-[85vh] px-0  py-0  flex flex-col justify-between bg-white border-0 shadow-none">
+            <Card className="rounded-2xl min-h-[85vh] md:min-h-[80vh] px-0 py-0 flex flex-col bg-white border-0 shadow-none overflow-hidden">
 
               {/* Chat Header */}
-              <div className="flex items-start flex-wrap justify-between bg-[#f9f9f9] px-3 py-1 border-b sticky top-0 z-10">
+              <div className="flex items-start flex-wrap justify-between bg-[#f9f9f9] px-3 py-1 border-b shrink-0 z-10">
                 <div className="flex items-center gap-3">
 
                   {/* Mobile Back Button */}
@@ -929,7 +929,7 @@ const toggleFavorite = (conversationId: string) => {
               </div>
 
               {/* Chat Messages */}
-              <div className="flex-1 px-3 -mt-15 -mb-15 overflow-y-auto max-h-[68vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <div className="flex-1 min-h-0 px-3 py-2 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 {!chatLaoding && (dynamicMessages || []).length !== 0 ? (
                   <div>
                     {/* {dynamicMessages.map((msg: Message) => (
@@ -1077,7 +1077,7 @@ const toggleFavorite = (conversationId: string) => {
               </div>
 
               {/* Message Input */}
-              <div className="px-6 py-0 border-t sticky bottom-0 bg-white z-10">
+              <div className="shrink-0 px-4 sm:px-6 py-3 border-t bg-white z-10">
                 <div className="mb-2">
                   {uploading && <span>Uploading...</span>}
                   {uplodedUrl.url && (
@@ -1153,9 +1153,9 @@ const toggleFavorite = (conversationId: string) => {
         open={open}
         onClose={() => setOpen(false)}
         reportedTo={`${
-          filteredDynamicConversation[0].participantsAre[0] === user.id
-            ? filteredDynamicConversation[0].participantsAre[1]
-            : filteredDynamicConversation[0].participantsAre[0]
+          dynamicActiveConversation.participantsAre[0] === user.id
+            ? dynamicActiveConversation.participantsAre[1]
+            : dynamicActiveConversation.participantsAre[0]
         }`}
       />
     )}

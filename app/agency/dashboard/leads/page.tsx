@@ -231,7 +231,7 @@ useEffect(() => {
         </p>
       </div>
       {/* TABS */}
-      <div className="inline-flex bg-[#e6edf5] rounded-full p-1 gap-1 mb-3">
+      {/* <div className="inline-flex bg-[#e6edf5] rounded-full p-1 gap-1 mb-3">
         {["opted", "direct"].map((tab) => (
           <button
             key={tab}
@@ -247,10 +247,10 @@ useEffect(() => {
               :"Opted Leads"}
           </button>
         ))}
-      </div>
+      </div> */}
 
-     {
-      leadTab==="opted" &&(
+     
+      
         <div className="min-h-screen">
 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
 
@@ -761,9 +761,10 @@ Dropped Leads
                 </DialogContent>
               </Dialog>
      </div>
-      )
-     }
-     {
+      
+     
+
+     {/* {
       leadTab==="direct" &&(
         <div>
           <BrowseRequirements
@@ -773,7 +774,7 @@ Dropped Leads
 
         </div>
       )
-     }
+     } */}
     </div>
   )
 }

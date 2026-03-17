@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { AlertTriangle, Search, Check, X,Calendar, Eye} from "lucide-react";
+import { AlertTriangle, Search, Check, X,Calendar, Eye,Trash2,Mail} from "lucide-react";
 
 import { authFetch } from "@/lib/auth-fetch";
 import {
@@ -46,7 +46,14 @@ export default function ReportedContentPage() {
   const [open, setOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<ReportItem | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const[suspendAccountDialogOpen,setSuspendAccountDialogOpen]=useState(false);
+  const[suspendAccountReport,setSuspendAccountReport]=useState<ReportItem | null>(null);
   const [reportToDelete, setReportToDelete] = useState<ReportItem | null>(null);
+
+  const[openMailModal,setOpenMailModal]=useState(false);
+  const[mailMessage,setMailMessage]=useState("");
+  const[sendingEmail,setSendingEmail]=useState(false);
+
 
   async function loadReports() {
     setResLoading(true);
@@ -100,6 +107,43 @@ export default function ReportedContentPage() {
     setReportToDelete(report);
     setDeleteDialogOpen(true);
   }
+  const sendMail = async () => {
+    if (!selectedReport) return;
+  
+  try {
+    setSendingEmail(true);
+    
+    const res = await authFetch(
+      `/api/reported-content/${selectedReport._id}/notify`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: mailMessage,
+        }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Email sent successfully");
+      setOpenMailModal(false);
+      setMailMessage("");
+    }
+  } catch (error) {
+    console.error(error);
+  }finally{
+    setSendingEmail(false);
+  }
+};
+
+  function openSuspendAccountConfirm(report: ReportItem) {
+    setSuspendAccountReport(report);
+    setSuspendAccountDialogOpen(true);
+  }
 
   async function confirmDelete() {
     if (!reportToDelete) return;
@@ -111,6 +155,25 @@ export default function ReportedContentPage() {
       if (res.ok) {
         setDeleteDialogOpen(false);
         setReportToDelete(null);
+        await loadReports();
+      }
+    } finally {
+      setActionLoading(null);
+    }
+  }
+  async function confirmSuspendAccount() {
+    if (!suspendAccountReport) return;
+    setActionLoading(suspendAccountReport._id);
+    try {
+      const res = await authFetch(`/api/reported-content/${suspendAccountReport._id}`, {
+        method: "PATCH",
+        body:JSON.stringify({action:"dismissed"})
+      });
+      const data=await res.json();
+      console.log("Response after suspending the account::::",data)
+      if (res.ok) {
+        setSuspendAccountDialogOpen(false);
+        setSuspendAccountReport(null);
         await loadReports();
       }
     } finally {
@@ -156,7 +219,7 @@ export default function ReportedContentPage() {
       </div>
 
       {/* Reports Table */}
-      <div className="bg-white rounded-2xl border shadow-lg">
+      <div className="bg-white rounded-2xl border shadow-lg overflow-x-auto">
         <ResponsiveTable scrollOnMobile>
           <table className="w-full min-w-[600px] text-sm">
           <thead className="border-b border-red-100">
@@ -235,19 +298,31 @@ export default function ReportedContentPage() {
                             variant="ghost"
                             size="sm"
                             className="h-8 w-8 p-0 hover:text-amber-600"
-                            onClick={() => handleIgnore(report)}
-                            disabled={actionLoading === report._id || report.status === "dismissed"}
-                            title="Ignore Report"
+                            onClick={() => openDeleteConfirm(report)}
+                            // disabled={actionLoading === report._id || report.status === "dismissed"}
+                            title="Delete Report"
                           >
-                            <X className="w-5 h-5" />
+                            <Trash2 />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 hover:text-amber-600"
+                            onClick={() => {
+                              setSelectedReport(report);
+                              setOpenMailModal(true);
+                            }}
+                            title="Send Mail"
+                          >
+                            <Mail className="w-5 h-5 text-gray-500 hover:text-black" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
                             className="h-8 w-8 p-0 hover:text-red-600"
-                            onClick={() => openDeleteConfirm(report)}
-                            disabled={actionLoading === report._id}
-                            title="Remove / Delete"
+                            onClick={() => openSuspendAccountConfirm(report)}
+                             disabled={actionLoading === report._id || report.status === "resolved"}
+                            title="Suspend Account"
                           >
                             <AlertTriangle className="w-5 h-5" />
                           </Button>
@@ -317,6 +392,65 @@ export default function ReportedContentPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/*Suspend confirmation */}
+      <AlertDialog open={suspendAccountDialogOpen} onOpenChange={setSuspendAccountDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Suspend Account?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will suspend the user account user will not be able to login.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmSuspendAccount}
+              className="bg-red-600 hover:bg-red-700"
+            >
+               Suspend
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/*Mail modal */}
+      {openMailModal && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="bg-white w-[450px] rounded-lg p-6">
+      
+      <h2 className="text-lg font-semibold mb-3">
+        Send Message to User
+      </h2>
+
+      <textarea
+        className="w-full border rounded-md p-2 h-32 text-sm"
+        placeholder="Write your message..."
+        value={mailMessage}
+        onChange={(e) => setMailMessage(e.target.value)}
+      />
+
+      <div className="flex justify-end gap-3 mt-4">
+        
+        <button
+          className="px-4 py-2 text-sm border rounded"
+          onClick={() => setOpenMailModal(false)}
+        >
+          Cancel
+        </button>
+
+        <button
+          className="px-4 py-2 text-sm bg-black text-white rounded"
+          onClick={sendMail}
+          disabled={sendingEmail}
+        >
+          {sendingEmail ? "Sending..." : "Send Email"}
+        </button>
+
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

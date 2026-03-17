@@ -35,6 +35,8 @@ export default function ReportContentModal({
   onClose: () => void;
   reportedTo: string;
 }) {
+
+  
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
@@ -43,7 +45,7 @@ export default function ReportContentModal({
 
   const handleSubmit = async () => {
     if (!reason || !description.trim()) return;
-
+    console.log("Reported To id is:::::",reportedTo)
     try {
       setLoading(true);
 

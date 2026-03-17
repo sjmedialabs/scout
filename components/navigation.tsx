@@ -125,7 +125,7 @@ export function Navigation() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      router.push(`/services?q=${encodeURIComponent(searchQuery.trim())}&type=providers`);
       setSearchQuery("");
     }
   };

@@ -29,14 +29,15 @@ export default function CareersPage() {
       </div>
 
       {/* Job Cards */}
-      <div className="space-y-6 w-6xl">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 max-w-full">
         {jobs.map((job) => (
           <Link
             key={job.slug}
             href={`/careers/${job.slug}`}
+            className="block"
           >
           <div
-            className="border mb-3 border-gray-400 rounded-3xl px-6 py-6 md:px-10 md:py-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
+            className="border border-gray-400 rounded-2xl sm:rounded-3xl px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:py-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-6"
           >
             {/* Left */}
             <div className="lg:w-1/3">

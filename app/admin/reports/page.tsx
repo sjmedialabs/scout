@@ -130,60 +130,68 @@ function KPICard({
     </div>
   )
 }
-function RevenueTrendChart({lastTweleveMonthsRevenue}) {
-  const maxRevenue= Math.max(...lastTweleveMonthsRevenue.map(d => d?.users),0)
-  // const maxRevenue=20000;
-  
+function RevenueTrendChart({ lastTweleveMonthsRevenue }) {
+  const maxRevenue = Math.max(
+    ...lastTweleveMonthsRevenue.map((d) => d?.revenue || 0), // ✅ fixed (was users)
+    0
+  );
 
-const step = getYAxisStep(maxRevenue)
+  const step = getYAxisStep(maxRevenue);
 
-const yAxisMax = Math.ceil(maxRevenue / step) * step
-const yAxisTicks = Array.from(
-  { length: yAxisMax / step + 1 },
-  (_, i) => i * step
-)
+  const yAxisMax = Math.ceil(maxRevenue / step) * step;
+  const yAxisTicks = Array.from(
+    { length: yAxisMax / step + 1 },
+    (_, i) => i * step
+  );
+
   return (
     <ChartContainer
       className="h-72 w-full"
       config={{ revenue: { label: "Revenue" } }}
     >
-      <BarChart data={lastTweleveMonthsRevenue}>
-        <defs>
-          <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="-13.56%" stopColor="#FD749B" />
-            <stop offset="158.3%" stopColor="#281AC8" />
-          </linearGradient>
-        </defs>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart
+          data={lastTweleveMonthsRevenue}
+          margin={{ top: 5, right: 10, left: 0, bottom: 5 }} // ✅ remove left space
+        >
+          <defs>
+            <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="-13.56%" stopColor="#FD749B" />
+              <stop offset="158.3%" stopColor="#281AC8" />
+            </linearGradient>
+          </defs>
 
-        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} />
 
-        <XAxis
-          dataKey="month"
-          axisLine
-          tickLine={false}
-          tick={{ fill: "#9CA3AF", fontSize: 10 }}
-        />
+          <XAxis
+            dataKey="month"
+            axisLine
+            tickLine={false}
+            tick={{ fill: "#9CA3AF", fontSize: 10 }}
+          />
 
-        <YAxis
-        domain={[0, yAxisMax]}
-        ticks={yAxisTicks}
-        allowDecimals={false}
-        tick={{ fill: "#858585", fontSize: 10 }}
-        axisLine={true}
-        tickLine={false}
-      />
+          <YAxis
+            width={35} // ✅ reduce reserved width
+            domain={[0, yAxisMax]}
+            ticks={yAxisTicks}
+            allowDecimals={false}
+            tick={{ fill: "#858585", fontSize: 10 }}
+            axisLine={true}
+            tickLine={false}
+          />
 
-        <ChartTooltip content={<ChartTooltipContent />} />
+          <ChartTooltip content={<ChartTooltipContent />} />
 
-        <Bar
-          dataKey="revenue"
-          fill="url(#revenueGradient)"
-          radius={[8, 8, 0, 0]}
-          barSize={8}
-        />
-      </BarChart>
+          <Bar
+            dataKey="revenue"
+            fill="url(#revenueGradient)"
+            radius={[8, 8, 0, 0]}
+            barSize={8}
+          />
+        </BarChart>
+      </ResponsiveContainer>
     </ChartContainer>
-  )
+  );
 }
 
 function RevenueSummaryCards() {
@@ -343,46 +351,57 @@ function KpiCard({
     </div>
   )
 }
-function AgencyPerformanceChart({topAgencies}) {
+function AgencyPerformanceChart({ topAgencies }) {
   return (
     <ChartContainer
-      className="h-64"
+      className="h-64 w-full"
       config={{ value: { label: "Performance" } }}
     >
-      <BarChart data={topAgencies}>
-        <defs>
-          <linearGradient id="serviceGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="-13.56%" stopColor="#FD749B" />
-            <stop offset="158.3%" stopColor="#281AC8" />
-          </linearGradient>
-        </defs>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart
+          data={topAgencies}
+          margin={{ top: 5, right: 10, left: 0, bottom: 5 }} // ✅ remove left spacing
+        >
+          <defs>
+            <linearGradient id="serviceGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="-13.56%" stopColor="#FD749B" />
+              <stop offset="158.3%" stopColor="#281AC8" />
+            </linearGradient>
+          </defs>
 
-        <CartesianGrid vertical={false} />
-        <XAxis
-          dataKey="agency"
-          tick={{ fill: "#9CA3AF", fontSize: 10 }}
-          tickLine={false}
-          axisLine={false}
-        />
-        <YAxis
-          tick={{ fill: "#9CA3AF", fontSize: 10 }}
-          tickLine={false}
-          axisLine={false}
-        />
+          <CartesianGrid vertical={false} />
 
-        <ChartTooltip content={<ChartTooltipContent />} />
+          <XAxis
+            dataKey="agency"
+            tick={{ fill: "#9CA3AF", fontSize: 10 }}
+            tickLine={false}
+            axisLine={false}
+            interval={0} // ✅ show all labels
+            angle={-20}  // ✅ prevent cutting (small tilt)
+            textAnchor="end"
+            height={50}  // ✅ give space for labels
+          />
 
-        <Bar
-          dataKey="value"
-          fill="url(#serviceGradient)"
-          radius={[8, 8, 0, 0]}
-          barSize={8}
-        />
-      </BarChart>
+          <YAxis
+            width={35} // ✅ reduce reserved left space
+            tick={{ fill: "#9CA3AF", fontSize: 10 }}
+            tickLine={false}
+            axisLine={false}
+          />
+
+          <ChartTooltip content={<ChartTooltipContent />} />
+
+          <Bar
+            dataKey="value"
+            fill="url(#serviceGradient)"
+            radius={[8, 8, 0, 0]}
+            barSize={8}
+          />
+        </BarChart>
+      </ResponsiveContainer>
     </ChartContainer>
-  )
+  );
 }
-
 function TopServicesTable({categories}) {
   return (
     <div className="bg-white rounded-2xl shadow-sm p-6">
