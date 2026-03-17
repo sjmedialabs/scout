@@ -57,7 +57,7 @@ const menuItems: MenuItem[] = [
   // { id: "competitor-comparison", label: "Competitor Comparison", icon: GitCompare, path: "/agency/dashboard/performance/competitor-comparison" },
 
   // MARKETING
-  { id: "lead-generation", label: "Lead Management", icon: Download, path: "/agency/dashboard/leads" },
+  // { id: "lead-generation", label: "Lead Management", icon: Download, path: "/agency/dashboard/leads" },
 
   // ACCOUNT & SETTINGS
   { id: "billing-subscription", label: "Billing & Subscription", icon: CreditCard, path: "/agency/dashboard/account/billing" },

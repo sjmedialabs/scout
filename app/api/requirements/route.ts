@@ -122,21 +122,21 @@ export async function POST(req: NextRequest) {
     ).lean();
 
     // Create notifications
-    if (providersMatchedServices.length > 0) {
-      const notifications = providersMatchedServices.map((provider) => ({
-        userId: provider.userId, //  RECEIVER (agency)
-        triggeredBy: user.userId, //  Client who posted
-        title: "New Requirement Posted",
-        message: `A new requirement matching your services (${newReq.category}) has been posted.`,
-        type: "NEW_REQUIREMENT",
-        userRole: "agency",
-        linkUrl: `/agency/dashboard/project-inquiries/${newReq._id}`,
-        sourceId: newReq._id,
-        isRead: false,
-      }));
+    // if (providersMatchedServices.length > 0) {
+    //   const notifications = providersMatchedServices.map((provider) => ({
+    //     userId: provider.userId, //  RECEIVER (agency)
+    //     triggeredBy: user.userId, //  Client who posted
+    //     title: "New Requirement Posted",
+    //     message: `A new requirement matching your services (${newReq.category}) has been posted.`,
+    //     type: "NEW_REQUIREMENT",
+    //     userRole: "agency",
+    //     linkUrl: `/agency/dashboard/project-inquiries/${newReq._id}`,
+    //     sourceId: newReq._id,
+    //     isRead: false,
+    //   }));
 
-      await Notification.insertMany(notifications);
-    }
+    //   await Notification.insertMany(notifications);
+    // }
 
     return NextResponse.json({
       success: true,
