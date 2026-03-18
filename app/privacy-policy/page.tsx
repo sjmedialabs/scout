@@ -22,7 +22,7 @@ export default function PrivacyPolicyPage() {
   console.log("privacyPolicy-cms",cms)
   return (
      <section className="bg-white">
-          <div className="mx-auto max-w-7xl px-4 py-6 ml-0 sm:px-6 lg:px-8 xl:pl-28">
+          <div className="mx-auto max-w-7xl px-4 py-6 ml-0 px-6 lg:px-10 ">
             
             {/* Header */}
             <h1 className="text-3xl h-6 text-orangeButton">

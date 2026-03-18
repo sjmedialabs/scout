@@ -110,7 +110,7 @@ export default function SubscribePage({ params }: SubscribePageProps) {
               <Card className="w-full max-w-md rounded-2xl shadow-md border border-slate-200 bg-white">
                 <CardContent className="p-5 pt-2 space-y-6">
                   <div className="flex items-center h-0 justify-between">
-                    <h2 className="text-orangeButton font-extrabold text-lg">
+                    <h2 className="text-orangeButton font-bold text-lg">
                       Order Summary
                     </h2>
                   </div>
@@ -118,13 +118,13 @@ export default function SubscribePage({ params }: SubscribePageProps) {
                   {/* Plan Row */}
                   <div className="flex items-center pt-7 justify-between border-b pb-4">
                     {/* Left */}
-                    <p className="font-extrabold text-zinc-900">
+                    <p className="font-bold text-zinc-900">
                       {selectedPlan.title} Plan
                     </p>
 
                     {/* Right */}
                     <div className="flex items-center gap-3">
-                      <p className="font-extrabold text-zinc-900">
+                      <p className="font-bold text-zinc-900">
                         $
                         {billing === "yearly"
                           ? selectedPlan.pricePerYear
@@ -144,7 +144,7 @@ export default function SubscribePage({ params }: SubscribePageProps) {
 
                   {/* Features */}
                   <div>
-                    <p className="font-extrabold text-md mb-3">
+                    <p className="font-bold text-md mb-3">
                       What's included:
                     </p>
                     <ul className="space-y-3">
@@ -202,7 +202,7 @@ export default function SubscribePage({ params }: SubscribePageProps) {
 
                   {/* Total*/}
                   <div className="border-t pt-4">
-                    <div className="flex items-center justify-between font-extrabold text-zinc-900">
+                    <div className="flex items-center justify-between font-bold text-zinc-900">
                       <span>Total</span>
                       <span>
                         $

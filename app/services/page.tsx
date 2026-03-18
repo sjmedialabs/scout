@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import RatingStars from "@/components/rating -star-servicesPage";
 import { Menu } from "lucide-react";
+import ContactProviderModal from "@/components/leadPopupForm";
 
 
 export default function ServicesPage() {
@@ -31,6 +32,8 @@ export default function ServicesPage() {
   
 
   const[resLoading,setResLoading]=useState(false);
+    const [open, setOpen] = useState(false)
+  
 
   const [categories, setCategories] = useState<any[]>([]);
   const [providers, setProviders] = useState<any[]>([]);
@@ -759,10 +762,15 @@ useEffect(() => {
                     <button
                       // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#000000] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
                       className="btn-blackButton h-[25px] w-full"
-                      onClick={() => handleContact(p)}
+                      onClick={() => setOpen(true)}
                     >
                       Contact
                     </button>
+                    <ContactProviderModal
+                                      open={open}
+                                      onClose={() => setOpen(false)}
+                                      userId={p.userId}    
+                                      />
                   </div>
                 </div>
             </div>

@@ -161,7 +161,7 @@ if (loading) {
             placeholder="Search Subscribers"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-[35px] rounded-full placeholder:text-gray-500 bg-transparent"
+            className="w-full h-[35px] rounded-full placeholder:text-xs placeholder:text-gray-500 bg-transparent"
           />
         </div>
         <div className="">
@@ -172,7 +172,7 @@ if (loading) {
             <SelectContent className="">
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="verified">Verified</SelectItem>
-              <SelectItem value="unverified">unVerified</SelectItem>
+              <SelectItem value="unverified">Un Verified</SelectItem>
               
             </SelectContent>        
           </Select>

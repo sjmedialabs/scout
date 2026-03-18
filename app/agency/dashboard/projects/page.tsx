@@ -59,7 +59,7 @@ const ProjectsPage = () => {
       });
   const [updating, setUpdating] = useState(false);
 
-  const ITEMS_PER_PAGE = 4;
+  const ITEMS_PER_PAGE = 10;
 
 const [activePage, setActivePage] = useState(1);
 const [completedPage, setCompletedPage] = useState(1);

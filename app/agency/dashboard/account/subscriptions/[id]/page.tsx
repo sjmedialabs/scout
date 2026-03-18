@@ -350,7 +350,7 @@ const handlePayment = async () => {
                 {/* Total*/}
                 <div className="border-t pt-4">
                   <div className="flex items-center justify-between font-bold text-zinc-900">
-                    <span>Price Plan</span>
+                    <span>Plan Price</span>
                     <span>
                       ${billing==="yearly"?selectedPlan.pricePerYear:selectedPlan.pricePerMonth}
                     </span>

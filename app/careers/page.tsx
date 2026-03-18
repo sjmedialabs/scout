@@ -31,7 +31,7 @@ export default function CareersPage() {
       </div>
 
       {/* Job Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:gap-6 max-w-full">
+      <div className="grid md:grid-cols-2 grid-cols-1 h-full gap-4 sm:gap-6 w-full">
         {jobs.map((job) => (
           <Link
             key={job.slug}
@@ -39,21 +39,21 @@ export default function CareersPage() {
             className="block"
           >
           <div
-            className="border border-gray-400 rounded-2xl sm:rounded-3xl px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:py-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-6"
+            className="border border-gray-400 h-full rounded-2xl sm:rounded-3xl px-4 py-4 sm:px-6 sm:py-6 md:px-6 md:py-2 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-6"
           >
             {/* Left */}
             <div className="lg:w-1/3">
-            <h2 className="text-lg font-semibold text-gray-800">
+            <h2 className="text-md font-semibold text-gray-800">
               {job.title}
             </h2>
-            <p className="text-sm text-gray-500 mt-1">
+            {/* <p className="text-sm text-gray-500 mt-1">
               Department: {job.department}
-            </p>
+            </p> */}
           </div>
 
           <div className="lg:w-1/4">
-            <p className="text-lg font-medium text-gray-500">
-              {job.employmentType}
+            <p className="text-sm text-gray-500 mt-1">
+              Department: {job.department}
             </p>
             <p className="text-sm text-gray-500 mt-1">
               {job.location}
@@ -63,7 +63,7 @@ export default function CareersPage() {
             {/* Middle 2 */}
             {/* Middle 2 */}
             <div className="lg:w-1/4 pt-0">
-              <p className="text-lg font-medium text-gray-500">
+              <p className="text-md font-medium text-gray-500">
                 {job.experience}
               </p>
               <p className="text-sm text-gray-500 mt-1">
