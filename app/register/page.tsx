@@ -79,18 +79,18 @@ const handleSubmit = async () => {
   return (
         <div>
         {/* Modal Card */}
-      <div className="relative min-h-screen w-full max-w-7xl bg-white mx-auto">
+      <div className="relative min-h-screen w-full  bg-white mx-auto">
         <div className="grid min-h-screen grid-cols-1 lg:grid-cols-12">
 
           {/* LEFT SECTION */}
           <div
             className="relative hidden lg:flex lg:col-span-6 min-h-screen flex-col justify-between p-10 text-white bg-cover bg-bottom-left bg-no-repeat"
             style={{
-              backgroundImage: "url('/images/Login-Image.png')",
+              backgroundImage: "url('/images/Login-Image2.png')",
               backgroundPosition: "left bottom"
             }}
           >
-            <div className="relative z-10 max-w-sm">
+            <div className="relative ml-auto  z-10">
               <h2 className="text-2xl font-bold leading-tight">
                 Built to Accelerate <br /> Business Success
               </h2>
