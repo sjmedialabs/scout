@@ -64,13 +64,13 @@ export default function CompanyOverviewCard({ provider }: CompanyOverviewCardPro
           <div className="text-[11px] font-semibold text-gray-900">
           Min Project Size:{" "}
           <span className="font-normal text-gray-600 text-[11px]">
-            {provider.minProjectSize || "—"}$
+           $ {provider.minProjectSize || "—"}
           </span>
         </div>
           <div className="text-[11px] font-semibold text-gray-900">
           Hourly Rate:{" "}
           <span className="font-normal text-gray-600 text-[11px]">
-            {provider.hourlyRate || "—"}$/hr
+            ${provider.hourlyRate || "—"}/hr
           </span>
         </div>
       </div>

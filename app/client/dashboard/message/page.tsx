@@ -720,7 +720,9 @@ const toggleFavorite = (conversationId: string) => {
   console.log("Filtered Conversatoions are::::::", filteredDynamicConversation);
 
   return (
-  <div className="space-y-2 -mt-2 ">
+  <div className="space-y-2 -mt-2 [scrollbar-width:none] 
+          [-ms-overflow-style:none]        
+          [&::-webkit-scrollbar]:hidden">
     {/* Header */}
     {/* <div>
       <h1 className="text-xl lg:text-3xl font-bold text-orangeButton ">
@@ -735,7 +737,7 @@ const toggleFavorite = (conversationId: string) => {
 
       {/* ================= LEFT SIDEBAR ================= */}
       {(!isMobile || !isMobileChatOpen) && (
-        <Card className="rounded-2xl p-4 min-h-[90vh]  bg-white">
+        <Card className="rounded-2xl p-4 max-h-[86vh] bg-white">
           <div className="h-5 flex justify-between items-center">
             <h3 className="font-semibold text-2xl mb-3">
               Messages{" "}
@@ -772,7 +774,9 @@ const toggleFavorite = (conversationId: string) => {
           </div>
 
           {(filteredDynamicConversation || []).length !== 0 ? (
-            <div className="space-y-2">
+            <div className="space-y-2 max-h-[90vh] overflow-y-auto  [scrollbar-width:none] 
+          [-ms-overflow-style:none]        
+          [&::-webkit-scrollbar]:hidden">
               {[...filteredDynamicConversation]
               .slice()
                 .sort((a, b) => {
@@ -918,7 +922,7 @@ const toggleFavorite = (conversationId: string) => {
           {!resLoading &&
           !failed &&
           dynamicActiveConversation ? (
-            <Card className="rounded-2xl px-0 py-0  flex flex-col justify-between bg-white border-0 shadow-none">
+            <Card className="rounded-2xl px-0 py-0  min-h-[85vh] flex flex-col justify-between bg-white border-0 shadow-none">
 
               {/* Chat Header */}
               <div className="flex items-start flex-wrap justify-between bg-[#f9f9f9] px-6 py-2 border-b">
@@ -962,7 +966,7 @@ const toggleFavorite = (conversationId: string) => {
               </div>
 
               {/* Chat Messages */}
-              <div className="flex-1 px-6 py-0 space-y-5 overflow-y-auto max-h-[55vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <div className="flex-1 px-6 py-0 space-y-3 overflow-y-auto max-h-[65vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 {!chatLaoding && (dynamicMessages || []).length !== 0 ? (
                   <div>
                     {/* {dynamicMessages.map((msg: Message) => (
@@ -1109,7 +1113,7 @@ const toggleFavorite = (conversationId: string) => {
               </div>
 
               {/* Message Input */}
-              <div className="px-6 py-0 border-t mb-[20px] sticky bottom-0">
+              <div className="px-6 py-0 border-t md:border-none mb-[20px]  sticky  bottom-0">
                 <div className="mb-2">
                   {uploading && <span>Uploading...</span>}
                   {uplodedUrl.url && (
