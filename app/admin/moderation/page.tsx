@@ -427,6 +427,6 @@ if (resLoading) {
       )
      }
     </div> 
-  );
+  ); 
 }
  
