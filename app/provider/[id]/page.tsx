@@ -114,7 +114,7 @@ export default function ProviderProfilePage({
     <div className="min-h-screen mt-0 bg-white">
       {/* Hero Section */}
       <div
-        className="text-white flex  justify-center lg:justify-start md:py-10"
+        className="text-white md:py-10"
         style={{
           backgroundImage: `url(/ProviderDetailBanner.jpg)`,
           backgroundSize: "cover",
@@ -123,14 +123,14 @@ export default function ProviderProfilePage({
           height: "350px",
         }}
       >
-        <div className="max-w-7xl px-6 lg:px-20 flex justify-start   lg:py-12 ">
-          <div className="flex flex-col md:flex-row justify-center md:items-center gap-6">
-            <div className="flex flex-row gap-4 items-center">
+        <div className=" px-5 py-5 lg:px-20    lg:py-12 ">
+          <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-6">
+            <div className="flex md:flex-row  gap-4 items-center">
             <div>
               <img
                 src={providerDetails.logo || "/provider4.jpg"}
                 alt=""
-                className="h-20 w-20 sm:h-24 sm:w-24 md:h-32 md:w-40 rounded-2xl object-contain bg-white/10 shrink-0"
+                className="h-20 w-20 sm:h-24 sm:w-24 md:h-32 md:w-full md:min-w-30 rounded-2xl object-contain shrink-0"
               />
             </div>
             <div className="flex-1">
@@ -147,22 +147,22 @@ export default function ProviderProfilePage({
                     Featured
                   </Badge>
                 )} */}
-                <h1 className="text-2xl font-extrabold mt-1">
+                <h1 className="text-md md:text-2xl font-extrabold mt-1">
                   {providerDetails.name.toUpperCase()}
                 </h1>
               </div>
-              <p className="text-lg text-white/90 mb-2">
+              <p className="text-sm md:text-lg text-white/90 mb-2">
                 {providerDetails.tagline || "Professional service provider"}
               </p>
               {/* location */}
-              <div className="grid grid-cols-3 gap-1 mb-3 text-sm">
+              <div className="grid grid-cols-3 gap-1 md:mb-3 text-sm">
                 <div className="flex items-center gap-2">
                   <img
                     src="/ProviderDetailPageBannerIconLoactionFilled.png"
-                    className="h-5 w-4"
+                    className="md:h-5 md:w-4 h-3 w-3"
                   />
 
-                  <span className="text-[#fff] font-semibold text-sm">
+                  <span className="text-[#fff] font-semibold text-xs md:text-sm">
                     {providerDetails.location}
                   </span>
                 </div>
@@ -204,7 +204,7 @@ export default function ProviderProfilePage({
             </div>
             </div>
             {/* buttons section */}
-            <div className="flex flex-col justify-center items-end gap-1">
+            <div className="flex flex-col justify-center items-start md:items-end gap-1">
               
                 <Button
                   size="lg"

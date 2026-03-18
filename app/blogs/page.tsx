@@ -3,145 +3,199 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export default function BlogPage() {
   const [search, setSearch] = useState("");
   const [visibleCount, setVisibleCount] = useState(8);
+  const[blogs,setBlogs]=useState([])
+
+  const [data, setData] = useState({
+    cms: null,
+    providers: [],
+    projects: [],
+    categories: [],
+  });
+  
+  const [resLoading, setResLoading] = useState(false);
+  
+  async function getData() {
+  let baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+
+  const REVALIDATE_TIME = Number(process.env.CMS_REVALIDATE_TIME) || 10;
+  const options = { next: { revalidate: REVALIDATE_TIME } };
+
+  try {
+    setResLoading(true);
+
+    //  Only CMS API call
+    const cmsRes = await fetch(`/api/cms`, options);
+
+    const cms = cmsRes.ok ? (await cmsRes.json()).data : null;
+    setBlogs(cms.blogs)
+
+    //  Return structure kept same (others empty)
+    // return { cms, providers: [], projects: [], categories: [] };
+
+  } catch (error) {
+    console.error("Data Fetch Error:", error);
+    return { cms: null, providers: [], projects: [], categories: [] };
+  } finally {
+    setResLoading(false);
+  }
+}
+  
+  useEffect(() => {
+    async function fetchData() {
+      const res = await getData();
+      setData(res);
+    }
+  
+    fetchData();
+  }, []);
+  
+  if (resLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   //  Mock Data (CMS-ready structure)
-  const blogs = [
-    {
-      id: 1,
-      slug: "startup-productivity",
-      title: "10 Tips to Skyrocket Your Startup’s Productivity",
-      description:
-        "Boost your team's efficiency with these 10 actionable productivity tips for startups.",
-      image: "/blog1.jpg",
-      category: "PRODUCTIVITY",
-      author: "Emily Roberts",
-      date: "Apr 22, 2024",
-      readTime: "5 min read",
-    },
-    {
-      id: 2,
-      slug: "saas-scaling",
-      title: "How to Scale Your SaaS Business in 2024",
-      description:
-        "Discover the essential steps to successfully scale your SaaS business.",
-      image: "/blog2.jpg",
-      category: "BUSINESS",
-      author: "Mark Anderson",
-      date: "Apr 18, 2024",
-      readTime: "5 min read",
-    },
-    {
-      id: 3,
-      slug: "api-integrations",
-      title: "A Beginner’s Guide to API Integrations",
-      description:
-        "Learn the basics of API integrations and how they can streamline your SaaS product.",
-      image: "/blog3.jpg",
-      category: "DEVELOPMENT",
-      author: "Sarah Johnson",
-      date: "Apr 15, 2024",
-      readTime: "5 min read",
-    },
-    {
-      id: 4,
-      slug: "startup-challenges",
-      title: "The Top 5 Challenges Facing New Startups",
-      description:
-        "Explore the biggest challenges new startups face and how to overcome them.",
-      image: "/blog4.jpg",
-      category: "STARTUPS",
-      author: "David Kim",
-      date: "Apr 10, 2024",
-      readTime: "5 min read",
-    },
-    {
-      id: 5,
-      slug: "saas-metrics",
-      title: "Essential SaaS Metrics for Startup Success",
-      description:
-        "Track these key SaaS metrics to ensure your startup grows effectively.",
-      image: "/blog5.jpg",
-      category: "SAAS",
-      author: "Jessica Lee",
-      date: "Apr 1, 2024",
-      readTime: "6 min read",
-    },
-    {
-      id: 6,
-      slug: "team-efficiency-tools",
-      title: "5 Tools to Enhance Your Team’s Efficiency",
-      description:
-        "These tools will help your team collaborate and work faster.",
-      image: "/blog6.jpg",
-      category: "PRODUCTIVITY",
-      author: "Jessica Lee",
-      date: "Apr 05, 2024",
-      readTime: "4 min read",
-    },
-    {
-      id: 7,
-      slug: "marketing-2024",
-      title: "Marketing Strategies for 2024",
-      description: "Top marketing trends you should follow this year.",
-      image: "/blog1.jpg",
-      category: "MARKETING",
-      author: "John Doe",
-      date: "Apr 06, 2024",
-      readTime: "5 min read",
-    },
-    {
-      id: 8,
-      slug: "startup-funding",
-      title: "Startup Funding Guide",
-      description: "How to raise funds for your startup.",
-      image: "/blog2.jpg",
-      category: "STARTUP",
-      author: "Jane Smith",
-      date: "Apr 07, 2024",
-      readTime: "6 min read",
-    },
-    {
-      id: 9,
-      slug: "scaling-teams",
-      title: "Scaling Teams Efficiently",
-      description: "Build and scale high-performing teams.",
-      image: "/blog3.jpg",
-      category: "BUSINESS",
-      author: "Alex",
-      date: "Apr 08, 2024",
-      readTime: "4 min read",
-    },
-    {
-      id: 10,
-      slug: "ui-ux-trends",
-      title: "UI/UX Trends",
-      description: "Latest UI/UX design trends.",
-      image: "/blog4.jpg",
-      category: "DESIGN",
-      author: "Chris",
-      date: "Apr 09, 2024",
-      readTime: "3 min read",
-    },
-  ];
+  // const blogs = [
+  //   {
+  //     id: 1,
+  //     slug: "startup-productivity",
+  //     title: "10 Tips to Skyrocket Your Startup’s Productivity",
+  //     description:
+  //       "Boost your team's efficiency with these 10 actionable productivity tips for startups.",
+  //     image: "/blog1.jpg",
+  //     category: "PRODUCTIVITY",
+  //     author: "Emily Roberts",
+  //     date: "Apr 22, 2024",
+  //     readTime: "5 min read",
+  //   },
+  //   {
+  //     id: 2,
+  //     slug: "saas-scaling",
+  //     title: "How to Scale Your SaaS Business in 2024",
+  //     description:
+  //       "Discover the essential steps to successfully scale your SaaS business.",
+  //     image: "/blog2.jpg",
+  //     category: "BUSINESS",
+  //     author: "Mark Anderson",
+  //     date: "Apr 18, 2024",
+  //     readTime: "5 min read",
+  //   },
+  //   {
+  //     id: 3,
+  //     slug: "api-integrations",
+  //     title: "A Beginner’s Guide to API Integrations",
+  //     description:
+  //       "Learn the basics of API integrations and how they can streamline your SaaS product.",
+  //     image: "/blog3.jpg",
+  //     category: "DEVELOPMENT",
+  //     author: "Sarah Johnson",
+  //     date: "Apr 15, 2024",
+  //     readTime: "5 min read",
+  //   },
+  //   {
+  //     id: 4,
+  //     slug: "startup-challenges",
+  //     title: "The Top 5 Challenges Facing New Startups",
+  //     description:
+  //       "Explore the biggest challenges new startups face and how to overcome them.",
+  //     image: "/blog4.jpg",
+  //     category: "STARTUPS",
+  //     author: "David Kim",
+  //     date: "Apr 10, 2024",
+  //     readTime: "5 min read",
+  //   },
+  //   {
+  //     id: 5,
+  //     slug: "saas-metrics",
+  //     title: "Essential SaaS Metrics for Startup Success",
+  //     description:
+  //       "Track these key SaaS metrics to ensure your startup grows effectively.",
+  //     image: "/blog5.jpg",
+  //     category: "SAAS",
+  //     author: "Jessica Lee",
+  //     date: "Apr 1, 2024",
+  //     readTime: "6 min read",
+  //   },
+  //   {
+  //     id: 6,
+  //     slug: "team-efficiency-tools",
+  //     title: "5 Tools to Enhance Your Team’s Efficiency",
+  //     description:
+  //       "These tools will help your team collaborate and work faster.",
+  //     image: "/blog6.jpg",
+  //     category: "PRODUCTIVITY",
+  //     author: "Jessica Lee",
+  //     date: "Apr 05, 2024",
+  //     readTime: "4 min read",
+  //   },
+  //   {
+  //     id: 7,
+  //     slug: "marketing-2024",
+  //     title: "Marketing Strategies for 2024",
+  //     description: "Top marketing trends you should follow this year.",
+  //     image: "/blog1.jpg",
+  //     category: "MARKETING",
+  //     author: "John Doe",
+  //     date: "Apr 06, 2024",
+  //     readTime: "5 min read",
+  //   },
+  //   {
+  //     id: 8,
+  //     slug: "startup-funding",
+  //     title: "Startup Funding Guide",
+  //     description: "How to raise funds for your startup.",
+  //     image: "/blog2.jpg",
+  //     category: "STARTUP",
+  //     author: "Jane Smith",
+  //     date: "Apr 07, 2024",
+  //     readTime: "6 min read",
+  //   },
+  //   {
+  //     id: 9,
+  //     slug: "scaling-teams",
+  //     title: "Scaling Teams Efficiently",
+  //     description: "Build and scale high-performing teams.",
+  //     image: "/blog3.jpg",
+  //     category: "BUSINESS",
+  //     author: "Alex",
+  //     date: "Apr 08, 2024",
+  //     readTime: "4 min read",
+  //   },
+  //   {
+  //     id: 10,
+  //     slug: "ui-ux-trends",
+  //     title: "UI/UX Trends",
+  //     description: "Latest UI/UX design trends.",
+  //     image: "/blog4.jpg",
+  //     category: "DESIGN",
+  //     author: "Chris",
+  //     date: "Apr 09, 2024",
+  //     readTime: "3 min read",
+  //   },
+  // ];
 
   //  Search Filter
   const filteredBlogs = blogs.filter((blog) =>
-    blog.title.toLowerCase().includes(search.toLowerCase())
+    blog?.title.toLowerCase().includes(search.toLowerCase())
   );
 
   //  Slice based on visible count
   const visibleBlogs = filteredBlogs.slice(0, visibleCount);
 
   return (
-    <div className="min-h-screen bg-gray-50 px-10 py-4">
+    <div className="min-h-screen bg-gray-50 px-6 md:px-10 py-4">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-orangeButton">Blog</h1>
+          <h1 className="text-2xl font-bold text-orangeButton">Blogs</h1>
           <p className="text-gray-500">
             Insights, tips & stories to help you grow your business
           </p>
@@ -163,8 +217,8 @@ export default function BlogPage() {
       {/* Blog Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
         {visibleBlogs.map((blog) => (
-            <Link href={`/blogs/${blog.slug}`} key={blog.id}>
-                <div className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer">
+            <Link href={`/blogs/${blog._id}`} key={blog._id}>
+                <div className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer h-full">
             {/* Image */}
             <div className="relative w-full h-40">
               <Image
@@ -176,20 +230,22 @@ export default function BlogPage() {
             </div>
 
             {/* Content */}
-            <div className="p-5">
+            <div className="px-4 py-3">
               {/* Category */}
               {/* <span className="text-xs bg-gray-100 px-3 py-1 rounded-full text-gray-600">
                 {blog.category}
               </span> */}
 
               {/* Title */}
-              <h2 className="text-lg font-semibold mt-2 mb-1 leading-tight ">
+              <h2 className="text-lg font-semibold mt-2 mb-1 leading-tight line-clamp-2 min-h-12">
                 {blog.title}
               </h2>
 
               <p className="text-sm mb-1">
                 Posted Date:{" "}
-                <span className="text-gray-500">{blog.date}</span>
+                <span className="text-gray-500">
+                {new Date(blog.postedDate).toLocaleDateString("en-GB")}
+              </span>
               </p>
 
               {/* Author + Date */}
@@ -198,9 +254,10 @@ export default function BlogPage() {
               </p> */}
 
               {/* Description */}
-              <p className="text-sm text-gray-600 line-clamp-2">
-                {blog.description}
-              </p>
+              <div
+                className="text-sm text-gray-600 line-clamp-2 min-h-10"
+                dangerouslySetInnerHTML={{ __html: blog.description }}
+              />
             </div>
           </div>
           </Link>

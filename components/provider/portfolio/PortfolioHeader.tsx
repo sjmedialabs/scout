@@ -4,7 +4,7 @@ export default function PortfolioHeader() {
       {/* Title */}
       <h1 className="text-xl h-6 font-bold text-orangeButton"
       >
-        Portfolio
+        Company Profile
       </h1>
 
       {/* Subtitle */}

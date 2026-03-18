@@ -121,7 +121,7 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
         </div>
         <div>
           {/* Filters */}
-          <div className="flex flex-row justify-between gap-3  mb-2">
+          <div className="flex flex-row justify-between gap-3 max-w-[95vw] overflow-x-auto mb-2">
            <div className="relative rounded-full w-full h-[35px] border border-gray-200">
   <Search
     className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
@@ -131,13 +131,13 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
     placeholder="Search users..."
     value={searchTerm}
     onChange={(e) => setSearchTerm(e.target.value)}
-    className="pl-10 h-full border-none rounded-full placeholder:text-gray-500"
+    className="pl-10 h-full border-none rounded-full sm:min-w-none min-w-[160px] placeholder:text-xs placeholder:text-gray-500"
   />
             </div>
 
             <div className="w-full">
               <Select value={roleFilter} onValueChange={setRoleFilter}>
-                <SelectTrigger className="rounded-full h-[40px] text-xs w-full border data-[placeholder]:text-gray-500 border-gray-200 px-3 py-0 flex items-center">
+                <SelectTrigger className="rounded-full h-[40px] text-xs w-full border text-gray-500 border-gray-200 px-3 py-0 flex items-center">
                   <SelectValue placeholder="All Roles" />
                 </SelectTrigger>
 
@@ -151,7 +151,7 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
             </div>
             <div className="w-full">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="rounded-full h-[40px] border text-xs border-gray-200  py-0 flex items-center">
+              <SelectTrigger className="rounded-full h-[40px] border text-xs text-gray-500 border-gray-200  py-0 flex items-center">
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
@@ -176,7 +176,7 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
           </div>
 
           {/* Users Table */}
-          <div className="border p-4 rounded-2xl">
+          <div className="border p-4 rounded-2xl max-w-[95vw] overflow-x-auto">
             <Table>
               <TableHeader className="font-bold">
                 <TableRow className="font-bold">

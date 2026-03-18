@@ -141,14 +141,15 @@ export default function AdminLeadsPage() {
         placeholder="Search by name, email, phone..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full h-9 px-2 border border-gray-200 rounded-full placeholder:text-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100"
+        className="w-full  h-9 px-2 border border-gray-200 rounded-full placeholder:text-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100"
       />
     </div>
         }
         activeFilterCount={statusFilter !== "all" ? 1 : 0}
         sheetTitle="Filter leads"
+        
       >
-        <div className="w-full md:w-auto">
+        <div className="w-full  md:w-auto">
           <Select
             value={statusFilter}
             onValueChange={(value) => {
@@ -184,7 +185,7 @@ export default function AdminLeadsPage() {
           {error}
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border shadow-sm overflow-hidden max-w-[95vw] overflow-x-auto">
           <ResponsiveTable scrollOnMobile>
             <table className="w-full min-w-[600px] text-sm">
               <thead className="bg-gray-50 border-b">

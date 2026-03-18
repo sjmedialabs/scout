@@ -39,6 +39,7 @@ export default function ContentManagementPage() {
     title: "",
     description: "",
     image: "",
+    postedDate: "",
   });
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
@@ -198,13 +199,15 @@ const formats = [
       alert("Image,Title and Description are required")
       return;
     }
+    blogForm.postedDate = new Date().toISOString()
     const updated = [blogForm, ...blogs];
+    console.log("Added blog form :::::", blogForm)
     setBlogs(updated);
     updateField("blogs", updated);
   }
 
   // Reset form
-  setBlogForm({ title: "", description: "", image: "" });
+  setBlogForm({ title: "", description: "", image: "" , postedDate: ""});
 };
 const handleDeleteBlog = (index: number) => {
   const updated = blogs.filter((_, i) => i !== index);
@@ -225,10 +228,10 @@ const isValidPhone = (phone) => {
 };
 
 
-  if (!cms) return <p className="text-center py-10">Loading...</p>;
+  if (!cms) return <p className="text-center py-10 ">Loading...</p>;
 
   return (
-    <div className=" space-y-0">
+    <div className=" space-y-0 ">
      
  
 
@@ -248,7 +251,7 @@ const isValidPhone = (phone) => {
             </Button>
           </div>
 
-          <div className="max-w-[100vw] overflow-x-auto -mb-4 mt-2 ">
+          <div className="max-w-[95vw] overflow-x-auto -mb-4 mt-2 ">
             <TabsList className="inline-flex bg-[#e6edf5]  rounded-full p-1 gap-1">
               
               <TabsTrigger

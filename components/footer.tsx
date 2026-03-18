@@ -196,6 +196,11 @@ export function Footer() {
                   Careers
                 </Link>
               </li>
+              <li>
+                <Link href="/blogs" className=" hover:text-foreground">
+                  Blogs
+                </Link>
+              </li>
               {/* <li>
                 <Link href="/press" className=" hover:text-foreground">
                   Press

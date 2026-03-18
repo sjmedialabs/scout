@@ -219,7 +219,7 @@ export default function ReportedContentPage() {
       </div>
 
       {/* Reports Table */}
-      <div className="bg-white rounded-2xl border shadow-lg overflow-x-auto">
+      <div className="bg-white rounded-2xl border shadow-lg max-w-[95vw] overflow-x-auto">
         <ResponsiveTable scrollOnMobile>
           <table className="w-full min-w-[600px] text-sm">
           <thead className="border-b border-red-100">
@@ -274,7 +274,7 @@ export default function ReportedContentPage() {
                         <span>{new Date(report.createdAt).toLocaleDateString("en-IN")}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex justify-center gap-2 flex-wrap">
+                        <div className="flex justify-center gap-2 ">
                           <Button
                             variant="ghost"
                             size="sm"

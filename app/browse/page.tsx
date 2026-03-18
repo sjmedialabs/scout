@@ -369,7 +369,7 @@ setFilteredRequirements(openRequirements);
     );
   }
   return (
-    <div className="space-y-2 p-12 pt-1">
+    <div className="space-y-2 p-6 md:p-12 pt-1">
       <div>
         <h1 className="text-2xl font-bold text-[#F4561C] tracking-tight">
         Requirements
@@ -381,7 +381,7 @@ setFilteredRequirements(openRequirements);
         </div>
         <div className="lg:col-span-3">
           <Card className="bg-[#fff] rounded-[16px] py-0 px-0 p-0 min-h-100">
-            <CardContent className="max-h-[600px] overflow-y-auto p-6 -mt-2">
+            <CardContent className="max-h-[600px] overflow-y-auto p-6 ">
               {filteredRequirements && (
                 <RequirementList
                   requirements={filteredRequirements}

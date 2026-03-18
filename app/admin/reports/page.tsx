@@ -132,7 +132,7 @@ function KPICard({
 }
 function RevenueTrendChart({ lastTweleveMonthsRevenue }) {
   const maxRevenue = Math.max(
-    ...lastTweleveMonthsRevenue.map((d) => d?.revenue || 0), // ✅ fixed (was users)
+    ...lastTweleveMonthsRevenue.map((d) => d?.revenue || 0), 
     0
   );
 
@@ -1448,7 +1448,7 @@ const getARPU = (payments) => {
             </div>
 
           {/* Main Content */}
-          <div className="flex flex-row gap-6">
+          <div className="flex flex-col md:flex-row gap-6">
             {/* Chart */}
             <div className=" bg-white rounded-2xl p-6 shadow-sm w-full">
               <h3 className="text-lg font-semibold text-orange-500">

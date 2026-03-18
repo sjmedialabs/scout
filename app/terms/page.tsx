@@ -22,8 +22,8 @@ export default function Page() {
 
   console.log("Terms and services-cms",cms)
   return(
-     <section className="bg-white xl:px-30">
-          <div className="mx-auto max-w-7xl px-4 py-6 ml-0 sm:px-6 lg:px-8 xl:pl-28">
+     <section className="bg-white">
+          <div className="mx-auto max-w-7xl  py-6 ml-0 px-6 md:px-10">
             
             {/* Header */}
             <h1 className="text-3xl h-6 text-orangeButton">
@@ -50,7 +50,7 @@ export default function Page() {
                         <div key={index}>
                           <div className="flex gap-2" >
                              <span className="font-semibold text-lg text-[#000] -mt-0.5">{index+1}.</span>
-                             <h1 className="font-extrabold text-md text-[#000]">{item.title}</h1>
+                             <h1 className="font-bold text-md text-[#000]">{item.title}</h1>
                           </div>
                          
                           <div

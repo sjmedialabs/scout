@@ -79,7 +79,7 @@ export function RequirementList({ requirements, onViewProposals, onViewDetails }
   return (
     <div className="space-y-4"> 
       {requirements.map((requirement) => (
-        <Card key={requirement._id} className="hover:shadow-md transition-shadow bg-[#EFF7FA] rounded-[16px] px-0">
+        <Card key={requirement._id} className="hover:shadow-md transition-shadow py-3 bg-[#EFF7FA] rounded-[16px] px-0">
           <CardHeader className="px-0 -mt-1">
             <div className="flex justify-between items-start  px-0">
               <div className="flex-1 px-6">

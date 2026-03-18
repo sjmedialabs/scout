@@ -90,8 +90,8 @@ export default function ContactPage() {
   console.log("CMS for  the contact::::",cms)
 
   return (
-    <div className="min-h-screen pc-4 py-14">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
+    <div className="min-h-screen px-6 md:px-10 py-5">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
         {/* LEFT */}
         <div>
           <h2 className="text-xl font-normal text-[#F54A0C]">
@@ -104,8 +104,8 @@ export default function ContactPage() {
 
           <div className="mt-8 w-full max-w-xl rounded-2xl bg-white shadow-[0_0_5px_rgba(0,0,0,0.15)] p-6 overflow-hidden">
             <div className="flex items-center gap-2">
-              <span className="text-lg font-extrabold">Media Enqueries :</span>
-              <span className="text-lg text-gray-500">
+              <span className="text-md md:text-lg font-bold">Media Enqueries :</span>
+              <span className="text-md md:text-lg text-gray-500">
                 {cms?.contact?.email || "enquiry@scout.com"}
               </span>
             </div>
@@ -113,11 +113,11 @@ export default function ContactPage() {
             <div className="-mx-6 my-6 border border-t-gray-700  bg-[#707070]" />
 
             <div className="flex items-center gap-2">
-              <span className="text-lg font-extrabold">Contact Number :</span>
-              <span className="text-lg text-gray-500">
+              <span className="text-md md:text-lg font-bold">Contact Number :</span>
+              <span className="text-md md:text-lg text-gray-500">
                 {cms?.contact?.phone || "+91-9848123456"}{","}
               </span>
-              <span className="text-lg text-gray-500">
+              <span className="text-md md:text-lg text-gray-500">
                 {cms?.contact?.phone2 || "99491237894"}
               </span>
             </div>
@@ -126,8 +126,8 @@ export default function ContactPage() {
 
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-lg font-extrabold">Email :</span>
-                <span className="text-lg text-gray-500">
+                <span className="text-md md:text-lg font-bold">Email :</span>
+                <span className="text-md md:text-lg text-gray-500">
                   {cms?.contact?.infoEmail || "info@scout.com"}
                 </span>
               </div>
@@ -139,7 +139,7 @@ export default function ContactPage() {
           </div>
 
           <div className="mt-8">
-            <p className=" text-lg font-semibold">
+            <p className=" text-md md:text-lg font-semibold">
               Grow your business by registering with us.
             </p>
             <button
@@ -152,7 +152,7 @@ export default function ContactPage() {
         </div>
 
         {/* RIGHT */}
-        <div className="mt-15 rounded-2xl vorder p-6 shadow-[0_0_5px_rgba(0,0,0,0.15)]">
+        <div className="md:mt-15 rounded-2xl vorder p-6 shadow-[0_0_5px_rgba(0,0,0,0.15)]">
           <h3 className="font-semibold text-orangeButton">Send Message</h3>
           <p className="text-sm mt-1">
             Share a few datails about your queries and we'll get back to you

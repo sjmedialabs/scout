@@ -133,26 +133,27 @@ export default function ModerationPage() {
         <p className="text-gray-500 text-sm md:text-base">Review and moderate reported content</p>
       </div>
 
-      <MobileFilterBar
-        searchSlot={
+      
+        <div className="flex gap-3">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
               placeholder="Search reports..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 w-full h-9 border-gray-200 rounded-full"
+              className="pl-9 w-full h-9 border-gray-200 placeholder:text-xs rounded-full"
             />
           </div>
-        }
-        sheetTitle="Filter reports"
-      >
-        <Button variant="outline" className="h-9" onClick={() => setSearch("")}>
+        
+        
+      
+        <Button variant="outline" className="h-[35px] btn-blackButton" onClick={() => setSearch("")}>
           Clear search
         </Button>
-      </MobileFilterBar>
+        </div>
+      
 
-      <div className="bg-white rounded-2xl border shadow-lg overflow-hidden">
+      <div className="bg-white rounded-2xl border shadow-lg max-w-[95vw] overflow-x-auto">
         <ResponsiveTable scrollOnMobile>
           <table className="w-full min-w-[600px] text-sm">
             <thead className="border-b bg-gray-50">
