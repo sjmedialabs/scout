@@ -811,7 +811,7 @@ const ProviderComparisonPage = () => {
                   focus:border-[#b2b2b2]
                   placeholder:text-[#b2b2b2]
                   px-6
-                  w-[170px]
+                  w-full
         
                   h-14
                   text-sm

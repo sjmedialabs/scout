@@ -490,12 +490,12 @@ const downloadFile = async (url: string) => {
                     Review and manage proposals received for this project
                   </p>
                 </div>
-                <div className="flex flex-row gap-2 items-center">
+                <div className="flex mt-2 sm:mt-0 flex-row gap-2 items-center">
                   <div>
                     <Button
                     variant="outline"
                     size={"xs"}
-                    className="BackButton"
+                    className="BackButton h-[25px]"
                     onClick={() => router.push("/client/dashboard/projects")}
                   >
                     {/* <MoveLeft className="h-4 w-4 " /> */}

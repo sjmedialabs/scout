@@ -209,6 +209,28 @@ const formatDate=(dateString: string)=> {
   })
 }
 
+const handleDownload = async (paymentId) => {
+  try {
+    const res = await  authFetch(`/api/payment/${paymentId}/invoice`);
+
+    if (!res.ok) throw new Error("Failed to download");
+
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `invoice-${paymentId}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 
 
    if(resLoading || loading){
@@ -294,7 +316,7 @@ const formatDate=(dateString: string)=> {
             </CardContent>
           </Card>
 
-          <Card className="rounded-2xl bg-white py-2">
+          {/* <Card className="rounded-2xl bg-white py-2">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Card Details</CardTitle>
               <Button className="btn-blackButton" variant="outline" size="sm">
@@ -317,7 +339,7 @@ const formatDate=(dateString: string)=> {
                 Primary Card
               </span>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
       </div>
 
@@ -367,7 +389,12 @@ const formatDate=(dateString: string)=> {
                     </td>
                     <td className="px-4 py-3">{row.amount}</td>
                     <td className="px-4 py-3 text-right">
-                      <Button variant="ghost" size="icon">
+                     <Button
+                        variant="ghost"
+                        size="icon"
+                        className="hover:bg-transparent hover:text-[#F54A0C] active:bg-transparent"
+                        onClick={() => handleDownload(row._id)}
+                      >
                         <Download className="h-4 w-4 text-gray-500" />
                       </Button>
                     </td>

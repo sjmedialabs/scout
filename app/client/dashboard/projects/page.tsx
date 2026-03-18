@@ -936,7 +936,7 @@ const paginatedRequirements = filteredRequirements?.slice(
               {paginatedRequirements?.map((project) => (
             <div
               key={project._id}
-              className="border-1 mr-3 md:mr-0 px-0 bg-[#fafafa] border-[#CFCACA] rounded-2xl mb-2"
+              className="border-1 mr-1 md:mr-0 px-0 bg-[#fafafa] border-[#CFCACA] rounded-2xl mb-2"
             >
               <div className="px-2  md:px-4 py-3">
                 <div className="flex justify-between items-start -mb-2">

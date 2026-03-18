@@ -739,7 +739,9 @@ const toggleFavorite = (conversationId: string) => {
           </div>
 
           {(filteredDynamicConversation || []).length !== 0 ? (
-            <div className="space-y-2">
+            <div className="space-y-2 max-h-[90vh] overflow-y-auto  [scrollbar-width:none] 
+          [-ms-overflow-style:none]        
+          [&::-webkit-scrollbar]:hidden">
               {[...filteredDynamicConversation]
               .slice()
                 .sort((a, b) => {
@@ -929,7 +931,7 @@ const toggleFavorite = (conversationId: string) => {
               </div>
 
               {/* Chat Messages */}
-              <div className="flex-1 min-h-0 px-3 py-2 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <div className="flex-1 min-h-0 px-3 py-2 overflow-y-auto max-h-[65vh]  [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 {!chatLaoding && (dynamicMessages || []).length !== 0 ? (
                   <div>
                     {/* {dynamicMessages.map((msg: Message) => (
@@ -1077,7 +1079,7 @@ const toggleFavorite = (conversationId: string) => {
               </div>
 
               {/* Message Input */}
-              <div className="shrink-0 px-4 sm:px-6 py-3 border-t bg-white z-10">
+              <div className="shrink-0 sticky md:border-none bottom-0 px-4 sm:px-6 py-3 border-t bg-white z-10">
                 <div className="mb-2">
                   {uploading && <span>Uploading...</span>}
                   {uplodedUrl.url && (

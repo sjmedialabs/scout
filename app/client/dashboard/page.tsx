@@ -901,7 +901,7 @@ export default function ClientDashboard() {
                 </p>
                 <Button
                   variant="outline"
-                  className="btn-blackButton touch-manipulation"
+                  className="btn-blackButton touch-manipulation h-[30px]"
                   onClick={() => router.push("/client/dashboard/projects")}
                 >
                   Total Projects →
@@ -924,7 +924,7 @@ export default function ClientDashboard() {
                 </p>
                 <Button
                   variant="outline"
-                  className="btn-blackButton touch-manipulation"
+                  className="btn-blackButton touch-manipulation h-[30px]"
                   onClick={() => router.push("/client/dashboard/proposals")}
                 >
                   Total Proposals →
@@ -947,7 +947,7 @@ export default function ClientDashboard() {
                 </p>
                 <Button
                   variant="outline"
-                  className="btn-blackButton touch-manipulation"
+                  className="btn-blackButton touch-manipulation h-[30px]"
                   onClick={() =>
                     router.push("/client/dashboard/proposals?status=shortlisted")
                   }
@@ -972,7 +972,7 @@ export default function ClientDashboard() {
                 </p>
                 <Button
                   variant="outline"
-                  className="btn-blackButton touch-manipulation"
+                  className="btn-blackButton touch-manipulation h-[30px]"
                   onClick={() =>
                     router.push("/client/dashboard/proposals?status=accepted")
                   }
