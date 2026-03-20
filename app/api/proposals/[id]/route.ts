@@ -262,15 +262,15 @@ export async function PUT(
             );
           }
           //it will automatically reject all the proposal whcih are recieved for this requirement once one proposal is accepted
-          // await Proposal.updateMany(
-          //   {
-          //     requirementId:proposal.requirementId,
-          //     _id: { $ne:id } // exclude accepted proposal
-          //   },
-          //   {
-          //     $set: { status: "rejected" }
-          //   }
-          // )
+          await Proposal.updateMany(
+            {
+              requirementId:proposal.requirementId,
+              _id: { $ne:id } // exclude accepted proposal
+            },
+            {
+              $set: { status: "rejected" }
+            }
+          )
         }
         //Notification creation
         await Notification.create({

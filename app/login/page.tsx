@@ -134,10 +134,10 @@ else {
                 bg-cover bg-bottom-left bg-no-repeat
               "
             style={{
-              backgroundImage: "url('/images/Login-Image.png')",
+              backgroundImage: "url('/images/Login-Image2.png')",
             }}
           >
-            <div className="relative max-w-sm -ml-2">
+            <div className="relative ml-auto">
               <h2 className="text-2xl font-bold leading-tight pb-3">
                 Built to Accelerate <br /> Business Success
               </h2>
