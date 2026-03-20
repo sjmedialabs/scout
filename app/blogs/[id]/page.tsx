@@ -160,7 +160,7 @@ export default function BlogDetailPage() {
         {/* RIGHT SIDEBAR */}
         <div className="space-y-6">
           {/* Newsletter */}
-          <div className="bg-white p-2 rounded-xl shadow-sm">
+          {/* <div className="bg-white p-2 rounded-xl shadow-sm">
             <h3 className="font-semibold text-orangeButton ">
               Subscribe to our newsletter
             </h3>
@@ -177,7 +177,7 @@ export default function BlogDetailPage() {
                 Subscribe
               </button>
             </div>
-          </div>
+          </div> */}
 
           {/* Related Articles */}
           <div>
