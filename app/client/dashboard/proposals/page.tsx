@@ -122,6 +122,7 @@ const ProposalPage = () => {
   const { user, loading } = useAuth();
   const searchParams = useSearchParams();
   const requirementId = searchParams.get("requirementId");
+  const queryStatus = searchParams.get("status")
 
   useEffect(() => {
     setSelectedRequirement(requirementId);
@@ -170,7 +171,7 @@ const handleMessageAgency = async (proposal: any) => {
   }
 };
   
-   const [filterStatus, setFilterStatus] = useState<string>("");
+   const [filterStatus, setFilterStatus] = useState<string>(queryStatus || "all");
    const[projectTitles,setProjectTitles]=useState([]);
    const[projectFilter,setProjectFilter]=useState<string>("");
    const[filteredProposals,setFilteredProposals]=useState<Proposal[]>([]);
