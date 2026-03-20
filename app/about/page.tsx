@@ -152,8 +152,8 @@ export default async function AboutPage() {
         <div className="py-10 px-8 lg:px-30">
            <h5 className="text-md font-normal text-[#F54A0C] text-center">{cms?.aboutTeamTitle}</h5>
            <h5 className="text-2xl font-normal text-black text-center max-w-[300px] mx-auto">
-{cms?.aboutTeamSubtitle}
-</h5>
+            {cms?.aboutTeamSubtitle}
+            </h5>
 
           <div className="flex flex-col justify-center items-center gap-3 md:flex-row md:justify-start md:items-center  mt-[20px]">
             {cms?.aboutTeam?.map((member: any, i: number) => (
