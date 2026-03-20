@@ -63,21 +63,21 @@ export default async function AboutPage() {
           >
 
 
-        <div className="text-center mb-16">
-          <h1 className="text-2xl md:text-4xl font-bold mb-6 text-[#F54A0C] font-sans">{cms?.aboutBannerTitle}</h1>
+        <div className="text-center mb-4">
+          <h1 className="text-2xl md:text-4xl font-bold mb-4 text-[#F54A0C] font-sans">{cms?.aboutBannerTitle}</h1>
           <p className="text-sm md:text-xl font-light  text-balance text-[#c3bfbf] font-sans md:max-w-2xl">
            {cms?.aboutBannerSubtitle}
           </p>
         </div>
         </div>
          
-        <div className="py-10 px-8 lg:px-30">
+        <div className="py-10 px-8 lg:px-10">
           <div className="max-w-7xl mx-auto">
               {/*section One*/}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center justify-center">
               <div className="">
-                  <p className="text-[16px] font-normal text-gray-500 font-sans mb-5">{cms?.aboutDescription1}</p>
-                  <p className="text-[16px] font-normal text-gray-500 font-sans mb-5">{cms?.aboutDescription2}</p>
+                  <p className="text-[16px] font-normal text-gray-500 font-sans mb-4">{cms?.aboutDescription1}</p>
+                  <p className="text-[16px] font-normal text-gray-500 font-sans mb-4">{cms?.aboutDescription2}</p>
                   {cms?.aboutPoints?.map((point : any, i : number) => (
                     <div className="flex justify-start items-center gap-1" key={i}>
                       <svg width="18" height="18" viewBox="0 0 15 15" fill=" #F54A0C" xmlns="http://www.w3.org/2000/svg"><path d="M11.4669 3.72684C11.7558 3.91574 11.8369 4.30308 11.648 4.59198L7.39799 11.092C7.29783 11.2452 7.13556 11.3467 6.95402 11.3699C6.77247 11.3931 6.58989 11.3355 6.45446 11.2124L3.70446 8.71241C3.44905 8.48022 3.43023 8.08494 3.66242 7.82953C3.89461 7.57412 4.28989 7.55529 4.5453 7.78749L6.75292 9.79441L10.6018 3.90792C10.7907 3.61902 11.178 3.53795 11.4669 3.72684Z" fill=" #F54A0C" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
@@ -95,7 +95,7 @@ export default async function AboutPage() {
             </div>
             
             {/*section two */}
-            <div className="grid lg:grid-cols-2 gap-10 mt-12 mb-12">
+            <div className="grid lg:grid-cols-2 gap-10 mt-4 mb-4">
               {cms?.aboutVisionCard?.map((item: any, i: number) => (
               <Card className="mb-3" style={{backgroundColor:"#fff"}} key={i}>
               <CardContent className="px-3 md:px-6">
@@ -122,7 +122,7 @@ export default async function AboutPage() {
 
        {/*Stats -section */}
          
-        <div className="py-16 px-6 lg:px-20" style={{ backgroundColor: "#F54A0C" }}>
+        <div className="py-16 px-6 lg:px-10" style={{ backgroundColor: "#F54A0C" }}>
           <div className="grid grid-cols-1 md:grid-cols-4 text-center divide-y md:divide-y-0 md:divide-x divide-[#ffffff33]">
             
             {cms?.aboutStats?.map((stat : any, index : number) => (
@@ -149,13 +149,13 @@ export default async function AboutPage() {
         </div>
 
         {/*Team section */}
-        <div className="py-10 px-8 lg:px-30">
+        <div className="py-10 px-8 lg:px-10">
            <h5 className="text-md font-normal text-[#F54A0C] text-center">{cms?.aboutTeamTitle}</h5>
            <h5 className="text-2xl font-normal text-black text-center max-w-[300px] mx-auto">
             {cms?.aboutTeamSubtitle}
             </h5>
 
-          <div className="flex flex-col justify-center items-center gap-3 md:flex-row md:justify-start md:items-center  mt-[20px]">
+          <div className="flex flex-col justify-center items-center gap-3 md:flex-row md:justify-between md:items-center  mt-4">
             {cms?.aboutTeam?.map((member: any, i: number) => (
             <div
               key={i}
@@ -171,7 +171,7 @@ export default async function AboutPage() {
               <div className="absolute inset-0 bg-black/0 backdrop-grayscale"></div>
 
               {/* Colored box */}
-              <div className="relative z-10 w-[80%] bg-[#F54A0C] pl-[30px] py-5 mb-5">
+              <div className="relative z-10 w-[80%] bg-[#F54A0C] pl-[30px] py-5 mb-4">
                 <h5 className="text-md font-bold text-white">{member.name}</h5>
                 <p className="text-[12px] font-normal text-white">{member.role}</p>
               </div>
@@ -184,9 +184,9 @@ export default async function AboutPage() {
 
         {/* team values sections */}
         
-         <div className="bg-[#f7f7f7] py-16 px-4 mt-12">
+         <div className="bg-[#f7f7f7] py-16 px-4 mt-4">
           {/* Title Section */}
-          <div className="text-center mb-12">
+          <div className="text-center mb-4">
             <h4 className="text-[#F54A0C] text-lg font-medium">
                Our Values
             </h4>
@@ -216,7 +216,7 @@ export default async function AboutPage() {
         </div>
 
 
-        <div className="py-10 px-8 lg:px-30">
+        <div className="py-10 px-8 lg:px-10">
           
         {/* CTA */}
         <div className="text-center">
