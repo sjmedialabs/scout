@@ -13,34 +13,32 @@ export default function ForgotPasswordPage() {
   const router = useRouter();
 
   const handleSubmit = async () => {
-    setError("");
-    setLoading(true);
+  setError("");
+  setLoading(true);
 
-    try {
-      const res = await fetch("/api/auth/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+  try {
+    const res = await fetch("/api/auth/forgot-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
 
-      if (!res.ok) {
-        throw new Error("Something went wrong");
-      }
+    const data = await res.json();
 
-      const data = await res.json();
-      if (data.resetUrl) {
-        router.push(data.resetUrl);
-        return;
-      }
-
-      setSuccess(true);
-    } catch (err) {
-      setError("Unable to send reset link. Try again.");
-      console.log(err)
-    } finally {
-      setLoading(false);
+    if (!res.ok) {
+      throw new Error(data.error || "Something went wrong");
     }
-  };
+
+    //  Always show success (even if user doesn't exist)
+    setSuccess(true);
+
+  } catch (err) {
+    console.error(err);
+    setError("Unable to send reset link. Try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
