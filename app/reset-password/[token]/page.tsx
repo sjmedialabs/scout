@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react"; // ✅ added
 
 export default function ResetPasswordPage() {
   const { token } = useParams();
@@ -9,6 +10,8 @@ export default function ResetPasswordPage() {
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // ✅ added
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // ✅ added
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -62,21 +65,47 @@ export default function ResetPasswordPage() {
               Enter your password below
             </p>
 
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter new password"
-              className="mt-4 w-full rounded-lg border px-4 py-2 text-sm"
-            />
+            {/* ✅ PASSWORD FIELD WITH ICON */}
+            <div className="relative mt-4">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter new password"
+                className="w-full rounded-lg border px-4 py-2 text-sm pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-2.5 text-gray-500"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
 
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm Password"
-              className="mt-3 w-full rounded-lg border px-4 py-2 text-sm"
-            />
+            {/* ✅ CONFIRM PASSWORD FIELD WITH ICON */}
+            <div className="relative mt-3">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm Password"
+                className="w-full rounded-lg border px-4 py-2 text-sm pr-10"
+              />
+              <button
+                type="button"
+                onClick={() =>
+                  setShowConfirmPassword(!showConfirmPassword)
+                }
+                className="absolute right-3 top-2.5 text-gray-500"
+              >
+                {showConfirmPassword ? (
+                  <EyeOff size={18} />
+                ) : (
+                  <Eye size={18} />
+                )}
+              </button>
+            </div>
 
             {error && (
               <p className="mt-2 text-xs text-red-500 text-center">{error}</p>
