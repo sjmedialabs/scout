@@ -3,10 +3,12 @@
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { Facebook, Twitter, Linkedin, Share2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function BlogDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const [blogs, setBlogs] = useState<any[]>([]);
@@ -35,7 +37,10 @@ export default function BlogDetailPage() {
   const blog = blogs.find((b) => String(b._id) === String(id));
 
   // ✅ Related Blogs
-  const relatedBlogs = blogs.filter((b) => String(b.id) !== String(id));
+  // const relatedBlogs = blogs.filter((b) => String(b.id) !== String(id));
+  const relatedBlogs = blogs.filter(
+  (b) => String(b._id) !== String(id)
+);
 
   const currentUrl =
     typeof window !== "undefined" ? window.location.href : "";
@@ -180,13 +185,19 @@ export default function BlogDetailPage() {
           </div> */}
 
           {/* Related Articles */}
-          <div>
+          <div
+          >
             <h3 className="font-semibold mb-4 text-orangeButton">
               Related Articles
             </h3>
             <div className="space-y-4">
               {relatedBlogs.map((item) => (
-                <div key={item.id} className="flex gap-3">
+                <div
+                  onClick={() => {
+                    console.log(item._id);
+                    router.push(`/blogs/${item._id}`);
+                  }}
+                 key={item._id} className="flex gap-3 cursor-pointer">
                   <div className="relative w-20 h-16 rounded-md overflow-hidden">
                     <Image
                       src={item.image}
@@ -203,7 +214,7 @@ export default function BlogDetailPage() {
                      <p className="text-sm mb-1">
                     Posted Date:{" "}
                     <span className="text-gray-500">
-                      {new Date(blog.postedDate).toLocaleDateString("en-GB")}
+                      {new Date(item.postedDate).toLocaleDateString("en-GB")}
                     </span>
                   </p>
                   </div>
