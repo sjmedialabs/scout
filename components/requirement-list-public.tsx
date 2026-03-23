@@ -129,7 +129,7 @@ export function RequirementList({ requirements, onViewProposals, onViewDetails }
                     (`/login?to=submit-proposal&id=${requirement._id}`)
                     )
                     } 
-                  className="bg-[#000000] max-w-[180px] rounded-full text-[#fff] text-[14px] hover:bg-[#000000] h-[40px]">
+                  className="btn-blackButton h-[30px]">
                 
                 Submit Proposal
                 <FaArrowRightLong className="h-3 w-3" color="#fff"/>
