@@ -501,7 +501,7 @@ setFilteredRequirements(openRequirements);
             {/* Footer */}
             <div className="p-6 pt-4 border-t flex justify-start gap-4">
               <Button
-                className="bg-[#2C34A1] hover:bg-[#2C34A1] text-white rounded-full px-6 flex items-center gap-2"
+                className="btn-blackButton h-[30px]"
                 onClick={() => handleViewProposals(selectedRequirement._id)}
               >
                 View Proposal →
