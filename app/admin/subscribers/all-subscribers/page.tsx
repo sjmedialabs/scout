@@ -43,6 +43,11 @@ export default function AllSubscribersPage() {
   const [status, setStatus] = useState("all");
   const [role, setRole] = useState<"all" | "client" | "agency">("all");
 
+  const ITEMS_PER_PAGE = 10;
+
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
  const toggleStatus = async (sub: Subscriber) => {
   // const sub = subscribers[index];
   console.log("recived sub::::",sub)
@@ -83,7 +88,7 @@ export default function AllSubscribersPage() {
       const roleQuery = role !== "all" ? `&role=${role}` : ""
 
       const res = await fetch(
-        `/api/users?limit=50&page=1${roleQuery}`,
+        `/api/users?limit=${ITEMS_PER_PAGE}&page=${page}${roleQuery}`,
         { credentials: "include" } 
       );
 
@@ -91,6 +96,7 @@ export default function AllSubscribersPage() {
 
       const data = await res.json();
       console.log ("RAW USER FROM API:" , data.users[0])
+      setTotalPages(data.pagination?.pages || 1);
 
       // Convert backend users → table format
       const formatted = data.users
@@ -138,7 +144,16 @@ export default function AllSubscribersPage() {
   }
 
   loadSubscribers();
-}, [role]);
+  }, [role, page]);
+
+  useEffect(() => {
+  const t = setTimeout(() => {
+    if (page === 1) return;
+    setPage(1);
+  }, 300);
+
+  return () => clearTimeout(t);
+}, [search, status, role]);
 
 
 
@@ -322,7 +337,36 @@ export default function AllSubscribersPage() {
             ))}
           </tbody>
         </table>
+
+        {/* Pagination  */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50">
+            <span className="text-sm text-gray-600">
+              Page {page} of {totalPages}
+            </span>
+
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page <= 1}
+              >
+                Previous
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page >= totalPages}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
+        </div>
       </div>
-    </div>
   );
 }

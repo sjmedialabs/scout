@@ -41,12 +41,21 @@ export default function ContactPage() {
   const handleSubmit = async () => {
     const newErrors: { email?: string; phone?: string } = {};
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      newErrors.email = "Invalid email address";
+    const email = form.email.trim();
+    const phone = form.phone.trim();
+
+    // Email validation
+    if (!email) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Enter a valid email (example@mail.com)";
     }
 
-    if (!/^[0-9]{10,15}$/.test(form.phone)) {
-      newErrors.phone = "Invalid phone number";
+    // Phone validation (supports +, spaces, 10–15 digits)
+    if (!phone) {
+      newErrors.phone = "Phone number is required";
+    } else if (!/^\+?[0-9\s]{10,15}$/.test(phone)) {
+      newErrors.phone = "Enter valid phone (10–15 digits)";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -94,10 +103,10 @@ export default function ContactPage() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
         {/* LEFT */}
         <div>
-          <h2 className="text-xl font-normal text-[#F54A0C]">
+          <h2 className="text-xl font-bold text-[#F54A0C]">
             {cms?.contact?.heading || "How Can We Help?"}
           </h2>
-          <p className="mt-1 text-sm">
+          <p className="mt-1 text-md">
             {cms?.contact?.description ||
               "Share a few details about your queries and we'll get back to you soon."}
           </p>
@@ -170,7 +179,7 @@ export default function ContactPage() {
                   setForm({ ...form, name: e.target.value });
                   setSuccess(false);
                 }}
-                className="mt-0 w-full border rounded-full border-blue-200 px-4 py-3 text-[10px] outline-none"
+                className="mt-0 w-full border rounded-full border-blue-200 px-4 py-3 text-[12px] outline-none"
               />
             </div>
 
@@ -181,11 +190,21 @@ export default function ContactPage() {
               <input
                 placeholder="Enter email address"
                 value={form.email}
-                onChange={(e) => {
-                  setForm({ ...form, email: e.target.value });
-                  setSuccess(false);
-                }}
-                className={`mt-0 w-full border rounded-full px-4 py-3 text-[10px] 
+               onChange={(e) => {
+                    const value = e.target.value;
+                    setForm({ ...form, email: value });
+
+                    if (!value.trim()) {
+                      setErrors((prev) => ({ ...prev, email: "Email is required" }));
+                    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                      setErrors((prev) => ({ ...prev, email: "Invalid email" }));
+                    } else {
+                      setErrors((prev) => ({ ...prev, email: "" }));
+                    }
+
+                    setSuccess(false);
+                  }}
+                className={`mt-0 w-full border rounded-full px-4 py-3 text-[12px] 
                       outline-none ${
                         errors.email ? "border-red-500" : "border-blue-200"
                       }`}
@@ -206,7 +225,7 @@ export default function ContactPage() {
                   setForm({ ...form, company: e.target.value });
                   setSuccess(false);
                 }}
-                className="mt-0 w-full border rounded-full border-blue-200 px-4 py-3 text-[10px] outline-none"
+                className="mt-0 w-full border rounded-full border-blue-200 px-4 py-3 text-[12px] outline-none"
               />
             </div>
 
@@ -221,7 +240,7 @@ export default function ContactPage() {
                   setForm({ ...form, website: e.target.value });
                   setSuccess(false);
                 }}
-                className="mt-0 w-full border rounded-full border-blue-200 px-4 py-3 text-[10px] outline-none"
+                className="mt-0 w-full border rounded-full border-blue-200 px-4 py-3 text-[12px] outline-none"
               />
             </div>
 
@@ -236,7 +255,7 @@ export default function ContactPage() {
                   setForm({ ...form, country: e.target.value });
                   setSuccess(false);
                 }}
-                className="mt-0 w-full border rounded-full border-blue-200 px-4 py-3 text-[10px] outline-none"
+                className="mt-0 w-full border rounded-full border-blue-200 px-4 py-3 text-[12px] outline-none"
               />
             </div>
 
@@ -248,11 +267,26 @@ export default function ContactPage() {
                 placeholder="Enter your phone number"
                 value={form.phone}
                 onChange={(e) => {
-                  setForm({ ...form, phone: e.target.value });
+                  const value = e.target.value;
+                  setForm({ ...form, phone: value });
+
+                  if (!value.trim()) {
+                    setErrors((prev) => ({ ...prev, phone: "Phone is required" }));
+                  } else if (!/^\+?[0-9\s]{10,15}$/.test(value)) {
+                    setErrors((prev) => ({ ...prev, phone: "Invalid phone" }));
+                  } else {
+                    setErrors((prev) => ({ ...prev, phone: "" }));
+                  }
+
                   setSuccess(false);
                 }}
+                onKeyDown={(e) => {
+                  if (!/[0-9+]/.test(e.key) && e.key !== "Backspace") {
+                    e.preventDefault();
+                  }
+                }}
                 className={`mt-0 w-full border rounded-full px-4 py-3
-                     text-[10px] outline-none ${
+                     text-[12px] outline-none ${
                        errors.phone ? "border-red-500" : "border-blue-200"
                      }`}
               />

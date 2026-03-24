@@ -426,7 +426,7 @@ useEffect(() => {
               className={`flex justify-between items-center cursor-pointer p-3 rounded-lg
               ${
                 openParent === parent._id
-                  ? "text-orangeButton font-bold"
+                  ? "text-white font-bold bg-orange-600 py-1"
                   : "hover:bg-gray-100"
               }`}
             >
@@ -447,7 +447,7 @@ useEffect(() => {
                       className={`flex justify-between items-center cursor-pointer p-2 rounded-md
                       ${
                         openChild === child._id
-                          ? "text-orangeButton font-semibold"
+                          ? "text-white font-semibold bg-orange-500 py-1"
                           : "hover:bg-gray-100"
                       }`}
                     >
@@ -460,10 +460,10 @@ useEffect(() => {
                         <div
                           key={item._id}
                           onClick={() => handleServiceClick(item, parent._id, child._id)}
-                          className={`ml-4 mt-1 cursor-pointer p-2 rounded-md
+                          className={`ml-4 mt-2 cursor-pointer p-2 rounded-md
                           ${
                             activeServiceId === item._id
-                              ? "text-orangeButton font-bold"
+                              ? "text-orangeButton font-bold py-1 bg-orange-100"
                               : "text-gray-600 hover:text-orangeButton"
                           }`}
                         >

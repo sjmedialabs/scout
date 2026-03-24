@@ -10,11 +10,13 @@ type Testimonial = {
   }
 }
 
-export default function Testimonials({
-  testimonials = [],
-}: {
-  testimonials?: Testimonial[]
-}) {
+export default function Testimonials(
+  { testimonials = [], variant = "default" }: { testimonials?: Testimonial[], variant?: "default" | "compact" |"large" }
+) {
+
+  const isCompact = variant === "compact";
+const isLarge = variant === "large";
+
   if (!testimonials.length) return null
 
   const topTestimonials = [...testimonials]
@@ -25,10 +27,10 @@ export default function Testimonials({
     <div className="shadow-md rounded-2xl border border-orange-100 bg-white p-6 space-y-4">
       {/* Header */}
       <div>
-        <h3 className="text-[16px] font-semibold h-5 text-orangeButton">
+        <h3 className={`${isCompact ? "text-[14px]" : "text-[16px]"} font-semibold`}>
           What Clients Are Saying
         </h3>
-        <p className="text-[12px] text-gray-500">
+        <p className={`${isLarge ? "text-[13px]" : "text-[12px]"} text-gray-500`}>
           Trusted by leaders from various industries
         </p>
       </div>
@@ -56,14 +58,14 @@ export default function Testimonials({
             </div>
 
             {/* Review text */}
-            <p className="text-[12px] leading-normal italic text-gray-500">
+            <p className={`${isLarge ? "text-[13px]" : "text-[12px]"} italic text-gray-500`}>
 
               “{item?.content}”
             </p>
 
          
-            <div className="mt-auto pt-3">
-              <p className="text-[12px] font-semibold text-gray-900">
+            <div className="mt-auto ">
+              <p className={`${isCompact ? "text-[10px]" : "text-[12px]"} font-semibold`}>
                 {item?.client?.name}
               </p>
               <p className="text-[11px] text-gray-500">

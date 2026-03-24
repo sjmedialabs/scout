@@ -400,7 +400,7 @@ const isValidPhone = (phone) => {
           {/* HOME WORK SECTION */}
           <section className="space-y-4 border p-4 rounded-xl shadow-lg">
             <div className="flex justify-between">
-              <h2 className="text-xl font-semibold  text-orangeButton">How Spark Works</h2>
+              <h2 className="text-xl font-semibold  text-orangeButton">How Scout Works</h2>
               <Button
               className="btn-blackButton h-[30px]"
                 onClick={() =>
