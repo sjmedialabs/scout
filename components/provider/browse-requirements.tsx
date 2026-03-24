@@ -247,7 +247,7 @@ export function BrowseRequirements({
                 </td>
 
                 <td 
-                onClick= {() => router.push(`/agency/dashboard/project-inquiries/${req._id}`)}
+                onClick= {() => router.push(`/agency/dashboard/project-inquiries/${req._id}/details`)}
                 className="p-4 font-medium cursor-pointer hover:text-blue-500">
                   {req.title}
                 </td>

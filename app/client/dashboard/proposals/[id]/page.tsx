@@ -203,19 +203,19 @@ const handlNegotation=async(proposalId:string)=>{
             console.log("negotation action response::::",await response.json,proposalId)
            
             //chat concersation start api
-            const conRes=await authFetch(`/api/chat/conversation`,{
-              method:"POST",
-              headers:{
-                "Content-Type":"application/json"
-              },
-              body:JSON.stringify({proposalId})
+            // const conRes=await authFetch(`/api/chat/conversation`,{
+            //   method:"POST",
+            //   headers:{
+            //     "Content-Type":"application/json"
+            //   },
+            //   body:JSON.stringify({proposalId})
    
-            })
-            const convData=await conRes.json();
-            setConversationId(convData.conversationId)
+            // })
+            // const convData=await conRes.json();
+            // setConversationId(convData.conversationId)
             
-            setSelectedProposalId(proposalId)
-            setShowNegotationModal(true)
+            // setSelectedProposalId(proposalId)
+            // setShowNegotationModal(true)
             
             console.log("Conversation Started")
         }catch(error){
@@ -538,15 +538,20 @@ const downloadFile = async (url: string) => {
                 <MoveLeft className="h-4 w-4" />
                {from?"Back to projects":"Back to proposals"}
               </Button>
-              <Button
-                variant="default"
-                size="sm"
-                className="rounded-full gap-1.5 bg-[#2C34A1] hover:bg-[#2C34A1]"
-                onClick={handleOpenChat}
-              >
-                <MessageSquare className="h-4 w-4" />
-                Chat
-              </Button>
+              {
+                proposal.status.toLowerCase()==="negotation" &&(
+                       <Button
+                        variant="default"
+                        size="sm"
+                        className="rounded-full gap-1.5 bg-[#2C34A1] hover:bg-[#2C34A1]"
+                        onClick={handleOpenChat}
+                      >
+                        <MessageSquare className="h-4 w-4" />
+                        Chat
+                      </Button>
+                )
+              }
+              
             </div>
           </div>
 
@@ -684,12 +689,17 @@ const downloadFile = async (url: string) => {
                                   <p className="text-sm font-semibold text-[#344054]">
                                     {milestone?.title}
                                   </p>
-                                  <Badge
-                                      variant="secondary"
-                                      className={`rounded-full text-xs font-medium ${getStatusStyles(milestone.approvalStatus)}`}
-                                    >
-                                      {milestone.approvalStatus?.charAt(0).toUpperCase() + milestone.approvalStatus?.slice(1)}
-                                    </Badge>
+                                  {
+                                    (proposal.status.toLowerCase()==="accepted" || proposal.status.toLowerCase()==="completed") &&(
+                                          <Badge
+                                          variant="secondary"
+                                          className={`rounded-full text-xs font-medium ${getStatusStyles(milestone.approvalStatus)}`}
+                                        >
+                                          {milestone.approvalStatus?.charAt(0).toUpperCase() + milestone.approvalStatus?.slice(1)}
+                                        </Badge>
+                                    )
+                                  }
+                                  
                                 </div>
                                 {milestone?.description && (
                                   <p className="text-xs text-[#667085] mt-1">{milestone.description}</p>
@@ -767,7 +777,8 @@ const downloadFile = async (url: string) => {
                         {proposal.status !== "shortlisted" &&
                           proposal.status !== "accepted" &&
                           proposal.status !== "rejected" &&
-                          proposal.status !== "completed" && (
+                          proposal.status !== "completed" &&
+                          proposal.status !== "negotation" && (
                             <Button
                               variant="outline"
                               size="sm"
@@ -783,7 +794,7 @@ const downloadFile = async (url: string) => {
                         {/* Negotiation */}
                         {proposal.status !== "accepted" &&
                           proposal.status !== "rejected" &&
-                          proposal.status !== "shortlisted" &&
+                          proposal.status !== "pending" &&
                           proposal.status !== "negotation" &&
                           proposal.status !== "completed" && (
                             <Button

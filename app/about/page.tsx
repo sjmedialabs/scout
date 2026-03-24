@@ -220,7 +220,7 @@ export default async function AboutPage() {
           
         {/* CTA */}
         <div className="text-center">
-          <h2 className="text-2xl font-semibold mb-4">{cms?.aboutBottomSectionTitle || "Ready to Join Spark?"}</h2>
+          <h2 className="text-2xl font-semibold mb-4">{cms?.aboutBottomSectionTitle || "Ready to Join Scout?"}</h2>
           <p className="text-[#b2b2b2] text-sm mb-6">
             {cms?. aboutBottomSectionSubTitle || "Whether you're looking for services or offering them, we'd love to have you in our community."}
           </p>

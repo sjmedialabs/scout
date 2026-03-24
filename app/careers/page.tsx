@@ -5,8 +5,10 @@ import { useEffect, useState } from "react"
 
 import ApplyJobModal from "@/components/ApplyJobModal"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
 
 export default function CareersPage() {
+  const router=useRouter();
   const [jobs, setJobs] = useState<any[]>([])
   const [open, setOpen] = useState(false)
   const [selectedJob, setSelectedJob] = useState("")
@@ -19,7 +21,7 @@ export default function CareersPage() {
 
   return (
     <>
-    <section className="max-w-7xl mx-auto px-4 py-8">
+    <section className="max-w-7xl  px-6   md:px-10 py-8">
       {/* Header */}
       <div className="text-center mb-10">
         <h1 className="text-3xl md:text-4xl text-orangeButton">
@@ -31,63 +33,75 @@ export default function CareersPage() {
       </div>
 
       {/* Job Cards */}
-      <div className="grid md:grid-cols-2 grid-cols-1 h-full gap-4 sm:gap-6 w-full">
-        {jobs.map((job) => (
-          <Link
-            key={job.slug}
-            href={`/careers/${job.slug}`}
-            className="block"
-          >
-          <div
-            className="border border-gray-400 h-full rounded-2xl sm:rounded-3xl px-4 py-4 sm:px-6 sm:py-6 md:px-6 md:py-2 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-6"
-          >
-            {/* Left */}
-            <div className="lg:w-1/3">
-            <h2 className="text-md font-semibold text-gray-800">
-              {job.title}
-            </h2>
-            {/* <p className="text-sm text-gray-500 mt-1">
-              Department: {job.department}
-            </p> */}
-          </div>
-
-          <div className="lg:w-1/4">
-            <p className="text-sm text-gray-500 mt-1">
-              Department: {job.department}
-            </p>
-            <p className="text-sm text-gray-500 mt-1">
-              {job.location}
-            </p>
-          </div>
-
-            {/* Middle 2 */}
-            {/* Middle 2 */}
-            <div className="lg:w-1/4 pt-0">
-              <p className="text-md font-medium text-gray-500">
-                {job.experience}
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
-                {job.employmentType}
-              </p>
-            </div>
-
-
-            {/* CTA */}
-            <div className="lg:w-auto">
-              <Button 
-              onClick={(e) => {
-                e.preventDefault()
-                setSelectedJob(job.title)
-                setOpen(true)
-              }}
-              className="primary-button h-[30px]">
-                Apply Now
-              </Button>
-            </div>
-          </div>
-          </Link>
-        ))}
+     <div className="flex flex-col justify-start items-center gap-4">
+  {jobs.map((job) => (
+    <div
+      key={job.slug}
+      onClick={() => router.push(`/careers/${job.slug}`)}
+      className="w-full cursor-pointer border border-gray-400 h-full 
+      rounded-2xl sm:rounded-3xl 
+      px-4 py-4 sm:px-6 sm:py-6 md:px-6 md:py-3
+      flex flex-col lg:flex-row 
+      lg:items-center lg:justify-between 
+      gap-4 sm:gap-6"
+    >
+      {/* Title */}
+      <div className="flex-1 min-w-[200px]">
+        <h2 className="text-md font-semibold text-gray-800">
+          {job.title}
+        </h2>
       </div>
+
+      {/* Department + Location */}
+      <div className="flex-1 min-w-[200px]">
+        <p className="text-sm text-gray-500 mt-1">
+          <span className="text-[#000] font-medium">
+            Department:
+          </span>{" "}
+          {job.department}
+        </p>
+
+        <p className="text-sm text-gray-500 mt-1">
+          <span className="text-[#000] font-medium">
+            Location:
+          </span>{" "}
+          {job.location}
+        </p>
+      </div>
+
+      {/* Experience + Employment */}
+      <div className="flex-1 min-w-[200px]">
+        <p className="text-sm text-gray-500 mt-1">
+          <span className="text-[#000] font-medium">
+            Experience:
+          </span>{" "}
+          {job.experience}
+        </p>
+
+        <p className="text-sm text-gray-500 mt-1">
+          <span className="text-[#000] font-medium">
+            Employment Type:
+          </span>{" "}
+          {job.employmentType}
+        </p>
+      </div>
+
+      {/* Button */}
+      <div className="lg:flex-shrink-0 flex lg:justify-end">
+        <Button
+          onClick={(e) => {
+            e.preventDefault();
+            setSelectedJob(job.title);
+            setOpen(true);
+          }}
+          className="primary-button h-[30px]"
+        >
+          Apply Now
+        </Button>
+      </div>
+    </div>
+  ))}
+</div>
     </section>
 
     <ApplyJobModal

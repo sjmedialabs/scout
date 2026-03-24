@@ -383,7 +383,7 @@ export default function SubmitProposalPage() {
 
                 <Button
                   type="button"
-                  className="h-8 rounded-lg bg-black px-4 text-[14px] font-medium text-white flex items-center gap-2 hover:bg-black/80"
+                  className="btn-blackButton h-[30px]"
                   onClick={() =>
                     setMilestones([...milestones, { title: "", description: "" }])
                   }
