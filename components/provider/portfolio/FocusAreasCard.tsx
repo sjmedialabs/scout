@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
 } from "recharts"
 
-export default function FocusAreasCard({ provider, reviews = [] }) {
+export default function FocusAreasCard({ provider, reviews = [], variant = "default" }: any) {
 
 // const SERVICE_COLORS = ["#F54A0C", "#FF8A5B", "#FFC1A6", "#FFD9C7"]
 
@@ -32,6 +32,9 @@ export default function FocusAreasCard({ provider, reviews = [] }) {
 //   .map(([name, value]) => ({ name, value }))
 //   .sort((a, b) => b.value - a.value)
 //   .slice(0, 5)
+
+const isCompact = variant === "compact";
+const isLarge = variant === "large";
 
 const SERVICE_COLORS = [
   "#2C34A1",
@@ -108,18 +111,30 @@ const topServices = Object.keys(serviceRatings)
 
       {/* Focus Areas */}
       <div className="shadow-md rounded-2xl border border-orange-100 bg-white p-5 space-y-1">
-        <h3 className="text-[16px] font-semibold text-orangeButton h-5">
+        <h3 className={`${
+            isCompact ? "text-[14px]" :
+            isLarge ? "text-[18px]" :
+            "text-[16px]"
+          } font-semibold text-orangeButton`}>
           Focus Areas
         </h3>
 
-        <p className="text-[12px] leading-[1.6] text-gray-600">
+        <p className={`${
+          isCompact ? "text-[10px]" :
+          isLarge ? "text-[13px] text-gray-600" :
+          "text-[11px] text-gray-600"
+        }`}>
           {provider?.focusArea || "Focus area is not added till now"}
         </p>
       </div>
 
       {/* Industries */}
       <div className="shadow-md rounded-2xl border border-orange-100 bg-white p-5 space-y-1">
-        <h3 className="text-[16px] font-semibold text-orangeButton h-5">
+        <h3 className={`${
+            isCompact ? "text-[14px]" :
+            isLarge ? "text-[18px]" :
+            "text-[16px]"
+          } font-semibold text-orangeButton`}>
           Industries
         </h3>
 
@@ -145,7 +160,11 @@ const topServices = Object.keys(serviceRatings)
             {/* Clients */}
       
     { provider?.clients?.length >0 && (<div className="shadow-md rounded-2xl border border-orange-100 bg-white p-5 space-y-1">
-        <h3 className="text-[16px] font-semibold text-orangeButton h-5">
+        <h3 className={`${
+            isCompact ? "text-[14px]" :
+            isLarge ? "text-[18px]" :
+            "text-[16px]"
+          } font-semibold text-orangeButton`}>
           Clients
         </h3>
           <div className="flex flex-wrap gap-2">
@@ -162,9 +181,13 @@ const topServices = Object.keys(serviceRatings)
 
       {topServices.length > 0 && (
         <div className="bg-white rounded-2xl p-6 shadow-md border border-orange-100">
-          <h1 className="text-[16px] font-semibold text-orangeButton mb-4 -mt-4">
+          <h3 className={`${
+            isCompact ? "text-[14px]" :
+            isLarge ? "text-[18px]" :
+            "text-[16px]"
+          } font-semibold text-orangeButton`}>
             Top Services
-          </h1>
+          </h3>
 
           <div className="w-full h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -206,7 +229,7 @@ const topServices = Object.keys(serviceRatings)
                   iconType="circle"  
                   iconSize={8}
                   wrapperStyle={{
-                    fontSize: "10px",
+                    fontSize: "12px",
                     paddingTop: "0px",
                   }}
                 />

@@ -42,6 +42,11 @@ export default function AllSubscribersPage() {
   const [status, setStatus] = useState("all");
   const [role, setRole] = useState<"all" | "client" | "agency">("all");
 
+  const ITEMS_PER_PAGE = 10;
+
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
  const toggleStatus = async (sub: Subscriber) => {
   // const sub = subscribers[index];
   console.log("recived sub::::",sub)
@@ -72,51 +77,95 @@ export default function AllSubscribersPage() {
 };
 
 
-async function loadSubscribers() {
-    try {
-      setLoading(true)
+// async function loadSubscribers() {
+//     try {
+//       setLoading(true)
 
 
-      const res = await authFetch("/api/providers");
-      const subsRes=await authFetch("/api/subscription");
+//       const res = await authFetch("/api/providers");
+//       const subsRes=await authFetch("/api/subscription");
 
-      if (!res.ok || !subsRes.ok) throw new Error("Failed to fetch users");
+//       if (!res.ok || !subsRes.ok) throw new Error("Failed to fetch users");
 
-      const data = await res.json();
-      const subsData=await subsRes.json();
+//       const data = await res.json();
+//       const subsData=await subsRes.json();
       
-      setSubscribers(data.providers);
-      setSubscriptions(subsData)
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }
-  useEffect(() => {
-  
+//       setSubscribers(data.providers);
+//       setSubscriptions(subsData)
+//     } catch (err) {
+//       console.error(err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   }
 
+async function loadSubscribers() {
+  try {
+    setLoading(true);
+
+    const params = new URLSearchParams();
+    params.set("page", String(page));
+    params.set("limit", String(ITEMS_PER_PAGE));
+
+    if (search.trim()) params.set("search", search.trim());
+    if (status !== "all") params.set("status", status);
+
+    const res = await authFetch(`/api/providers?${params.toString()}`);
+    const subsRes = await authFetch("/api/subscription");
+
+    if (!res.ok || !subsRes.ok) throw new Error("Failed to fetch users");
+
+    const data = await res.json();
+    const subsData = await subsRes.json();
+
+    setSubscribers(data.providers || data.data || []);
+    console.log("API RESPONSE:", data);
+    setTotalPages(data.pagination?.pages || 1);
+
+    setSubscriptions(subsData);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+}
+
+useEffect(() => {
   loadSubscribers();
-}, [role]);
+}, [page, status]);
+
+useEffect(() => {
+  const t = setTimeout(() => {
+    if (page === 1) loadSubscribers();
+    else setPage(1);
+  }, 300);
+
+  return () => clearTimeout(t);
+}, [search]);
+
+
+//   useEffect(() => {
+//   loadSubscribers();
+// }, [role]);
 
 
 console.log("Subscrbefrs are :::::",subscribers)
-  const filtered = subscribers.filter((s) => {
-  const searchText = search.toLowerCase();
+//   const filtered = subscribers.filter((s) => {
+//   const searchText = search.toLowerCase();
 
-  const matchesSearch =
-    s.name?.toLowerCase().includes(searchText) ||
-    s.email?.toLowerCase().includes(searchText);
+//   const matchesSearch =
+//     s.name?.toLowerCase().includes(searchText) ||
+//     s.email?.toLowerCase().includes(searchText);
 
-  const matchesStatus =
-    status === "all"
-      ? true
-      : status === "verified"
-      ? s.isVerified === true
-      : s.isVerified === false;
+//   const matchesStatus =
+//     status === "all"
+//       ? true
+//       : status === "verified"
+//       ? s.isVerified === true
+//       : s.isVerified === false;
 
-  return matchesSearch && matchesStatus;
-});
+//   return matchesSearch && matchesStatus;
+// });
 
 
 const getPlanName=(recievedProvider)=>{
@@ -165,7 +214,10 @@ if (loading) {
           />
         </div>
         <div className="">
-          <Select value={status} onValueChange={setStatus}>
+          <Select value={status} onValueChange={(value) => {
+                  setStatus(value);
+                  setPage(1);
+                }}>
             <SelectTrigger className="rounded-full h-[40px] w-[120px] border text-xs border-gray-200 text-gray-500 py-0 flex items-center ">
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
@@ -208,7 +260,7 @@ if (loading) {
           </thead>
 
           <tbody>
-            {filtered.map((sub, i) => (
+            {subscribers.map((sub, i) => (
               <tr
                 key={i}
                 className="border-b last:border-none hover:bg-gray-50 transition"
@@ -274,6 +326,35 @@ if (loading) {
             ))}
           </tbody>
         </table>
+      
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50">
+          <span className="text-sm text-gray-600">
+            Page {page} of {totalPages}
+          </span>
+
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+            >
+              Previous
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );

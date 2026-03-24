@@ -247,16 +247,18 @@ export default function ProviderProfilePage({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main */}
           <div className="lg:col-span-2 space-y-6">
-            <CompanyOverviewCard provider={providerDetails} />
-            <ServiceLines provider={providerDetails} />
-            <PricingSnapshot provider={providerDetails} />
-            <PortfolioGrid provider={providerDetails} />
-            <Testimonials testimonials={reviews} />
+            <CompanyOverviewCard provider={providerDetails} variant="large"/>
+            <ServiceLines provider={providerDetails} variant="large"/>
+            {/* <PricingSnapshot provider={providerDetails} variant="large"/> */}
+            <PortfolioGrid provider={providerDetails} variant="large"/>
+            <Testimonials testimonials={reviews} variant="large"/>
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6 lg:h-screen ">
-            <FocusAreasCard provider={providerDetails} reviews={reviews} />
+          <div className="space-y-6 ">
+            <div className="md:sticky lg:top-15">
+            <FocusAreasCard provider={providerDetails} reviews={reviews} variant="large"/>
+            </div>
           </div>
         </div>
     </div>

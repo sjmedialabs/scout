@@ -211,7 +211,7 @@ const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
 <div className="flex justify-between items-center">
 
   {/* ICON + UPLOAD */}
-  <div className="flex flex-col items-center w-12">
+  {/* <div className="flex flex-col items-center w-12">
     <img
       src={editingId === cat._id ? editIcon || "/images/placeholder.png" : cat.icon || "/images/placeholder.png"}
       className="w-10 h-10 object-cover rounded-full border mb-2"
@@ -220,11 +220,11 @@ const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
     {editingId === cat._id && (
       <FileUpload
         onChange={(url) => {
-          setEditIcon(url); // store locally, don't update DB yet
+          setEditIcon(url); 
         }}
       />
     )}
-  </div>
+  </div> */}
 
   {/* TITLE OR INPUT */}
   <div className="flex-1 ml-4">
