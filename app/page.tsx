@@ -159,7 +159,7 @@ const { cms, providers, projects, categories } = data;
       <section className="py-6 px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-4xl font-bold text-center mb-4">
-            How Spark Works
+            How Scout Works
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {cms?.homeWorkSection?.map((section: any, index: number) => (
@@ -368,7 +368,7 @@ const { cms, providers, projects, categories } = data;
                   {/* Budget */}
                   <div className="mt-auto">
                     <div className="px-6 mt-0">
-                      <span className="text-sm font-bold text-green-500">
+                      <span className="text-sm font-bold text-green-700">
                         ${project.budgetMin.toLocaleString()} - $
                         {project.budgetMax.toLocaleString()}
                       </span>
@@ -569,7 +569,7 @@ const { cms, providers, projects, categories } = data;
             {cms?.getStartedTitle || "Ready to Get Started?"}
           </h3>
           <p className="text-base max-w-sm mx-auto text-slate-500">
-            {cms?.getStartedSubtitle || "Join thousands of businesses finding the right service providers on Spark."}
+            {cms?.getStartedSubtitle || "Join thousands of businesses finding the right service providers on Scout."}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-2">
             <Button

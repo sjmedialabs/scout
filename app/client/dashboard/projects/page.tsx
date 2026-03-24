@@ -286,7 +286,7 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
     document.removeEventListener("mousedown", handleClickOutside);
   };
 }, []);
-
+ 
   const handleCreateProject = () => {
     if (
       newProject.title &&

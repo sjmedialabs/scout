@@ -296,42 +296,57 @@ const formats = [
             </CardHeader>
 
             <CardContent className="space-y-6">
+             <div>
+               <Label className="text-[#000] text-sm font-medium mb-0">Title</Label>
               <Input 
               className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
               name="title" 
               value={formData.title} 
               onChange={handleChange} 
-              placeholder="Job Title" />
-
+              placeholder="Enter Job Title" />
+             </div>
+              
+              <div>
+                <Label className="text-[#000] text-sm font-medium mb-0">Description</Label>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
                 className="w-full  shadow-md border rounded-xl p-3"
-                placeholder="Description"
+                placeholder="Enter JobDescription"
               />
-
+              </div>
+ 
+              <div>
+                <Label className="text-[#000] text-sm font-medium mb-0">Location</Label>
               <Input
               className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
                name="location" 
                value={formData.location} 
                onChange={handleChange} 
-               placeholder="Location" 
+               placeholder="Enter Job Location" 
                />
+               </div>
+               <div>
+                <Label className="text-[#000] text-sm font-medium mb-0">Email</Label>
               <Input 
               className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
               name="email" 
               value={formData.email} 
               onChange={handleChange} 
-              placeholder="Email" 
+              placeholder="Enter Your Email" 
               />
-              <Input 
+              </div>
+              {/* <Input 
               className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
               name="website" 
               value={formData.website} 
               onChange={handleChange} 
               placeholder="Website" 
-              />
+              /> */}
+
+              <div>
+                <Label className="text-[#000] text-sm font-medium mb-0">Responsibilities</Label>
 
               <ReactQuill
                 className="rounded-xl placeholder:text-gray-300 shadow-md border-gray-200"
@@ -341,6 +356,11 @@ const formats = [
                 modules={modules}
                 formats={formats}
               />
+              </div>
+
+              <div>
+                <Label className="text-[#000] text-sm font-medium mb-0">Skills</Label>
+          
 
               <ReactQuill
                 className="rounded-xl shadow-md border-gray-200"
@@ -350,8 +370,10 @@ const formats = [
                 modules={modules}
                 formats={formats}
               />
+              </div>
 
-
+              <div>
+                <Label className="text-[#000] text-sm font-medium mb-0">Experience</Label>
               <Input 
               className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
               name="experience" 
@@ -359,6 +381,9 @@ const formats = [
                onChange={handleChange} 
                placeholder="Experience" 
                />
+                </div>
+              <div>
+                <Label className="text-[#000] text-sm font-medium mb-0">Salary Range</Label>
               <Input 
               className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
               name="salaryRange" 
@@ -366,6 +391,11 @@ const formats = [
               onChange={handleChange} 
               placeholder="Salary" 
               />
+              </div>
+              
+              <div>
+                <Label className="text-[#000] text-sm font-medium mb-0">Department</Label>
+             
               <Input 
               className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
               name="department" 
@@ -373,6 +403,10 @@ const formats = [
               onChange={handleChange} 
               placeholder="Department" 
               />
+               </div>
+               <div>
+                <Label className="text-[#000] text-sm font-medium mb-0">Employment Type</Label>
+               
               <Input 
               className="rounded-xl shadow-md border-gray-200 placeholder:text-gray-500"
               name="employmentType" 
@@ -380,6 +414,7 @@ const formats = [
               onChange={handleChange} 
               placeholder="Employment Type" 
               />
+              </div>
                
                <div className="flex gap-3">
               <Button 

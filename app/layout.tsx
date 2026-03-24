@@ -26,7 +26,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Spark - B2B Service Platform",
+  title: "Scout - B2B Service Platform",
   description: "Connect service seekers with verified providers",
   generator: "Sj Media Labs",
 }

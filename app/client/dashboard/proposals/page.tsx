@@ -423,19 +423,19 @@ const handleMessageAgency = async (proposal: any) => {
             console.log("negotation action response::::",await response.json,proposalId)
             setProposals((prev) => prev.map((p) => (p.id === proposalId ? { ...p, status: "negotation" as const } : p)))
             //chat concersation start api
-            const conRes=await authFetch(`/api/chat/conversation`,{
-              method:"POST",
-              headers:{
-                "Content-Type":"application/json"
-              },
-              body:JSON.stringify({proposalId})
+            // const conRes=await authFetch(`/api/chat/conversation`,{
+            //   method:"POST",
+            //   headers:{
+            //     "Content-Type":"application/json"
+            //   },
+            //   body:JSON.stringify({proposalId})
    
-            })
-            const convData=await conRes.json();
-            setConversationId(convData.conversationId)
+            // })
+            // const convData=await conRes.json();
+            // setConversationId(convData.conversationId)
             
-            setSelectedProposalId(proposalId)
-            setShowNegotationModal(true)
+            // setSelectedProposalId(proposalId)
+            // setShowNegotationModal(true)
             
             console.log("Conversation Started")
         }catch(error){
@@ -682,17 +682,36 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                       key={proposal.id}
                       className="py-0 px-0 rounded-[22px] mb-3"
                     >
-                      <CardContent className="px-0 lg:px-2 py-0 lg:py-2">
-                        <div className="flex flex-col lg:flex-row gap-4">
+                      <CardContent className="px-0 lg:px-2 py-0 lg:py-2 h-full">
+                        <div className="flex flex-col lg:flex-row items-stretch w-full gap-4 overflow-hidden">
                           
                           {/* Left Image */}
-                          <div className="h-auto w-full lg:w-[170px] rounded-t-[18px] lg:rounded-[18px] overflow-hidden sm:shrink-0">
-                            <img
-                              src={proposal?.agency?.coverImage || "/proposal.jpg"}
-                              alt={proposal.agency?.name}
-                              className="h-full w-full object-cover"
-                            />
-                          </div>
+<div
+  className="
+    w-full 
+    h-[180px]              /* Required for small screens */
+    lg:h-auto              /* Auto height on desktop */
+    lg:w-[170px] 
+    relative
+    rounded-t-[18px] 
+    lg:rounded-[18px] 
+    overflow-hidden 
+    sm:shrink-0
+    lg:self-stretch
+  "
+>
+  <img
+    src={proposal?.agency?.coverImage || "/proposal.jpg"}
+    alt={proposal.agency?.name}
+    className="
+      absolute 
+      inset-0
+      w-full 
+      h-full 
+      object-cover
+    "
+  />
+</div>
 
                           {/* Right Side Content */}
                           <div className="flex-1 px-3 py-2 lg:py-0 lg:pr-5">
@@ -853,7 +872,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                     View Proposal Details
                                   </Button>
                                   
-                                  {proposal.status !== "rejected" && (
+                                  {(proposal.status.toLowerCase()=== "negotation") && (
                                   <Button
                                     variant="outline"
                                     size="sm"
@@ -868,7 +887,8 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                   {proposal.status !== "shortlisted" &&
                                     proposal.status !== "accepted" &&
                                     proposal.status !== "rejected" &&
-                                    proposal.status !== "completed" && (
+                                    proposal.status !== "completed" && 
+                                    proposal.status !== "negotation" && (
                                       <Button
                                         variant="outline"
                                         size="sm"
@@ -884,7 +904,7 @@ console.log("Filtered Proposals:::::::",filteredProposals)
                                   {/* Negotiation */}
                                   {proposal.status !== "accepted" &&
                                     proposal.status !== "rejected" &&
-                                    proposal.status !== "shortlisted" &&
+                                    proposal.status !== "pending" &&
                                     proposal.status !== "negotation" &&
                                     proposal.status !== "completed" && (
                                       <Button
