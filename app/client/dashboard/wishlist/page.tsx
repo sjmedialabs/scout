@@ -373,7 +373,7 @@ const WishListPage = () => {
                     {/* LEFT — Verified */}
                     <div className="absolute left-0">
                       {p.agency.isVerified && (
-                        <span className="inline-flex items-center rounded-lg border font-bold px-2 py-0 text-[10px] text-green-500 bg-white">
+                        <span className="inline-flex items-center rounded-lg border font-bold px-2 py-0 text-[10px] text-white bg-[#232a8f]">
                           Verified
                         </span>
                       )}
