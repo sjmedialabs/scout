@@ -562,6 +562,14 @@ const handler = (payload: any) => {
           return item;
         }),
       );
+       setFileteredDynamicConversation((prev = []) =>
+        prev.map((item) => {
+          if (item.conversationId === found.conversationId) {
+            return { ...item, unreadCount: 0 };
+          }
+          return item;
+        }),
+      );
       setTotalUnreadMessagesCount((prev) => prev - tempCount);
 
       await fetchMessages(recievdId);

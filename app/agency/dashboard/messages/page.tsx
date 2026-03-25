@@ -150,6 +150,7 @@ export default function MessagesPage() {
   const [typing, setTyping] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const [dynamicConversation, setDynamicConversation] = useState<
     Conversation[]
@@ -194,6 +195,7 @@ const [deletingId, setDeletingId] = useState<string | null>(null);
         socketRef.current = null
       }
     }, [])
+
   const loadData = async () => {
     setResLoading(true);
     setFailed(false);
@@ -248,6 +250,35 @@ if (conversationIdFromUrl) {
       setResLoading(false);
     }
   };
+  //Ui Layout scroll remover
+ useEffect(() => {
+  // Find scroll container
+  const scrollContainer = document.querySelector(
+    ".responsive-layout-scroll"
+  );
+
+  if (scrollContainer) {
+    // Store previous values (important)
+    const previousOverflow = scrollContainer.style.overflowY;
+    const previousMaxHeight = scrollContainer.style.maxHeight;
+
+    // Apply overrides
+    scrollContainer.style.overflowY = "hidden";
+    scrollContainer.style.maxHeight = "90vh";
+
+    // Restore when leaving page
+    return () => {
+      scrollContainer.style.overflowY = previousOverflow;
+      scrollContainer.style.maxHeight = previousMaxHeight;
+    };
+  }
+}, []);
+useEffect(() => {
+  messagesEndRef.current?.scrollIntoView({
+    behavior: "smooth",
+  });
+}, [dynamicMessages]);
+
 //   if (!dynamicConversation.length) return;
 
 //   setFileteredDynamicConversation((prev) => {
@@ -529,6 +560,14 @@ const handler = (payload: any) => {
           return item;
         }),
       );
+      setFileteredDynamicConversation((prev = []) =>
+        prev.map((item) => {
+          if (item.conversationId === found.conversationId) {
+            return { ...item, unreadCount: 0 };
+          }
+          return item;
+        }),
+      );
       setTotalUnreadMessagesCount((prev) => prev - tempCount);
 
       await fetchMessages(recievdId);
@@ -687,7 +726,7 @@ const toggleFavorite = (conversationId: string) => {
   console.log("Filtered Conversatoions are::::::", filteredDynamicConversation);
 
   return (
-  <div className="space-y-2 ">
+  <div className="space-y-2  max-h-[90vh]">
     {/* Header */}
     {/* <div>
       <h1 className="text-xl lg:text-3xl font-bold text-orangeButton">
@@ -1062,6 +1101,7 @@ const toggleFavorite = (conversationId: string) => {
                         </div>
                       );
                     })}
+                    <div ref={messagesEndRef} />
                   </div>
                 ) : (
                   <div className="text-center">
@@ -1079,8 +1119,8 @@ const toggleFavorite = (conversationId: string) => {
               </div>
 
               {/* Message Input */}
-              <div className="shrink-0 sticky md:border-none bottom-0 px-4 sm:px-6 py-3 border-t bg-white z-10">
-                <div className="mb-2">
+              <div className="shrink-0 sticky md:border-none bottom-0 px-4 sm:px-6 py-0 -mt-2  border-t bg-white z-10">
+                <div className="mb-0">
                   {uploading && <span>Uploading...</span>}
                   {uplodedUrl.url && (
                     <div>

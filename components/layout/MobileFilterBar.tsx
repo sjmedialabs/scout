@@ -43,7 +43,7 @@ export function MobileFilterBar({
     <div className={cn("w-full", className)}>
       {/* Desktop: single row, no scroll */}
       <div className="hidden lg:block w-full overflow-x-auto">
-  <div className="flex items-center gap-2 xl:gap-3 min-w-max">
+  <div className="flex items-center gap-2 xl:gap-3">
     {searchSlot && (
       <div className="min-w-[200px] lg:min-w-[220px] max-w-[280px] shrink-0">
         {searchSlot}

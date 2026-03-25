@@ -170,7 +170,7 @@ setSubscriptions(activePlans);
                   className={[
                    "group relative cursor-pointer transition-all duration-500 ease-out",
                    "border border-gray-500 bg-neutral-10 shadow-[0_1px_3px_rgb(0,0,0,0.03)]",
-                  "hover:-translate-y-1 py-3 hover:shadow-xl hover:bg-white",
+                  " py-3 hover:shadow-xl hover:bg-white",
                   selected ? "bg-zinc-50 ring-1 ring-zinc-200 border-slate-300" : "",
                   + "flex flex-col justify-between h-full min-w-0",
                  ].join(" ")}
