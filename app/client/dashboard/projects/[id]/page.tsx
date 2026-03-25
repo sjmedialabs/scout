@@ -249,26 +249,26 @@ const ProjectDetailPage = () => {
               console.log("negotation action response::::",await response.json,proposalId)
               setProposals((prev) => prev.map((p) => (p.id === proposalId ? { ...p, status: "negotation" as const } : p)))
               //chat concersation start api
-              const conRes=await authFetch(`/api/chat/conversation`,{
-                method:"POST",
-                headers:{
-                  "Content-Type":"application/json"
-                },
-                body:JSON.stringify({proposalId})
+              // const conRes=await authFetch(`/api/chat/conversation`,{
+              //   method:"POST",
+              //   headers:{
+              //     "Content-Type":"application/json"
+              //   },
+              //   body:JSON.stringify({proposalId})
      
-              })
-              const convData=await conRes.json();
-              setConversationId(convData.conversationId)
+              // })
+              // const convData=await conRes.json();
+              // setConversationId(convData.conversationId)
               
-              setSelectedProposalId(proposalId)
-              setShowNegotationModal(true)
+              // setSelectedProposalId(proposalId)
+              // setShowNegotationModal(true)
               
               console.log("Conversation Started")
           }catch(error){
             console.log("failed to update the  status",error)
-            alert("Staus failed to shortlist the proposal")
+            alert("Status failed to shortlist the proposal.")
           }
-  }
+        }
   const handleSendMessage=async()=>{
     if(!negotationMessage.trim()) {
       setErrorMsg({
@@ -556,13 +556,32 @@ const downloadFile = async (url: string) => {
                           
                           {/* Left Image */}
         
-                           <div className="h-auto w-full lg:w-[170px] rounded-t-[18px] lg:rounded-[18px] overflow-hidden sm:shrink-0">
-                            <img
-                              src={proposal?.agency?.coverImage || "/proposal.jpg"}
-                              alt={proposal.agency?.name}
-                              className="h-full w-full object-cover"
-                            />
-                          </div>
+                           <div
+  className="
+    w-full 
+    h-[180px]              /* Required for small screens */
+    lg:h-auto              /* Auto height on desktop */
+    lg:w-[170px] 
+    relative
+    rounded-t-[18px] 
+    lg:rounded-[18px] 
+    overflow-hidden 
+    sm:shrink-0
+    lg:self-stretch
+  "
+>
+  <img
+    src={proposal?.agency?.coverImage || "/proposal.jpg"}
+    alt={proposal.agency?.name}
+    className="
+      absolute 
+      inset-0
+      w-full 
+      h-full 
+      object-cover
+    "
+  />
+</div>
                           {/* Right Side Content */}
                           <div className="flex-1 px-3 py-2 lg:py-0 lg:pr-5">
 
@@ -707,13 +726,13 @@ const downloadFile = async (url: string) => {
                                     View Proposal Details
                                   </Button>
                                   
-                                  {proposal.status !== "rejected" && (
+                                  {proposal.status ===  "negotation" && (
                                   <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={() => handleMessageAgency(proposal)}
                                     className="btn-blackButton"
-                                  >
+                                   >
                                     Chat
                                   </Button> 
                                     )}
@@ -722,7 +741,8 @@ const downloadFile = async (url: string) => {
                                   {proposal.status !== "shortlisted" &&
                                     proposal.status !== "accepted" &&
                                     proposal.status !== "rejected" &&
-                                    proposal.status !== "completed" && (
+                                    proposal.status !== "completed" && 
+                                    proposal.status !== "negotation" && (
                                       <Button
                                         variant="outline"
                                         size="sm"
@@ -738,7 +758,7 @@ const downloadFile = async (url: string) => {
                                   {/* Negotiation */}
                                   {proposal.status !== "accepted" &&
                                     proposal.status !== "rejected" &&
-                                    proposal.status !== "shortlisted" &&
+                                    proposal.status !== "pending" &&
                                     proposal.status !== "negotation" &&
                                     proposal.status !== "completed" && (
                                       <Button
