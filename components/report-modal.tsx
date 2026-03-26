@@ -120,12 +120,14 @@ export default function ReportContentModal({
             variant="outline"
             onClick={onClose}
             disabled={loading}
+            className="btn-blackButton h-[30px]"
           >
             Cancel
           </Button>
           <Button
             onClick={handleSubmit}
             disabled={!reason || !description || loading}
+            className="primary-button h-[30px]"
           >
             {loading ? "Submitting..." : "Submit Report"}
           </Button>
