@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import Seeker from "@/models/Seeker";
 import { getCurrentUser } from "@/lib/auth/jwt";
+import User from "@/models/User";
 
 export async function GET(
   req: NextRequest,
@@ -141,6 +142,25 @@ if (updates.phoneNumber) {
         { status: 404 },
       );
     }
+
+    // Update User collection if name or companyName exists
+const userUpdates: any = {};
+
+if (updates.name) {
+  userUpdates.name = updates.name;
+}
+
+if (updates.companyName) {
+  userUpdates.company = updates.companyName;
+}
+
+if (Object.keys(userUpdates).length > 0) {
+  await User.findOneAndUpdate(
+    { _id: id }, // assuming userId === User _id
+    { $set: userUpdates },
+    { new: true }
+  );
+}
 
     return NextResponse.json(
       { success: true, data: updatedSeeker },

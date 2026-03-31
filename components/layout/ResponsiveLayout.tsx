@@ -17,7 +17,7 @@ export function ResponsiveLayout({ children, className }: ResponsiveLayoutProps)
   return (
     <div
       className={cn(
-        "flex-1 overflow-x-hidden overflow-y-auto",
+        "flex-1 overflow-x-hidden overflow-y-auto responsive-layout-scroll",
         "px-3 py-4 sm:px-4 sm:py-4 md:px-5 md:py-5 lg:px-6 lg:py-5",
         "min-h-0", // for flex children
         className
