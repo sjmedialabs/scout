@@ -645,17 +645,17 @@ const ProviderComparisonPage = () => {
                   <div className="space-y-1 mb-4">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-[#6B6B6B] font-bold text-md ">
-                        Schedule
+                        Communication
                       </span>
                       <span className="font-bold text-[#6B6B6B] text-md">
-                        {proposal.agency.scheduleRating || 0}/5.0
+                        {proposal.agency.communicationRating || 0}/5.0
                       </span>
                     </div>
                     <div className="h-2 bg-muted rounded-full overflow-hidden">
                       <div
                         className="h-full bg-[#2B7FFF]"
                         style={{
-                          width: `${(proposal.agency.scheduleRating / 5) * 100 || 0}%`,
+                          width: `${(proposal.agency.communicationRating / 5) * 100 || 0}%`,
                         }}
                       />
                     </div>
@@ -665,17 +665,17 @@ const ProviderComparisonPage = () => {
                   <div className="space-y-1 mb-4">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-[#6B6B6B] font-bold text-md ">
-                        Cost
+                        On-time Delivery
                       </span>
                       <span className="font-bold text-[#6B6B6B] text-md">
-                        {proposal.agency.costRating || 0}/5.0
+                        {proposal.agency.ontimeDeliveryRating || 0}/5.0
                       </span>
                     </div>
                     <div className="h-2 bg-muted rounded-full overflow-hidden">
                       <div
                         className="h-full bg-[#F0B100]"
                         style={{
-                          width: `${(proposal.agency.costRating / 5) * 100 || 0}%`,
+                          width: `${(proposal.agency.ontimeDeliveryRating / 5) * 100 || 0}%`,
                         }}
                       />
                     </div>

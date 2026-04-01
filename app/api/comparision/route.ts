@@ -107,9 +107,15 @@ export async function POST(req: NextRequest) {
             logo: "$agency.logo",
             rating: "$agency.rating",
             reviewCount: "$agency.reviewCount",
-            costRating: "$agency.costRating",
+             communicationRating: {
+                $ifNull: ["$agency.communicationRating", 0],
+              },
+
+              ontimeDeliveryRating: {
+                $ifNull: ["$agency.ontimeDeliveryRating", 0],
+              },
             qualityRating: "$agency.qualityRating",
-            scheduleRating: "$agency.scheduleRating",
+            // ontimeDeliveryRating: "$agency.ontimeDeliveryRating",
             willingToReferRating: "$agency.willingToReferRating",
             location: "$agency.location",
             minAmount: {

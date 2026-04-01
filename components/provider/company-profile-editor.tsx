@@ -36,6 +36,7 @@ import ServiceDropdown from "../select-category-filter";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { isValidPhoneNumber } from "libphonenumber-js";
+import CaseStudiesSection from "./caseStudiesSection";
 
 interface CompanyProfileEditorProps {
   provider: Provider;
@@ -128,8 +129,8 @@ export function CompanyProfileEditor({
     awards: provider.awards || [],
     certifications: provider.certifications || [],
     industries: provider.industries || [],
-    portfolio:
-      provider.portfolio.map((item) => ({ ...item, id: item._id })) || [],
+    portfolio:provider.portfolio.map((item) => ({ ...item, id: item._id })) || [],
+    caseStudies: provider.caseStudies.map((item) => ({ ...item, id: item._id })) || [],
     testimonials: provider.testimonials || [],
     socialLinks: {
       linkedin: provider.socialLinks.linkedin || "",
@@ -270,6 +271,7 @@ export function CompanyProfileEditor({
         countryCode:formData.countryCode,
         country:formData.country,
         minProjectSize: formData.minProjectSize,
+        caseStudies: formData.caseStudies || [],
         focusArea: formData.focusArea,
         clients:formData.clients,
 
@@ -476,7 +478,7 @@ export function CompanyProfileEditor({
       ),
     }));
   };
-
+ 
   const handleTaglineChange = (value: string) => {
     if (value.length <= 50) {
       setFormData((prev) => ({ ...prev, tagline: value }));
@@ -631,6 +633,7 @@ export function CompanyProfileEditor({
           <TabsTrigger className="rounded-xl" value="services">Services</TabsTrigger>
           <TabsTrigger className="rounded-xl" value="portfolio">Portfolio</TabsTrigger>
           <TabsTrigger className="rounded-xl" value="awards">Awards</TabsTrigger>
+          <TabsTrigger className="rounded-xl" value="caseStudies">Case Studies</TabsTrigger>
         </TabsList>
 
       <TabsContent value="overview">
@@ -1511,7 +1514,7 @@ export function CompanyProfileEditor({
 </TabsContent>
 
     {/* Portfolio */}
-    <TabsContent value="portfolio">
+      <TabsContent value="portfolio">
       <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
         <CardHeader>
           <div className="flex justify-between items-center -mt-2 ">
@@ -2222,7 +2225,7 @@ export function CompanyProfileEditor({
                     variant="outline"
                     className="mb-2 bg-[#ebecee] rounded-2xl text-[12px] text-[#000]"
                   >
-                    ⭐ {item.rating}/5
+                     {item.rating}/5
                   </Badge>
 
                   <h4 className="font-semibold text-md mb-1">
@@ -2258,6 +2261,13 @@ export function CompanyProfileEditor({
             {/* <div className="flex justify-end">
         <Button onClick={handleSave}>Save Changes</Button>
       </div> */}
+      <TabsContent value="caseStudies">
+        <CaseStudiesSection
+  formData={formData}
+  setFormData={setFormData}
+  isEditMode={isEditMode}
+/>
+      </TabsContent>
      </Tabs>
         </div>
   );
