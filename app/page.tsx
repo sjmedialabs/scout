@@ -156,8 +156,8 @@ const { cms, providers, projects, categories } = data;
       <HomeHero cms={cms} />
 
       {/* Features */}
-      <section className="py-6 px-4">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-6 px-6 md:px-10">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl font-bold text-center mb-4">
             How Scout Works
           </h2>
@@ -180,12 +180,12 @@ const { cms, providers, projects, categories } = data;
 
       {/* Service Categories - CMS Driven */}
       <section
-        className="py-4 px-4"
+        className="py-4 px-6 md:px-10"
         style={{
           backgroundImage: "url('/images/category-background.png')",
         }}
       >
-        <div className="max-w-6xl mx-auto flex justify-center flex-col">
+        <div className="max-w-7xl mx-auto flex justify-center flex-col">
           <div className="text-center mb-6">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] font-extrabold px-4 py-1 rounded-full mb-2">
               <span className="text-xs font-medium text-[#fff] capitalize">
@@ -284,8 +284,8 @@ const { cms, providers, projects, categories } = data;
 
       {/* Public Requirements - From API */}
       {projects.length > 0 && (
-        <section className="py-6 px-4">
-          <div className="max-w-6xl mx-auto">
+        <section className="py-6 px-6 md:px-10">
+          <div className="max-w-7xl mx-auto">
             <div className="text-center mb-6">
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] font-extrabold px-4 py-1 rounded-full  mb-2">
                 <span className="text-xs font-medium text-white capitalize">
@@ -415,8 +415,8 @@ const { cms, providers, projects, categories } = data;
 
       {/* Top Providers - From API */}
       {providers.length > 0 && (
-        <section className="py-6 px-4 bg-blueBackground">
-          <div className="max-w-6xl mx-auto">
+        <section className="py-6 px-6 md:px-10 bg-blueBackground">
+          <div className="max-w-7xl mx-auto">
             <div className="text-center mb-6">
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] font-extrabold px-4 py-1 rounded-full  mb-2">
                 <span className="text-xs font-medium text-white capitalize">
@@ -454,7 +454,7 @@ const { cms, providers, projects, categories } = data;
                         {provider.isVerified && (
                           <Badge
                             variant="outline"
-                            className="bg-white text-green-500 rounded-full px-3 py-0.5 text-[10px] font-semibold"
+                            className="bg-[#232a8f] text-white rounded-full px-3 py-0.5 text-[10px] font-semibold"
                           >
                             Verified
                           </Badge>
@@ -563,7 +563,7 @@ const { cms, providers, projects, categories } = data;
       )}
 
       {/* CTA Section */}
-      <section className="py-4 px-4">
+      <section className="py-4 px-6 md:px-10">
         <div className="max-w-4xl mx-auto text-center">
           <h3 className="text-2xl md:text-4xl font-extralight">
             {cms?.getStartedTitle || "Ready to Get Started?"}
