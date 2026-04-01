@@ -111,7 +111,7 @@ export async function GET(
         flexibilityRating: provider?.flexibilityRating || 0,
         valueForMoneyRating: provider?.valueForMoneyRating || 0,
         postLaunchSupportRating: provider?.postLaunchSupportRating || 0,
-
+        caseStudies: provider?.caseStudies || [],
 
         
         reviewCount: provider.reviewCount,
