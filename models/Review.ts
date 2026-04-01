@@ -6,10 +6,23 @@ export interface IReview extends Document {
   clientId: mongoose.Types.ObjectId
   projectId: mongoose.Types.ObjectId
   rating: number
+  
+  scheduleRating?: number
+  costRating?: number
+  
+
+  communicationRating: number
+  ontimeDeliveryRating: number
   qualityRating: number
-  scheduleRating: number
-  costRating: number
+  strategicThinkingRating: number
+  ROIClarityRating: number
   willingToReferRating: number
+  transparencyRating: number
+  flexibilityRating: number
+  valueForMoneyRating: number
+  postLaunchSupportRating: number
+
+
   projectStartDate?: Date
   projectEndDate?: Date
   title: string
@@ -33,10 +46,22 @@ const ReviewSchema = new Schema<IReview>(
     clientId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     projectId: { type: Schema.Types.ObjectId, ref: "Requirement", required: true },
     rating: { type: Number, required: true, min: 1, max: 5 },
+   
+    scheduleRating: { type: Number, min: 1, max: 5 },
+    costRating: { type: Number, min: 1, max: 5 },
+   
+
+    communicationRating: { type: Number, required: true, min: 1, max: 5 },
+    ontimeDeliveryRating: { type: Number, required: true, min: 1, max: 5 },
     qualityRating: { type: Number, required: true, min: 1, max: 5 },
-    scheduleRating: { type: Number, required: true, min: 1, max: 5 },
-    costRating: { type: Number, required: true, min: 1, max: 5 },
+    strategicThinkingRating: { type: Number, required: true, min: 1, max: 5 },
+    ROIClarityRating: { type: Number, required: true, min: 1, max: 5 },
     willingToReferRating: { type: Number, required: true, min: 1, max: 5 },
+    transparencyRating: { type: Number, required: true, min: 1, max: 5 },
+    flexibilityRating: { type: Number, required: true, min: 1, max: 5 },
+    valueForMoneyRating: { type: Number, required: true, min: 1, max: 5 },
+    postLaunchSupportRating: { type: Number, required: true, min: 1, max: 5 },
+
     projectStartDate: { type: Date },
     projectEndDate: { type: Date },
     title: { type: String},

@@ -219,10 +219,19 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
   title: "",
   content: "",
   rating: "",
+
+  communicationRating: "",
+  ontimeDeliveryRating: "",
   qualityRating: "",
-  costRating: "",
-  scheduleRating: "",
+  strategicThinkingRating: "",
+  ROIClarityRating:"",
   willingToReferRating: "",
+  transparencyRating: "",
+  flexibilityRating: "",
+  valueForMoneyRating: "",
+  postLaunchSupportRating: "",
+ 
+ 
   projectStartDate: "",
   projectEndDate: "",
 });
@@ -412,34 +421,50 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
     const projectTemp = requirements.find(
       (req) => req._id === reviewSubmissionProjectId,
     );
-    if (!projectTemp) {
-      toast.error("Invalid Project for review submission");
-    }
-    if (
+   if (
   !reviewForm.content.trim() ||
   Number(reviewForm.rating) <= 0 ||
-  Number(reviewForm.costRating) <= 0 ||
+
+  Number(reviewForm.communicationRating) <= 0 ||
+  Number(reviewForm.ontimeDeliveryRating) <= 0 ||
   Number(reviewForm.qualityRating) <= 0 ||
-  Number(reviewForm.scheduleRating) <= 0 ||
-  Number(reviewForm.willingToReferRating) <= 0
- 
+  Number(reviewForm.strategicThinkingRating) <= 0 ||
+  Number(reviewForm.ROIClarityRating) <= 0 ||
+  Number(reviewForm.willingToReferRating) <= 0 ||
+  Number(reviewForm.transparencyRating) <= 0 ||
+  Number(reviewForm.flexibilityRating) <= 0 ||
+  Number(reviewForm.valueForMoneyRating) <= 0 ||
+  Number(reviewForm.postLaunchSupportRating) <= 0
+
 ) {
   toast.error("All fields are required for review submission");
   return;
 }
+console.log("Submitting review form is::::", reviewForm);
 
     //Build correct payload for API
     const payload = {
-      content: reviewForm.content.trim(),
-      rating: reviewForm.rating,
-      costRating: reviewForm.costRating,
-      qualityRating: reviewForm.qualityRating,
-      scheduleRating: reviewForm.scheduleRating,
-      willingToReferRating: reviewForm.willingToReferRating,
-      
-      providerId: projectTemp?.allocatedToId,
-      projectId: projectTemp?._id,
-    };
+  title: reviewForm.title?.trim(),
+
+  content: reviewForm.content.trim(),
+  rating: Number(reviewForm.rating),
+
+  communicationRating: Number(reviewForm.communicationRating),
+  ontimeDeliveryRating: Number(reviewForm.ontimeDeliveryRating),
+  qualityRating: Number(reviewForm.qualityRating),
+  strategicThinkingRating: Number(reviewForm.strategicThinkingRating),
+  ROIClarityRating: Number(reviewForm.ROIClarityRating),
+  willingToReferRating: Number(reviewForm.willingToReferRating),
+  transparencyRating: Number(reviewForm.transparencyRating),
+  flexibilityRating: Number(reviewForm.flexibilityRating),
+  valueForMoneyRating: Number(reviewForm.valueForMoneyRating),
+  postLaunchSupportRating: Number(reviewForm.postLaunchSupportRating),
+
+  
+
+  providerId: projectTemp?.allocatedToId,
+  projectId: projectTemp?._id,
+};
     try {
       // API CALL
       setSending(true);
@@ -456,10 +481,18 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
           title: "",
           content: "",
           rating: "",
+
+          communicationRating: "",
+          ontimeDeliveryRating: "",
           qualityRating: "",
-          costRating: "",
-          scheduleRating: "",
+          strategicThinkingRating: "",
+          ROIClarityRating: "",
           willingToReferRating: "",
+          transparencyRating: "",
+          flexibilityRating: "",
+          valueForMoneyRating: "",
+          postLaunchSupportRating: "",
+
           projectStartDate: "",
           projectEndDate: "",
         });
@@ -1409,10 +1442,17 @@ const paginatedRequirements = filteredRequirements?.slice(
 
               {[
                 { label: "Overall Rating", key: "rating" },
-                { label: "Cost Rating", key: "costRating" },
+                
+                {label: "Communication Rating", key: "communicationRating" },
+                { label: "On-time Delivery Rating", key: "ontimeDeliveryRating" },
                 { label: "Quality Rating", key: "qualityRating" },
+                { label: "Strategic Thinking Rating", key: "strategicThinkingRating" },
+                { label: "ROI Clarity Rating", key: "ROIClarityRating" },
                 { label: "Willing To Refer Rating", key: "willingToReferRating" },
-                { label: "Schedule Rating", key: "scheduleRating" },
+                { label: "Transparency Rating", key: "transparencyRating" },
+                { label: "Flexibility Rating", key: "flexibilityRating" },
+                { label: "Value For Money Rating", key: "valueForMoneyRating" },
+                { label: "Post-Launch Support Rating", key: "postLaunchSupportRating" },
               ].map((item) => (
                 <div className="space-y-2" key={item.key}>
                   <Label className="text-[#000] text-[14px] font-bold">

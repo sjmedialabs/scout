@@ -11,6 +11,18 @@ export interface IPortfolioItem {
   projectUrl?: string
 }
 
+export interface ICaseStudy{
+  clientCompanyName:string
+  projectTitle:string
+  projectDescription:string
+  technologiesUsed:string[]
+  budget:string
+  timeline:string
+  stats:[{title:string,value:string,description?:string}]
+  projectSteps:[{title:string,description:string,timeline:string}]
+  projectUrl?:string
+}
+
 export interface ITestimonial {
   clientName: string
   company: string
@@ -40,12 +52,22 @@ export interface IProvider extends Document {
   technologies: string[]
   industries: string[]
   clients:string[]
-  rating: number
-  reviewCount: number
-  qualityRating?:number
   scheduleRating?:number
   costRating?:number
+
+  rating: number
+  reviewCount: number
+  communicationRating?:number
+  ontimeDeliveryRating?:number
+  qualityRating?:number
+  strategicThinkingRating?:number
+  ROIClarityRating?:number
   willingToReferRating?:number
+  transparencyRating?:number
+  flexibilityRating?:number
+  valueForMoneyRating?:number
+  postLaunchSupportRating?:number
+
   projectsCompleted: number
   hourlyRate?: string
   minProjectSize?: number
@@ -55,6 +77,7 @@ export interface IProvider extends Document {
   portfolio: IPortfolioItem[]
   testimonials: ITestimonial[]
   certifications: string[]
+  caseStudies: ICaseStudy[]
   // awards: string[]
   awards: {
   title: string
@@ -103,6 +126,27 @@ const PortfolioItemSchema = new Schema({
   projectUrl: { type: String },
 })
 
+const CaseStudySchema = new Schema({
+  clientCompanyName: { type: String, required: true },
+  projectTitle: { type: String, required: true },
+  projectDescription: { type: String, required: true },
+  technologiesUsed: [{ type: String }],
+  budget: { type: String ,required: true},
+  timeline: { type: String, required: true },
+  stats: [{
+    title: { type: String, required: true },
+    value: { type: String, required: true },
+    description: { type: String }
+  }],
+  projectSteps: [{
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    timeline: { type: String, required: true }
+  }],
+  projectUrl: { type: String }
+})
+
+
 const TestimonialSchema = new Schema({
   clientName: { type: String, required: true },
   company: { type: String, required: true },
@@ -133,11 +177,22 @@ const ProviderSchema = new Schema<IProvider>(
     technologies: [{ type: String }],
     industries: [{ type: String }],
     clients:[{type:String,default:[]}],
-    rating: { type: Number, default: 0, min: 0, max: 5 },
-    qualityRating: { type: Number, default: 0, min: 0, max: 5 },
     scheduleRating: { type: Number, default: 0, min: 0, max: 5 },
     costRating: { type: Number, default: 0, min: 0, max: 5 },
+
+    rating: { type: Number, default: 0, min: 0, max: 5 },
+    communicationRating: { type: Number, default: 0, min: 0, max: 5 },
+    ontimeDeliveryRating: { type: Number, default: 0, min: 0, max: 5 },
+    qualityRating: { type: Number, default: 0, min: 0, max: 5 },
+    strategicThinkingRating: { type: Number, default: 0, min: 0, max: 5 },
+    ROIClarityRating: { type: Number, default: 0, min: 0, max: 5 },
     willingToReferRating: { type: Number, default: 0, min: 0, max: 5 },
+    transparencyRating: { type: Number, default: 0, min: 0, max: 5 },
+    flexibilityRating: { type: Number, default: 0, min: 0, max: 5 },
+    valueForMoneyRating: { type: Number, default: 0, min: 0, max: 5 },
+    postLaunchSupportRating: { type: Number, default: 0, min: 0, max: 5 },
+    
+
     reviewCount: { type: Number, default: 0 },
     projectsCompleted: { type: Number, default: 0 },
     hourlyRate: { type: String },
@@ -147,6 +202,7 @@ const ProviderSchema = new Schema<IProvider>(
     foundedYear: { type: Number },
     portfolio: [PortfolioItemSchema],
     testimonials: [TestimonialSchema],
+    caseStudies: [CaseStudySchema],
     certifications: [{ type: String }],
     awards: [awardSchema],
     socialLinks: {

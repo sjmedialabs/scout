@@ -80,19 +80,40 @@ export async function GET(req: NextRequest) {
       // 🔹 Final response shape (UNCHANGED)
       {
         $project: {
+          //  Main rating
           rating: 1,
-          qualityRating: 1,
-          scheduleRating: 1,
-          costRating: 1,
-          willingToReferRating: 1,
+
+          //  Old rating fields (KEEP for old data)
+          scheduleRating: { $ifNull: ["$scheduleRating", null] },
+          costRating: { $ifNull: ["$costRating", null] },
+
+          //  New rating fields
+          communicationRating: { $ifNull: ["$communicationRating", null] },
+          ontimeDeliveryRating: { $ifNull: ["$ontimeDeliveryRating", null] },
+          qualityRating: { $ifNull: ["$qualityRating", null] },
+          strategicThinkingRating: { $ifNull: ["$strategicThinkingRating", null] },
+          ROIClarityRating: { $ifNull: ["$ROIClarityRating", null] },
+          willingToReferRating: { $ifNull: ["$willingToReferRating", null] },
+          transparencyRating: { $ifNull: ["$transparencyRating", null] },
+          flexibilityRating: { $ifNull: ["$flexibilityRating", null] },
+          valueForMoneyRating: { $ifNull: ["$valueForMoneyRating", null] },
+          postLaunchSupportRating: { $ifNull: ["$postLaunchSupportRating", null] },
+
+          //  Project timeline
+          projectStartDate: { $ifNull: ["$projectStartDate", null] },
+          projectEndDate: { $ifNull: ["$projectEndDate", null] },
+
+          //  Review content
           title: 1,
           content: 1,
           pros: 1,
           cons: 1,
           keyHighLights: 1,
           createdAt: 1,
+
           response: { $ifNull: ["$response", {}] },
 
+          //  Client details
           client: {
             name: "$client.name",
             companyName: "$client.companyName",
@@ -103,6 +124,7 @@ export async function GET(req: NextRequest) {
             position: "$client.position",
           },
 
+          //  Project details
           project: {
             title: "$project.title",
             category: "$project.category",
@@ -136,6 +158,7 @@ export async function GET(req: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser();
+
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },
@@ -153,25 +176,59 @@ export async function POST(request: NextRequest) {
     await connectToDatabase();
 
     const body = await request.json();
+
     const {
       providerId,
       projectId,
+
       rating,
+
+      // ⭐ Old optional ratings (keep)
       qualityRating,
       scheduleRating,
       costRating,
+
+      // ⭐ New required ratings
+      communicationRating,
+      ontimeDeliveryRating,
+      strategicThinkingRating,
+      ROIClarityRating,
       willingToReferRating,
+      transparencyRating,
+      flexibilityRating,
+      valueForMoneyRating,
+      postLaunchSupportRating,
+
+      // ⭐ Other fields
+      projectStartDate,
+      projectEndDate,
+
+      title,
       content,
       pros,
       cons,
+      keyHighLights,
     } = body;
 
-    if (!providerId || !projectId || !rating  || !content) {
+    // ✅ Required field validation
+    if (
+      !providerId ||
+      !projectId ||
+      !rating ||
+      !content ||
+
+      !communicationRating ||
+      !ontimeDeliveryRating ||
+      !strategicThinkingRating ||
+      !ROIClarityRating ||
+      !willingToReferRating ||
+      !transparencyRating ||
+      !flexibilityRating ||
+      !valueForMoneyRating ||
+      !postLaunchSupportRating
+    ) {
       return NextResponse.json(
-        {
-          error:
-            "Missing required fields: providerId, projectId, rating, title, content",
-        },
+        { error: "Missing required review fields" },
         { status: 400 },
       );
     }
@@ -186,8 +243,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify project belongs to user
+    // 🔹 Verify project ownership
     const project = await Requirement.findById(projectId);
+
     if (!project || project.clientId.toString() !== user.userId) {
       return NextResponse.json(
         { error: "Project not found or unauthorized" },
@@ -195,7 +253,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if already reviewed
+    // 🔹 Prevent duplicate review
     const existingReview = await Review.findOne({
       clientId: user.userId,
       providerId,
@@ -204,66 +262,120 @@ export async function POST(request: NextRequest) {
 
     if (existingReview) {
       return NextResponse.json(
-        { error: "You have already reviewed this provider for this project" },
+        { error: "You have already reviewed this provider" },
         { status: 409 },
       );
     }
 
-    // Create review
+    // Create Review (UPDATED)
     const review = await Review.create({
       providerId,
       clientId: user.userId,
       projectId,
+
       rating,
-      qualityRating: qualityRating || rating,
-      scheduleRating: scheduleRating || rating,
-      costRating: costRating || rating,
-      willingToReferRating: willingToReferRating || rating,
+
+      qualityRating: qualityRating,
+
+      // New ratings
+      communicationRating,
+      ontimeDeliveryRating,
+      strategicThinkingRating,
+      ROIClarityRating,
+      willingToReferRating,
+      transparencyRating,
+      flexibilityRating,
+      valueForMoneyRating,
+      postLaunchSupportRating,
+
+      projectStartDate,
+      projectEndDate,
+
+      title,
       content,
+
       pros: pros || [],
       cons: cons || [],
-      keyHighLights: body.keyHighLights || [],
+      keyHighLights: keyHighLights || [],
+
       isVerified: false,
       isPublic: true,
     });
 
-    // Mark project as reviewed
-    await Requirement.findByIdAndUpdate(projectId, { isReviewed: true });
+    // 🔹 Mark project reviewed
+    await Requirement.findByIdAndUpdate(projectId, {
+      isReviewed: true,
+    });
 
-    // Update provider rating
-    const reviews = await Review.find({ providerId, isPublic: true });
-    const avgRating =
-      reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
-    const avgCostRating =
-      reviews.reduce((sum, r) => sum + r.costRating, 0) / reviews.length;
-    const avgQualityRating =
-      reviews.reduce((sum, r) => sum + r.qualityRating, 0) / reviews.length;
-    const avgScheduleRating =
-      reviews.reduce((sum, r) => sum + r.scheduleRating, 0) / reviews.length;
-    const avgWillingToReferRating =
-      reviews.reduce((sum, r) => sum + r.willingToReferRating, 0) /
-      reviews.length;
+    // 🔹 Update provider ratings (UNCHANGED logic)
+    // 🔹 Update provider ratings (UPDATED FOR ALL FIELDS)
 
-    const providerToupdate = await Provider.findOneAndUpdate(
-      { userId: providerId },
-      {
-        rating: Math.round(avgRating * 10) / 10,
-        reviewCount: reviews.length,
-        costRating: Math.round(avgCostRating * 10) / 10,
-        qualityRating: Math.round(avgQualityRating * 10) / 10,
-        scheduleRating: Math.round(avgScheduleRating * 10) / 10,
-        willingToReferRating: Math.round(avgWillingToReferRating * 10) / 10,
-      },
-      { new: true },
-    );
-    console.log("--Updated provider ratings:", providerToupdate);
-    //     console.log({
-    //   avgRating,
-    //   avgCostRating,
-    //   avgQualityRating,
-    //   avgScheduleRating,
-    //   avgWillingToReferRating,
-    // })
+const reviews = await Review.find({
+  providerId,
+  isPublic: true,
+});
+
+// helper function
+const avg = (field: string) =>
+  reviews.reduce((sum, r) => sum + (r[field] || 0), 0) /
+  reviews.length;
+
+//  Calculate averages
+const avgRating = avg("rating");
+
+const avgCommunicationRating = avg("communicationRating");
+const avgOntimeDeliveryRating = avg("ontimeDeliveryRating");
+const avgQualityRating = avg("qualityRating");
+const avgStrategicThinkingRating = avg("strategicThinkingRating");
+const avgROIClarityRating = avg("ROIClarityRating");
+const avgWillingToReferRating = avg("willingToReferRating");
+const avgTransparencyRating = avg("transparencyRating");
+const avgFlexibilityRating = avg("flexibilityRating");
+const avgValueForMoneyRating = avg("valueForMoneyRating");
+const avgPostLaunchSupportRating = avg("postLaunchSupportRating");
+
+//  Update provider
+const providerToupdate = await Provider.findOneAndUpdate(
+  { userId: providerId },
+  {
+    rating: Math.round(avgRating * 10) / 10,
+
+    reviewCount: reviews.length,
+
+    communicationRating:
+      Math.round(avgCommunicationRating * 10) / 10,
+
+    ontimeDeliveryRating:
+      Math.round(avgOntimeDeliveryRating * 10) / 10,
+
+    qualityRating:
+      Math.round(avgQualityRating * 10) / 10,
+
+    strategicThinkingRating:
+      Math.round(avgStrategicThinkingRating * 10) / 10,
+
+    ROIClarityRating:
+      Math.round(avgROIClarityRating * 10) / 10,
+
+    willingToReferRating:
+      Math.round(avgWillingToReferRating * 10) / 10,
+
+    transparencyRating:
+      Math.round(avgTransparencyRating * 10) / 10,
+
+    flexibilityRating:
+      Math.round(avgFlexibilityRating * 10) / 10,
+
+    valueForMoneyRating:
+      Math.round(avgValueForMoneyRating * 10) / 10,
+
+    postLaunchSupportRating:
+      Math.round(avgPostLaunchSupportRating * 10) / 10,
+  },
+  { new: true },
+);
+
+console.log("--Updated provider ratings:", providerToupdate);
 
     return NextResponse.json({
       success: true,
@@ -277,6 +389,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error creating review:", error);
+
     return NextResponse.json(
       { error: "Failed to create review" },
       { status: 500 },

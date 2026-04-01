@@ -72,13 +72,32 @@ export async function GET(
       },
 
       // 🔹 Shape final response
-      {
+       {
         $project: {
+          //  Main rating
           rating: 1,
-          qualityRating: 1,
-          scheduleRating: 1,
-          costRating: 1,
-          willingToReferRating: 1,
+
+          //  Old rating fields (KEEP for old data)
+          scheduleRating: { $ifNull: ["$scheduleRating", null] },
+          costRating: { $ifNull: ["$costRating", null] },
+
+          //  New rating fields
+          communicationRating: { $ifNull: ["$communicationRating", null] },
+          ontimeDeliveryRating: { $ifNull: ["$ontimeDeliveryRating", null] },
+          qualityRating: { $ifNull: ["$qualityRating", null] },
+          strategicThinkingRating: { $ifNull: ["$strategicThinkingRating", null] },
+          ROIClarityRating: { $ifNull: ["$ROIClarityRating", null] },
+          willingToReferRating: { $ifNull: ["$willingToReferRating", null] },
+          transparencyRating: { $ifNull: ["$transparencyRating", null] },
+          flexibilityRating: { $ifNull: ["$flexibilityRating", null] },
+          valueForMoneyRating: { $ifNull: ["$valueForMoneyRating", null] },
+          postLaunchSupportRating: { $ifNull: ["$postLaunchSupportRating", null] },
+
+          //  Project timeline
+          projectStartDate: { $ifNull: ["$projectStartDate", null] },
+          projectEndDate: { $ifNull: ["$projectEndDate", null] },
+
+          //  Review content
           title: 1,
           content: 1,
           pros: 1,
@@ -86,6 +105,9 @@ export async function GET(
           keyHighLights: 1,
           createdAt: 1,
 
+          response: { $ifNull: ["$response", {}] },
+
+          //  Client details
           client: {
             name: "$client.name",
             companyName: "$client.companyName",
@@ -96,6 +118,7 @@ export async function GET(
             position: "$client.position",
           },
 
+          //  Project details
           project: {
             title: "$project.title",
             category: "$project.category",
