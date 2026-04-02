@@ -99,7 +99,7 @@ export default function ContactPage() {
   console.log("CMS for  the contact::::",cms)
 
   return (
-    <div className="min-h-screen px-6 md:px-10 py-5">
+    <div className="min-h-screen px-6 md:px-8 py-5">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
         {/* LEFT */}
         <div>

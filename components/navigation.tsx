@@ -233,7 +233,7 @@ const overflowCategories = mainCategories.slice(5);
       >
        
         <div
-          className={`lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${isAgencyDashboard ? "ml-80" : ""}`}
+          className={`max-w-7xl mx-auto px-4 py-2 sm:px-6 xl:px-0 ${isAgencyDashboard ? "ml-80" : ""}`}
         >
           <div className="flex justify-between items-center h-14 gap-4">
 

@@ -149,7 +149,7 @@ export default async function AboutPage() {
         </div>
 
         {/*Team section */}
-        <div className="py-10 px-8 lg:px-10">
+        <div className="py-10 px-8 lg:px-10m xl:px-0 max-w-7xl mx-auto">
            <h5 className="text-md font-normal text-[#F54A0C] text-center">{cms?.aboutTeamTitle}</h5>
            <h5 className="text-2xl font-normal text-black text-center max-w-[300px] mx-auto">
             {cms?.aboutTeamSubtitle}
@@ -196,7 +196,7 @@ export default async function AboutPage() {
           </div>
 
           {/* Values Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-4 text-center gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 max-w-7xl mx-auto gap-4text-center gap-4">
             {cms?.aboutValues?.map((item : any, i : number) => (
               <div key={i} className="flex flex-col items-center min-w-0">
                 <img 
