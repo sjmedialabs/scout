@@ -33,7 +33,7 @@ const isLarge = variant === "large";
             <span className="text-xs sm:hidden">:</span>
 
             <span className={`${isCompact ? "text-[10px]" : "text-[16px]"} text-gray-600 text-center font-bold sm:text-black`}>
-              ${provider.minAmount ?? 0}+
+              ${provider?.minProjectSize ?? 0}+
             </span>
           </div>
 
@@ -53,13 +53,13 @@ const isLarge = variant === "large";
           {/* Rating for cost */}
           <div className="flex flex-row sm:flex-col gap-1">
             <span className={`${isCompact ? "text-[9px]" : "text-[10px]"} font-semibold`}>
-              Rating for cost
+              Rating for Communication
             </span>
 
             <span className="text-xs sm:hidden">:</span>
 
             <span className={`${isCompact ? "text-[10px]" : "text-[16px]"} text-gray-600 text-center font-bold sm:text-black`}>
-              {provider.costRating ?? 0} / 5
+              {provider.communicationRating ?? 0} / 5
             </span>
           </div>
       </div>

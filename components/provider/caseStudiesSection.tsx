@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
+import { toast } from "@/lib/toast";
 
 interface Props {
   formData: any;
@@ -78,15 +79,21 @@ export default function CaseStudiesSection({
 
   /* ---------------- STATS ---------------- */
 
-  const addStat = () => {
-    setCaseStudyForm((prev: any) => ({
+const MAX_STATS = 5;
+
+const addStat = () => {
+  setCaseStudyForm((prev: any) => {
+    if ((prev.stats || []).length >= MAX_STATS) return prev;
+
+    return {
       ...prev,
       stats: [
         ...(prev.stats || []),
         { title: "", value: "", description: "" },
       ],
-    }));
-  };
+    };
+  });
+};
 
   const updateStat = (
     index: number,
@@ -152,38 +159,80 @@ export default function CaseStudiesSection({
 
   /* ---------------- ADD / EDIT ---------------- */
 
-  const saveCaseStudy = () => {
-    if (!editId) {
-      const newItem = {
-        id: Date.now().toString(),
-        ...caseStudyForm,
-      };
+  const validateCaseStudy = () => {
+  const stats = caseStudyForm.stats || [];
+  const steps = caseStudyForm.projectSteps || [];
 
-      setFormData((prev: any) => ({
-        ...prev,
-        caseStudies: [
-          ...(prev.caseStudies || []),
-          newItem,
-        ],
-      }));
-    } else {
-      const updated = formData.caseStudies.map(
-        (item: any) =>
-          item.id === editId
-            ? { ...item, ...caseStudyForm }
-            : item
-      );
+  //  Validate Stats
+  for (let i = 0; i < stats.length; i++) {
+    const stat = stats[i];
 
-      setFormData((prev: any) => ({
-        ...prev,
-        caseStudies: updated,
-      }));
+    if (
+      !stat.title?.trim() ||
+      !stat.value?.trim() ||
+      !stat.description?.trim()
+    ) {
+      toast.error(`Please fill all fields in Stat ${i + 1}`);
+      return false;
     }
+  }
 
-    setCaseStudyForm({});
-    setEditId(null);
-    setShowForm(false);
-  };
+  //  Validate Project Steps
+  for (let i = 0; i < steps.length; i++) {
+    const step = steps[i];
+
+    if (
+      !step.title?.trim() ||
+      !step.description?.trim()
+    ) {
+      toast.error(`Please fill all fields in Project Step ${i + 1}`);
+      return false;
+    }
+  }
+
+  return true;
+};
+
+  const saveCaseStudy = () => {
+
+  //  Validate before saving
+  const isValid = validateCaseStudy();
+
+  if (!isValid) return;
+
+  if (!editId) {
+    const newItem = {
+      id: Date.now().toString(),
+      ...caseStudyForm,
+    };
+
+    setFormData((prev: any) => ({
+      ...prev,
+      caseStudies: [
+        ...(prev.caseStudies || []),
+        newItem,
+      ],
+    }));
+
+  } else {
+
+    const updated = formData.caseStudies.map(
+      (item: any) =>
+        item.id === editId
+          ? { ...item, ...caseStudyForm }
+          : item
+    );
+
+    setFormData((prev: any) => ({
+      ...prev,
+      caseStudies: updated,
+    }));
+  }
+
+  setCaseStudyForm({});
+  setEditId(null);
+  setShowForm(false);
+};
 
   const editCaseStudy = (id: string) => {
     const item = formData.caseStudies.find(
@@ -361,64 +410,64 @@ export default function CaseStudiesSection({
 
             {/* TECHNOLOGIES USED */}
 
-<div className="space-y-5 mt-4">
+              <div className="space-y-5 mt-4">
 
-  <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
-    Technologies Used
-  </Label>
+                <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
+                  Technologies Used
+                </Label>
 
-  {/* Selected Technologies */}
+                {/* Selected Technologies */}
 
-  <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2">
 
-    {(caseStudyForm.technologiesUsed || []).map(
-      (tech: string) => (
+                  {(caseStudyForm.technologiesUsed || []).map(
+                    (tech: string) => (
 
-        <Badge
-          key={tech}
-          variant="secondary"
-          className="flex items-center bg-[#1C96F4] gap-2"
-        >
+                      <Badge
+                        key={tech}
+                        variant="secondary"
+                        className="flex items-center bg-[#1C96F4] gap-2"
+                      >
 
-          {tech}
+                        {tech}
 
-          <div
-            onClick={() => removeTech(tech)}
-          >
-            <X className="h-3 w-3 cursor-pointer" />
-          </div>
+                        <div
+                          onClick={() => removeTech(tech)}
+                        >
+                          <X className="h-3 w-3 cursor-pointer" />
+                        </div>
 
-        </Badge>
+                      </Badge>
 
-      )
-    )}
+                    )
+                  )}
 
-  </div>
+                </div>
 
-  {/* Add Technology Input */}
+                {/* Add Technology Input */}
 
-  <div className="flex w-[50%] gap-2 -mt-3">
+                <div className="flex w-[50%] gap-2 -mt-3">
 
-    <Input
-      type="text"
-      value={techInput}
-      onChange={(e) =>
-        setTechInput(e.target.value)
-      }
-      placeholder="Enter Technology"
-      className="placeholder:text-[#b2b2b2] bg-[#f2f1f6] mt-1 border-[#D0D5DD] border-1 rounded-[6px] font-inter"
-    />
+                  <Input
+                    type="text"
+                    value={techInput}
+                    onChange={(e) =>
+                      setTechInput(e.target.value)
+                    }
+                    placeholder="Enter Technology"
+                    className="placeholder:text-[#b2b2b2] bg-[#f2f1f6] mt-1 border-[#D0D5DD] border-1 rounded-[6px] font-inter"
+                  />
 
-    <Button
-      onClick={addTech}
-      className="bg-[#F54A0C] rounded-xl h-[36px] w-[70px] mt-1.5"
-    >
-      <Plus className="h-4 w-4" />
-    </Button>
+                  <Button
+                    onClick={addTech}
+                    className="bg-[#F54A0C] rounded-xl h-[36px] w-[70px] mt-1.5"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
 
-  </div>
+                </div>
 
-</div>
+              </div>
 
             {/* STATS */}
 
@@ -432,159 +481,178 @@ export default function CaseStudiesSection({
                 <Button
                   onClick={addStat}
                   className="bg-[#F54A0C] rounded-xl h-[30px]"
+                  disabled={(caseStudyForm.stats || []).length >= 5}
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
 
-              {(caseStudyForm.stats || []).map(
-                (stat: any, index: number) => (
+           {(caseStudyForm.stats || []).map(
+  (stat: any, index: number) => (
 
-                  <div
-                    key={index}
-                    className="grid grid-cols-4 gap-2"
-                  >
-
-                    <Input
-                      placeholder="Title"
-                      value={stat.title}
-                      onChange={(e) =>
-                        updateStat(
-                          index,
-                          "title",
-                          e.target.value
-                        )
-                      }
-                      className="bg-[#f2f1f6] border-[#D0D5DD]  placeholder:text-[#b2b2b2]"
-                    />
-
-                    <Input
-                      placeholder="Value"
-                      value={stat.value}
-                      onChange={(e) =>
-                        updateStat(
-                          index,
-                          "value",
-                          e.target.value
-                        )
-                      }
-                      className="bg-[#f2f1f6] border-[#D0D5DD] placeholder:text-[#b2b2b2]"
-                    />
-
-                    <Input
-                      placeholder="Description"
-                      value={stat.description}
-                      onChange={(e) =>
-                        updateStat(
-                          index,
-                          "description",
-                          e.target.value
-                        )
-                      }
-                      className="bg-[#f2f1f6] border-[#D0D5DD] placeholder:text-[#b2b2b2]"
-                    />
-
-                    <Trash2
-                      className="h-5 w-5 text-red-500 cursor-pointer mt-2"
-                      onClick={() =>
-                        removeStat(index)
-                      }
-                    />
-
-                  </div>
-
-                )
-              )}
-
-            </div>
-
-            {/* PROJECT STEPS */}
-
-<div className="space-y-3 mt-4">
-
-  <div className="flex justify-between items-center">
-
-    <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
-      Project Steps
-    </Label>
-
-    <Button
-      onClick={addStep}
-      className="bg-[#F54A0C] rounded-xl h-[30px]"
+    <div
+      key={index}
+      className="grid grid-cols-4 gap-2"
     >
-      <Plus className="h-4 w-4" />
-    </Button>
 
-  </div>
-
-  {(caseStudyForm.projectSteps || []).map(
-    (step: any, index: number) => (
-
-      <div
-        key={index}
-        className="grid grid-cols-4 gap-2"
-      >
-
-        {/* Title */}
-
+      {/* TITLE */}
+      <div className="relative">
         <Input
-          placeholder="Step Title"
-          value={step.title}
+          placeholder="Title"
+          value={stat.title}
+          maxLength={50}
           onChange={(e) =>
-            updateStep(
+            updateStat(
               index,
               "title",
               e.target.value
             )
           }
-          className="placeholder:text-[#b2b2b2] bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px]"
+          className="bg-[#f2f1f6] border-[#D0D5DD] pr-10 placeholder:text-[#b2b2b2]"
         />
 
-        {/* Description */}
+        <span className="absolute right-2 bottom-1 text-xs text-gray-400">
+          {stat.title.length}/50
+        </span>
+      </div>
 
+      {/* VALUE */}
+      <Input
+        placeholder="Value"
+        value={stat.value}
+        onChange={(e) =>
+          updateStat(
+            index,
+            "value",
+            e.target.value
+          )
+        }
+        className="bg-[#f2f1f6] border-[#D0D5DD] placeholder:text-[#b2b2b2]"
+      />
+
+      {/* DESCRIPTION */}
+      <div className="relative">
         <Input
           placeholder="Description"
-          value={step.description}
+          value={stat.description}
+          maxLength={50}
           onChange={(e) =>
-            updateStep(
+            updateStat(
               index,
               "description",
               e.target.value
             )
           }
-          className="placeholder:text-[#b2b2b2] bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px]"
+          className="bg-[#f2f1f6] border-[#D0D5DD] pr-10 placeholder:text-[#b2b2b2]"
         />
 
-        {/* Timeline */}
-
-        <Input
-          placeholder="Timeline"
-          value={step.timeline}
-          onChange={(e) =>
-            updateStep(
-              index,
-              "timeline",
-              e.target.value
-            )
-          }
-          className="placeholder:text-[#b2b2b2] bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px]"
-        />
-
-        {/* Delete Icon */}
-
-        <Trash2
-          className="h-5 w-5 text-red-500 cursor-pointer mt-2"
-          onClick={() =>
-            removeStep(index)
-          }
-        />
-
+        <span className="absolute right-2 bottom-1 text-xs text-gray-400">
+          {stat.description.length}/50
+        </span>
       </div>
 
-    )
-  )}
+      {/* DELETE */}
+      <Trash2
+        className="h-5 w-5 text-red-500 cursor-pointer mt-2"
+        onClick={() =>
+          removeStat(index)
+        }
+      />
 
-</div>
+    </div>
+
+  )
+)}
+
+            </div>
+
+            {/* PROJECT STEPS */}
+
+              <div className="space-y-3 mt-4">
+
+                <div className="flex justify-between items-center">
+
+                  <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
+                    Project Steps
+                  </Label>
+
+                  <Button
+                    onClick={addStep}
+                    className="bg-[#F54A0C] rounded-xl h-[30px]"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+
+                </div>
+
+                {(caseStudyForm.projectSteps || []).map(
+                  (step: any, index: number) => (
+
+                    <div
+                      key={index}
+                      className="grid grid-cols-4 gap-2"
+                    >
+
+                      {/* Title */}
+
+                      <Input
+                        placeholder="Step Title"
+                        value={step.title}
+                        onChange={(e) =>
+                          updateStep(
+                            index,
+                            "title",
+                            e.target.value
+                          )
+                        }
+                        className="placeholder:text-[#b2b2b2] bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px]"
+                      />
+
+                      {/* Description */}
+
+                      <Input
+                        placeholder="Description"
+                        value={step.description}
+                        onChange={(e) =>
+                          updateStep(
+                            index,
+                            "description",
+                            e.target.value
+                          )
+                        }
+                        className="placeholder:text-[#b2b2b2] bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px]"
+                      />
+
+                      {/* Timeline */}
+
+                      <Input
+                        placeholder="Timeline"
+                        value={step.timeline}
+                        onChange={(e) =>
+                          updateStep(
+                            index,
+                            "timeline",
+                            e.target.value
+                          )
+                        }
+                        className="placeholder:text-[#b2b2b2] bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px]"
+                      />
+
+                      {/* Delete Icon */}
+
+                      <Trash2
+                        className="h-5 w-5 text-red-500 cursor-pointer mt-2"
+                        onClick={() =>
+                          removeStep(index)
+                        }
+                      />
+
+                    </div>
+
+                  )
+                )}
+
+              </div>
 
             {/* ACTIONS */}
 
