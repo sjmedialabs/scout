@@ -310,7 +310,7 @@ useEffect(() => {
 };
 
  return (
-  <div className="flex flex-col lg:flex-row w-full min-h-screen bg-white">
+  <div className="flex flex-col lg:flex-row w-full min-h-screen bg-white max-w-7xl mx-auto">
 
     {/* ---------------- MOBILE HEADER ---------------- */}
     <div className="lg:hidden flex items-center px-6 justify-between p-1 border-b border-gray-200">

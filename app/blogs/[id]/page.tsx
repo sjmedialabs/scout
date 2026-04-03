@@ -83,7 +83,7 @@ export default function BlogDetailPage() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen md:px-10 px-6 py-4">
+    <div className=" min-h-screen max-w-7xl mx-auto md:px-8 xl:px-0 px-6 py-4">
       <div className="grid lg:grid-cols-3 gap-8">
         {/* LEFT CONTENT */}
         <div className="lg:col-span-2">

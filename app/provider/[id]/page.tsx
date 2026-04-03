@@ -11,12 +11,13 @@ import RatingStars from "@/components/rating-star";
 import { useEffect, useState } from "react";
 import { authFetch } from "@/lib/auth-fetch";
 import ContactProviderModal from "@/components/leadPopupForm";
-import CompanyOverviewCard from "@/components/provider/portfolio/CompanyOverviewCard";
-import FocusAreasCard from "@/components/provider/portfolio/FocusAreasCard";
-import PortfolioGrid from "@/components/provider/portfolio/PortfolioGrid";
-import PricingSnapshot from "@/components/provider/portfolio/PricingSnapshot";
-import ServiceLines from "@/components/provider/portfolio/ServiceLines";
-import Testimonials from "@/components/provider/portfolio/Testimonials";
+import Hero from "@/components/provider/portfolio/Hero";
+import Stats from "@/components/provider/portfolio/Stats";
+import Overview from "@/components/provider/portfolio/Overview";
+import CaseStudies from "@/components/provider/portfolio/CaseStudies";
+import Reviews from "@/components/provider/portfolio/Reviews";
+import SectionTabs from "@/components/provider/portfolio/SectionTabs";
+
 
 export default function ProviderProfilePage({
   params,
@@ -30,6 +31,7 @@ export default function ProviderProfilePage({
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
+  const [proposalData, setProposalData] = useState([]);
 
   useEffect(() => {
     loadData();
@@ -40,6 +42,10 @@ export default function ProviderProfilePage({
     try {
       const response = await fetch(`/api/providers/${id}`);
       const data = await response.json();
+      const proposalResponse = await fetch(`/api/proposals/${data.provider.userId}/public`)
+      const proposalData = await proposalResponse.json()
+      setProposalData(proposalData.proposals)
+      console.log("Fetched proosal data ::::::::::", proposalData)
       const reviewsResponse = await fetch(
         `/api/reviews/${data.provider.userId}`,
       );
@@ -110,159 +116,17 @@ export default function ProviderProfilePage({
 
 
   return (
-    <>
-    <div className="min-h-screen mt-0 bg-white">
-      {/* Hero Section */}
-      <div
-        className="text-white md:py-10"
-        style={{
-          backgroundImage: `url(/ProviderDetailBanner.jpg)`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          height: "350px",
-        }}
-      >
-        <div className=" px-5 py-5 lg:px-20    lg:py-12 ">
-          <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-6">
-            <div className="flex md:flex-row  gap-4 items-center">
-            <div>
-              <img
-                src={providerDetails.logo || "/provider4.jpg"}
-                alt=""
-                className="h-20 w-20 sm:h-24 sm:w-24 md:h-32 md:w-full md:min-w-30 rounded-2xl object-contain shrink-0"
-              />
-            </div>
-            <div className="flex-1">
-              <div className="mb-0">
-                {providerDetails.isVerified && (
-                  <Badge className="bg-[#2C34A1] backdrop-blur-sm rounded-2xl mr-3">
-                    <CheckCircle2 className="h-3 w-3 mr-0.2" />
-                    Verified
-                  </Badge>
-                )}
-                {/* {providerDetails.isFeatured && (
-                  <Badge className="bg-[#e84816]  backdrop-blur-sm rounded-2xl">
-                    <Star className="h-3 w-3 mr-1 fill-white" />
-                    Featured
-                  </Badge>
-                )} */}
-                <h1 className="text-md md:text-2xl font-extrabold mt-1">
-                  {providerDetails.name.toUpperCase()}
-                </h1>
-              </div>
-              <p className="text-sm md:text-lg text-white/90 mb-2">
-                {providerDetails.tagline || "Professional service provider"}
-              </p>
-              {/* location */}
-              <div className="grid grid-cols-3 gap-1 md:mb-3 text-sm">
-                <div className="flex items-center gap-2">
-                  <img
-                    src="/ProviderDetailPageBannerIconLoactionFilled.png"
-                    className="md:h-5 md:w-4 h-3 w-3"
-                  />
+  <div className="bg-[#F7F7F5]">
 
-                  <span className="text-[#fff] font-semibold text-xs md:text-sm">
-                    {providerDetails.location}
-                  </span>
-                </div>
-                {/* <div className="flex items-center gap-2">
-                  <img
-                    src="/ProviderDetailPageBannerIconBriefCase.png"
-                    className="h-5 w-5"
-                  />
-                  <span className="text-[#fff] font-semibold text-sm">
-                    {providerDetails.projectsCompleted} projects
-                  </span>
-                </div> */}
-                {/* <div className="flex items-center gap-2">
-                  <img
-                    src="/ProviderDetailPageBannerIconChatOperational.png"
-                    className="h-5 w-5"
-                  />
-                  <span className="text-[#fff] font-semibold text-sm">
-                    Response: {providerDetails?.responseTime || "2 hrs"}
-                  </span>
-                </div> */}
-              </div>
-              {/* stars rating */}
-              <div className="flex flex-wrap items-center gap-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <RatingStars rating={providerDetails.rating} />
-                  <span className="font-semibold text-lg">
-                    {providerDetails.rating}
-                  </span>
-                  <span className="text-white/80">
-                    ({providerDetails.reviewCount} reviews)
-                  </span>
-                </div>
+    <Hero provider={providerDetails} onContact={() => setOpen(true)} />
+    <Stats provider={providerDetails} reviews={reviews} proposalData={proposalData} />
+    <SectionTabs />
+    <Overview provider={providerDetails} reviews={reviews} proposalData={proposalData}  />
+   {
+    providerDetails.caseStudies.length!== 0 && <CaseStudies provider={providerDetails} />
+   }
+    <Reviews reviews={reviews} provider={providerDetails} />
 
-                {/* <Badge className="bg-[#fff] text-[#000] rounded-2xl backdrop-blur-sm border-white/30 capitalize">
-                  {providerDetails.subscriptionPlanId || "Basic"} Plan
-                </Badge> */}
-              </div>
-            </div>
-            </div>
-            {/* buttons section */}
-            <div className="flex flex-col justify-center items-start md:items-end gap-1">
-              
-                <Button
-                  size="lg"
-                  onClick={() => setOpen(true)}
-                  className="bg-white  text-[#2C34A1] hover:bg-white/90 text-sm font-semibold  active:bg-white  rounded-3xl"
-                >
-                  <img
-                    src="/providerDetailPageBannerButton.jpg"
-                    className="h-4 w-4 mr-0.5"
-                  />
-                  Contact Provider
-                </Button>
-                  <ContactProviderModal
-                  open={open}
-                  onClose={() => setOpen(false)}
-                  userId={providerDetails.userId}    
-                  />
-
-              
-              {providerDetails?.website && (
-                <a href={`${providerDetails.website}`} target="_blank" className="flex justify-center">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="border-white rounded-3xl w-51 mt-2 font-semibold text-white hover:bg-white/10 bg-transparent  active:bg-transparent"
-                    onClick={(e) => webisteClickHandle(e, id)}
-                  >
-                    <ExternalLink className="mr-0.5" height={16} width={16} />
-                    View Website
-                  </Button>
-                </a>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main */}
-          <div className="lg:col-span-2 space-y-6">
-            <CompanyOverviewCard provider={providerDetails} variant="large"/>
-            <ServiceLines provider={providerDetails} variant="large"/>
-            {/* <PricingSnapshot provider={providerDetails} variant="large"/> */}
-            <PortfolioGrid provider={providerDetails} variant="large"/>
-            <Testimonials testimonials={reviews} variant="large"/>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6 ">
-            <div className="md:sticky lg:top-15">
-            <FocusAreasCard provider={providerDetails} reviews={reviews} variant="large"/>
-            </div>
-          </div>
-        </div>
-    </div>
   </div>
-  </>
 );
 }

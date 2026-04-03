@@ -191,7 +191,7 @@ export default function BlogPage() {
   const visibleBlogs = filteredBlogs.slice(0, visibleCount);
 
   return (
-    <div className="min-h-screen bg-gray-50 px-6 md:px-10 py-4">
+    <div className="min-h-screen px-6 md:px-8 xl:px-0 py-4 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
         <div>

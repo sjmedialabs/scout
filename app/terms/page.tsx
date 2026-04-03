@@ -23,7 +23,7 @@ export default function Page() {
   console.log("Terms and services-cms",cms)
   return(
      <section className="bg-white">
-          <div className="mx-auto max-w-7xl  py-6 ml-0 px-6 md:px-10">
+          <div className="mx-auto max-w-7xl  py-6 px-6 md:px-8 xl:px-0  ">
             
             {/* Header */}
             <h1 className="text-3xl h-6 text-orangeButton">

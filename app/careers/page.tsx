@@ -21,7 +21,7 @@ export default function CareersPage() {
 
   return (
     <>
-    <section className="max-w-7xl  px-6   md:px-10 py-8">
+    <section className="w-full px-6 md:px-8 xl:px-27 py-8">
       {/* Header */}
       <div className="text-center mb-10">
         <h1 className="text-3xl md:text-4xl text-orangeButton">
@@ -33,12 +33,12 @@ export default function CareersPage() {
       </div>
 
       {/* Job Cards */}
-     <div className="flex flex-col justify-start items-center gap-4">
+     <div className="flex flex-col gap-4">
   {jobs.map((job) => (
     <div
       key={job.slug}
       onClick={() => router.push(`/careers/${job.slug}`)}
-      className="w-full cursor-pointer border border-gray-400 h-full 
+      className="w-full  cursor-pointer border border-gray-400 h-full 
       rounded-2xl sm:rounded-3xl 
       px-4 py-4 sm:px-6 sm:py-6 md:px-6 md:py-3
       flex flex-col lg:flex-row 

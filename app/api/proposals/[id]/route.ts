@@ -26,7 +26,7 @@ export async function GET(
 
     const { id } = await params;
 
-    // ✅ Validate ObjectId
+    //  Validate ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }
@@ -35,7 +35,7 @@ export async function GET(
     console.log("Incoming ID:", id);
     console.log("Is valid ObjectId:", mongoose.Types.ObjectId.isValid(id));
 
-    // ✅ Fetch ALL matching proposals
+    //  Fetch ALL matching proposals
     const proposals = await Proposal.find({
       $or: [
         { _id: objectId },
@@ -87,7 +87,7 @@ export async function GET(
     
         const clientMap = new Map(clients.map((c) => [c.userId.toString(), c]));
 
-    // ✅ Mark proposals as viewed if client
+    //  Mark proposals as viewed if client
     
     if (user.role === "client") {
             await Proposal.updateOne(
@@ -104,7 +104,7 @@ export async function GET(
         )
     }
 
-    // ✅ Format response
+    //  Format response
     return NextResponse.json({
       count: proposals.length,
       proposals: proposals.map((p) => ({

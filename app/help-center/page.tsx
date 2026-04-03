@@ -24,7 +24,7 @@ export default function HelpCenterPage() {
     <>
     
      <section className="bg-white">
-          <div className="w-full px-4 md:px-8 py-10 ml-3">
+          <div className="max-w-7xl mx-auto px-4 md:px-8 xl:px-0 py-10 ">
     
             {/* Page Header */}
             <h1 className="text-center text-2xl font-medium text-orangeButton mb-10">
