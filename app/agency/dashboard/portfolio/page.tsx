@@ -10,6 +10,7 @@ import PortfolioGrid from "@/components/provider/portfolio/PortfolioGrid";
 import Testimonials from "@/components/provider/portfolio/Testimonials";
 import { Button } from "@/components/ui/button";
 import { authFetch } from "@/lib/auth-fetch";
+import { useAuth } from "@/contexts/auth-context";
 import {
   Card,
   CardContent,
@@ -17,22 +18,26 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Review } from "@/lib/types";
+import { useRouter } from "next/navigation";
 
 export default function ProviderPortfolioPage() {
-  const { user, loading } = useCurrentUser();
+  
+   const { user, loading } = useAuth();
+    const router = useRouter(); 
 
   const [provider, setProvider] = useState<any>(null);
   const [responseLoading, setResponseLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const [reviews, setReviews] = useState<Review[]>([]);
   const loadData = async () => {
-    if (!user?.userId) return;
+    if (!user?.id) return;
 
     setResponseLoading(true);
     setFailed(false);
 
     try {
-      const res = await authFetch(`/api/providers/${user.userId}`);
+      const res = await authFetch(`/api/providers/${user?.id}`);
       const data = await res.json();
       setProvider(data.provider);
     } catch (err) {
@@ -43,14 +48,17 @@ export default function ProviderPortfolioPage() {
     }
   };
 
-  useEffect(() => {
-    if (!loading && user) {
+ useEffect(() => {
+    if (!loading && (!user || user.role !== "agency")) {
+      router.push("/login");
+    }
+    if (user && user.role === "agency") {
       loadData();
     }
-  }, [loading, user]);
-  useEffect(() => {
-    loadReview();
-  }, []);
+  }, [user, loading, router]);
+  // useEffect(() => {
+  //   loadReview();
+  // }, []);
 
   const loadReview = async () => {
     try {
