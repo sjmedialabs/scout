@@ -115,7 +115,14 @@ const isLarge = variant === "large";
               </div>
             </div>
           ))}
+         
         </div>
+        {/* No Portfolio Items Message*/}
+         {
+            portfolioItems.length === 0 && (
+              <p className="text-gray-500 text-center text-md">No portfolio items available</p>
+            )
+          }
       </div>
 
 
@@ -162,6 +169,12 @@ const isLarge = variant === "large";
             </div>
           ))}
         </div>
+        {/* No Awards Items Message*/}
+         {
+            awardItems.length === 0 && (
+              <p className="text-gray-500 text-center text-md">No awards items available</p>
+            )
+          }
       </div>
 
     </div>
