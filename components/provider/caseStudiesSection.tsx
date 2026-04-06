@@ -758,6 +758,12 @@ const addStat = () => {
 
         </div>
 
+        {
+          !isEditMode && (formData.caseStudies || []).length === 0 && (
+            <p className="text-gray-500 text-md text-center ">No Case Studies are yet</p>
+          )
+        }
+
       </CardContent>
 
     </Card>

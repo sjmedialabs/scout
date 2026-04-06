@@ -82,6 +82,8 @@ import {
 } from "@/components/ui/command";
 
 import { TimezoneCombobox, TimezoneSearchableSelect } from "@/components/seeker/searchableTimezone";
+import { useAuth } from "@/contexts/auth-context";
+import { useRouter } from "next/navigation";
 
 
 
@@ -111,7 +113,9 @@ const ClientProfilePage = () => {
   const [userDetails, setUserDetails] = useState();
   const [responseLoading, setResponseLoading] = useState(true);
   const [failed, setFailed] = useState(false);
-  const { user, loading } = useCurrentUser();
+  // const { user, loading } = useCurrentUser();
+  const { user, loading } = useAuth();
+      const router = useRouter(); 
   const [profileData, setProfileData] = useState({});
   console.log("userDeatails:::", user);
   const requiredFields = [
@@ -143,11 +147,13 @@ const ClientProfilePage = () => {
     }
   };
   useEffect(() => {
-    if (!loading && user) {
-      // setUserDetails(user);
-      loadData(user.userId);
+    if (!loading && (!user || user.role !== "client")) {
+      router.push("/login");
     }
-  }, [user, loading]);
+    if (user && user.role === "client") {
+      loadData(user.id);
+    }
+  }, [user, loading, router]);
   const handleProfileUpdate = (field: string, value: string) => {
     setProfileData((prev) => ({
       ...prev,
@@ -223,7 +229,7 @@ const getFormattedPhone = () => {
         return;
       }
 
-      const response = await authFetch(`/api/seeker/${user.userId}`, {
+      const response = await authFetch(`/api/seeker/${user?.id}`, {
         method: "PUT",
         body: JSON.stringify(profileData),
         credentials: "include",

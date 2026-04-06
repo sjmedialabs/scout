@@ -1263,6 +1263,11 @@ export function CompanyProfileEditor({
                 </Badge>
               ))}
             </div>
+            {
+              !isEditMode && (formData.technologies || []).length === 0 &&(
+                <p className="text-gray-500 text-md text-center ">No Technologies are yet</p>
+              )
+            }
 
             {isEditMode && (
             <div className="flex gap-2 w-[50%]">
@@ -1311,6 +1316,11 @@ export function CompanyProfileEditor({
                 </Badge>
               ))}
             </div>
+            {
+              !isEditMode && (formData.industries || []).length === 0 &&(
+                <p className="text-gray-500 text-md text-center ">No Industries are yet</p>
+              )
+            }
 
             {
               isEditMode &&(
@@ -1362,12 +1372,17 @@ export function CompanyProfileEditor({
                   )}
                 </Badge>
               ))}
-              {
+              {/* {
                 (formData.clients || []).length === 0 &&(
                   <p className="text-gray-500 text-md text-center ">No Clients are yet</p>
                 )
-              }
+              } */}
             </div>
+            {
+              !isEditMode && (formData.clients || []).length === 0 && (
+                <p className="text-gray-500 text-md text-center ">No Clients are yet</p>
+              )
+            }
 
             {/* Add Client Input */}
             {isEditMode && (
@@ -1407,7 +1422,7 @@ export function CompanyProfileEditor({
     <Card className="bg-[#fff] border border-[#D0D5DD] rounded-[6px] shadow-none">
       <CardContent className="space-y-4 py-2">
 
-        {/* ✅ ALWAYS SHOW ADDED SERVICES */}
+        {/*  ALWAYS SHOW ADDED SERVICES */}
         <div className="flex flex-wrap gap-2">
           {(formData.services || []).map((service) => (
             <Badge
@@ -1426,6 +1441,11 @@ export function CompanyProfileEditor({
             </Badge>
           ))}
         </div>
+        {
+          !isEditMode && (formData.services || []).length === 0 && (
+            <p className="text-gray-500 text-md text-center ">No Services are yet</p>
+          )
+        }
 
         {/* ✅ CATEGORY SELECT (EDIT MODE ONLY) */}
         {isEditMode && (
@@ -1792,6 +1812,11 @@ export function CompanyProfileEditor({
               </div>
             ))}
           </div>
+          {
+            !isEditMode && (formData.portfolio || []).length === 0 && (
+              <p className="text-gray-500 text-md text-center ">No Portfolio items are yet</p>
+            )
+          }
         </CardContent>
       </Card>
         
@@ -1887,6 +1912,12 @@ export function CompanyProfileEditor({
                   </div>
                 ))}
               </div>
+
+              {
+                !isEditMode && (formData.awards || []).length === 0 && (
+                  <p className="text-gray-500 text-md text-center ">No Awards are yet</p>
+                )
+              }
 
               {/* ADD AWARD FORM */}
               {isEditMode && (
