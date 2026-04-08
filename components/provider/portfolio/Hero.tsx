@@ -21,7 +21,7 @@ export default function Hero({ provider, onContact }: any) {
         <img
           src={provider?.logo || "/provider4.jpg"}
           alt="logo"
-          className="h-20 md:h-40 w-auto object-contain"
+          className="h-20 md:h-40 w-auto max-w-[200px] object-contain"
         />
       </div>
 
