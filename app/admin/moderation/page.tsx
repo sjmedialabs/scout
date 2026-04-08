@@ -394,7 +394,7 @@ if (resLoading) {
                   id="title"
                   value={rejectMsg}
                   maxLength={100}
-                  className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
+                  className="border-2 mt-1 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
                   onChange={(e) => setRejectMsg(e.target.value)}
                   rows={4}
                   placeholder="e.g., Enter your reason for rejecting the requirement"

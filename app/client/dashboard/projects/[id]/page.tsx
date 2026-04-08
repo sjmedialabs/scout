@@ -905,8 +905,8 @@ const downloadFile = async (url: string) => {
             </div>
             <div className="flex items-center gap-2">
               <Badge className="rounded-full bg-green-500 text-white px-3 py-1 text-xs font-medium">
-                {acceptedProposal.status.charAt(0).toUpperCase() +
-                  acceptedProposal.status.slice(1)}
+                {acceptedProposal?.status.charAt(0).toUpperCase() +
+                  acceptedProposal?.status.slice(1)}
               </Badge>
               <Button
                 variant="outline"
