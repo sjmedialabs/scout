@@ -45,7 +45,7 @@ export default function Reviews({ reviews, provider }: any) {
   const visibleReviews = showAll ? reviews : reviews?.slice(0, 6);
 
   return (
-    <section id="reviews" className="px-6 sm:px-6 lg:px-0 py-6 max-w-7xl mx-auto bg-[#F7F7F5]">
+    <section id="reviews" className="px-6 sm:px-6 lg:px-0 py-6 max-w-7xl mx-auto bg-white">
 
       {/* HEADER */}
       <p className="text-lg font-bold text-gray-500 mb-2">CLIENT REVIEWS</p>

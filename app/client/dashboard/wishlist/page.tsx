@@ -196,7 +196,7 @@ const WishListPage = () => {
     <div className="space-y-3">
       <div>
         <h1 className="text-xl text-[#F4561C]  font-bold">
-          Wish List
+          Favourites
         </h1>
         <p className="text-md text-[#656565]  mt-0">
           Compare vendors side-by-side to make informed decisions

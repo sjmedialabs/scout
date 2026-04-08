@@ -116,7 +116,7 @@ export default function ProviderProfilePage({
 
 
   return (
-  <div className="bg-[#F7F7F5]">
+  <div className="bg-white">
 
     <Hero provider={providerDetails} onContact={() => setOpen(true)} />
     <Stats provider={providerDetails} reviews={reviews} proposalData={proposalData} />

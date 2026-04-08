@@ -73,8 +73,9 @@ export function Navigation() {
     let isMounted = true;
 
     const fetchCategories = async () => {
+      console.time("fetchCategories")
       try {
-        // ✅ PUBLIC API → normal fetch
+        //  PUBLIC API → normal fetch
         const res = await fetch("/api/service-categories", {
           credentials: "include",
         });
@@ -92,6 +93,7 @@ export function Navigation() {
     };
 
     fetchCategories();
+    console.timeEnd("fetchCategories")
 
     return () => {
       isMounted = false;
