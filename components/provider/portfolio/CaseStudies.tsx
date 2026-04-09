@@ -27,18 +27,18 @@ const handlePrev = () => {
 };
 
   return (
-    <section id="case-studies" className="px-6 sm:px-6 lg:px-0 py-6 max-w-7xl mx-auto bg-white">
+    <section id="case-studies" className="px-6 sm:px-6 lg:px-0 py-6 max-w-7xl mt-4 mx-auto bg-white">
 
       {/* HEADER */}
-      <p className="text-lg font-bold text-gray-500 mb-1 uppercase tracking-wide">
+      <p className="text-lg font-bold text-gray-500 mb-0 uppercase tracking-wide">
         CASE STUDIES
       </p>
 
-      <h2 className="text-md text-gray-500  mb-2">
+      <h2 className="text-md text-gray-500  mb-1">
         Detailed outcomes
       </h2>
 
-      <p className="text-sm text-gray-500 mb-8 max-w-2xl">
+      <p className="text-sm text-gray-500 mb-2 max-w-2xl">
         Every project below includes scope, timeline, methodology, and verified post-launch metrics.
       </p>
 

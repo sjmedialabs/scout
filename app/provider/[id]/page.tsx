@@ -17,6 +17,8 @@ import Overview from "@/components/provider/portfolio/Overview";
 import CaseStudies from "@/components/provider/portfolio/CaseStudies";
 import Reviews from "@/components/provider/portfolio/Reviews";
 import SectionTabs from "@/components/provider/portfolio/SectionTabs";
+import PublicPortfolioGrid from "@/components/provider/portfolio/PublicPortfolio";
+
 
 
 export default function ProviderProfilePage({
@@ -122,6 +124,8 @@ export default function ProviderProfilePage({
     <Stats provider={providerDetails} reviews={reviews} proposalData={proposalData} />
     <SectionTabs />
     <Overview provider={providerDetails} reviews={reviews} proposalData={proposalData}  />
+    <PublicPortfolioGrid provider={providerDetails} />
+
    {
     providerDetails.caseStudies.length!== 0 && <CaseStudies provider={providerDetails} />
    }

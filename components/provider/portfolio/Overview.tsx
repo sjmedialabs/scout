@@ -125,7 +125,7 @@ const hasAnyChartData = hasServiceData || hasIndustryData;
   
   return (
     <section id="overview" className="px-6 sm:px-6 lg:px-0 py-12 max-w-7xl mx-auto bg-white">
-      <h2 className="text-lg font-bold text-gray-500 mb-6">AGENCY PROFILE</h2>
+      <h2 className="text-lg font-bold text-gray-500 mb-2">AGENCY PROFILE</h2>
 
       <div className="grid lg:grid-cols-2 gap-6 items-stretch">
 
