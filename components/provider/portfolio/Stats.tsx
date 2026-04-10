@@ -109,9 +109,9 @@ const calculateYoYGrowth = (proposals: any[]) => {
         : "Since inception",
     },
     {
-      value: calculateRepeatClientPercentage(proposalData).toFixed(2) + "%",
+      value: calculateRepeatClientPercentage(proposalData || []).toFixed(2) + "%",
       label: "Repeat clients",
-      sub: `↑ ${calculateYoYGrowth(proposalData).toFixed(2)} % YoY`,
+      sub: `↑ ${calculateYoYGrowth(proposalData || []).toFixed(2)} % YoY`,
     },
     // {
     //   value: `${provider?.teamSize || 34}`,
