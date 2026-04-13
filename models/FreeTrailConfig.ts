@@ -3,11 +3,17 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IFreeTrialConfig extends Document {
   proposalLimit: number;
+  caseStudiesCount: number;
 }
 
 const FreeTrialConfigSchema = new Schema<IFreeTrialConfig>(
   {
     proposalLimit: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    caseStudiesCount: {
       type: Number,
       required: true,
       min: 0,

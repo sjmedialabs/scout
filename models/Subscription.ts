@@ -4,6 +4,9 @@ export interface ISubscription extends Document {
   title: string
   pricePerMonth: number
   pricePerYear: number
+  proposalsPerMonth: number
+  caseStudiesCount: number
+  isFeatured: boolean
   yearlySubscription: boolean
   description?: string
   features: string[]
@@ -23,6 +26,21 @@ const SubscriptionSchema = new Schema<ISubscription>(
     pricePerMonth: {
       type: Number,
       required: true,
+    },
+
+    proposalsPerMonth: {
+      type: Number,
+      required: true,
+    },
+
+    caseStudiesCount: {
+      type: Number,
+      required: true,
+    },
+
+    isFeatured: {
+      type: Boolean,
+      default: false,
     },
 
     pricePerYear: {

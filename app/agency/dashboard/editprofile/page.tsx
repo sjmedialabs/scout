@@ -2,7 +2,7 @@
 
 import { CompanyProfileEditor } from "@/components/provider/company-profile-editor";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/lib/toast";
 import { authFetch } from "@/lib/auth-fetch";
@@ -13,7 +13,7 @@ const token =
   typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
 const EditProfile = () => {
-  const router=useRouter();
+  const router = useRouter();
   const { user, loading } = useAuth();
 
   const [provider, setProvider] = useState({
@@ -39,16 +39,24 @@ const EditProfile = () => {
   const [providerDetails, setProviderDetails] = useState({});
   const [responseLoading, setResponseLoading] = useState(true);
   const [failed, setFailed] = useState(false);
-  console.log("fetched user Details are from the edit profie is:::::",user)
+  const [isCaseStudiesLimitReached, setIsCaseStudiesLimitReached] = useState(false);
+  console.log("fetched user Details are from the edit profie is:::::", user)
 
   const loadData = async () => {
     setResponseLoading(true);
     setFailed(false);
     try {
       const response = await authFetch(`/api/providers/${user?.id}`);
+      const userRes = await authFetch(`/api/users/${user?.id}`)
       const data = await response.json();
+      const userData = await userRes.json();
 
       setProviderDetails(data.provider);
+
+      if ((data.provider?.caseStudies.length || 0) >= (userData?.subscription?.caseStudiesCount || 0)) {
+        console.log("Entered into if condition:::::::::::::", userData?.subscription?.caseStudiesCount, data.provider?.caseStudies.length)
+        setIsCaseStudiesLimitReached(true)
+      }
     } catch (error) {
       console.log("Failed to get the data::", error);
       setFailed(true);
@@ -58,7 +66,7 @@ const EditProfile = () => {
   };
   console.log("Provider Details::::", providerDetails);
 
- 
+
 
   const handleSaveProfile = async (recievedData: any) => {
     console.log("Recieved Form Data to handle save profile:::", recievedData);
@@ -69,7 +77,7 @@ const EditProfile = () => {
         body: JSON.stringify(recievedData),
       });
       const data = await response.json();
-      console.log("Save profile data:::::",data)
+      console.log("Save profile data:::::", data)
       if (response.ok) {
         toast.success("Successfully updated the profile details");
       }
@@ -80,13 +88,13 @@ const EditProfile = () => {
     }
   };
   useEffect(() => {
-      if (!loading && (!user || user.role !== "agency")) {
-        router.push("/login");
-      }
-      if (user && user.role === "agency") {
-        loadData();
-      }
-    }, [user, loading, router]);
+    if (!loading && (!user || user.role !== "agency")) {
+      router.push("/login");
+    }
+    if (user && user.role === "agency") {
+      loadData();
+    }
+  }, [user, loading, router]);
 
   if (responseLoading) {
     return (
@@ -126,6 +134,7 @@ const EditProfile = () => {
       {providerDetails && (
         <CompanyProfileEditor
           provider={providerDetails}
+          isCaseStudiesLimitReached={isCaseStudiesLimitReached}
           onSave={handleSaveProfile}
         />
       )}

@@ -16,17 +16,18 @@ export interface IUser extends Document {
   subscriptionPlanId?: mongoose.Types.ObjectId
   subscriptionStartDate?: Date
   subscriptionEndDate?: Date
-  billingCycle?:"Yearly" | "Monthly"
+  billingCycle?: "Yearly" | "Monthly"
 
-  proposalCount:Number
+  proposalCount: Number
+  monthlyProposalCount: Number
 
   otp?: {
     code: string
     expiresAt: Date
   }
-  isEmailVerified?:boolean
+  isEmailVerified?: boolean
 
-  
+
   createdAt: Date
   updatedAt: Date
   resetPasswordToken?: string
@@ -44,11 +45,15 @@ const UserSchema = new Schema<IUser>(
     avatar: { type: String },
     isVerified: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
-    subscriptionPlanId:{type: Schema.Types.ObjectId,ref:"Subscription"},
-    subscriptionStartDate:{type:Date},
-    subscriptionEndDate:{type:Date},
-    billingCycle:{type:String,enum:["Yearly","Monthly"],default:"Monthly"},
-    proposalCount:{type:Number,default:0},
+    subscriptionPlanId: { type: Schema.Types.ObjectId, ref: "Subscription" },
+    subscriptionStartDate: { type: Date },
+    subscriptionEndDate: { type: Date },
+    billingCycle: { type: String, enum: ["Yearly", "Monthly"], default: "Monthly" },
+    proposalCount: { type: Number, default: 0 },
+    monthlyProposalCount: {
+      type: Number,
+      default: 0
+    },
     lastLogin: { type: Date },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
@@ -56,7 +61,7 @@ const UserSchema = new Schema<IUser>(
       code: String,
       expiresAt: Date,
     },
-    isEmailVerified:{type:Boolean,default:false}
+    isEmailVerified: { type: Boolean, default: false }
   },
   { timestamps: true },
 )
