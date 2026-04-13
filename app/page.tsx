@@ -722,8 +722,8 @@ if (resLoading) {
                         {blog.title}
                       </h3>
 
-                      <p className="text-xs text-gray-500 mt-1">
-                        {new Date(blog.postedDate).toLocaleDateString("en-GB")}
+                      <p className="text-xs text-black font-bold mt-1">
+                       Posted Date: <span className="text-gray-500"> {new Date(blog.postedDate).toLocaleDateString("en-GB")} </span>
                       </p>
 
                       <div

@@ -38,6 +38,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} ${plusJakarta.variable}`}>
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="font-sans antialiased overflow-x-hidden">
 <ClientLayout>{children}</ClientLayout>
       </body>
