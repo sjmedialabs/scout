@@ -261,7 +261,7 @@ export function Footer() {
               <Button
                 size="sm"
                 type="submit"
-                className="absolute right-1 xl:-right-8 top-1/2 -translate-y-1/2 rounded-full bg-orangeButton text-white h-10 px-5"
+                className="absolute right-1 xl:-right-8 text-sm top-1/2 -translate-y-1/2 rounded-full bg-orangeButton text-white h-10 px-5"
               >
                 Subscribe
               </Button>
@@ -378,7 +378,7 @@ export function Footer() {
               <img src="/images/youtube.png" alt="" className="h-8" />
             </Link>
           </div> */}
-          <p className="mb-2">&copy; {cms?.contact?.footerCopyRightMsg || "2025 Spark. All rights reserved."} </p>
+          <p className="mb-2">&copy; {cms?.contact?.footerCopyRightMsg || "2026 Spark. All rights reserved."} </p>
         </div>
       </div>
     </footer>

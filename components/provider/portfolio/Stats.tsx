@@ -140,7 +140,7 @@ const calculateYoYGrowth = (proposals: any[]) => {
 
 
   return (
-    <section className="border-y bg-[#F7F7F5] px-6 sm:px-6 lg:px-0 py-6 max-w-7xl mx-auto">
+    <section className="border-y bg-white px-6 sm:px-6 lg:px-0 py-6 max-w-7xl mx-auto">
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 justify-between divide-x divide-y md:divide-y-0">
         {stats.map((s, i) => (
           <div key={i} className="p-5">

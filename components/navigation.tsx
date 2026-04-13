@@ -73,8 +73,9 @@ export function Navigation() {
     let isMounted = true;
 
     const fetchCategories = async () => {
+      console.time("fetchCategories")
       try {
-        // ✅ PUBLIC API → normal fetch
+        //  PUBLIC API → normal fetch
         const res = await fetch("/api/service-categories", {
           credentials: "include",
         });
@@ -92,6 +93,7 @@ export function Navigation() {
     };
 
     fetchCategories();
+    console.timeEnd("fetchCategories")
 
     return () => {
       isMounted = false;
@@ -474,6 +476,7 @@ const overflowCategories = mainCategories.slice(5);
                 asChild
               >
                 <Link
+                className="!text-sm"
                   href={
                     user ? "/client/dashboard?section=projects" : "/register"
                   }
@@ -482,7 +485,7 @@ const overflowCategories = mainCategories.slice(5);
                 </Link>
               </Button>
 
-               <Button className="primary-button h-[32px]"  onClick={()=>router.push("/browse")}>
+               <Button className="primary-button h-[32px] !text-sm"  onClick={()=>router.push("/browse")}>
                 Find Projects
               </Button>
              

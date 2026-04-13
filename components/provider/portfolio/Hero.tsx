@@ -11,7 +11,7 @@ export default function Hero({ provider, onContact }: any) {
   const [open, setOpen] = useState(false); 
 
   return (
-    <section className="bg-[#F7F7F5] px-6 sm:px-6 lg:px-0 py-6 max-w-7xl mx-auto">
+    <section className="bg-white px-6 sm:px-6 lg:px-0 py-6 max-w-7xl mx-auto">
       <div className="flex flex-col lg:flex-row justify-between lg:items-center items-start gap-5">
 
         <div className="flex gap-6 items-start flex-1">
@@ -21,7 +21,7 @@ export default function Hero({ provider, onContact }: any) {
         <img
           src={provider?.logo || "/provider4.jpg"}
           alt="logo"
-          className="h-20 md:h-40 w-auto object-contain"
+          className="h-20 md:h-40 w-auto max-w-[200px] object-contain"
         />
       </div>
 
@@ -44,7 +44,7 @@ export default function Hero({ provider, onContact }: any) {
             )}
 
             {provider?.foundedYear && (
-              <Badge className="bg-white border text-black rounded-full text-xs">
+              <Badge className="bg-white border text-black rounded-full border border-gray-500 text-xs">
                 {new Date().getFullYear() - provider.foundedYear} yrs in business
               </Badge>
             )}
@@ -70,7 +70,7 @@ export default function Hero({ provider, onContact }: any) {
           <div className="flex flex-wrap gap-3 mt-6">
 
             <Button
-              className="bg-black text-white rounded-full px-6"
+              className="primary-button"
               onClick={() => setOpen(true)}
             >
               Start a Project
@@ -78,7 +78,7 @@ export default function Hero({ provider, onContact }: any) {
 
             <Button
               variant="outline"
-              className="rounded-full px-6"
+              className="btn-blackButton"
               onClick={() => {
                 const section = document.getElementById("case-studies");
                 if (section) {
@@ -104,7 +104,7 @@ export default function Hero({ provider, onContact }: any) {
         <div className="flex flex-col gap-3 justify-center items-start lg:items-end">
 
           <Button
-            className="bg-black text-white rounded-full px-6"
+            className="primary-button"
             onClick={() => setOpen(true)}
           >
             Contact Provider
@@ -114,7 +114,7 @@ export default function Hero({ provider, onContact }: any) {
             <a href={provider.website} target="_blank">
               <Button
                 variant="outline"
-                className="rounded-full px-6"
+                className="btn-blackButton"
               >
                 <ExternalLink className="mr-2 h-4 w-4" />
                 Visit Website

@@ -124,13 +124,13 @@ const hasAnyChartData = hasServiceData || hasIndustryData;
 
   
   return (
-    <section id="overview" className="px-6 sm:px-6 lg:px-0 py-12 max-w-7xl mx-auto bg-[#F7F7F5]">
-      <h2 className="text-lg font-bold text-gray-500 mb-6">AGENCY PROFILE</h2>
+    <section id="overview" className="px-6 sm:px-6 lg:px-0 py-12 max-w-7xl mx-auto bg-white">
+      <h2 className="text-lg font-bold text-gray-500 mb-2">AGENCY PROFILE</h2>
 
       <div className="grid lg:grid-cols-2 gap-6 items-stretch">
 
         {/* LEFT */}
-        <div className="border rounded-xl p-6 bg-[#F7F7F5] h-full flex flex-col">
+        <div className="border rounded-xl p-6 bg-white h-full flex flex-col">
           <h3 className="font-semibold mb-4 text-sm">COMPANY DETAILS</h3>
 
           <Row label="Founded" value={provider?.foundedYear || "N/A"} />
@@ -160,7 +160,7 @@ const hasAnyChartData = hasServiceData || hasIndustryData;
         </div>
 
         {/* RIGHT */}
-        <div className="border rounded-xl p-6 bg-[#F7F7F5] h-full flex flex-col justify-between">
+        <div className="border rounded-xl p-6 bg-white h-full flex flex-col justify-between">
           <div>
             <h3 className="font-semibold mb-4 text-sm">SERVICES</h3>
 
@@ -227,7 +227,7 @@ const hasAnyChartData = hasServiceData || hasIndustryData;
 
         {/* SERVICE FOCUS */}
         
-          <div className="border rounded-xl p-6 bg-[#F7F7F5]">
+          <div className="border rounded-xl p-6 bg-white">
             <h3 className="font-semibold mb-1 text-sm">
               Service focus breakdown
             </h3>
@@ -267,7 +267,7 @@ const hasAnyChartData = hasServiceData || hasIndustryData;
 
         {/* CLIENT TYPE */}
         
-        <div className="border rounded-xl p-6  bg-[#F7F7F5]">
+        <div className="border rounded-xl p-6  bg-white">
           <h3 className="font-semibold mb-1 text-sm">
             Client type distribution
           </h3>

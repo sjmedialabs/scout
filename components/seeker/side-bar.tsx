@@ -47,7 +47,7 @@ const menuItems: MenuItem[] = [
   { id: "providers", label: "Find Agencies", icon: Users, path: "/client/dashboard/providers" },
   { id: "messages", label: "Chat", icon: MessageSquare, path: "/client/dashboard/message" },
   { id: "provider-comparison", label: "Provider Comparison", icon: GitCompare, path: "/client/dashboard/provider-comparison" },
-  { id: "wishlist", label: "Wish List", icon: Eye, path: "/client/dashboard/wishlist" },
+  { id: "wishlist", label: "My Favourites", icon: Eye, path: "/client/dashboard/wishlist" },
   {id:"notifications",label:"Notifications",icon:Bell,path:"/client/dashboard/notifications"}
 ]
 

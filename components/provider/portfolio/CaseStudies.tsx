@@ -27,23 +27,23 @@ const handlePrev = () => {
 };
 
   return (
-    <section id="case-studies" className="px-6 sm:px-6 lg:px-0 py-6 max-w-7xl mx-auto bg-[#F7F7F5]">
+    <section id="case-studies" className="px-6 sm:px-6 lg:px-0 py-6 max-w-7xl mt-4 mx-auto bg-white">
 
       {/* HEADER */}
-      <p className="text-lg font-bold text-gray-500 mb-1 uppercase tracking-wide">
+      <p className="text-lg font-bold text-gray-500 mb-0 uppercase tracking-wide">
         CASE STUDIES
       </p>
 
-      <h2 className="text-md text-gray-500  mb-2">
+      <h2 className="text-md text-gray-500  mb-1">
         Detailed outcomes
       </h2>
 
-      <p className="text-sm text-gray-500 mb-8 max-w-2xl">
+      <p className="text-sm text-gray-500 mb-2 max-w-2xl">
         Every project below includes scope, timeline, methodology, and verified post-launch metrics.
       </p>
 
       {/* MAIN CARD */}
-      <div className="border rounded-xl bg-[#F7F7F5] overflow-hidden">
+      <div className="border rounded-xl bg-white overflow-hidden">
 
         {/* ================= TOP ================= */}
         <div className="p-4">
@@ -52,7 +52,7 @@ const handlePrev = () => {
                     
                     <button
                     onClick={handlePrev}
-                    className="px-3 py-1 text-xs border cursor-pointer rounded-md hover:bg-gray-100"
+                    className="px-3 py-1 text-xs bg-[#232a8f] text-white border cursor-pointer rounded-md hover:bg-blue-800"
                     >
                     ← Prev
                     </button>
@@ -63,7 +63,7 @@ const handlePrev = () => {
 
                     <button
                     onClick={handleNext}
-                    className="px-3 py-1 text-xs border cursor-pointer rounded-md hover:bg-gray-100"
+                    className="px-3 py-1 text-xs border bg-[#232a8f] text-white cursor-pointer rounded-md hover:bg-blue-800"
                     >
                     Next →
                     </button>
