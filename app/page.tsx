@@ -188,23 +188,23 @@ const { cms, providers, projects, categories } = data;
         <div className="max-w-7xl mx-auto flex justify-center flex-col">
           <div className="text-center mb-6">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] font-extrabold px-4 py-1 rounded-full mb-2">
-              <span className="text-xs font-medium text-[#fff] capitalize">
+              <span className="text-sm font-medium text-[#fff] capitalize">
                 Service Categories
               </span>
             </div>
-            <h2 className="stext-mediun uppercase font-bold text-blueButton ">
+            <h2 className="text-md uppercase font-bold text-blueButton ">
              {cms?.homeServiceTitle}
               {/* <span className="text-blueButton font-bold ">
                 any project
               </span> */}
             </h2>
-            <p className="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">
+            <p className="text-sm text-gray-500 max-w-lg mx-auto leading-relaxed">
              {cms?.homeServiceSubTitle}
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-            {(categories && categories.length > 0 ? categories : []).map(
+            {(categories && categories.length > 0 ? categories.slice(0,6) : []).map(
               (category: any) => {
                 const colors = colorMap[category.color] || colorMap.blue;
                 const serviceLink = `/services/${category._id}`;
@@ -213,7 +213,7 @@ const { cms, providers, projects, categories } = data;
                   <div
                     key={category._id}
                     
-                    className={`group bg-white/70  backdrop-blur-sm rounded-4xl px-6 py-6 border lg:pl-8 ${colors.hover} hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col`}
+                    className={`group bg-white/70 h-[285px] backdrop-blur-sm rounded-4xl px-6 py-6 border lg:pl-8 ${colors.hover} hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col`}
                   >
                     {/* Top Content */}
                     <div>
@@ -232,11 +232,11 @@ const { cms, providers, projects, categories } = data;
 
                       {/* Subcategories */}
                       <div className="space-y-3">
-                        {(category.children.slice(0, 6) || []).map(
+                        {(category.children.slice(0, 4) || []).map(
                           (sub: any, index: number) => (
                             <p
                               key={index}
-                              className={`block text-slate-500 text-sm hover:${colors.text} hover:translate-x-2 transition-all duration-200 font-medium`}
+                              className={`block text-slate-500 text-md hover:${colors.text} hover:translate-x-2 transition-all duration-200 font-medium`}
                             >
                               → {sub.title}
                             </p>
@@ -249,7 +249,7 @@ const { cms, providers, projects, categories } = data;
                     <div className="mt-auto pt-6">
                       <Button
                         size="sm"
-                        className=" bg-blueButton cursor-pointer  text-white rounded-full"
+                        className=" bg-blueButton cursor-pointer text-sm  text-white rounded-full"
                         onClick={() =>
                       router.push(`/services?category=${category._id}`)
                     }
@@ -288,14 +288,14 @@ const { cms, providers, projects, categories } = data;
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-6">
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] font-extrabold px-4 py-1 rounded-full  mb-2">
-                <span className="text-xs font-medium text-white capitalize">
+                <span className="text-sm font-medium text-white capitalize">
                   Newly added
                 </span>
               </div>
-              <h2 className="stext-mediun uppercase font-bold text-blueButton ">
+              <h2 className="text-md uppercase font-bold text-blueButton ">
                 {cms?.recentRequirementTitle || "Requirements"}
               </h2>
-              <p className="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">
+              <p className="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">
                 {cms?.recentRequirementSubTitle || "Discover opportunities from businesses lookking for your services"}
               </p>
             </div>
@@ -330,7 +330,7 @@ const { cms, providers, projects, categories } = data;
               {projects.map((project: any) => (
                 <div
                   key={project._id}
-                  className="rounded-3xl border border-slate-200 bg-white hover:shadow-lg transition-shadow
+                  className="rounded-3xl border border-slate-200 items-center bg-white hover:shadow-lg transition-shadow
                    flex flex-col h-full"
                 >
                   {/* Image */}
@@ -341,17 +341,17 @@ const { cms, providers, projects, categories } = data;
                   />
 
                   {/* Category + Timeline */}
-                  <div className="flex items-center justify-between px-6 mt-4">
+                 
                     <Badge
                       variant="outline"
-                      className="rounded-full bg-gray-100 text-[8px] font-semibold px-2 py-1"
+                      className="rounded-full mt-3 mb-2 bg-gray-100 text-xs font-semibold py-1"
                     >
                       {project.category}
                     </Badge>
-                    <span className="text-xs font-semibold text-blueButton">
+                    <p className="text-sm font-semibold text-blueButton">
                       Timeline - <span className="text-red-500">{project.timeline}</span>
-                    </span>
-                  </div>
+                    </p>
+                
 
                   {/* Title */}
                   <h3 className="px-6 mt-1 text-md font-semibold capitalize">
@@ -379,8 +379,8 @@ const { cms, providers, projects, categories } = data;
                       <Link href={`/login?to=requirement-details&id=${project._id}`}>
                         <Button
                           variant="outline"
-                          size="xs"
-                          className="primary-button w-[100px] h-[20px]"
+                          size="sm"
+                          className="primary-button !text-xs w-[100px] h-[30px]"
                         >
                           View Details →
                         </Button>
@@ -419,14 +419,14 @@ const { cms, providers, projects, categories } = data;
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-6">
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] font-extrabold px-4 py-1 rounded-full  mb-2">
-                <span className="text-xs font-medium text-white capitalize">
+                <span className="text-sm font-medium text-white capitalize">
                   Top Agencies
                 </span>
               </div>
-              <h2 className="text-mediun uppercase font-bold text-blueButton ">
+              <h2 className="text-md uppercase font-bold text-blueButton ">
                 {cms?.topProvidersTitle || "Top Providers"}
               </h2>
-              <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
+              <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
                 {cms?.topProvidersSubTitle || "Discover opportunities from businesses lookking for your services"}
               </p>
             </div>
@@ -454,7 +454,7 @@ const { cms, providers, projects, categories } = data;
                         {provider.isVerified && (
                           <Badge
                             variant="outline"
-                            className="bg-[#232a8f] text-white rounded-full px-3 py-0.5 text-[10px] font-semibold"
+                            className="bg-[#232a8f] text-white rounded-full px-3 py-0.5 text-xs font-semibold"
                           >
                             Verified
                           </Badge>
@@ -485,7 +485,7 @@ const { cms, providers, projects, categories } = data;
                           </svg>
                         ))}
 
-                        <span className="text-xs font-semibold text-gray-700 ml-1">
+                        <span className="text-sm font-semibold text-gray-700 ml-1">
                           {provider.rating?.toFixed(1) || "0.0"}
                         </span>
                       </div>
@@ -496,7 +496,7 @@ const { cms, providers, projects, categories } = data;
                     </h3>
                   </div>
                   <div className="pb-4 px-4 sm:px-6 lg:px-4 flex flex-col flex-1">
-                    <p className="text-sm text-gray-500 mb-0 line-clamp-1">
+                    <p className="text-sm text-gray-500 leading-8 -mt-1 mb-0 line-clamp-1">
                         {provider.description}
                       </p>
                     <div className="flex flex-col h-full gap-4">
@@ -508,13 +508,13 @@ const { cms, providers, projects, categories } = data;
                             .map((service: string, idx: number) => (
                               <span
                                 key={idx}
-                                className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-[10px] font-semibold"
+                                className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold"
                               >
                                 {service}
                               </span>
                             ))
                         ) : (
-                          <span className="text-xs text-gray-400 italic">
+                          <span className="text-sm text-gray-400 italic">
                             No services listed
                           </span>
                         )}
@@ -524,9 +524,9 @@ const { cms, providers, projects, categories } = data;
                       <div className="-mt-1">
                         <Button
                           variant="outline"
-                          size="xs"
+                          size="sm"
                           asChild
-                          className="primary-button w-[100px] h-[20px]"
+                          className="primary-button !text-xs w-[100px] h-[30px]"
                         >
                           <Link
                             href={`/provider/${provider.id || provider._id}`}
@@ -577,7 +577,7 @@ const { cms, providers, projects, categories } = data;
               className="primary-button  h-[40px]"
               asChild
             >
-              <Link href="/register?type=seeker">Post Requirement</Link>
+              <Link className="!text-sm" href="/register?type=seeker">Post Requirement</Link>
             </Button>
             <Button
               size="lg"
@@ -585,7 +585,7 @@ const { cms, providers, projects, categories } = data;
               className="btn-blackButton  h-[40px]"
               asChild
             >
-              <Link href="/register?type=provider">Find Projects</Link>
+              <Link className="!text-sm" href="/register?type=provider">Find Projects</Link>
             </Button>
           </div>
         </div>

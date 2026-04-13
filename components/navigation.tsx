@@ -476,6 +476,7 @@ const overflowCategories = mainCategories.slice(5);
                 asChild
               >
                 <Link
+                className="!text-sm"
                   href={
                     user ? "/client/dashboard?section=projects" : "/register"
                   }
@@ -484,7 +485,7 @@ const overflowCategories = mainCategories.slice(5);
                 </Link>
               </Button>
 
-               <Button className="primary-button h-[32px]"  onClick={()=>router.push("/browse")}>
+               <Button className="primary-button h-[32px] !text-sm"  onClick={()=>router.push("/browse")}>
                 Find Projects
               </Button>
              
