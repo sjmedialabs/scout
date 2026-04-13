@@ -41,6 +41,7 @@ import CaseStudiesSection from "./caseStudiesSection";
 interface CompanyProfileEditorProps {
   provider: Provider;
   onSave: (provider: Provider) => void;
+  isCaseStudiesLimitReached: Boolean;
 }
 
 const validateEmail = (email: string): boolean => {
@@ -100,7 +101,9 @@ const languages = [
 
 export function CompanyProfileEditor({
   provider,
+  isCaseStudiesLimitReached,
   onSave,
+
 }: CompanyProfileEditorProps) {
   const [formData, setFormData] = useState({
     ...provider,
@@ -117,8 +120,8 @@ export function CompanyProfileEditor({
     salesEmail: provider.salesEmail || "",
     schedulingLink: provider.schedulingLink || "",
     adminContactPhone: provider.adminContactPhone || "",
-    countryCode:provider.countryCode || "91",
-    country:provider.country || "India",
+    countryCode: provider.countryCode || "91",
+    country: provider.country || "India",
     foundedYear: provider.foundedYear || new Date().getFullYear(),
     totalEmployees: provider.teamSize || "",
     tagline: provider.tagline || "",
@@ -129,7 +132,7 @@ export function CompanyProfileEditor({
     awards: provider.awards || [],
     certifications: provider.certifications || [],
     industries: provider.industries || [],
-    portfolio:provider.portfolio.map((item) => ({ ...item, id: item._id })) || [],
+    portfolio: provider.portfolio.map((item) => ({ ...item, id: item._id })) || [],
     caseStudies: provider.caseStudies.map((item) => ({ ...item, id: item._id })) || [],
     testimonials: provider.testimonials || [],
     socialLinks: {
@@ -153,13 +156,13 @@ export function CompanyProfileEditor({
   const [newTechnology, setNewTechnology] = useState("");
   const [newIndustry, setNewIndustry] = useState("");
   const [newClient, setNewClient] = useState("");
-  
+
   const [isEditMode, setIsEditMode] = useState(false);
   // const [newAward, setNewAward] = useState("");
   const [awardForm, setAwardForm] = useState({
-  title: "",
-  imageUrl: "",
-});
+    title: "",
+    imageUrl: "",
+  });
   const [newCertificate, setNewCertificate] = useState("");
   const [portfolioTechnology, setPortfolioTechnology] = useState("");
   const [editPortfolioId, setEditPortfolioId] = useState();
@@ -240,23 +243,23 @@ export function CompanyProfileEditor({
     }
 
     if (
-  formData.adminContactPhone &&
-  !validatePhone(formData.countryCode, formData.adminContactPhone)
-) {
-  newErrors.adminContactPhone = "Please enter a valid phone number";
-}
+      formData.adminContactPhone &&
+      !validatePhone(formData.countryCode, formData.adminContactPhone)
+    ) {
+      newErrors.adminContactPhone = "Please enter a valid phone number";
+    }
 
     if (formData.companyVideoLink && !validateURL(formData.companyVideoLink)) {
       newErrors.companyVideoLink = "Please enter a valid URL";
     }
 
     setErrors(newErrors);
-    console.log("Errrors :::::",newErrors)
+    console.log("Errrors :::::", newErrors)
 
     if (Object.keys(newErrors).length === 0) {
       console.log("Calling save Profile:::");
 
-      const payload = { 
+      const payload = {
         name: formData.companyName, // schema: name
         tagline: formData.tagline,
         description: formData.description,
@@ -268,12 +271,12 @@ export function CompanyProfileEditor({
         salesEmail: formData.salesEmail,
         phone: formData.phone,
         adminContactPhone: formData.adminContactPhone,
-        countryCode:formData.countryCode,
-        country:formData.country,
+        countryCode: formData.countryCode,
+        country: formData.country,
         minProjectSize: formData.minProjectSize,
         caseStudies: formData.caseStudies || [],
         focusArea: formData.focusArea,
-        clients:formData.clients,
+        clients: formData.clients,
 
         services: formData.services || [],
         technologies: formData.technologies || [],
@@ -398,7 +401,7 @@ export function CompanyProfileEditor({
   const removeClient = (client: string) => {
     setFormData((prev) => ({
       ...prev,
-      clients: prev.clients.filter((item:string) => item !== client),
+      clients: prev.clients.filter((item: string) => item !== client),
     }));
   }
 
@@ -433,15 +436,15 @@ export function CompanyProfileEditor({
   // };
 
   const addAward = () => {
-  if (!awardForm.title.trim() || !awardForm.imageUrl) return;
+    if (!awardForm.title.trim() || !awardForm.imageUrl) return;
 
-  setFormData((prev) => ({
-    ...prev,
-    awards: [...(prev.awards || []), awardForm],
-  }));
+    setFormData((prev) => ({
+      ...prev,
+      awards: [...(prev.awards || []), awardForm],
+    }));
 
-  setAwardForm({ title: "", imageUrl: "" });
-};
+    setAwardForm({ title: "", imageUrl: "" });
+  };
 
   // const removeAward = (award: string) => {
   //   setFormData((prev) => ({
@@ -451,11 +454,11 @@ export function CompanyProfileEditor({
   // };
 
   const removeAward = (index: number) => {
-  setFormData((prev) => ({
-    ...prev,
-    awards: prev.awards.filter((_, i) => i !== index),
-  }));
-};
+    setFormData((prev) => ({
+      ...prev,
+      awards: prev.awards.filter((_, i) => i !== index),
+    }));
+  };
 
   const addCertificate = () => {
     if (
@@ -478,7 +481,7 @@ export function CompanyProfileEditor({
       ),
     }));
   };
- 
+
   const handleTaglineChange = (value: string) => {
     if (value.length <= 50) {
       setFormData((prev) => ({ ...prev, tagline: value }));
@@ -591,7 +594,7 @@ export function CompanyProfileEditor({
       setShowTestimonialForm(false);
     }
   };
-  
+
   const editTestimonialItem = (id: string) => {
     const item = formData.testimonials.find((t) => (t._id || t.id) === id);
     if (item) {
@@ -608,12 +611,12 @@ export function CompanyProfileEditor({
   };
 
   return (
-      <div className="space-y-1 bg-[#ffffff] -mx-4 mt-1">
+    <div className="space-y-1 bg-[#ffffff] -mx-4 mt-1">
 
       <div className="flex justify-between items-center pb-1 -mt-5 p-3">
         <h1 className="text-xl text-orangeButton font-semibold">
           Agency Profile
-          </h1>
+        </h1>
 
         {!isEditMode ? (
           <Button className="btn-blackButton h-[30px]" onClick={() => setIsEditMode(true)}>
@@ -636,144 +639,143 @@ export function CompanyProfileEditor({
           <TabsTrigger className="rounded-xl" value="caseStudies">Case Studies</TabsTrigger>
         </TabsList>
 
-      <TabsContent value="overview">
-        <div className={!isEditMode ? "pointer-events-none opacity-90" : ""}>
-      {/* Company Information */}
-      <div className="space-y-0 border rounded-xl p-2 -mt-3 ">
-        {/*comapny loago and coverimage */}
+        <TabsContent value="overview">
+          <div className={!isEditMode ? "pointer-events-none opacity-90" : ""}>
+            {/* Company Information */}
+            <div className="space-y-0 border rounded-xl p-2 -mt-3 ">
+              {/*comapny loago and coverimage */}
 
-        <div className="grid grid-cols-1 max-h-[50vh] overflow-y-auto md:grid-cols-2 gap-5 mt-0 mb-3">
-          {/*logo  */}
-          <div className="space-y-2">
-            <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
-              Company Logo
-            </Label>
-            <ImageUpload
-              value={formData.logo}
-              onChange={(value) => setFormData({ ...formData, logo: value })}
-              description="Upload your company logo (PNG, JPG) or provide a URL"
-              previewClassName="w-24 h-24 border"
-              isEditable={isEditMode}
-            />
-          </div>
+              <div className="grid grid-cols-1 max-h-[50vh] overflow-y-auto md:grid-cols-2 gap-5 mt-0 mb-3">
+                {/*logo  */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
+                    Company Logo
+                  </Label>
+                  <ImageUpload
+                    value={formData.logo}
+                    onChange={(value) => setFormData({ ...formData, logo: value })}
+                    description="Upload your company logo (PNG, JPG) or provide a URL"
+                    previewClassName="w-24 h-24 border"
+                    isEditable={isEditMode}
+                  />
+                </div>
 
-          {/*cover image */}
+                {/*cover image */}
 
-          <div className="space-y-2">
-            <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
-              Company Cover Image
-            </Label>
-            <ImageUpload
-              value={formData.coverImage}
-              onChange={(value) =>
-                setFormData({ ...formData, coverImage: value })
-              }
-              description="Upload your company cover image (PNG, JPG) or provide a URL"
-              previewClassName="w-24 h-24 border"
-              isEditable={isEditMode} 
-            />
-          </div>
-        </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
+                    Company Cover Image
+                  </Label>
+                  <ImageUpload
+                    value={formData.coverImage}
+                    onChange={(value) =>
+                      setFormData({ ...formData, coverImage: value })
+                    }
+                    description="Upload your company cover image (PNG, JPG) or provide a URL"
+                    previewClassName="w-24 h-24 border"
+                    isEditable={isEditMode}
+                  />
+                </div>
+              </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
-          <div className="space-y-2">
-            <Label
-              htmlFor="companyName"
-              className="text-sm font-inter text-[#98A0B4] font-semibold"
-            >
-              Company Name
-            </Label>
-            <Input
-              id="companyName"
-              value={formData.companyName}
-              onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  companyName: e.target.value,
-                }));
-                if (errors.companyName)
-                  setErrors((prev) => ({ ...prev, companyName: "" }));
-              }}
-              className={`${errors.companyName ? "border-red-500" : ""} bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
-              placeholder="Enter company name"
-            />
-            {errors.companyName && (
-              <p className="text-sm text-red-500">{errors.companyName}</p>
-            )}
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="companyName"
+                    className="text-sm font-inter text-[#98A0B4] font-semibold"
+                  >
+                    Company Name
+                  </Label>
+                  <Input
+                    id="companyName"
+                    value={formData.companyName}
+                    onChange={(e) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        companyName: e.target.value,
+                      }));
+                      if (errors.companyName)
+                        setErrors((prev) => ({ ...prev, companyName: "" }));
+                    }}
+                    className={`${errors.companyName ? "border-red-500" : ""} bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+                    placeholder="Enter company name"
+                  />
+                  {errors.companyName && (
+                    <p className="text-sm text-red-500">{errors.companyName}</p>
+                  )}
+                </div>
 
-          <div className="space-y-2">
-            <Label
-              htmlFor="website"
-              className="text-sm font-inter text-[#98A0B4] font-semibold"
-            >
-              Company Website
-            </Label>
-            <Input
-              id="website"
-              value={formData.website}
-              onChange={(e) => {
-                setFormData((prev) => ({ ...prev, website: e.target.value }));
-                if (errors.website)
-                  setErrors((prev) => ({ ...prev, website: "" }));
-              }}
-              className={`${errors.website ? "border-red-500" : ""} bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
-              placeholder="Enter website url"
-            />
-            {errors.website && (
-              <p className="text-sm text-red-500">{errors.website}</p>
-            )}
-          </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="website"
+                    className="text-sm font-inter text-[#98A0B4] font-semibold"
+                  >
+                    Company Website
+                  </Label>
+                  <Input
+                    id="website"
+                    value={formData.website}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, website: e.target.value }));
+                      if (errors.website)
+                        setErrors((prev) => ({ ...prev, website: "" }));
+                    }}
+                    className={`${errors.website ? "border-red-500" : ""} bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+                    placeholder="Enter website url"
+                  />
+                  {errors.website && (
+                    <p className="text-sm text-red-500">{errors.website}</p>
+                  )}
+                </div>
 
-          <div className="space-y-2">
-            <Label
-              htmlFor="adminContactPhone"
-              className="text-sm text-[#98A0B4] font-semibold font-inter"
-            >
-              Contact Number
-            </Label>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="adminContactPhone"
+                    className="text-sm text-[#98A0B4] font-semibold font-inter"
+                  >
+                    Contact Number
+                  </Label>
 
-            <PhoneInput
-              country={"in"}
-              enableSearch={true}                 // ✅ enables search
-              searchPlaceholder="Search country"
-              searchNotFound="No country found"
-              autocompleteSearch={true}
-              value={`${formData.countryCode || ""}${formData.adminContactPhone || ""}`}
-              onChange={(value, data: any) => {
-                const dialCode = data.dialCode;
-                const phoneNumber = value.slice(dialCode.length);
+                  <PhoneInput
+                    country={"in"}
+                    enableSearch={true}                 // ✅ enables search
+                    searchPlaceholder="Search country"
+                    searchNotFound="No country found"
+                    autocompleteSearch={true}
+                    value={`${formData.countryCode || ""}${formData.adminContactPhone || ""}`}
+                    onChange={(value, data: any) => {
+                      const dialCode = data.dialCode;
+                      const phoneNumber = value.slice(dialCode.length);
 
-                setFormData((prev) => ({
-                  ...prev,
-                  adminContactPhone: phoneNumber,
-                  country: data.name,
-                  countryCode: dialCode,
-                }));
+                      setFormData((prev) => ({
+                        ...prev,
+                        adminContactPhone: phoneNumber,
+                        country: data.name,
+                        countryCode: dialCode,
+                      }));
 
-                if (errors.adminContactPhone) {
-                  setErrors((prev) => ({ ...prev, adminContactPhone: "" }));
-                }
-              }}
-              inputProps={{
-                name: "adminContactPhone",
-                required: true,
-              }}
-              inputClass={`!w-full !h-[39px] !text-sm !bg-[#f2f1f6] !border-[#D0D5DD] !rounded-[6px] font-inter ${
-                errors.adminContactPhone ? "!border-red-500" : ""
-              }`}
-              buttonClass="!border-[#D0D5DD] !rounded-l-[6px] "
-              containerClass="!w-full "
-            />
+                      if (errors.adminContactPhone) {
+                        setErrors((prev) => ({ ...prev, adminContactPhone: "" }));
+                      }
+                    }}
+                    inputProps={{
+                      name: "adminContactPhone",
+                      required: true,
+                    }}
+                    inputClass={`!w-full !h-[39px] !text-sm !bg-[#f2f1f6] !border-[#D0D5DD] !rounded-[6px] font-inter ${errors.adminContactPhone ? "!border-red-500" : ""
+                      }`}
+                    buttonClass="!border-[#D0D5DD] !rounded-l-[6px] "
+                    containerClass="!w-full "
+                  />
 
-            {errors.adminContactPhone && (
-              <p className="text-sm text-red-500">
-                {errors.adminContactPhone}
-              </p>
-            )}
-          </div>
+                  {errors.adminContactPhone && (
+                    <p className="text-sm text-red-500">
+                      {errors.adminContactPhone}
+                    </p>
+                  )}
+                </div>
 
-          {/* <div className="space-y-2">
+                {/* <div className="space-y-2">
             <Label
               htmlFor="salesEmail"
               className="text-sm font-inter text-[#98A0B4] font-semibold"
@@ -799,10 +801,10 @@ export function CompanyProfileEditor({
               <p className="text-sm text-red-500">{errors.salesEmail}</p>
             )}
           </div> */}
-        </div>
+              </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
-          {/* <div className="space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
+                {/* <div className="space-y-2">
             <Label
               htmlFor="schedulingLink"
               className="text-sm font-inter text-[#98A0B4] font-semibold"
@@ -828,105 +830,105 @@ export function CompanyProfileEditor({
             )}
           </div> */}
 
-          <div className="space-y-2">
-            <Label
-              htmlFor="foundedYear"
-              className="text-sm text-[#98A0B4] font-inter font-semibold"
-            >
-              Founded Year
-            </Label>
-            <Select
-              value={formData.foundedYear?.toString() || ""}
-              onValueChange={(value) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  foundedYear: Number.parseInt(value),
-                }));
-                if (errors.foundedYear)
-                  setErrors((prev) => ({ ...prev, foundedYear: "" }));
-              }}
-            >
-              <SelectTrigger
-                className={`${errors.foundedYear ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] !h-[39px] border-[#D0D5DD] rounded-[6px] font-inter`}
-              >
-                <SelectValue placeholder="2022" />
-              </SelectTrigger>
-              <SelectContent>
-                {Array.from(
-                  { length: new Date().getFullYear() - 1949 },
-                  (_, i) => new Date().getFullYear() - i,
-                ).map((year) => (
-                  <SelectItem key={year} value={year.toString()}>
-                    {year}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.foundedYear && (
-              <p className="text-sm text-red-500">{errors.foundedYear}</p>
-            )}
-          </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="foundedYear"
+                    className="text-sm text-[#98A0B4] font-inter font-semibold"
+                  >
+                    Founded Year
+                  </Label>
+                  <Select
+                    value={formData.foundedYear?.toString() || ""}
+                    onValueChange={(value) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        foundedYear: Number.parseInt(value),
+                      }));
+                      if (errors.foundedYear)
+                        setErrors((prev) => ({ ...prev, foundedYear: "" }));
+                    }}
+                  >
+                    <SelectTrigger
+                      className={`${errors.foundedYear ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] !h-[39px] border-[#D0D5DD] rounded-[6px] font-inter`}
+                    >
+                      <SelectValue placeholder="2022" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from(
+                        { length: new Date().getFullYear() - 1949 },
+                        (_, i) => new Date().getFullYear() - i,
+                      ).map((year) => (
+                        <SelectItem key={year} value={year.toString()}>
+                          {year}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.foundedYear && (
+                    <p className="text-sm text-red-500">{errors.foundedYear}</p>
+                  )}
+                </div>
 
-          <div className="space-y-2">
-            <Label
-              htmlFor="totalEmployees"
-              className="text-sm font-inter text-[#98A0B4] font-semibold "
-            >
-              Total Employees
-            </Label>
-            <Select
-              value={formData.totalEmployees}
-              onValueChange={(value) => {
-                setFormData((prev) => ({ ...prev, totalEmployees: value }));
-                if (errors.totalEmployees)
-                  setErrors((prev) => ({ ...prev, totalEmployees: "" }));
-              }}
-            >
-              <SelectTrigger
-                className={`${errors.totalEmployees ? "border-red-500" : ""} !bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px] !h-[39px] font-inter`}
-              >
-                <SelectValue placeholder="10 - 49" />
-              </SelectTrigger>
-              <SelectContent>
-                {employeeSizes.map((size) => (
-                  <SelectItem key={size} value={size}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.totalEmployees && (
-              <p className="text-sm text-red-500">{errors.totalEmployees}</p>
-            )}
-          </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="totalEmployees"
+                    className="text-sm font-inter text-[#98A0B4] font-semibold "
+                  >
+                    Total Employees
+                  </Label>
+                  <Select
+                    value={formData.totalEmployees}
+                    onValueChange={(value) => {
+                      setFormData((prev) => ({ ...prev, totalEmployees: value }));
+                      if (errors.totalEmployees)
+                        setErrors((prev) => ({ ...prev, totalEmployees: "" }));
+                    }}
+                  >
+                    <SelectTrigger
+                      className={`${errors.totalEmployees ? "border-red-500" : ""} !bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px] !h-[39px] font-inter`}
+                    >
+                      <SelectValue placeholder="10 - 49" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {employeeSizes.map((size) => (
+                        <SelectItem key={size} value={size}>
+                          {size}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.totalEmployees && (
+                    <p className="text-sm text-red-500">{errors.totalEmployees}</p>
+                  )}
+                </div>
 
-          <div className="space-y-2">
-            <Label
-              htmlFor="tagline"
-              className="text-sm font-inter text-[#98A0B4] font-semibold "
-            >
-              Tagline
-            </Label>
-            <div className="relative">
-              <Input
-                id="tagline"
-                value={formData.tagline}
-                onChange={(e) => handleTaglineChange(e.target.value)}
-                className={`${errors.tagline ? "border-red-500" : ""} h-[39px] !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
-                placeholder="We value your Needs"
-                maxLength={50}
-              />
-              {/* <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-muted-foreground">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="tagline"
+                    className="text-sm font-inter text-[#98A0B4] font-semibold "
+                  >
+                    Tagline
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="tagline"
+                      value={formData.tagline}
+                      onChange={(e) => handleTaglineChange(e.target.value)}
+                      className={`${errors.tagline ? "border-red-500" : ""} h-[39px] !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+                      placeholder="We value your Needs"
+                      maxLength={50}
+                    />
+                    {/* <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-muted-foreground">
                   {taglineCount} / 50
                 </div> */}
-            </div>
-            {errors.tagline && (
-              <p className="text-sm text-red-500">{errors.tagline}</p>
-            )}
-          </div>
-        </div>
+                  </div>
+                  {errors.tagline && (
+                    <p className="text-sm text-red-500">{errors.tagline}</p>
+                  )}
+                </div>
+              </div>
 
-        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           
           <div className="space-y-2">
             <Label
@@ -955,78 +957,78 @@ export function CompanyProfileEditor({
           </div>
         </div> */}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
-          <div className="space-y-2">
-            <Label
-              htmlFor="projects"
-              className="text-sm font-inter text-[#98A0B4] font-semibold"
-            >
-              Projects Completed
-            </Label>
-            <div className="relative">
-              <Input
-                id="projects"
-                type="number"
-                min={1}
-                value={formData.projectsCompleted}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    projectsCompleted: e.target.value,
-                  }))
-                }
-                className={`${errors.tagline ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
-                placeholder="Enter number of projects completed"
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label
-              htmlFor="location"
-              className="text-sm font-inter text-[#98A0B4] font-semibold"
-            >
-              Location
-            </Label>
-            <div className="relative">
-              <Input
-                id="location"
-                value={formData.location}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, location: e.target.value }))
-                }
-                className={`${errors.tagline ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
-                placeholder="Enter your company location"
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label
-              htmlFor="rate"
-              className="text-sm font-inter text-[#98A0B4] font-semibold"
-            >
-              Hourly Rate
-            </Label>
-            <div className="relative">
-              <Input
-                id="rate"
-                type="number"
-                min={1}
-                value={formData.hourlyRate}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    hourlyRate: e.target.value,
-                  }))
-                }
-                className={`${errors.tagline ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
-                placeholder="Enter starting proice per hour"
-              />
-            </div>
-          </div>
-        </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="projects"
+                    className="text-sm font-inter text-[#98A0B4] font-semibold"
+                  >
+                    Projects Completed
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="projects"
+                      type="number"
+                      min={1}
+                      value={formData.projectsCompleted}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          projectsCompleted: e.target.value,
+                        }))
+                      }
+                      className={`${errors.tagline ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+                      placeholder="Enter number of projects completed"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="location"
+                    className="text-sm font-inter text-[#98A0B4] font-semibold"
+                  >
+                    Location
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="location"
+                      value={formData.location}
+                      onChange={(e) =>
+                        setFormData((prev) => ({ ...prev, location: e.target.value }))
+                      }
+                      className={`${errors.tagline ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+                      placeholder="Enter your company location"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="rate"
+                    className="text-sm font-inter text-[#98A0B4] font-semibold"
+                  >
+                    Hourly Rate
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="rate"
+                      type="number"
+                      min={1}
+                      value={formData.hourlyRate}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          hourlyRate: e.target.value,
+                        }))
+                      }
+                      className={`${errors.tagline ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+                      placeholder="Enter starting proice per hour"
+                    />
+                  </div>
+                </div>
+              </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
-          {/* <div className="space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
+                {/* <div className="space-y-2">
             <Label
               htmlFor="insta"
               className="text-sm font-inter text-[#98A0B4] font-semibold"
@@ -1126,7 +1128,7 @@ export function CompanyProfileEditor({
               />
             </div>
           </div> */}
-          {/* <div className="space-y-2">
+                {/* <div className="space-y-2">
             <Label
               htmlFor="languagesSpoken"
               className="text-sm font-inter text-[#98A0B4] font-semibold"
@@ -1170,436 +1172,436 @@ export function CompanyProfileEditor({
               ))}
             </div>
           </div> */}
-          <div className="space-y-2">
-            <Label
-              htmlFor="min-project-size"
-              className="text-sm font-inter text-[#98A0B4] font-semibold"
-            >
-              Min Project Price
-            </Label>
-            <Input
-              id="min-project-size"
-              value={formData.minProjectSize}
-              type="number"
-              onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  minProjectSize: e.target.value,
-                }));
-              }}
-              className={`placeholder:text-[#b2b2b2] !bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px] font-inter`}
-              placeholder="200"
-            />
-          </div>
-        </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="min-project-size"
+                    className="text-sm font-inter text-[#98A0B4] font-semibold"
+                  >
+                    Min Project Price
+                  </Label>
+                  <Input
+                    id="min-project-size"
+                    value={formData.minProjectSize}
+                    type="number"
+                    onChange={(e) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        minProjectSize: e.target.value,
+                      }));
+                    }}
+                    className={`placeholder:text-[#b2b2b2] !bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px] font-inter`}
+                    placeholder="200"
+                  />
+                </div>
+              </div>
 
-        <div className="space-y-2 mb-2">
-          <Label
-            htmlFor="description"
-            className="text-sm font-inter text-[#98A0B4] font-semibold"
-          >
-            Description
-          </Label>
-          <Textarea
-            id="description"
-            value={formData.description || ""}
-            onChange={(e) => {
-              setFormData((prev) => ({ ...prev, description: e.target.value }));
-              if (errors.description)
-                setErrors((prev) => ({ ...prev, description: "" }));
-            }}
-            rows={6}
-            className={`${errors.description ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
-            placeholder="about company"
-          />
-          {errors.description && (
-            <p className="text-sm text-red-500">{errors.description}</p>
-          )}
-        </div>
-        <div className="space-y-2">
-          <Label
-            htmlFor="focus-area"
-            className="text-sm font-inter text-[#98A0B4] font-semibold"
-          >
-            Focus Area
-          </Label>
-          <Textarea
-            id="focus-area"
-            value={formData.focusArea || ""}
-            onChange={(e) => {
-              setFormData((prev) => ({ ...prev, focusArea: e.target.value }));
-            }}
-            rows={6}
-             className={`${errors.description ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
-            placeholder="Focus areas about the company"
-          />
-        </div>
+              <div className="space-y-2 mb-2">
+                <Label
+                  htmlFor="description"
+                  className="text-sm font-inter text-[#98A0B4] font-semibold"
+                >
+                  Description
+                </Label>
+                <Textarea
+                  id="description"
+                  value={formData.description || ""}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, description: e.target.value }));
+                    if (errors.description)
+                      setErrors((prev) => ({ ...prev, description: "" }));
+                  }}
+                  rows={6}
+                  className={`${errors.description ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+                  placeholder="about company"
+                />
+                {errors.description && (
+                  <p className="text-sm text-red-500">{errors.description}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="focus-area"
+                  className="text-sm font-inter text-[#98A0B4] font-semibold"
+                >
+                  Focus Area
+                </Label>
+                <Textarea
+                  id="focus-area"
+                  value={formData.focusArea || ""}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, focusArea: e.target.value }));
+                  }}
+                  rows={6}
+                  className={`${errors.description ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
+                  placeholder="Focus areas about the company"
+                />
+              </div>
 
-      {/*Technologies offered */}
+              {/*Technologies offered */}
 
-      <div className="mt-3">
-        <h1 className="font-inter text-sm text-[#a2a9bb] font-bold leading-6">
-          Technologies Offered
-        </h1>
-        {/* <p className="font-inter text-sm text-[#000000] font-normal mb-2 ">
+              <div className="mt-3">
+                <h1 className="font-inter text-sm text-[#a2a9bb] font-bold leading-6">
+                  Technologies Offered
+                </h1>
+                {/* <p className="font-inter text-sm text-[#000000] font-normal mb-2 ">
           Manage the Technologies you provide
         </p> */}
-        <Card className="bg-[#fff] border-1  border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
-          <CardContent className="space-y-4 py-6">
-            <div className="flex flex-wrap gap-2">
-              {(formData.technologies || []).map((tech) => (
-                <Badge
-                  key={tech}
-                  variant="secondary"
-                  className="flex items-center gap-2 bg-[#1C96F4] font-inter"
-                >
-                  {tech}
+                <Card className="bg-[#fff] border-1  border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
+                  <CardContent className="space-y-4 py-6">
+                    <div className="flex flex-wrap gap-2">
+                      {(formData.technologies || []).map((tech) => (
+                        <Badge
+                          key={tech}
+                          variant="secondary"
+                          className="flex items-center gap-2 bg-[#1C96F4] font-inter"
+                        >
+                          {tech}
 
-                  {isEditMode && (
-                  <div onClick={() => removeTech(tech)}>
-                    <X className="h-3 w-3 cursor-pointer" />
-                  </div>
-                  )}
-                </Badge>
-              ))}
-            </div>
-            {
-              !isEditMode && (formData.technologies || []).length === 0 &&(
-                <p className="text-gray-500 text-md text-center ">No Technologies are yet</p>
-              )
-            }
-
-            {isEditMode && (
-            <div className="flex gap-2 w-[50%]">
-              <Input
-                type="text"
-                value={newTechnology}
-                onChange={(e) => setNewTechnology(e.target.value)}
-                placeholder="Datsience..."
-                className=" placeholder:text-[#b2b2b2] mt-1 !bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px]"
-              />
-
-              <Button
-                onClick={addTech}
-                className="bg-[#F54A0C] h-[36px] w-[70px] mt-1.5"
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-      {/*Industries working */}
-        <div className="mt-3">
-        <h1 className="font-inter text-sm text-[#a2a9bb] font-bold leading-6">
-          Industries Working
-        </h1>
-        
-        <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
-          <CardContent className="space-y-4 py-6">
-            <div className="flex flex-wrap gap-2">
-              {(formData.industries || []).map((ind) => (
-                <Badge
-                  key={ind}
-                  variant="secondary"
-                  className="flex items-center gap-2 bg-[#1C96F4]"
-                >
-                  {ind}
-                  {
-                    isEditMode &&(
-                      <div onClick={() => removeIndustry(ind)}>
-                        <X className="h-3 w-3 cursor-pointer" />
-                      </div>
-                    )
-                  }
-                </Badge>
-              ))}
-            </div>
-            {
-              !isEditMode && (formData.industries || []).length === 0 &&(
-                <p className="text-gray-500 text-md text-center ">No Industries are yet</p>
-              )
-            }
-
-            {
-              isEditMode &&(
-                <div className="flex gap-2 w-[50%]">
-                  <Input
-                    type="text"
-                    value={newIndustry}
-                    onChange={(e) => setNewIndustry(e.target.value)}
-                    placeholder="Consulting..."
-                    className=" placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] rounded-[6px]"
-                  />
-
-                  <Button
-                    onClick={addIndustry}
-                    className="bg-[#F54A0C] h-[36px] w-[70px] mt-1.5"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-              )
-            }
-          </CardContent>
-        </Card>
-       </div>
-
-       {/*client names */}
-       <div className="mt-3">
-        <h1 className="font-inter text-sm text-[#a2a9bb] font-bold leading-6">
-          Clients
-        </h1>
-
-        <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
-          <CardContent className="space-y-4 py-6">
-            
-            {/* Client Badges */}
-            <div className="flex flex-wrap gap-2">
-              {(formData.clients || []).map((client) => (
-                <Badge
-                  key={client}
-                  variant="secondary"
-                  className="flex items-center gap-2 bg-[#1C96F4]"
-                >
-                  {client}
-
-                  {isEditMode && (
-                    <div onClick={() => removeClient(client)}>
-                      <X className="h-3 w-3 cursor-pointer" />
+                          {isEditMode && (
+                            <div onClick={() => removeTech(tech)}>
+                              <X className="h-3 w-3 cursor-pointer" />
+                            </div>
+                          )}
+                        </Badge>
+                      ))}
                     </div>
-                  )}
-                </Badge>
-              ))}
-              {/* {
+                    {
+                      !isEditMode && (formData.technologies || []).length === 0 && (
+                        <p className="text-gray-500 text-md text-center ">No Technologies are yet</p>
+                      )
+                    }
+
+                    {isEditMode && (
+                      <div className="flex gap-2 w-[50%]">
+                        <Input
+                          type="text"
+                          value={newTechnology}
+                          onChange={(e) => setNewTechnology(e.target.value)}
+                          placeholder="Datsience..."
+                          className=" placeholder:text-[#b2b2b2] mt-1 !bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px]"
+                        />
+
+                        <Button
+                          onClick={addTech}
+                          className="bg-[#F54A0C] h-[36px] w-[70px] mt-1.5"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+              {/*Industries working */}
+              <div className="mt-3">
+                <h1 className="font-inter text-sm text-[#a2a9bb] font-bold leading-6">
+                  Industries Working
+                </h1>
+
+                <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
+                  <CardContent className="space-y-4 py-6">
+                    <div className="flex flex-wrap gap-2">
+                      {(formData.industries || []).map((ind) => (
+                        <Badge
+                          key={ind}
+                          variant="secondary"
+                          className="flex items-center gap-2 bg-[#1C96F4]"
+                        >
+                          {ind}
+                          {
+                            isEditMode && (
+                              <div onClick={() => removeIndustry(ind)}>
+                                <X className="h-3 w-3 cursor-pointer" />
+                              </div>
+                            )
+                          }
+                        </Badge>
+                      ))}
+                    </div>
+                    {
+                      !isEditMode && (formData.industries || []).length === 0 && (
+                        <p className="text-gray-500 text-md text-center ">No Industries are yet</p>
+                      )
+                    }
+
+                    {
+                      isEditMode && (
+                        <div className="flex gap-2 w-[50%]">
+                          <Input
+                            type="text"
+                            value={newIndustry}
+                            onChange={(e) => setNewIndustry(e.target.value)}
+                            placeholder="Consulting..."
+                            className=" placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] rounded-[6px]"
+                          />
+
+                          <Button
+                            onClick={addIndustry}
+                            className="bg-[#F54A0C] h-[36px] w-[70px] mt-1.5"
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )
+                    }
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/*client names */}
+              <div className="mt-3">
+                <h1 className="font-inter text-sm text-[#a2a9bb] font-bold leading-6">
+                  Clients
+                </h1>
+
+                <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
+                  <CardContent className="space-y-4 py-6">
+
+                    {/* Client Badges */}
+                    <div className="flex flex-wrap gap-2">
+                      {(formData.clients || []).map((client) => (
+                        <Badge
+                          key={client}
+                          variant="secondary"
+                          className="flex items-center gap-2 bg-[#1C96F4]"
+                        >
+                          {client}
+
+                          {isEditMode && (
+                            <div onClick={() => removeClient(client)}>
+                              <X className="h-3 w-3 cursor-pointer" />
+                            </div>
+                          )}
+                        </Badge>
+                      ))}
+                      {/* {
                 (formData.clients || []).length === 0 &&(
                   <p className="text-gray-500 text-md text-center ">No Clients are yet</p>
                 )
               } */}
-            </div>
-            {
-              !isEditMode && (formData.clients || []).length === 0 && (
-                <p className="text-gray-500 text-md text-center ">No Clients are yet</p>
-              )
-            }
-
-            {/* Add Client Input */}
-            {isEditMode && (
-              <div className="flex gap-2 w-[50%]">
-                <Input
-                  type="text"
-                  value={newClient}
-                  onChange={(e) => setNewClient(e.target.value)}
-                  placeholder="Client name..."
-                  className="placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] rounded-[6px]"
-                />
-
-                <Button
-                  onClick={addClient}
-                  className="bg-[#F54A0C] h-[36px] w-[70px] mt-1.5"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-
-          </CardContent>
-        </Card>
-      </div>
-
-      </div>
-      </div>
-      </TabsContent>
-
-      {/* Services Offered */}
-      <TabsContent value="services">
-  <div className="-mt-6">
-    <h1 className="font-inter text-xl mb-2 text-[#000000] font-normal leading-6">
-      Services Offered
-    </h1>
-
-    <Card className="bg-[#fff] border border-[#D0D5DD] rounded-[6px] shadow-none">
-      <CardContent className="space-y-4 py-2">
-
-        {/*  ALWAYS SHOW ADDED SERVICES */}
-        <div className="flex flex-wrap gap-2">
-          {(formData.services || []).map((service) => (
-            <Badge
-              key={service}
-              variant="secondary"
-              className="flex items-center gap-2 bg-[#1C96F4]"
-            >
-              {service}
-
-              {/* ❌ remove icon hidden in view mode */}
-              {isEditMode && (
-                <div onClick={() => removeService(service)}>
-                  <X className="h-3 w-3 cursor-pointer" />
-                </div>
-              )}
-            </Badge>
-          ))}
-        </div>
-        {
-          !isEditMode && (formData.services || []).length === 0 && (
-            <p className="text-gray-500 text-md text-center ">No Services are yet</p>
-          )
-        }
-
-        {/* ✅ CATEGORY SELECT (EDIT MODE ONLY) */}
-        {isEditMode && (
-          <>
-            {/* Step 1: Main Category */}
-            <Select
-              onValueChange={(title) => {
-                const cat = categories.find((c) => c.title === title);
-                setSelectedCategory(cat);
-                setSelectedChild(null);
-              }}
-            >
-              <SelectTrigger className="w-[50%] mt-1 !bg-[#f2f1f6]">
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((cat) => (
-                  <SelectItem key={cat._id} value={cat.title}>
-                    {cat.title}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Step 2: Sub Category */}
-            {selectedCategory && (
-              <Select
-                onValueChange={(title) => {
-                  const child = selectedCategory.children.find(
-                    (c) => c.title === title
-                  );
-                  setSelectedChild(child);
-                }}
-              >
-                <SelectTrigger className="w-[50%] mt-1 bg-[#f2f1f6]">
-                  <SelectValue placeholder="Select sub category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {selectedCategory.children.map((child) => (
-                    <SelectItem key={child.title} value={child.title}>
-                      {child.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-
-            {/* Step 3: Service Checkboxes */}
-            {selectedChild && (
-              <div className="flex flex-col gap-2 mt-3">
-                {selectedChild.items.map((item) => {
-                  const checked = (formData.services || []).includes(
-                    item.title
-                  );
-
-                  return (
-                    <label
-                      key={item.title}
-                      className="flex items-center gap-2 text-sm"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={() => {
-                          setFormData((prev) => ({
-                            ...prev,
-                            services: checked
-                              ? prev.services.filter(
-                                  (s) => s !== item.title
-                                )
-                              : [...(prev.services || []), item.title],
-                          }));
-                        }}
-                      />
-                      {item.title}
-                    </label>
-                  );
-                })}
-              </div>
-            )}
-          </>
-        )}
-      </CardContent>
-    </Card>
-  </div>
-</TabsContent>
-
-    {/* Portfolio */}
-      <TabsContent value="portfolio">
-      <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
-        <CardHeader>
-          <div className="flex justify-between items-center -mt-2 ">
-            <div className="">
-              <CardTitle className="font-inter text-xl text-[#000000] font-normal leading-6">
-                Portfolio
-              </CardTitle>
-              <CardDescription className="font-inter text-sm text-[#000000] font-normal mb-2">
-                Showcase your past projects
-              </CardDescription>
-            </div>
-
-            {isEditMode && (
-            <div className="flex flex-row gap-2">
-              <Button
-                onClick={() => setShowPortfolioForm(true)}
-                className="h-[30px] btn-blackButton"
-              >
-                <Plus className="h-4 w-4" />
-                Add Project
-              </Button>
-              {/* <Button onClick={addPortfolioItem} className="bg-[#39761E] hover:bg-[#39761E] w-[120px] rounded-full text-[12px]">{editPortfolioId?"Update":"Save Project"}</Button> */}
-            </div>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {isEditMode && showPortfolioForm && (
-            <div className=" space-y-2">
-              {/*project image */}
-              <div className="space-y-2 -mt-6">
-                <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
-                  Project Image
-                </Label>
-                <ImageUpload
-                  value={portfolioForm.image}
-                  onChange={(value) =>
-                    setPortfolioForm((prev) => ({ ...prev, image: value }))
-                  }
-                  description="Upload your company ccover image (PNG, JPG) or provide a URL"
-                  previewClassName="w-24 h-24"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
-                    Project Title
-                  </Label>
-                  <Input
-                    value={portfolioForm.title || ""}
-                    onChange={(e) =>
-                      setPortfolioForm((prev) => ({
-                        ...prev,
-                        title: e.target.value,
-                      }))
+                    </div>
+                    {
+                      !isEditMode && (formData.clients || []).length === 0 && (
+                        <p className="text-gray-500 text-md text-center ">No Clients are yet</p>
+                      )
                     }
-                    placeholder="Enter project name"
-                    className=" placeholder:text-[#b2b2b2] bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px] font-inter"
-                  />
+
+                    {/* Add Client Input */}
+                    {isEditMode && (
+                      <div className="flex gap-2 w-[50%]">
+                        <Input
+                          type="text"
+                          value={newClient}
+                          onChange={(e) => setNewClient(e.target.value)}
+                          placeholder="Client name..."
+                          className="placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] rounded-[6px]"
+                        />
+
+                        <Button
+                          onClick={addClient}
+                          className="bg-[#F54A0C] h-[36px] w-[70px] mt-1.5"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+
+                  </CardContent>
+                </Card>
+              </div>
+
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Services Offered */}
+        <TabsContent value="services">
+          <div className="-mt-6">
+            <h1 className="font-inter text-xl mb-2 text-[#000000] font-normal leading-6">
+              Services Offered
+            </h1>
+
+            <Card className="bg-[#fff] border border-[#D0D5DD] rounded-[6px] shadow-none">
+              <CardContent className="space-y-4 py-2">
+
+                {/*  ALWAYS SHOW ADDED SERVICES */}
+                <div className="flex flex-wrap gap-2">
+                  {(formData.services || []).map((service) => (
+                    <Badge
+                      key={service}
+                      variant="secondary"
+                      className="flex items-center gap-2 bg-[#1C96F4]"
+                    >
+                      {service}
+
+                      {/* ❌ remove icon hidden in view mode */}
+                      {isEditMode && (
+                        <div onClick={() => removeService(service)}>
+                          <X className="h-3 w-3 cursor-pointer" />
+                        </div>
+                      )}
+                    </Badge>
+                  ))}
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
-                    Category
-                  </Label>
-                  {/* <Select
+                {
+                  !isEditMode && (formData.services || []).length === 0 && (
+                    <p className="text-gray-500 text-md text-center ">No Services are yet</p>
+                  )
+                }
+
+                {/* ✅ CATEGORY SELECT (EDIT MODE ONLY) */}
+                {isEditMode && (
+                  <>
+                    {/* Step 1: Main Category */}
+                    <Select
+                      onValueChange={(title) => {
+                        const cat = categories.find((c) => c.title === title);
+                        setSelectedCategory(cat);
+                        setSelectedChild(null);
+                      }}
+                    >
+                      <SelectTrigger className="w-[50%] mt-1 !bg-[#f2f1f6]">
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((cat) => (
+                          <SelectItem key={cat._id} value={cat.title}>
+                            {cat.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    {/* Step 2: Sub Category */}
+                    {selectedCategory && (
+                      <Select
+                        onValueChange={(title) => {
+                          const child = selectedCategory.children.find(
+                            (c) => c.title === title
+                          );
+                          setSelectedChild(child);
+                        }}
+                      >
+                        <SelectTrigger className="w-[50%] mt-1 bg-[#f2f1f6]">
+                          <SelectValue placeholder="Select sub category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {selectedCategory.children.map((child) => (
+                            <SelectItem key={child.title} value={child.title}>
+                              {child.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+
+                    {/* Step 3: Service Checkboxes */}
+                    {selectedChild && (
+                      <div className="flex flex-col gap-2 mt-3">
+                        {selectedChild.items.map((item) => {
+                          const checked = (formData.services || []).includes(
+                            item.title
+                          );
+
+                          return (
+                            <label
+                              key={item.title}
+                              className="flex items-center gap-2 text-sm"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => {
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    services: checked
+                                      ? prev.services.filter(
+                                        (s) => s !== item.title
+                                      )
+                                      : [...(prev.services || []), item.title],
+                                  }));
+                                }}
+                              />
+                              {item.title}
+                            </label>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* Portfolio */}
+        <TabsContent value="portfolio">
+          <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
+            <CardHeader>
+              <div className="flex justify-between items-center -mt-2 ">
+                <div className="">
+                  <CardTitle className="font-inter text-xl text-[#000000] font-normal leading-6">
+                    Portfolio
+                  </CardTitle>
+                  <CardDescription className="font-inter text-sm text-[#000000] font-normal mb-2">
+                    Showcase your past projects
+                  </CardDescription>
+                </div>
+
+                {isEditMode && (
+                  <div className="flex flex-row gap-2">
+                    <Button
+                      onClick={() => setShowPortfolioForm(true)}
+                      className="h-[30px] btn-blackButton"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add Project
+                    </Button>
+                    {/* <Button onClick={addPortfolioItem} className="bg-[#39761E] hover:bg-[#39761E] w-[120px] rounded-full text-[12px]">{editPortfolioId?"Update":"Save Project"}</Button> */}
+                  </div>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {isEditMode && showPortfolioForm && (
+                <div className=" space-y-2">
+                  {/*project image */}
+                  <div className="space-y-2 -mt-6">
+                    <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
+                      Project Image
+                    </Label>
+                    <ImageUpload
+                      value={portfolioForm.image}
+                      onChange={(value) =>
+                        setPortfolioForm((prev) => ({ ...prev, image: value }))
+                      }
+                      description="Upload your company ccover image (PNG, JPG) or provide a URL"
+                      previewClassName="w-24 h-24"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
+                        Project Title
+                      </Label>
+                      <Input
+                        value={portfolioForm.title || ""}
+                        onChange={(e) =>
+                          setPortfolioForm((prev) => ({
+                            ...prev,
+                            title: e.target.value,
+                          }))
+                        }
+                        placeholder="Enter project name"
+                        className=" placeholder:text-[#b2b2b2] bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px] font-inter"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
+                        Category
+                      </Label>
+                      {/* <Select
                     value={portfolioForm.category ?? undefined}
                     onValueChange={(value) =>
                       setPortfolioForm((prev) => ({ ...prev, category: value }))
@@ -1619,170 +1621,170 @@ export function CompanyProfileEditor({
                       ))}
                     </SelectContent>
                   </Select> */}
-                  <ServiceDropdown
+                      <ServiceDropdown
                         value={portfolioForm.category ?? undefined}
-                          onChange={(value) =>
-                      setPortfolioForm((prev) => ({ ...prev, category: value }))
-                    }
-                          triggerClassName="border-[#D0D5DD] bg-[#f2f1f6] rounded-[6px] font-inter"
-                        />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
-                  Description
-                </Label>
-                <Textarea
-                  value={portfolioForm.description || ""}
-                  onChange={(e) =>
-                    setPortfolioForm((prev) => ({
-                      ...prev,
-                      description: e.target.value,
-                    }))
-                  }
-                  placeholder="Describe the project and your role..."
-                  rows={3}
-                  className=" placeholder:text-[#b2b2b2] bg-[#f2f1f6] border-[#D0D5DD] border-1 rounded-[6px] font-inter"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
-                    Project URL
-                  </Label>
-                  <Input
-                    value={portfolioForm.projectUrl || ""}
-                    onChange={(e) =>
-                      setPortfolioForm((prev) => ({
-                        ...prev,
-                        projectUrl: e.target.value,
-                      }))
-                    }
-                    placeholder="Enter project url"
-                    className=" placeholder:text-[#b2b2b2] bg-[#f2f1f6] border-[#D0D5DD] border-1 rounded-[6px] font-inter"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-inter  text-[#98A0B4] font-semibold">
-                    Completion Date
-                  </Label>
-                  <Input
-                    type="date"
-                    className="bg-[#f2f1f6] rounded-[6px] border-gray-300"
-                    value={
-                      portfolioForm.completedAt instanceof Date
-                        ? portfolioForm.completedAt.toISOString().split("T")[0]
-                        : ""
-                    }
-                    onChange={(e) =>
-                      setPortfolioForm((prev) => ({
-                        ...prev,
-                        completedAt: e.target.value
-                          ? new Date(e.target.value)
-                          : undefined,
-                      }))
-                    }
-                  />
-                </div>
-              </div>
-
-              {/*Technologies used in this project */}
-              <div className="space-y-5 mt-4">
-                <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
-                  Technologies Used
-                </Label>
-                <div className="flex flex-wrap gap-2">
-                  {(portfolioForm.technologies || []).map((tech) => (
-                    <Badge
-                      key={tech}
-                      variant="secondary"
-                      className="flex items-center bg-[#1C96F4] gap-2"
-                    >
-                      {tech}
-                      <div onClick={() => removePortfolioTech(tech)}>
-                        <X className="h-3 w-3 cursor-pointer" />
-                      </div>
-                    </Badge>
-                  ))}
-                </div>
-
-                <div className="flex w-[50%] gap-2 -mt-2">
-                  <Input
-                    type="text"
-                    value={portfolioTechnology}
-                    onChange={(e) => setPortfolioTechnology(e.target.value)}
-                    placeholder="Enter Technology"
-                    className=" placeholder:text-[#b2b2b2] bg-[#f2f1f6] mt-1 border-[#D0D5DD] border-1 rounded-[6px] font-inter"
-                  />
-
-                  <Button
-                    onClick={addPorfolioTech}
-                    className="bg-[#F54A0C] rounded-xl h-[36px] w-[70px] mt-1.5"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <Button
-                  onClick={addPortfolioItem}
-                  className="primary-button h-[30px]"
-                >
-                  {editPortfolioId ? "Update" : "Add Project"}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowPortfolioForm(false)}
-                  className="btn-blackButton h-[30px]"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          )}
-
-          <div className="grid md:grid-cols-2 gap-4">
-            {(formData.portfolio || []).map((item) => (
-              <div
-                key={item.id || item._id}
-                className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300"
-              >
-                <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100">
-                  <img
-                    src={
-                      item.image ||
-                      `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(item.title) || "/placeholder.svg"}`
-                    }
-                    alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                </div>
-                <div className="p-4">
-                  <Badge
-                    variant="outline"
-                    className="mb-2 bg-[#ebecee] rounded-2xl text-[12px] text-[#000]"
-                  >
-                    {item.category}
-                  </Badge>
-                  <h4 className="font-semibold text-md mb-1">{item.title}</h4>
-                  <p className="text-sm text-[#b2b2b2] line-clamp-2 mb-3">
-                    {item.description}
-                  </p>
-                  <div className="flex flex-wrap gap-1 mb-3">
-                    {item.technologies.map((tech, idx) => (
-                      <Badge
-                        key={idx}
-                        variant="secondary"
-                        className="text-xs bg-[#d9e4f6] text-[#000] rounded-2xl"
-                      >
-                        {tech}
-                      </Badge>
-                    ))}
+                        onChange={(value) =>
+                          setPortfolioForm((prev) => ({ ...prev, category: value }))
+                        }
+                        triggerClassName="border-[#D0D5DD] bg-[#f2f1f6] rounded-[6px] font-inter"
+                      />
+                    </div>
                   </div>
-                  {/* {item.projectUrl && (
+
+                  <div className="space-y-2">
+                    <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
+                      Description
+                    </Label>
+                    <Textarea
+                      value={portfolioForm.description || ""}
+                      onChange={(e) =>
+                        setPortfolioForm((prev) => ({
+                          ...prev,
+                          description: e.target.value,
+                        }))
+                      }
+                      placeholder="Describe the project and your role..."
+                      rows={3}
+                      className=" placeholder:text-[#b2b2b2] bg-[#f2f1f6] border-[#D0D5DD] border-1 rounded-[6px] font-inter"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
+                        Project URL
+                      </Label>
+                      <Input
+                        value={portfolioForm.projectUrl || ""}
+                        onChange={(e) =>
+                          setPortfolioForm((prev) => ({
+                            ...prev,
+                            projectUrl: e.target.value,
+                          }))
+                        }
+                        placeholder="Enter project url"
+                        className=" placeholder:text-[#b2b2b2] bg-[#f2f1f6] border-[#D0D5DD] border-1 rounded-[6px] font-inter"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm font-inter  text-[#98A0B4] font-semibold">
+                        Completion Date
+                      </Label>
+                      <Input
+                        type="date"
+                        className="bg-[#f2f1f6] rounded-[6px] border-gray-300"
+                        value={
+                          portfolioForm.completedAt instanceof Date
+                            ? portfolioForm.completedAt.toISOString().split("T")[0]
+                            : ""
+                        }
+                        onChange={(e) =>
+                          setPortfolioForm((prev) => ({
+                            ...prev,
+                            completedAt: e.target.value
+                              ? new Date(e.target.value)
+                              : undefined,
+                          }))
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  {/*Technologies used in this project */}
+                  <div className="space-y-5 mt-4">
+                    <Label className="text-sm font-inter text-[#98A0B4] font-semibold">
+                      Technologies Used
+                    </Label>
+                    <div className="flex flex-wrap gap-2">
+                      {(portfolioForm.technologies || []).map((tech) => (
+                        <Badge
+                          key={tech}
+                          variant="secondary"
+                          className="flex items-center bg-[#1C96F4] gap-2"
+                        >
+                          {tech}
+                          <div onClick={() => removePortfolioTech(tech)}>
+                            <X className="h-3 w-3 cursor-pointer" />
+                          </div>
+                        </Badge>
+                      ))}
+                    </div>
+
+                    <div className="flex w-[50%] gap-2 -mt-2">
+                      <Input
+                        type="text"
+                        value={portfolioTechnology}
+                        onChange={(e) => setPortfolioTechnology(e.target.value)}
+                        placeholder="Enter Technology"
+                        className=" placeholder:text-[#b2b2b2] bg-[#f2f1f6] mt-1 border-[#D0D5DD] border-1 rounded-[6px] font-inter"
+                      />
+
+                      <Button
+                        onClick={addPorfolioTech}
+                        className="bg-[#F54A0C] rounded-xl h-[36px] w-[70px] mt-1.5"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={addPortfolioItem}
+                      className="primary-button h-[30px]"
+                    >
+                      {editPortfolioId ? "Update" : "Add Project"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowPortfolioForm(false)}
+                      className="btn-blackButton h-[30px]"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              <div className="grid md:grid-cols-2 gap-4">
+                {(formData.portfolio || []).map((item) => (
+                  <div
+                    key={item.id || item._id}
+                    className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300"
+                  >
+                    <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100">
+                      <img
+                        src={
+                          item.image ||
+                          `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(item.title) || "/placeholder.svg"}`
+                        }
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                    </div>
+                    <div className="p-4">
+                      <Badge
+                        variant="outline"
+                        className="mb-2 bg-[#ebecee] rounded-2xl text-[12px] text-[#000]"
+                      >
+                        {item.category}
+                      </Badge>
+                      <h4 className="font-semibold text-md mb-1">{item.title}</h4>
+                      <p className="text-sm text-[#b2b2b2] line-clamp-2 mb-3">
+                        {item.description}
+                      </p>
+                      <div className="flex flex-wrap gap-1 mb-3">
+                        {item.technologies.map((tech, idx) => (
+                          <Badge
+                            key={idx}
+                            variant="secondary"
+                            className="text-xs bg-[#d9e4f6] text-[#000] rounded-2xl"
+                          >
+                            {tech}
+                          </Badge>
+                        ))}
+                      </div>
+                      {/* {item.projectUrl && (
                           <a
                             href={item.projectUrl}
                             target="_blank"
@@ -1792,38 +1794,38 @@ export function CompanyProfileEditor({
                             View Project <ExternalLink className="h-3 w-3" />
                           </a>
                         )} */}
-                        {isEditMode && (
-                  <div className="flex justify-between">
-                    <Button
-                      className="bg-red-500 hover:bg-red-700 h-[30px] w-[80px] rounded-full"
-                      onClick={() => removePortfolioItem(item.id)}
-                    >
-                      Delete
-                    </Button>
-                    <Button
-                      className="btn-blackButton h-[30px]"
-                      onClick={() => editPortfolioItem(item.id)}
-                    >
-                      Edit
-                    </Button>
+                      {isEditMode && (
+                        <div className="flex justify-between">
+                          <Button
+                            className="bg-red-500 hover:bg-red-700 h-[30px] w-[80px] rounded-full"
+                            onClick={() => removePortfolioItem(item.id)}
+                          >
+                            Delete
+                          </Button>
+                          <Button
+                            className="btn-blackButton h-[30px]"
+                            onClick={() => editPortfolioItem(item.id)}
+                          >
+                            Edit
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                        )}
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-          {
-            !isEditMode && (formData.portfolio || []).length === 0 && (
-              <p className="text-gray-500 text-md text-center ">No Portfolio items are yet</p>
-            )
-          }
-        </CardContent>
-      </Card>
-        
-      </TabsContent>
+              {
+                !isEditMode && (formData.portfolio || []).length === 0 && (
+                  <p className="text-gray-500 text-md text-center ">No Portfolio items are yet</p>
+                )
+              }
+            </CardContent>
+          </Card>
 
-      {/*Industries working */}
-      {/* <div>
+        </TabsContent>
+
+        {/*Industries working */}
+        {/* <div>
         <h1 className="font-inter text-xl text-[#000000] font-normal leading-6">
           Industries Working
         </h1>
@@ -1867,115 +1869,115 @@ export function CompanyProfileEditor({
         </Card>
       </div> */}
 
-      {/*Awards added */}
+        {/*Awards added */}
 
-      <TabsContent value="awards">
-        <div>
-          <h1 className="font-inter text-xl text-[#000000] font-normal leading-6">
-            Awards Received
-          </h1>
+        <TabsContent value="awards">
+          <div>
+            <h1 className="font-inter text-xl text-[#000000] font-normal leading-6">
+              Awards Received
+            </h1>
 
-          <p className="font-inter text-sm text-[#000000] font-normal mb-2">
-            Manage the awards your agency has received
-          </p>
+            <p className="font-inter text-sm text-[#000000] font-normal mb-2">
+              Manage the awards your agency has received
+            </p>
 
-          <Card className="bg-[#fff] border border-[#D0D5DD] rounded-[6px] shadow-none">
-            <CardContent className="space-y-6 py-6">
+            <Card className="bg-[#fff] border border-[#D0D5DD] rounded-[6px] shadow-none">
+              <CardContent className="space-y-6 py-6">
 
-              {/* SHOW AWARDS */}
-              <div className="grid md:grid-cols-2 gap-4">
-                {(formData.awards || []).map((item, index) => (
-                  <div
-                    key={index}
-                    className="relative border rounded-lg p-4 flex gap-4 items-center"
-                  >
-                    <img
-                      src={item.imageUrl}
-                      alt={item.title}
-                      className="w-16 h-16 object-cover rounded-md border"
-                    />
+                {/* SHOW AWARDS */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  {(formData.awards || []).map((item, index) => (
+                    <div
+                      key={index}
+                      className="relative border rounded-lg p-4 flex gap-4 items-center"
+                    >
+                      <img
+                        src={item.imageUrl}
+                        alt={item.title}
+                        className="w-16 h-16 object-cover rounded-md border"
+                      />
 
-                    <div className="flex-1">
-                      <p className="font-medium">{item.title}</p>
+                      <div className="flex-1">
+                        <p className="font-medium">{item.title}</p>
+                      </div>
+
+                      {isEditMode && (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => removeAward(index)}
+                          className="rounded-full bg-red-500 hover:bg-red-700 h-[30px]"
+                        >
+                          Delete
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {
+                  !isEditMode && (formData.awards || []).length === 0 && (
+                    <p className="text-gray-500 text-md text-center ">No Awards are yet</p>
+                  )
+                }
+
+                {/* ADD AWARD FORM */}
+                {isEditMode && (
+                  <div className="space-y-4 border-t pt-4">
+
+                    {/* Image Upload */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold">
+                        Award Image
+                      </Label>
+
+                      <ImageUpload
+                        value={awardForm.imageUrl}
+                        onChange={(value) =>
+                          setAwardForm((prev) => ({
+                            ...prev,
+                            imageUrl: value,
+                          }))
+                        }
+                        description="Upload award image (PNG, JPG)"
+                        previewClassName="w-24 h-24 border"
+                      />
                     </div>
 
-                    {isEditMode && (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => removeAward(index)}
-                        className="rounded-full bg-red-500 hover:bg-red-700 h-[30px]"
-                      >
-                        Delete
-                      </Button>
-                    )}
+                    {/* Award Title */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold">
+                        Award Title
+                      </Label>
+                      <Input
+                        value={awardForm.title}
+                        onChange={(e) =>
+                          setAwardForm((prev) => ({
+                            ...prev,
+                            title: e.target.value,
+                          }))
+                        }
+                        placeholder="Best Design Agency 2025"
+                        className="bg-[#f2f1f6]"
+                      />
+                    </div>
+
+                    <Button
+                      onClick={addAward}
+                      className="primary-button h-[30px]"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Award
+                    </Button>
+
                   </div>
-                ))}
-              </div>
+                )}
 
-              {
-                !isEditMode && (formData.awards || []).length === 0 && (
-                  <p className="text-gray-500 text-md text-center ">No Awards are yet</p>
-                )
-              }
-
-              {/* ADD AWARD FORM */}
-              {isEditMode && (
-                <div className="space-y-4 border-t pt-4">
-
-                  {/* Image Upload */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-semibold">
-                      Award Image
-                    </Label>
-
-                    <ImageUpload
-                      value={awardForm.imageUrl}
-                      onChange={(value) =>
-                        setAwardForm((prev) => ({
-                          ...prev,
-                          imageUrl: value,
-                        }))
-                      }
-                      description="Upload award image (PNG, JPG)"
-                      previewClassName="w-24 h-24 border"
-                    />
-                  </div>
-
-                  {/* Award Title */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-semibold">
-                      Award Title
-                    </Label>
-                    <Input
-                      value={awardForm.title}
-                      onChange={(e) =>
-                        setAwardForm((prev) => ({
-                          ...prev,
-                          title: e.target.value,
-                        }))
-                      }
-                      placeholder="Best Design Agency 2025"
-                      className="bg-[#f2f1f6]"
-                    />
-                  </div>
-
-                  <Button
-                    onClick={addAward}
-                    className="primary-button h-[30px]"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Award
-                  </Button>
-
-                </div>
-              )}
-
-            </CardContent>
-          </Card>
-        </div>
-      </TabsContent>
-      {/* <TabsContent value="awards">
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+        {/* <TabsContent value="awards">
         <div className={!isEditMode ? "pointer-events-none opacity-90" : ""}>
       <div className="-mt-5">
         <h1 className="font-inter text-xl text-[#000000] font-normal leading-6">
@@ -2024,8 +2026,8 @@ export function CompanyProfileEditor({
       </div>
     </TabsContent> */}
 
-      {/*Certifications added */}
-      {/* <div>
+        {/*Certifications added */}
+        {/* <div>
         <h1 className="font-inter text-xl text-[#000000] font-normal leading-6">
           Certification Recieved
         </h1>
@@ -2069,9 +2071,9 @@ export function CompanyProfileEditor({
         </Card>
       </div> */}
 
-      {/*Testimonials */}
+        {/*Testimonials */}
 
-      {/* <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
+        {/* <Card className="bg-[#fff] border-1 border-[#D0D5DD] rounded-[6px] font-inter shadow-none">
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
@@ -2289,17 +2291,18 @@ export function CompanyProfileEditor({
         </CardContent>
       </Card> */}
 
-            {/* <div className="flex justify-end">
+        {/* <div className="flex justify-end">
         <Button onClick={handleSave}>Save Changes</Button>
       </div> */}
-      <TabsContent value="caseStudies">
-        <CaseStudiesSection
-  formData={formData}
-  setFormData={setFormData}
-  isEditMode={isEditMode}
-/>
-      </TabsContent>
-     </Tabs>
-        </div>
+        <TabsContent value="caseStudies">
+          <CaseStudiesSection
+            formData={formData}
+            setFormData={setFormData}
+            isEditMode={isEditMode}
+            isCaseStudiesLimitReached={isCaseStudiesLimitReached}
+          />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }

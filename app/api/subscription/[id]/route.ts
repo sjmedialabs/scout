@@ -83,6 +83,12 @@ export async function PUT(
       subscription.features = body.features
     if (body.isActive !== undefined)
       subscription.isActive = body.isActive
+    if (body.proposalsPerMonth != undefined)
+      subscription.proposalsPerMonth = body.proposalsPerMonth
+    if (body.caseStudiesCount != undefined)
+      subscription.caseStudiesCount = body.caseStudiesCount
+    if (body.isFeatured != undefined)
+      subscription.isFeatured = body.isFeatured
 
     await subscription.save()
 

@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     await connectToDatabase();
 
-    const { proposalLimit } = await request.json();
+    const { proposalLimit, caseStudiesCount } = await request.json();
 
     if (proposalLimit === undefined || proposalLimit < 0) {
       return NextResponse.json(
@@ -32,13 +32,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const config = await FreeTrialConfig.create({ proposalLimit });
+    const config = await FreeTrialConfig.create({ proposalLimit, caseStudiesCount: caseStudiesCount ?? 0 });
 
     return NextResponse.json(
       {
         success: true,
         message: "Free trial proposal limit created",
         proposalLimit: config.proposalLimit,
+        caseStudiesCount: config.caseStudiesCount,
       },
       { status: 201 }
     );
@@ -67,6 +68,7 @@ export async function GET(_request: NextRequest) {
     return NextResponse.json({
       success: true,
       proposalLimit: config.proposalLimit,
+      caseStudiesCount: config.caseStudiesCount,
     });
   } catch (error) {
     console.error("GET FreeTrialConfig error:", error);
@@ -89,7 +91,7 @@ export async function PUT(request: NextRequest) {
 
     await connectToDatabase();
 
-    const { proposalLimit } = await request.json();
+    const { proposalLimit, caseStudiesCount } = await request.json();
 
     if (proposalLimit === undefined || proposalLimit < 0) {
       return NextResponse.json(
@@ -100,7 +102,7 @@ export async function PUT(request: NextRequest) {
 
     const updatedConfig = await FreeTrialConfig.findOneAndUpdate(
       {},
-      { proposalLimit },
+      { proposalLimit, ...(caseStudiesCount !== undefined && { caseStudiesCount }) },
       { new: true }
     );
 
@@ -115,6 +117,7 @@ export async function PUT(request: NextRequest) {
       success: true,
       message: "Free trial proposal limit updated",
       proposalLimit: updatedConfig.proposalLimit,
+      caseStudiesCount: updatedConfig.caseStudiesCount,
     });
   } catch (error) {
     console.error("PUT FreeTrialConfig error:", error);

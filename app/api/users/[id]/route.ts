@@ -32,65 +32,70 @@ export async function GET(
       return NextResponse.json({ error: "Not authorized" }, { status: 403 });
     }
 
-      const userData = await User.findById(id)
-          .select("-password")
-          .populate("subscriptionPlanId")
-          .lean()
+    const userData = await User.findById(id)
+      .select("-password")
+      .populate("subscriptionPlanId")
+      .lean()
 
-        let subscription
+    let subscription
 
-        if (userData.subscriptionPlanId) {
-          const plan = userData.subscriptionPlanId as any
-          const isYearly = userData.billingCycle === "Yearly"
+    if (userData.subscriptionPlanId) {
+      const plan = userData.subscriptionPlanId as any
+      const isYearly = userData.billingCycle === "Yearly"
 
-          subscription = {
-            type: "paid",
-            title: plan.title,
-            price: isYearly ? plan.pricePerYear : plan.pricePerMonth,
-            billingCycle: userData.billingCycle,
-            features: plan.features,
-            status:
-              userData.subscriptionEndDate &&
-              userData.subscriptionEndDate < new Date()
-                ? "expired"
-                : "active",
-            startDate: userData.subscriptionStartDate,
-            endDate: userData.subscriptionEndDate,
-          }
-        } else {
-          // FREE TRIAL USERS
-          subscription = {
-            type: "trial",
-            title: "Free Trial",
-            price: 0,
-            billingCycle: "Monthly",
-            features: [],
-            status: "trial",
-            startDate: userData.createdAt,
-            endDate: null,
-          }
-        }
+      subscription = {
+        type: "paid",
+        title: plan.title,
+        price: isYearly ? plan.pricePerYear : plan.pricePerMonth,
+        proposalsPerMonth: plan?.proposalsPerMonth || 0,
+        caseStudiesCount: plan?.caseStudiesCount || 0,
+        isFeatured: plan?.isFeatured || false,
+        billingCycle: userData.billingCycle,
+        features: plan.features,
+        status:
+          userData.subscriptionEndDate &&
+            userData.subscriptionEndDate < new Date()
+            ? "expired"
+            : "active",
+        startDate: userData.subscriptionStartDate,
+        endDate: userData.subscriptionEndDate,
+      }
+    } else {
+      // FREE TRIAL USERS
+      subscription = {
+        type: "trial",
+        title: "Free Trial",
+        price: 0,
+        billingCycle: "Monthly",
+        features: [],
+        status: "trial",
+        startDate: userData.createdAt,
+        endDate: null,
+      }
+    }
 
-        return NextResponse.json({
-          user: {
-            id: userData._id.toString(),
-            email: userData.email,
-            name: userData.name,
-            role: userData.role,
-            company: userData.company,
-            phone: userData.phone,
-            avatar: userData.avatar,
-            isVerified: userData.isVerified,
-            isActive: userData.isActive,
-            subscriptionStartDate:userData?.subscriptionStartDate,
-            subscriptionEndDate:userData?.subscriptionEndDate,
-            proposalCount:userData?.proposalCount || 0,
-            lastLogin: userData.lastLogin,
-            createdAt: userData.createdAt,
+    return NextResponse.json({
+      user: {
+        id: userData._id.toString(),
+        email: userData.email,
+        name: userData.name,
+        role: userData.role,
+        company: userData.company,
+        phone: userData.phone,
+        avatar: userData.avatar,
+        isVerified: userData.isVerified,
+        isActive: userData.isActive,
+        subscriptionStartDate: userData?.subscriptionStartDate,
+        subscriptionEndDate: userData?.subscriptionEndDate,
+        subscriptionPlanId: userData?.subscriptionPlanId,
+        proposalCount: userData?.proposalCount || 0,
+        monthlyProposalCount: userData?.monthlyProposalCount || 0,
+        lastLogin: userData.lastLogin,
+        createdAt: userData.createdAt,
 
-          },
-          subscription,
-        })
+      },
+      subscription,
+    })
   } catch (error) {
     console.error("Error fetching user:", error);
     return NextResponse.json(

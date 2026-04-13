@@ -234,6 +234,9 @@ export interface ISubscription {
   title: string
   pricePerMonth: number
   pricePerYear: number
+  proposalsPerMonth: number
+  caseStudiesCount: number
+  isFeatured: boolean
   yearlySubscription: boolean
   description?: string
   features: string[]

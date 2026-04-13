@@ -108,14 +108,14 @@ export async function GET(request: NextRequest) {
       status: p.status,
       createdAt: p.createdAt,
       updatedAt: p.updatedAt,
-      acceptedAt:p.acceptedAt,
-      clientViewed:p.clientViewed,
-      clientResponded:p.clientResponded,
-      clientId:p.clientId,
-      agencyId:p.agencyId,
-      proposalDescription:p.proposalDescription,
-      documentUrl:p.documentUrl,
-      attachments:p.attachments,
+      acceptedAt: p.acceptedAt,
+      clientViewed: p.clientViewed,
+      clientResponded: p.clientResponded,
+      clientId: p.clientId,
+      agencyId: p.agencyId,
+      proposalDescription: p.proposalDescription,
+      documentUrl: p.documentUrl,
+      attachments: p.attachments,
     }));
 
     return NextResponse.json({
@@ -155,7 +155,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (!mongoose.Types.ObjectId.isValid(user.userId)) {
-      return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid user ID" },
+        { status: 400 }
+      );
     }
 
     await connectToDatabase();
@@ -172,8 +175,7 @@ export async function POST(request: NextRequest) {
       coverLetter,
       milestones,
       documentUrl,
-    attachments,
-      
+      attachments,
     } = body;
 
     if (!mongoose.Types.ObjectId.isValid(requirementId)) {
@@ -184,6 +186,7 @@ export async function POST(request: NextRequest) {
     }
 
     const provider = await Provider.findOne({ userId: user.userId });
+
     if (!provider) {
       return NextResponse.json(
         { error: "Provider profile not found" },
@@ -192,6 +195,7 @@ export async function POST(request: NextRequest) {
     }
 
     const project = await Requirement.findById(requirementId);
+
     if (!project || project.status.toLowerCase() === "closed") {
       return NextResponse.json(
         { error: "Project not accepting proposals" },
@@ -211,6 +215,81 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // ================================
+    //  NEW LOGIC — CHECK MONTHLY LIMIT
+    // ================================
+
+    const userDoc = await User.findById(user.userId)
+      .populate("subscriptionPlanId");
+
+    if (!userDoc) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      );
+    }
+
+    // Check subscription expiry
+    if (
+      userDoc.subscriptionEndDate &&
+      new Date() > userDoc.subscriptionEndDate
+    ) {
+      return NextResponse.json(
+        { error: "Subscription expired" },
+        { status: 403 }
+      );
+    }
+
+    const plan: any = userDoc.subscriptionPlanId;
+
+    if (!plan) {
+      return NextResponse.json(
+        { error: "Subscription plan not found" },
+        { status: 403 }
+      );
+    }
+
+    //  Monthly reset logic using subscriptionStartDate
+
+    const now = new Date();
+    const start = new Date(userDoc.subscriptionStartDate);
+
+    const monthsPassed =
+      (now.getFullYear() - start.getFullYear()) * 12 +
+      (now.getMonth() - start.getMonth());
+
+    const currentCycleStart = new Date(start);
+    currentCycleStart.setMonth(
+      start.getMonth() + monthsPassed
+    );
+
+    const nextCycle = new Date(currentCycleStart);
+    nextCycle.setMonth(nextCycle.getMonth() + 1);
+
+    if (now >= nextCycle) {
+      userDoc.monthlyProposalCount = 0;
+      await userDoc.save();
+    }
+
+    //  Check limit
+
+    if (
+      userDoc.monthlyProposalCount >=
+      (plan?.proposalsPerMonth || 100)
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Monthly proposal limit reached. Please upgrade your plan or wait for next cycle.",
+        },
+        { status: 403 }
+      );
+    }
+
+    // ================================
+    // EXISTING FUNCTIONALITY CONTINUES
+    // ================================
+
     const proposal = await Proposal.create({
       requirementId,
       clientId,
@@ -218,19 +297,31 @@ export async function POST(request: NextRequest) {
       coverLetter,
       proposedBudget,
       proposalDescription,
-      proposedTimeline: proposedTimeline || "As discussed",
+      proposedTimeline:
+        proposedTimeline || "As discussed",
       milestones: milestones || [],
       status: "pending",
       documentUrl: documentUrl || "",
       attachments: attachments || [],
-      
     });
 
-     // Update project proposal count
-      await Requirement.findByIdAndUpdate(requirementId, { $inc: { proposals: 1 } })
+    // Update project proposal count
+    await Requirement.findByIdAndUpdate(
+      requirementId,
+      { $inc: { proposals: 1 } }
+    );
 
-      //update users proposal count
-      await User.findByIdAndUpdate(user.userId,{$inc:{proposalCount:1}})
+    // ✅ UPDATED USER COUNTS (safe update)
+
+    await User.findByIdAndUpdate(
+      user.userId,
+      {
+        $inc: {
+          proposalCount: 1,          // existing
+          monthlyProposalCount: 1,   // NEW
+        },
+      }
+    );
 
     await Notification.create({
       userId: clientId,
@@ -240,12 +331,17 @@ export async function POST(request: NextRequest) {
       type: "proposal_submitted",
       userRole: "client",
       sourceId: proposal._id,
-      linkUrl:"/client/dashboard/proposals"
+      linkUrl: "/client/dashboard/proposals",
     });
 
-    return NextResponse.json({ success: true, proposal });
+    return NextResponse.json({
+      success: true,
+      proposal,
+    });
+
   } catch (error) {
     console.error("Error creating proposal:", error);
+
     return NextResponse.json(
       { error: "Failed to create proposal" },
       { status: 500 },

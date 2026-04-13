@@ -30,11 +30,14 @@ import {
 
 export default function SubmitProposalPage() {
   const { user, loading } = useAuth();
-  
+
+  console.log("Logined User Detaisl::::", user)
+
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { toast } = useToast();
   const [success, setSuccess] = useState(false);
+  const [isProposalLimitReached, setIsProposalLimitReached] = useState(false);
 
   const [resLoading, setResLoading] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -48,18 +51,30 @@ export default function SubmitProposalPage() {
     try {
       const res = await authFetch(`/api/requirements/${id}`);
       const proposalRes = await authFetch("/api/proposals");
-      if (res.ok && proposalRes.ok) {
+      const userRes = await authFetch(`/api/users/${user?.id}`)
+
+      if (res.ok && proposalRes.ok && userRes.ok) {
         const data = await res.json();
         const proposalData = await proposalRes.json();
+        const userData = await userRes.json();
+        console.log("Mine user details  ::::::::::;", userData)
+
+
 
         setFailed(false);
         setRequirement(data.requirements[0]);
 
-        console.log("Requirement details::::",data.requirements[0])
-      
-       const proposalsCount=(proposalData.proposals || []).filter((eachItem)=>id===eachItem.requirement.id && eachItem.agency.userId===user?.id)
-     
-        setShowForm(proposalsCount.length === 0)
+        console.log("Requirement details::::", data.requirements[0])
+
+        const proposalsCount = (proposalData.proposals || []).filter((eachItem) => id === eachItem.requirement.id && eachItem.agency.userId === user?.id)
+
+        // setShowForm(proposalsCount.length === 0)
+
+        if ((userData.user?.monthlyProposalCount || 0) >= (userData.subscription?.proposalsPerMonth || 0)) {
+          console.log("Entered to if condition is::;")
+          // setIsProposalLimitReached(true)
+          setShowForm(false)
+        }
 
         // setProposals(proposalData.proposals.filter((eachItem)=>id===eachItem.requirement.id && eachItem.agencyId===user?.id))
       }
@@ -88,16 +103,16 @@ export default function SubmitProposalPage() {
     coverLetter: coverLetter,
     milestones: milestones.filter((m) => m.trim() !== ""),
   });
- 
+
   console.log("Form status:::::", showForm);
 
   const handleSubmitProposal = async () => {
     if (!validateForm()) return;
 
-      if (!milestones || milestones.length < 2) {
+    if (!milestones || milestones.length < 2) {
       alert("At least two milestones are required for the proposal");
       return;
-      }
+    }
 
     // Check each milestone
     const hasEmptyFields = milestones.some(
@@ -122,9 +137,9 @@ export default function SubmitProposalPage() {
         proposedTimeline: timeline,
         proposalDescription: approach,
         coverLetter: coverLetter,
-        milestones: milestones.map((eachItem) => ({ title: eachItem.title,description:eachItem.description })),
-        attachments:documentUrls.filter((eachItem:String)=>eachItem.trim().length>0)
-      }; 
+        milestones: milestones.map((eachItem) => ({ title: eachItem.title, description: eachItem.description })),
+        attachments: documentUrls.filter((eachItem: String) => eachItem.trim().length > 0)
+      };
 
       console.log("Payload to send:::::::", payload);
       const res = await authFetch("/api/proposals", {
@@ -141,18 +156,18 @@ export default function SubmitProposalPage() {
           approach: false,
           form: false,
         });
-         // window.location.reload()
-      setTimeout(() => {
-        router.push("/agency/dashboard/project-inquiries");
-        // router.refresh()
-      }, 2000);
+        // window.location.reload()
+        setTimeout(() => {
+          router.push("/agency/dashboard/project-inquiries");
+          // router.refresh()
+        }, 2000);
       } else if (res.status === 409) {
         setFormResponse("You already submitted the proposal for this project");
       } else {
         setFormResponse("failed to submit the proposal please try again");
       }
 
-     
+
     } catch {
       setErrors({
         cost: false,
@@ -201,9 +216,9 @@ export default function SubmitProposalPage() {
   const [timelineUnit, setTimelineUnit] = useState("Days"); // 
   const [timelineValue, setTimelineValue] = useState("");
   const [approach, setApproach] = useState("");
-  const [milestones, setMilestones] = useState([{title:"",description:""}]);
+  const [milestones, setMilestones] = useState([{ title: "", description: "" }]);
   const [coverLetter, setCoverLetter] = useState("");
-  const[documentUrls,setDocumentUrls] = useState([]);
+  const [documentUrls, setDocumentUrls] = useState([]);
 
   useEffect(() => {
     if (loading) return; // ⛔ wait until auth finishes
@@ -240,14 +255,15 @@ export default function SubmitProposalPage() {
       {/* PROJECT SUMMARY */}
       <div className="mt-2">
         <ProposalHeader
-          proposal={{requirement:requirement,
-                      client:requirement?.client,
+          proposal={{
+            requirement: requirement,
+            client: requirement?.client,
           }}
           buttonText="Back to projects"
           buttonUrl="/agency/dashboard/project-inquiries"
         />
-        </div>
-    
+      </div>
+
 
       {/* PROPOSAL FORM */}
       {showForm ? (
@@ -284,58 +300,58 @@ export default function SubmitProposalPage() {
               </div>
 
               {/* Estimated Timeline */}
-               <div className="space-y-2">
-              <label className="text-[15px] font-bold text-[#98A0B4]">
-                Estimated Timeline
-              </label>
+              <div className="space-y-2">
+                <label className="text-[15px] font-bold text-[#98A0B4]">
+                  Estimated Timeline
+                </label>
 
-              <div className="flex gap-2">
-                {/* Number Input */}
-                <Input
-                  type="number"
-                  value={timelineValue}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setTimelineValue(value);
+                <div className="flex gap-2">
+                  {/* Number Input */}
+                  <Input
+                    type="number"
+                    value={timelineValue}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setTimelineValue(value);
 
-                    setTimeline(`${value} ${timelineUnit}`);
+                      setTimeline(`${value} ${timelineUnit}`);
 
-                    if (errors.timeline || errors.form) {
-                      setErrors({ ...errors, timeline: false, form: false });
-                    }
-                  }}
-                  placeholder="Enter value"
-                  className={`
+                      if (errors.timeline || errors.form) {
+                        setErrors({ ...errors, timeline: false, form: false });
+                      }
+                    }}
+                    placeholder="Enter value"
+                    className={`
                     h-10 rounded-xl text-[16px] placeholder:text-[12px] placeholder:text-[#98A0B4]
                     ${errors.timeline ? "border-red-500" : "border-gray-200"}
                   `}
-                />
+                  />
 
-                {/* ShadCN Select */}
-                <Select
-                  value={timelineUnit}
-                  onValueChange={(unit) => {
-                    setTimelineUnit(unit);
-                    setTimeline(`${timelineValue} ${unit}`);
-                  }}
-                >
-                  <SelectTrigger className="h-10 w-[140px] rounded-xl border-gray-200 text-[14px]">
-                    <SelectValue placeholder="Select Unit" />
-                  </SelectTrigger>
+                  {/* ShadCN Select */}
+                  <Select
+                    value={timelineUnit}
+                    onValueChange={(unit) => {
+                      setTimelineUnit(unit);
+                      setTimeline(`${timelineValue} ${unit}`);
+                    }}
+                  >
+                    <SelectTrigger className="h-10 w-[140px] rounded-xl border-gray-200 text-[14px]">
+                      <SelectValue placeholder="Select Unit" />
+                    </SelectTrigger>
 
-                  <SelectContent>
-                    <SelectItem value="Days">Days</SelectItem>
-                    <SelectItem value="Weeks">Weeks</SelectItem>
-                    <SelectItem value="Months">Months</SelectItem>
-                    <SelectItem value="Years">Years</SelectItem>
-                  </SelectContent>
-                </Select>
+                    <SelectContent>
+                      <SelectItem value="Days">Days</SelectItem>
+                      <SelectItem value="Weeks">Weeks</SelectItem>
+                      <SelectItem value="Months">Months</SelectItem>
+                      <SelectItem value="Years">Years</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <p className="text-[12px] text-gray-300">
+                  Client expectation: {requirement.timeline}
+                </p>
               </div>
-
-              <p className="text-[12px] text-gray-300">
-                Client expectation: {requirement.timeline}
-              </p>
-            </div>
             </div>
 
             {/* WORK APPROACH */}
@@ -391,57 +407,57 @@ export default function SubmitProposalPage() {
                   + Add Milestone
                 </Button>
               </div>
-                  {milestones.map((milestone, index) => (
-                    <div
-                      key={index}
-                      className="relative border border-gray-200 rounded-xl p-4 space-y-3"
+              {milestones.map((milestone, index) => (
+                <div
+                  key={index}
+                  className="relative border border-gray-200 rounded-xl p-4 space-y-3"
+                >
+                  {/* Title Input */}
+                  <Input
+                    value={milestone.title}
+                    onChange={(e) => {
+                      const updated = [...milestones];
+                      updated[index].title = e.target.value;
+                      setMilestones(updated);
+                    }}
+                    placeholder={`Milestone Title - ${index + 1}`}
+                    className="h-10 border mt-3 border-gray-200 rounded-xl text-[16px] placeholder:text-[#98A0B4]"
+                  />
+
+                  {/* Description Input */}
+                  <div className="relative">
+                    <textarea
+                      value={milestone.description}
+                      maxLength={50}
+                      onChange={(e) => {
+                        const updated = [...milestones];
+                        updated[index].description = e.target.value;
+                        setMilestones(updated);
+                      }}
+                      placeholder="Milestone Description (Max 50 characters)"
+                      className="w-full h-20 border border-gray-200 rounded-xl text-[14px] p-2 resize-none placeholder:text-[#98A0B4]"
+                    />
+
+                    {/* Character Counter */}
+                    <span className="absolute bottom-2 right-3 text-xs text-gray-400">
+                      {milestone.description?.length}/50
+                    </span>
+                  </div>
+
+                  {/* Remove Button */}
+                  {milestones.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setMilestones(milestones.filter((_, i) => i !== index))
+                      }
+                      className="absolute top-0 right-3  text-gray-400 hover:text-red-500 text-sm font-medium"
                     >
-                      {/* Title Input */}
-                      <Input
-                        value={milestone.title}
-                        onChange={(e) => {
-                          const updated = [...milestones];
-                          updated[index].title = e.target.value;
-                          setMilestones(updated);
-                        }}
-                        placeholder={`Milestone Title - ${index + 1}`}
-                        className="h-10 border mt-3 border-gray-200 rounded-xl text-[16px] placeholder:text-[#98A0B4]"
-                      />
-
-                      {/* Description Input */}
-                      <div className="relative">
-                        <textarea
-                          value={milestone.description}
-                          maxLength={50}
-                          onChange={(e) => {
-                            const updated = [...milestones];
-                            updated[index].description = e.target.value;
-                            setMilestones(updated);
-                          }}
-                          placeholder="Milestone Description (Max 50 characters)"
-                          className="w-full h-20 border border-gray-200 rounded-xl text-[14px] p-2 resize-none placeholder:text-[#98A0B4]"
-                        />
-
-                        {/* Character Counter */}
-                        <span className="absolute bottom-2 right-3 text-xs text-gray-400">
-                          {milestone.description?.length}/50
-                        </span>
-                      </div>
-
-                      {/* Remove Button */}
-                      {milestones.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setMilestones(milestones.filter((_, i) => i !== index))
-                          }
-                          className="absolute top-0 right-3  text-gray-400 hover:text-red-500 text-sm font-medium"
-                        >
-                          ✕
-                        </button>
-                      )}
-                    </div>
-                  ))}
+                      ✕
+                    </button>
+                  )}
+                </div>
+              ))}
 
 
             </div>
@@ -449,13 +465,13 @@ export default function SubmitProposalPage() {
             {/* File Upload */}
             <div>
 
-            <div className="space-y-2">
-              <label className="text-[#98A0B4] text-[14px] font-normal">Proposal Attachment (optional)</label>
-              <PdfUpload
-                maxSizeMB={10}
-                onUploadSuccess={(url) => setDocumentUrls((prev)=>([...prev,url]))}
-                placeholderText="Upload additional documents to support your proposal (PDF)"
-              />
+              <div className="space-y-2">
+                <label className="text-[#98A0B4] text-[14px] font-normal">Proposal Attachment (optional)</label>
+                <PdfUpload
+                  maxSizeMB={10}
+                  onUploadSuccess={(url) => setDocumentUrls((prev) => ([...prev, url]))}
+                  placeholderText="Upload additional documents to support your proposal (PDF)"
+                />
               </div>
             </div>
 
@@ -511,7 +527,7 @@ export default function SubmitProposalPage() {
       ) : (
         <div>
           <p className="text-center mt-5 text-2xl">
-            You submitted the proposal already for this requirement
+            You have reached the monthly proposal limit for this plan
           </p>
         </div>
       )}

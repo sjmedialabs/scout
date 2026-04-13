@@ -69,6 +69,7 @@ export async function POST(req: Request) {
       subscriptionPlanId: plan._id,
       subscriptionStartDate: startDate,
       subscriptionEndDate: endDate,
+      monthlyProposalCount: 0,
       billingCycle, // store Monthly / Yearly
     })
 
