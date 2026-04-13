@@ -207,97 +207,128 @@ const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
       <div className="space-y-6">
         {categories.map((cat) => (
           <div key={cat._id} className="bg-white px-2 py-3 border rounded-2xl shadow-md">
-{/* MAIN CATEGORY HEADER */}
-<div className="flex justify-between items-center">
+          {/* MAIN CATEGORY HEADER */}
+          <div className="flex justify-between items-center">
 
-  {/* ICON + UPLOAD */}
-  {/* <div className="flex flex-col items-center w-12">
-    <img
-      src={editingId === cat._id ? editIcon || "/images/placeholder.png" : cat.icon || "/images/placeholder.png"}
-      className="w-10 h-10 object-cover rounded-full border mb-2"
-    />
+            {/* ICON + UPLOAD */}
+            <div className="flex gap-3 items-center ">
+              <img
+                src={editingId === cat._id ? editIcon || "/images/placeholder.png" : cat.icon || "/images/placeholder.png"}
+                className="w-10 h-10 object-cover rounded-full border mb-2"
+              />
 
-    {editingId === cat._id && (
-      <FileUpload
-        onChange={(url) => {
-          setEditIcon(url); 
-        }}
-      />
-    )}
-  </div> */}
+              {editingId === cat._id && (
+                <div className="flex items-center gap-2">
+                  
+                  {/* Upload */}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
 
-  {/* TITLE OR INPUT */}
-  <div className="flex-1 ml-4">
-    {editingId === cat._id ? (
-      <Input
-        value={editTitle}
-        onChange={(e) => setEditTitle(e.target.value)}
-        className="text-lg font-semibold"
-      />
-    ) : (
-      <h2 className="text-xl font-semibold text-orangeButton ">{cat.title}</h2>
-    )}
-  </div>
+                      const reader = new FileReader();
 
-  {/* ACTION BUTTONS */}
-  <div className="flex items-center gap-3">
+                      reader.onloadend = () => {
+                        setEditIcon(reader.result as string);
+                      };
 
-    {editingId === cat._id ? (
-      <>
-        {/* SAVE */}
-        <Button
-        className="rounded-full bg-orangeButton"
-          size="sm"
-          onClick={async () => {
-            const updated = {
-              ...cat,
-              title: editTitle,
-              slug: slugify(editTitle),
-              icon: editIcon || cat.icon || null, // update icon at save time
-            };
+                      reader.readAsDataURL(file);
+                    }}
+                    className=" text-gray-400 px-3 cursor-pointer py-3 text-sm w-[220px] border"
+                  />
 
-            await updateCategory(cat._id!, updated);
+                  {/* Remove Button */}
+                  {editIcon && (
+                    <button
+                      type="button"
+                      onClick={() => setEditIcon(null)}
+                      className="text-xs text-red-500  cursor-pointer underline"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
 
-            setEditingId(null);
-            setEditIcon(null);
-            fetchCategories(); // refresh UI
-          }}
-        >
-          Save
-        </Button>
+            {/* TITLE OR INPUT */}
+            <div className="flex-1 px-3">
+              {editingId === cat._id ? (
+                <Input
+                placeholder="Add category..."
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="text-lg font-semibold placeholder:text-gray-400 rounded-2xl border border-gray-200"
+                />
+              ) : (
+                <h2 className="text-xl font-semibold text-orangeButton ">{cat.title}</h2>
+              )}
+            </div>
 
-        {/* CANCEL */}
-        <Button
-        className="rounded-full bg-black text-white"
-          size="sm"
-          variant="outline"
-          onClick={() => {
-            setEditingId(null);
-            setEditIcon(null);
-          }}
-        >
-          Cancel
-        </Button>
-      </>
-    ) : (
-      <Pencil 
-      className="w-5 h-5 cursor-pointer"
-        onClick={() => {
-          setEditingId(cat._id!);
-          setEditTitle(cat.title);
-          setEditIcon(cat.icon || null);
-        }}
-      
-      />
-    )}
+            {/* ACTION BUTTONS */}
+            <div className="flex items-center gap-3">
 
-    {/* DELETE */}
-    <Trash
-      className="w-5 h-5 cursor-pointer text-red-600"
-      onClick={() => removeCategory(cat._id!)}
-    />
-  </div>
-</div>
+              {editingId === cat._id ? (
+                <>
+                  {/* SAVE */}
+                  <Button
+                  className="rounded-full bg-orangeButton"
+                    size="sm"
+                    onClick={async () => {
+                      const updated = {
+                        ...cat,
+                        title: editTitle,
+                        slug: slugify(editTitle),
+                        icon: editIcon === null ? null : editIcon || cat.icon
+                      };
+
+                      await updateCategory(cat._id!, updated);
+                      setCategories(prev =>
+                        prev.map(c => c._id === cat._id ? updated : c)
+                      );
+
+                      setEditingId(null);
+                      setEditIcon(null);
+                      fetchCategories();
+                    }}
+                  >
+                    Save
+                  </Button>
+
+                  {/* CANCEL */}
+                  <Button
+                  className="rounded-full bg-black text-white"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setEditingId(null);
+                      setEditIcon(null);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <Pencil 
+                className="w-5 h-5 cursor-pointer"
+                  onClick={() => {
+                    setEditingId(cat._id!);
+                    setEditTitle(cat.title);
+                    setEditIcon(cat.icon || null);
+                  }}
+                
+                />
+              )}
+
+              {/* DELETE */}
+              <Trash
+                className="w-5 h-5 cursor-pointer text-red-600"
+                onClick={() => removeCategory(cat._id!)}
+              />
+            </div>
+          </div>
             {/* ADD SUBCATEGORY */}
             <AddInput
             

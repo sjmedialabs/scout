@@ -104,7 +104,7 @@ export default function JobDetailsPage({
               <button
                 type="button"
                 onClick={() => setOpen(true)}
-                className="w-full sm:w-auto min-h-[44px] px-6 bg-orange-600 hover:bg-orange-500 transition text-white text-base font-medium rounded-lg"
+                className="primary-button !text-sm h-[30px] w-[100px]"
               >
                 Apply Now
               </button>

@@ -98,12 +98,6 @@ export default function HelpCenterPage() {
                           __html: cms?.helpCenter?.rightSideDescription2 || "",
                         }}
                       />
-
-
-
-
-                    
-
                   </div>
               </div>
     

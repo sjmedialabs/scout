@@ -298,7 +298,7 @@ export default function ContactPage() {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="mt-0 max-w-[190px]  cursor-pointer rounded-full bg-orangeButton px-6 py-3 text-white text-[10px]"
+              className="mt-0 max-w-[150px]  cursor-pointer rounded-full bg-orangeButton py-3 text-white text-sm"
             >
               {loading ? "Submitting..." : "Submit Request"}
             </button>

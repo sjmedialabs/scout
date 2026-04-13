@@ -405,6 +405,7 @@ const isValidPhone = (phone) => {
               className="btn-blackButton h-[30px]"
                 onClick={() =>
                   handleAdd("homeWorkSection", {
+                    tag: "",
                     title: "",
                     description: "",
                     image: "",
@@ -439,6 +440,17 @@ const isValidPhone = (phone) => {
                     description="Upload Image (PNG, JPG) or provide a URL"
                     previewClassName="w-100 h-24"
               />
+
+              <Input
+                  placeholder="Enter Tag"
+                  className="border-gray-200 rounded-xl placeholder:text-gray-200"
+                  value={item.tag}
+                  onChange={(e) => {
+                    const updated = [...cms.homeWorkSection];
+                    updated[index].tag = e.target.value;
+                    updateField("homeWorkSection", updated);
+                  }}
+                />
 
                 <Input
                   placeholder="Title"
@@ -548,7 +560,7 @@ const isValidPhone = (phone) => {
             
           </section>
 
-          {/*Top Providers Sction */}
+          {/*Top Providers Section */}
              <section className="space-y-4 border p-4 rounded-xl shadow-lg">
             <div className="flex justify-between">
               <h2 className="text-xl font-semibold">Top Providers Section</h2>
@@ -572,8 +584,28 @@ const isValidPhone = (phone) => {
                 updateField("topProvidersSubTitle", e.target.value)
               }
             />
+          </section>
 
-            
+          {/*Blogs Section */}
+             <section className="space-y-4 border p-4 rounded-xl shadow-lg">
+            <div className="flex justify-between">
+              <h2 className="text-xl font-semibold">Blogs Section</h2>
+              
+            </div>
+            <label className="text-md text-gray-600 ">Title</label>
+            <Input
+              placeholder="Top providers section title"
+              className="border-gray-200 rounded-xl placeholder:text-gray-300"
+              value={cms.blogSection?.title || ""}
+              onChange={(e) => updateNested("blogSection", "title", e.target.value)}
+            />
+            <label className="text-md text-gray-600 ">Sub-Title</label>
+            <Input
+              placeholder="Top providers section sub-title"
+              className="border-gray-200 rounded-xl placeholder:text-gray-300"
+              value={cms.blogSection?.subTitle || ""}
+              onChange={(e) => updateNested("blogSection", "subTitle", e.target.value)}
+            />
           </section>
 
           {/* GET STARTED */}
