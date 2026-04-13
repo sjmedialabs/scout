@@ -349,7 +349,7 @@ const overflowCategories = mainCategories.slice(5);
                                 <li key={child.slug}>
                                   <Link
                                     href={`/services?subcategory=${child._id}`}
-                                    className="text-xs text-gray-500 hover:text-slate-900"
+                                    className="text-sm text-gray-500 hover:text-slate-900"
                                   >
                                     {child.title}
                                   </Link>
@@ -373,12 +373,12 @@ const overflowCategories = mainCategories.slice(5);
                 Pricing
               </Link>
 
-  {/* <Link
-    href="/about"
-    className="text-md text-gray-500 hover:text-slate-900 mt-1"
-  >
-    About
-  </Link> */}
+                  {/* <Link
+                    href="/about"
+                    className="text-md text-gray-500 hover:text-slate-900 mt-1"
+                  >
+                    About
+                  </Link> */}
 
                   {/* MORE DROPDOWN */}
                   {overflowCategories.length > 0 && (

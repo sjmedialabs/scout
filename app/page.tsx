@@ -1,5 +1,5 @@
 "use client";
-import React, { useState,useEffect } from "react";
+import React, { useState,useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,7 @@ import {
   Megaphone,
   Briefcase,
   Shield,
+  ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { authFetch } from "@/lib/auth-fetch";
 import { useRouter } from "next/navigation";
@@ -78,16 +79,47 @@ const colorMap: Record<string, { bg: string; hover: string; text: string }> = {
 
 
 
-export default async function HomePage() {
+export default function HomePage() {
   const router=useRouter();
 const [data, setData] = useState({
   cms: null,
   providers: [],
   projects: [],
   categories: [],
+  blogs: [],
 });
 
 const [resLoading, setResLoading] = useState(false);
+
+const scrollRef = useRef<HTMLDivElement>(null);
+
+const scroll = (direction: "left" | "right") => {
+  if (!scrollRef.current) return;
+
+  const card = scrollRef.current.children[0] as HTMLElement;
+
+  scrollRef.current.scrollBy({
+    left: direction === "right"
+      ? card.offsetWidth + 24
+      : -(card.offsetWidth + 24),
+    behavior: "smooth",
+  });
+};
+
+const [currentIndex, setCurrentIndex] = useState(0);
+const { cms, providers, projects, categories, blogs } = data;
+
+
+const items = cms?.homeWorkSection || [];
+const showArrows = (items?.length || 0) > 3;
+
+const handlePrev = () => {
+  setCurrentIndex((prev) => (prev === 0 ? items.length - 1 : prev - 1));
+};
+
+const handleNext = () => {
+  setCurrentIndex((prev) => (prev === items.length - 1 ? 0 : prev + 1));
+};
 
 async function getData() {
   let baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
@@ -108,6 +140,8 @@ async function getData() {
 
     const cms = cmsRes.ok ? (await cmsRes.json()).data : null;
 
+    const blogs = cms?.blogs?.slice(0, 4) || [];
+
     const providers = providersRes.ok
       ? (await providersRes.json()).providers?.slice(0, 4)
       : [];
@@ -123,7 +157,7 @@ async function getData() {
     
     console.log("Fetchjed Categories from api::::::", categories)
 
-    return { cms, providers, projects, categories };
+    return { cms, providers, projects, categories, blogs };
   } catch (error) {
     console.error("[HomePage] Data Fetch Error:", error);
     return { cms: null, providers: [], projects: [], categories: [] };
@@ -149,32 +183,120 @@ if (resLoading) {
   );
 }
 
-const { cms, providers, projects, categories } = data;
   return (
     <div className="bg-background">
       {/* Hero Section */}
       <HomeHero cms={cms} />
 
       {/* Features */}
-      <section className="py-6 px-6 md:px-10">
+      <section className="py-6 px-6 md:px-10 bg-gradient-to-r">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-4">
+
+          <h2 className="text-4xl font-bold text-center mb-6">
             How Scout Works
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {cms?.homeWorkSection?.map((section: any, index: number) => (
-              <div
-                key={index}
-                className="flex flex-col gap-4 items-center text-center"
-              >
-                <img src={section.image} alt="" />
-                <div className="">
-                  <h3 className="text-2xl font-bold">{section.title}</h3>
-                  <p className="text-gray-500">{section.description}</p>
-                </div>
+
+          {/* MOBILE SLIDER */}
+          <div className="relative md:hidden">
+            
+            {/* Card */}
+            {items.length > 0 && (
+              <div className="bg-[#0F2A2F] text-white rounded-3xl px-6 py-4 min-h-[420px]">
+                
+                <p className="text-green-400 text-sm font-semibold mb-2">
+                  {items[currentIndex]?.tag || "Step"}
+                </p>
+
+                <h3 className="text-2xl font-bold mb-3">
+                  {items[currentIndex]?.title}
+                </h3>
+
+                <p className="text-gray-300 text-sm">
+                  {items[currentIndex]?.description}
+                </p>
+
+                <img
+                  src={items[currentIndex]?.image}
+                  className="mt-6 rounded-xl w-full"
+                />
               </div>
-            ))}
+            )}
+
+            {/* Arrows */}
+            {showArrows && (
+              <>
+                <button
+                  onClick={handlePrev}
+                  className="absolute -left-5 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow z-10"
+                >
+                  <ChevronLeft />
+                </button>
+
+                <button
+                  onClick={handleNext}
+                  className="absolute -right-5 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow z-10"
+                >
+                  <ChevronRight />
+                </button>
+              </>
+            )}
           </div>
+
+          {/* DESKTOP GRID */}
+          <div className="hidden md:block relative overflow-visible">
+
+        {/* Scroll Container */}
+        <div
+          ref={scrollRef}
+          className="flex gap-6 overflow-x-auto scroll-smooth no-scrollbar"
+        >
+          {items.map((section: any, index: number) => (
+            <div
+              key={index}
+              className="w-[calc((100%-48px)/3)] shrink-0"
+            >
+              <div className="bg-[#0F2A2F] text-white rounded-3xl px-6 py-4 min-h-[420px]">
+                
+                <p className="text-green-400 text-sm font-semibold mb-2">
+                  {section?.tag || "Step"}
+                </p>
+
+                <h3 className="text-2xl font-bold mb-3">
+                  {section.title}
+                </h3>
+
+                <p className="text-gray-300 text-sm">
+                  {section.description}
+                </p>
+
+                <img
+                  src={section.image}
+                  className="mt-6 rounded-xl w-full"
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Arrows */}
+        {showArrows && (
+          <>
+            <button
+              onClick={() => scroll("left")}
+              className="absolute -left-12 top-1/2 cursor-pointer -translate-y-1/2 bg-[#0f2a2f] text-white p-2 rounded-full shadow z-10"            >
+              <ChevronLeft />
+            </button>
+
+            <button
+              onClick={() => scroll("right")}
+              className="absolute -right-12 top-1/2 cursor-pointer -translate-y-1/2 bg-[#0f2a2f] text-white p-2 rounded-full shadow z-10"            >
+              <ChevronRight />
+            </button>
+          </>
+        )}
+
+      </div>
+
         </div>
       </section>
 
@@ -221,7 +343,7 @@ const { cms, providers, projects, categories } = data;
                         <img
                           src={category?.icon || "/images/icon-1.png"}
                           alt=""
-                          className="h-10"
+                          className="h-10 rounded-full"
                         />
                         <h3
                           className={`text-xl font-bold text-blueButton group-hover:${colors.text} transition-colors`}
@@ -555,8 +677,86 @@ const { cms, providers, projects, categories } = data;
                 size={"lg"}
                 asChild
               >
-                <Link href="/services">View All Providers →</Link>
+                <Link href="/services">View all providers →</Link>
               </Button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Blogs Section */}
+      {(cms?.blogTitle || cms?.blogSubTitle || blogs.length > 0) && (
+        <section className="py-6 px-6 md:px-10 border-b">
+          <div className="max-w-7xl mx-auto">
+            {/* Heading */}
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] font-extrabold px-4 py-1 rounded-full mb-2">
+                <span className="text-sm font-medium text-white capitalize">
+                  Latest Insights
+                </span>
+              </div>
+              <h2 className="text-md uppercase font-bold text-blueButton">
+                {cms?.blogSection?.title ?? "Latest Blogs"}
+              </h2>
+              <p className="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">
+                {cms?.blogSection?.subTitle ?? "Stay updated with insights"}
+              </p>
+            </div>
+
+            {/* Grid */}
+            <div className="grid md:grid-cols-4 gap-3">
+              {blogs.map((blog: any) => (
+                  <div className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300 bg-white flex flex-col h-full">
+                    
+                    {/* Image */}
+                    <img
+                      src={blog.image}
+                      alt={blog.title}
+                      className="w-full h-[150px] object-cover rounded-t-3xl"
+                    />
+
+                    {/* Content */}
+                    <div className="pb-4 px-4 sm:px-6 lg:px-4 flex flex-col flex-1">
+                      {/* Title */}
+                      <h3 className="text-base sm:text-lg font-bold line-clamp-2 min-h-[48px]">
+                        {blog.title}
+                      </h3>
+
+                      <p className="text-xs text-black font-bold mt-1">
+                       Posted Date: <span className="text-gray-500"> {new Date(blog.postedDate).toLocaleDateString("en-GB")} </span>
+                      </p>
+
+                      <div
+                        className="text-sm text-gray-600 line-clamp-2 mt-1"
+                        dangerouslySetInnerHTML={{ __html: blog.description }}
+                      />
+
+                      {/* Button */}
+                      <div className="mt-auto pt-3">
+                        <Button
+                          size="sm"
+                          className="primary-button !text-xs w-[110px] h-[30px]"
+                        >
+                        <Link href={`/blogs/${blog._id}`} key={blog._id}>
+                          Read More →
+                        </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+              ))}
+            </div>
+
+            {/* View All */}
+            <div className="flex justify-center items-center">
+              <Link href="/blogs">
+                <Button
+                  size="lg"
+                  className="rounded-full mt-8 text-sm sm:text-lg px-5 sm:px-8 py-2 sm:py-3 font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1]"
+                >
+                  View all blogs →
+                </Button>
+              </Link>
             </div>
           </div>
         </section>

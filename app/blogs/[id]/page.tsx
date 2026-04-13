@@ -14,7 +14,7 @@ export default function BlogDetailPage() {
   const [blogs, setBlogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ FETCH CMS BLOGS
+  //  FETCH CMS BLOGS
   useEffect(() => {
     const fetchBlogs = async () => {
       try {

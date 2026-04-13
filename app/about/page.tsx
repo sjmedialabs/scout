@@ -150,7 +150,7 @@ export default async function AboutPage() {
 
         {/*Team section */}
         <div className="py-10 px-8 lg:px-10m xl:px-0 max-w-7xl mx-auto">
-           <h5 className="text-md font-normal text-[#F54A0C] text-center">{cms?.aboutTeamTitle}</h5>
+           <h5 className="text-lg font-normal text-[#F54A0C] text-center">{cms?.aboutTeamTitle}</h5>
            <h5 className="text-2xl font-normal text-black text-center max-w-[300px] mx-auto">
             {cms?.aboutTeamSubtitle}
             </h5>
@@ -226,10 +226,10 @@ export default async function AboutPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg"  className="primary-button h-[30px]" asChild>
-              <Link href="/register">Get Started Today</Link>
+              <Link className="!text-sm" href="/register">Get Started Today</Link>
             </Button>
             <Button size="lg"  className="btn-blackButton h-[30px]" asChild>
-              <Link href="/contact">Contact Us</Link>
+              <Link className="!text-sm" href="/contact">Contact Us</Link>
             </Button>
           </div>
         </div>
