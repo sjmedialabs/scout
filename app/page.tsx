@@ -283,13 +283,13 @@ if (resLoading) {
           <>
             <button
               onClick={() => scroll("left")}
-              className="absolute -left-12 top-1/2 cursor-pointer -translate-y-1/2 bg-[#0f2a2f] text-white p-2 rounded-full shadow z-10"            >
+              className="absolute -left-12 ml-2 top-1/2 cursor-pointer -translate-y-1/2 bg-[#0f2a2f] text-white p-2 rounded-full shadow z-10"            >
               <ChevronLeft />
             </button>
 
             <button
               onClick={() => scroll("right")}
-              className="absolute -right-12 top-1/2 cursor-pointer -translate-y-1/2 bg-[#0f2a2f] text-white p-2 rounded-full shadow z-10"            >
+              className="absolute -right-12 mr-2 top-1/2 cursor-pointer -translate-y-1/2 bg-[#0f2a2f] text-white p-2 rounded-full shadow z-10"            >
               <ChevronRight />
             </button>
           </>
@@ -582,7 +582,7 @@ if (resLoading) {
                           </Badge>
                         )}
                         {provider.isFeatured && (
-                          <Badge className="bg-orangeButton text-white rounded-full px-3 py-0.5 text-[10px] font-semibold">
+                          <Badge className="bg-orangeButton text-white rounded-full px-3 py-0.5 text-xs font-semibold">
                             Featured
                           </Badge>
                         )}
