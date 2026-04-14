@@ -120,8 +120,8 @@ else {
 //   };
 
   return (
-    // <div className="fixed inset-0 flex items-center justify-center px-4">
-      <div className="relative w-full max-w-7xl min-h-screen bg-white">
+    <div>
+      <div className="relative w-full min-h-screen bg-white">
         <div className="grid min-h-screen grid-cols-1 lg:grid-cols-12">
 
           {/* LEFT SECTION */}
@@ -135,10 +135,12 @@ else {
               "
             style={{
               backgroundImage: "url('/images/Login-Image2.png')",
+              backgroundPosition: "left bottom"
+
             }}
           >
-            <div className="relative ml-auto">
-              <h2 className="text-2xl font-bold leading-tight pb-3">
+            <div className="relative ml-auto z-10">
+              <h2 className="text-2xl font-bold leading-tight ">
                 Built to Accelerate <br /> Business Success
               </h2>
 
@@ -152,7 +154,7 @@ else {
           </div>
 
           {/* RIGHT SECTION */}
-          <div className="lg:col-span-6 min-h-screen flex flex-col overflow-y-auto p-8 sm:p-4">
+          <div className="lg:col-span-6 min-h-screen flex flex-col overflow-y-auto p-8 sm:p-10">
             <div className="flex items-center mb-2">
               <button
                   onClick={() => router.push("/")}
@@ -275,6 +277,6 @@ else {
           </div>
         </div>
       </div>
-    // </div>
+     </div>
   );
 }

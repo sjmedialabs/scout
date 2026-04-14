@@ -84,7 +84,9 @@ const handleSubmit = async () => {
 
           {/* LEFT SECTION */}
           <div
-            className="relative hidden lg:flex lg:col-span-6 min-h-screen flex-col justify-between p-10 text-white bg-cover bg-bottom-left bg-no-repeat"
+            className="relative hidden lg:flex lg:col-span-6 
+            min-h-screen flex-col justify-between p-10
+             text-white bg-cover bg-bottom-left bg-no-repeat"
             style={{
               backgroundImage: "url('/images/Login-Image2.png')",
               backgroundPosition: "left bottom"

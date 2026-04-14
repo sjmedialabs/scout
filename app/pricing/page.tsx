@@ -103,7 +103,7 @@ export default function PricingPage() {
 
         {/* Header */}
         <div className="text-center mb-8">
-          <p className="text-1xl font-thin text-[#e0332c] mb-1">
+          <p className="text-1xl font-medium text-orangeButton mb-1">
             Choose Your Plan
           </p>
           <p className="text-xl text-muted-foreground text-balance text-center max-w-xl mx-auto leading-tight">

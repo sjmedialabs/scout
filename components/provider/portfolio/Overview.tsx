@@ -162,7 +162,7 @@ const hasAnyChartData = hasServiceData || hasIndustryData;
         {/* RIGHT */}
         <div className="border rounded-xl p-6 bg-white h-full flex flex-col justify-between">
           <div>
-            <h3 className="font-semibold mb-4 text-sm">SERVICES</h3>
+            <h3 className="font-semibold mb-2 text-sm">SERVICES</h3>
 
             {/* SERVICES */}
             {
@@ -205,8 +205,8 @@ const hasAnyChartData = hasServiceData || hasIndustryData;
 
             {/* FOCUS AREAS */}
             {provider?.focusArea &&
-             <div>
-             <h3 className="font-semibold mb-4 text-sm">FOCUS AREAS</h3>
+             <div className="mt-8">
+             <h3 className="font-semibold mb-2 text-sm">FOCUS AREAS</h3>
             <p className="text-sm text-gray-600">
               {provider?.focusArea || "Focus area not added yet"}
             </p>

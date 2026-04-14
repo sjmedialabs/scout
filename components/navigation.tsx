@@ -305,10 +305,10 @@ const overflowCategories = mainCategories.slice(5);
               </Link>
             </div> */}
             {/* <div
-  className={`hidden justify-center flex-1 lg:flex items-center text-md xl:text-sm font-medium transition-all duration-300
-    ${isSticky ? "lg:gap-14" : "lg:gap-16"}
-  gap-4 lg:gap-16 2xl:gap-16`}
-> */}
+              className={`hidden justify-center flex-1 lg:flex items-center text-md xl:text-sm font-medium transition-all duration-300
+                ${isSticky ? "lg:gap-14" : "lg:gap-16"}
+              gap-4 lg:gap-16 2xl:gap-16`}
+            > */}
             <div
               className={`hidden flex-1 min-w-0 lg:flex  items-center
                 gap-2
@@ -398,75 +398,75 @@ const overflowCategories = mainCategories.slice(5);
                 </DropdownMenuTrigger>
 
 
-      <DropdownMenuContent className="w-93 p-2 rounded-xl">
-  {!selectedOverflowCategory && (
-    <div className="flex flex-col">
-      {overflowCategories.map((category) => (
-        <button
-          key={category.slug}
-          className="text-left px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 rounded-md"
-          onClick={() => setSelectedOverflowCategory(category)}
-        >
-          {category.title}
-        </button>
-      ))}
-    </div>
-  )}
+                <DropdownMenuContent className="w-93 p-2 rounded-xl">
+                  {!selectedOverflowCategory && (
+                    <div className="flex flex-col">
+                      {overflowCategories.map((category) => (
+                        <button
+                          key={category.slug}
+                          className="text-left px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 rounded-md"
+                          onClick={() => setSelectedOverflowCategory(category)}
+                        >
+                          {category.title}
+                        </button>
+                      ))}
+                    </div>
+                  )}
 
-  {selectedOverflowCategory && (
-    <div>
-      {/* Back button */}
-      <button
-        className="text-xs text-gray-500 mb-2 cursor-pointer"
-        onClick={() => setSelectedOverflowCategory(null)}
-      >
-        ← Back
-      </button>
+                  {selectedOverflowCategory && (
+                    <div>
+                      {/* Back button */}
+                      <button
+                        className="text-xs text-gray-500 mb-2 cursor-pointer"
+                        onClick={() => setSelectedOverflowCategory(null)}
+                      >
+                        ← Back
+                      </button>
 
-      <div
-  className={`grid gap-4 ${
-    selectedOverflowCategory.children.length === 1
-      ? "grid-cols-1"
-      : "grid-cols-2"
-  }`}
->
-  {selectedOverflowCategory.children?.map((sub: any) => (
-    <div key={sub.title}>
-      <p className="text-sm font-semibold mb-1">{sub.title}</p>
+                      <div
+                  className={`grid gap-4 ${
+                    selectedOverflowCategory.children.length === 1
+                      ? "grid-cols-1"
+                      : "grid-cols-2"
+                  }`}
+                >
+                  {selectedOverflowCategory.children?.map((sub: any) => (
+                    <div key={sub.title}>
+                      <p className="text-sm font-semibold mb-1">{sub.title}</p>
 
-      <ul className="space-y-1">
-        {sub.items?.map((child: any) => (
-          <li key={child.slug}>
-            <Link
-              href={`/services?subcategory=${child._id}`}
-              className="text-xs text-gray-500 hover:text-slate-900 cursor-pointer"
-            >
-              {child.title}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  ))}
-</div>
+                      <ul className="space-y-1">
+                        {sub.items?.map((child: any) => (
+                          <li key={child.slug}>
+                            <Link
+                              href={`/services?subcategory=${child._id}`}
+                              className="text-xs text-gray-500 hover:text-slate-900 cursor-pointer"
+                            >
+                              {child.title}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
 
-    </div>
-  )}
-</DropdownMenuContent>
-    </DropdownMenu>
-  )}
-</div>
+                    </div>
+                  )}
+                </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                </div>
 
 
               {/* ... other static links ... */}
 
-              {/* <Link href="/pricing"className="text-xs text-gray-500 hover:text-slate-900" >
-    Videos,Images
-  </Link>
+                        {/* <Link href="/pricing"className="text-xs text-gray-500 hover:text-slate-900" >
+              Videos,Images
+            </Link>
 
-  <Link href="/about"  className="text-xs text-gray-500 hover:text-slate-900">
-    Social Media
-  </Link> */}
+            <Link href="/about"  className="text-xs text-gray-500 hover:text-slate-900">
+              Social Media
+            </Link> */}
             </div>
 
             {/* Post a Project Button */}
@@ -662,7 +662,7 @@ const overflowCategories = mainCategories.slice(5);
           </div> */}
           <div className="flex flex-row gap-2">
               <Button
-                className="bg-orangeButton  hover:bg-[#f54607] text-white h-8 rounded-full"
+                className="bg-orangeButton hover:bg-[#f54607] text-white h-8 rounded-full"
                 asChild
               >
                 <Link
@@ -681,8 +681,6 @@ const overflowCategories = mainCategories.slice(5);
           </div>
           </div>
           )}
-
-
         </div>
       </nav>
     </div>
