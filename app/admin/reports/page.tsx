@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/tooltip"
 import { User } from "@/lib/types";
 import { authFetch } from "@/lib/auth-fetch"
+import { ca } from "date-fns/locale"
 
 /* ---------------- Tabs ---------------- */
 const TABS = ["Overview", "Revenue", "Users", "Services"] as const
@@ -402,7 +403,7 @@ function AgencyPerformanceChart({ topAgencies }) {
     </ChartContainer>
   );
 }
-function TopServicesTable({categories}) {
+function TopServicesTable({ categories }) {
   return (
     <div className="bg-white rounded-2xl shadow-sm p-6">
       <h3 className="text-xl font-semibold text-orange-500">
@@ -418,34 +419,44 @@ function TopServicesTable({categories}) {
             <tr className="border-b text-gray-500 text-xs">
               <th className="text-left py-2">#</th>
               <th className="text-left">Service Name</th>
-              {/* <th>Category</th> */}
               <th>Orders</th>
-              {/* <th>Revenue</th> */}
               <th>Rating</th>
             </tr>
           </thead>
+
           <tbody>
-            {categories.slice(0, 6).map((service,i) => (
-              <tr
-                key={i}
-                className="border-b last:border-none text-xs"
-              >
-                <td className="py-3">{service.id}</td>
-                <td>{service.category}</td>
-                {/* <td className="text-center">{service.category}</td> */}
-                <td className="text-center">{service.count}</td>
-                {/* <td className="text-center">{service.revenue}</td> */}
-                <td className="text-center flex justify-center py-3 items-center gap-1">
-                  {service.rating}
-                  <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+            {categories.length === 0 ? (
+              <tr>
+                <td
+                  colSpan="4"
+                  className="text-center py-6 text-gray-500"
+                >
+                  No Top agencies are available
                 </td>
               </tr>
-            ))}
+            ) : (
+              categories.slice(0, 6).map((service, i) => (
+                <tr
+                  key={i}
+                  className="border-b last:border-none text-xs"
+                >
+                  <td className="py-3">{service.id}</td>
+                  <td>{service.category}</td>
+                  <td className="text-center">
+                    {service.count}
+                  </td>
+                  <td className="text-center flex justify-center py-3 items-center gap-1">
+                    {service.rating}
+                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
     </div>
-  )
+  );
 }
 function exportToCSV(filename: string, rows: Record<string, any>[]) {
   if (!rows.length) return
@@ -1461,7 +1472,10 @@ const getARPU = (payments) => {
             </div>
             <div className="w-full">
               {/* Table */}
-              <TopServicesTable categories={topCategories} /></div>
+              <TopServicesTable categories={topCategories} />
+              
+              
+              </div>
           </div>
         </div>
       )}
@@ -1632,44 +1646,61 @@ function UserGrowthChart({ userData, yAxisMax, yAxisTicks }) {
 }
 
 function UserGrowthChart2({ userGrowthData }) {
+  const isEmpty =
+    !userGrowthData || userGrowthData.length === 0
+
   return (
-    <ChartContainer
-      className="h-72 w-full"
-      config={{ users: { label: "Users" } }}
-    >
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          data={userGrowthData}
-          margin={{ top: 10, right: 10, left: -20, bottom: 0 }} // removes left space
-        >
-          <CartesianGrid strokeDasharray="3 3" vertical={false} />
+    <div className="relative h-72 w-full">
+      <ChartContainer
+        className="h-72 w-full"
+        config={{ users: { label: "Users" } }}
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={userGrowthData}
+            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+          >
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+            />
 
-          <XAxis
-            dataKey="month"
-            axisLine
-            tickLine={false}
-            tick={{ fill: "#9CA3AF", fontSize: 10 }}
-          />
+            <XAxis
+              dataKey="month"
+              axisLine
+              tickLine={false}
+              tick={{ fill: "#9CA3AF", fontSize: 10 }}
+            />
 
-          <YAxis
-            axisLine
-            tickLine={false}
-            tick={{ fill: "#9CA3AF", fontSize: 10 }}
-          />
+            <YAxis
+              axisLine
+              tickLine={false}
+              tick={{ fill: "#9CA3AF", fontSize: 10 }}
+            />
 
-          <ChartTooltip content={<ChartTooltipContent />} />
+            <ChartTooltip
+              content={<ChartTooltipContent />}
+            />
 
-          <Line
-            type="monotone"
-            dataKey="users"
-            stroke="#F43F5E"
-            strokeWidth={2}
-            dot={false}
-            activeDot={{ r: 5 }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </ChartContainer>
+            <Line
+              type="monotone"
+              dataKey="users"
+              stroke="#F43F5E"
+              strokeWidth={2}
+              dot={false}
+              activeDot={{ r: 5 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </ChartContainer>
+
+      {/* No Data Message Overlay */}
+      {isEmpty && (
+        <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm">
+          No data available
+        </div>
+      )}
+    </div>
   )
 }
 

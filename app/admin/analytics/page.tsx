@@ -170,7 +170,8 @@ const filterByDate = (data:any[]) => {
           authFetch("/api/subscription"),
           authFetch("/api/reported-content")
         ]);
-        const usersData = await usersRes.json();
+        const usersDataRes = await usersRes.json()
+        const usersData = usersDataRes.filter((item:any)=>item.role!=="admin");
         const filteredUsers = filterByDate(usersData.users)
         // let totalUsers = usersData.users.length;
         let totalUsers = filteredUsers.length;

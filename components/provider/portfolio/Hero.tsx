@@ -10,6 +10,8 @@ export default function Hero({ provider, onContact }: any) {
 
   const [open, setOpen] = useState(false); 
 
+  console.log("Provider data in Hero:", provider);
+
   return (
     <section className="bg-white px-6 sm:px-6 lg:px-0 py-6 max-w-7xl mx-auto">
       <div className="flex flex-col lg:flex-row justify-between lg:items-center items-start gap-5">

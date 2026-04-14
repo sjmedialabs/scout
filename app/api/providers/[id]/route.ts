@@ -4,6 +4,8 @@ import Provider from "@/models/Provider";
 import Review from "@/models/Review";
 import { getCurrentUser } from "@/lib/auth/jwt";
 import mongoose from "mongoose";
+import User from "@/models/User";
+import Subscription from "@/models/Subscription";
 import dayjs from "dayjs";
 
 export async function GET(
@@ -16,46 +18,62 @@ export async function GET(
     const { id } = await params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid ID format" },
+        { status: 400 }
+      );
     }
 
     // ---------------------------------------------
-    // 🔥 NEW LOGIC: Find provider by _id OR userId
+    // Find provider by _id OR userId
     // ---------------------------------------------
     const provider = await Provider.findOne({
       $or: [
-        { _id: id }, // match provider's _id
-        { userId: id }, // match provider's userId
+        { _id: id },
+        { userId: id },
       ],
     });
 
     if (!provider) {
       return NextResponse.json(
         { error: "Provider not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
-    // Increment profile views
-    // await Provider.updateOne(
-    //   { _id: provider._id },
-    //   { $inc: { profileViews: 1 } }
-    // )
-
-    // const monthKey = dayjs().format("YYYY-MM");
-    // // Reset if month changed
-    // if (provider.currentMonthKey !== monthKey) {
-    //   provider.currentMonthKey = monthKey;
-    //   provider.currentMonthProfileViews = 0;
-    //   provider.currentMonthWebsiteClicks = 0;
-    // }
-
-    // // Example: profile view
-    // provider.profileViews += 1;
-    // provider.currentMonthProfileViews += 1;
-
     await provider.save();
 
+    // ---------------------------------------------
+    // NEW — Get User Subscription
+    // ---------------------------------------------
+    let computedIsFeatured = false;
+
+    if (provider.userId) {
+
+      const user = await User.findById(
+        provider.userId,
+        {
+          subscriptionPlanId: 1,
+          subscriptionStartDate: 1,
+          subscriptionEndDate: 1,
+        }
+      ).lean();
+
+      if (user?.subscriptionPlanId) {
+
+        const plan = await Subscription.findById(
+          user.subscriptionPlanId,
+          { isFeatured: 1 }
+        ).lean();
+
+        computedIsFeatured =
+          plan?.isFeatured || false;
+      }
+    }
+
+    // ---------------------------------------------
+    // Reviews (unchanged)
+    // ---------------------------------------------
     const reviews = await Review.find({
       providerId: provider._id.toString(),
       isPublic: true,
@@ -79,6 +97,9 @@ export async function GET(
       createdAt: r.createdAt,
     }));
 
+    // ---------------------------------------------
+    // Response
+    // ---------------------------------------------
     return NextResponse.json({
       provider: {
         id: provider._id.toString(),
@@ -94,55 +115,88 @@ export async function GET(
         salesEmail: provider.salesEmail,
         phone: provider.phone,
         adminContactPhone: provider.adminContactPhone,
-        countryCode:provider.countryCode,
-        country:provider.country,
+        countryCode: provider.countryCode,
+        country: provider.country,
         services: provider.services,
         technologies: provider.technologies,
         clients: provider.clients,
         industries: provider.industries,
         rating: provider.rating,
-        communicationRating: provider?.communicationRating || 0,
-        ontimeDeliveryRating: provider?.ontimeDeliveryRating || 0,
-        qualityRating: provider?.qualityRating || 0,
-        strategicThinkingRating: provider?.strategicThinkingRating || 0,
-        ROIClarityRating: provider?.ROIClarityRating || 0,
-        willingToReferRating: provider?.willingToReferRating || 0,
-        transparencyRating: provider?.transparencyRating || 0,
-        flexibilityRating: provider?.flexibilityRating || 0,
-        valueForMoneyRating: provider?.valueForMoneyRating || 0,
-        postLaunchSupportRating: provider?.postLaunchSupportRating || 0,
-        caseStudies: provider?.caseStudies || [],
+        communicationRating:
+          provider?.communicationRating || 0,
+        ontimeDeliveryRating:
+          provider?.ontimeDeliveryRating || 0,
+        qualityRating:
+          provider?.qualityRating || 0,
+        strategicThinkingRating:
+          provider?.strategicThinkingRating || 0,
+        ROIClarityRating:
+          provider?.ROIClarityRating || 0,
+        willingToReferRating:
+          provider?.willingToReferRating || 0,
+        transparencyRating:
+          provider?.transparencyRating || 0,
+        flexibilityRating:
+          provider?.flexibilityRating || 0,
+        valueForMoneyRating:
+          provider?.valueForMoneyRating || 0,
+        postLaunchSupportRating:
+          provider?.postLaunchSupportRating || 0,
 
-        
         reviewCount: provider.reviewCount,
-        projectsCompleted: provider.projectsCompleted,
+        projectsCompleted:
+          provider.projectsCompleted,
         hourlyRate: provider.hourlyRate,
-        minProjectSize: provider.minProjectSize,
-        websiteClicks: provider.websiteClicks,
+        minProjectSize:
+          provider.minProjectSize,
+        websiteClicks:
+          provider.websiteClicks,
         teamSize: provider.teamSize,
         foundedYear: provider.foundedYear,
         portfolio: provider.portfolio,
         testimonials: provider.testimonials,
-        certifications: provider.certifications,
+        certifications:
+          provider.certifications,
         awards: provider.awards,
         socialLinks: provider.socialLinks,
-        isFeatured: provider.isFeatured,
+
+        // ✅ UPDATED — from plan
+        isFeatured: computedIsFeatured,
+
         isVerified: provider.isVerified,
-        profileViews: provider.profileViews || 0,
-        caseStudies: provider.caseStudies || [],
-        currentMonthProfileViews: provider.currentMonthProfileViews,
-        lastMonthProfileViews: provider.lastMonthProfileViews,
-        currentMonthWebsiteClicks: provider.currentMonthWebsiteClicks,
+        profileViews:
+          provider.profileViews || 0,
+
+        caseStudies:
+          provider.caseStudies || [],
+
+        currentMonthProfileViews:
+          provider.currentMonthProfileViews,
+
+        lastMonthProfileViews:
+          provider.lastMonthProfileViews,
+
+        currentMonthWebsiteClicks:
+          provider.currentMonthWebsiteClicks,
+
         focusArea: provider.focusArea,
+
         createdAt: provider.createdAt,
       },
+
       reviews: formattedReviews,
     });
+
   } catch (error) {
-    console.error("Error fetching provider:", error);
+
+    console.error(
+      "Error fetching provider:",
+      error
+    );
+
     return NextResponse.json(
       { error: "Failed to fetch provider" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

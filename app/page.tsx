@@ -581,11 +581,11 @@ if (resLoading) {
                             Verified
                           </Badge>
                         )}
-                        {/* {provider.isFeatured && (
+                        {provider.isFeatured && (
                           <Badge className="bg-orangeButton text-white rounded-full px-3 py-0.5 text-[10px] font-semibold">
                             Featured
                           </Badge>
-                        )} */}
+                        )}
                       </div>
 
                       {/* ⭐ RATING STARS */}

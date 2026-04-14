@@ -377,12 +377,17 @@ const WishListPage = () => {
                           Verified
                         </span>
                       )}
-                    </div>
+                      {p.agency.isFeatured && (
+                        <span className="inline-flex items-center rounded-lg border font-bold px-2 py-0 text-[10px] text-white bg-[#f54a0c]">
+                          Featured
+                        </span>
+                      )}
+                    </div> 
 
                     {/* RIGHT — Rating */}
                     <div className="absolute right-0 flex items-center gap-1.5">
                       <div className="flex items-center gap-0.5">
-                        <RatingStars rating={p.agency.rating} />
+                        <RatingStars rating={p.agency.rating} size={12} />
                       </div>
 
                       <span className="text-xs font-semibold text-[#0E0E0E]">
@@ -393,7 +398,7 @@ const WishListPage = () => {
                   </div>
 
                   {/* Title + Description */}
-                  <div className="py-1">
+                  <div className="mt-2">
                     <h3
                       className="text-md font-bold text-[#0E0E0E] leading-tight"
                       

@@ -3,6 +3,9 @@ import mongoose from "mongoose";
 import { connectToDatabase } from "@/lib/mongodb";
 import { getCurrentUser } from "@/lib/auth/jwt";
 import Wishlist from "@/models/Wishlist";
+import User from "@/models/User";
+import Subscription from "@/models/Subscription";
+
 
 export async function POST(req: NextRequest) {
   try {
@@ -116,10 +119,11 @@ export async function GET(req: NextRequest) {
   try {
     // 🔐 Auth check
     const user = await getCurrentUser();
+
     if (!user) {
       return NextResponse.json(
         { success: false, message: "Authentication required" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -128,19 +132,22 @@ export async function GET(req: NextRequest) {
     if (!mongoose.Types.ObjectId.isValid(clientId)) {
       return NextResponse.json(
         { success: false, message: "Invalid client ID" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     await connectToDatabase();
 
-    // ✅ Fetch wishlist with FULL provider data
     const wishlist = await Wishlist.aggregate([
+
+      // STEP 1 — Match Wishlist
       {
         $match: {
           clientId: new mongoose.Types.ObjectId(clientId),
         },
       },
+
+      // STEP 2 — Lookup Provider
       {
         $lookup: {
           from: "providers",
@@ -149,15 +156,51 @@ export async function GET(req: NextRequest) {
           as: "agency",
         },
       },
+
+      { $unwind: "$agency" },
+
+      // STEP 3 — Lookup User
       {
-        $unwind: "$agency",
+        $lookup: {
+          from: "users",
+          localField: "agency.userId",
+          foreignField: "_id",
+          as: "agencyUser",
+        },
       },
+
+      {
+        $unwind: {
+          path: "$agencyUser",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      // ✅ STEP 4 — Lookup Subscription (FIXED)
+      {
+        $lookup: {
+          from: "subscriptions", // ✅ FIXED HERE
+          localField: "agencyUser.subscriptionPlanId",
+          foreignField: "_id",
+          as: "subscription",
+        },
+      },
+
+      {
+        $unwind: {
+          path: "$subscription",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      // STEP 5 — Project Data
       {
         $project: {
           _id: 1,
           createdAt: 1,
+
           agency: {
-            // 🔹 BASIC INFO
+
             _id: "$agency._id",
             userId: "$agency.userId",
             name: "$agency.name",
@@ -172,7 +215,6 @@ export async function GET(req: NextRequest) {
             phone: "$agency.phone",
             adminContactPhone: "$agency.adminContactPhone",
 
-            // 🔹 ARRAYS
             services: "$agency.services",
             technologies: "$agency.technologies",
             industries: "$agency.industries",
@@ -180,11 +222,11 @@ export async function GET(req: NextRequest) {
             testimonials: "$agency.testimonials",
             certifications: "$agency.certifications",
             awards: "$agency.awards",
+
             keyHighlights: {
               $ifNull: ["$agency.keyHighlights", []],
             },
 
-            // 🔹 RATINGS
             rating: "$agency.rating",
             qualityRating: "$agency.qualityRating",
             scheduleRating: "$agency.scheduleRating",
@@ -192,40 +234,43 @@ export async function GET(req: NextRequest) {
             willingToReferRating: "$agency.willingToReferRating",
             reviewCount: "$agency.reviewCount",
 
-            // 🔹 BUSINESS INFO
             projectsCompleted: "$agency.projectsCompleted",
             hourlyRate: "$agency.hourlyRate",
             minProjectSize: "$agency.minProjectSize",
             teamSize: "$agency.teamSize",
             foundedYear: "$agency.foundedYear",
 
-            // 🔹 SOCIAL LINKS
             socialLinks: "$agency.socialLinks",
 
-            // 🔹 FLAGS
-            isFeatured: "$agency.isFeatured",
+            // ✅ FIXED isFeatured
+            isFeatured: {
+              $ifNull: [
+                "$subscription.isFeatured",
+                false
+              ],
+            },
+
             isVerified: "$agency.isVerified",
             isActive: "$agency.isActive",
 
-            // 🔹 ANALYTICS
             profileViews: "$agency.profileViews",
             impressions: "$agency.impressions",
             websiteClicks: "$agency.websiteClicks",
 
-            // 🔹 PRICING / TIMELINE
             minAmount: {
               $ifNull: ["$agency.minAmount", 0],
             },
+
             minTimeLine: {
               $ifNull: ["$agency.minTimeLine", "N/A"],
             },
 
-            // 🔹 TIMESTAMPS
             createdAt: "$agency.createdAt",
             updatedAt: "$agency.updatedAt",
           },
         },
       },
+
       {
         $sort: { createdAt: -1 },
       },
@@ -237,13 +282,16 @@ export async function GET(req: NextRequest) {
         count: wishlist.length,
         data: wishlist,
       },
-      { status: 200 },
+      { status: 200 }
     );
+
   } catch (error) {
+
     console.error("Wishlist GET Error:", error);
+
     return NextResponse.json(
       { success: false, message: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
