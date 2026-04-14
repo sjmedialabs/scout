@@ -678,13 +678,25 @@ console.log("Caluclated pie data is::::::",pieData)
             Revenue by plan
           </h3>
 
+          {
+              revenueByPlan.length===0 && (
+                <p className="text-center text-gray-500">No data available  </p>
+              )
+            }
+
           <ResponsiveContainer width="100%" height={420} className={"px-0"}>
+            
+            
             <BarChart
               data={revenueByPlan}
               barGap={6}
               barSize={50}
               margin={{ top: 0, right: 20, left: 0, bottom: 10 }}
             >
+
+              
+              {/* Grid */}  
+              
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
 
               <XAxis
@@ -726,7 +738,6 @@ console.log("Caluclated pie data is::::::",pieData)
                 ))}
               </Bar>
             </BarChart>
-
           </ResponsiveContainer>
         </div>
 
@@ -736,6 +747,11 @@ console.log("Caluclated pie data is::::::",pieData)
           <h3 className="text-xl font-semibold  text-orangeButton mb-0 ">
             Revenue by distribution
           </h3>
+
+          {
+            revenueByPlan.length===0 && (
+            <p className="text-center text-gray-500">No data available  </p>
+          )}
 
           <div className=" md:flex-row items-center gap-10">
             {/* PIE CHART */}

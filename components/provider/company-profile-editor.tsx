@@ -738,7 +738,7 @@ export function CompanyProfileEditor({
 
                   <PhoneInput
                     country={"in"}
-                    enableSearch={true}                 // ✅ enables search
+                    enableSearch={true}                 
                     searchPlaceholder="Search country"
                     searchNotFound="No country found"
                     autocompleteSearch={true}
@@ -915,7 +915,7 @@ export function CompanyProfileEditor({
                       value={formData.tagline}
                       onChange={(e) => handleTaglineChange(e.target.value)}
                       className={`${errors.tagline ? "border-red-500" : ""} h-[39px] !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
-                      placeholder="We value your Needs"
+                      placeholder="Enter Tagline"
                       maxLength={50}
                     />
                     {/* <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-muted-foreground">
@@ -1212,7 +1212,7 @@ export function CompanyProfileEditor({
                   }}
                   rows={6}
                   className={`${errors.description ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
-                  placeholder="about company"
+                  placeholder="Enter Description of your company"
                 />
                 {errors.description && (
                   <p className="text-sm text-red-500">{errors.description}</p>
@@ -1233,7 +1233,7 @@ export function CompanyProfileEditor({
                   }}
                   rows={6}
                   className={`${errors.description ? "border-red-500" : ""} !bg-[#f2f1f6] placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
-                  placeholder="Focus areas about the company"
+                  placeholder="Enter focus areas about the company"
                 />
               </div>
 
@@ -1277,7 +1277,7 @@ export function CompanyProfileEditor({
                           type="text"
                           value={newTechnology}
                           onChange={(e) => setNewTechnology(e.target.value)}
-                          placeholder="Datsience..."
+                          placeholder="Enter Technologies..."
                           className=" placeholder:text-[#b2b2b2] mt-1 !bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px]"
                         />
 
@@ -1331,8 +1331,8 @@ export function CompanyProfileEditor({
                             type="text"
                             value={newIndustry}
                             onChange={(e) => setNewIndustry(e.target.value)}
-                            placeholder="Consulting..."
-                            className=" placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] rounded-[6px]"
+                            placeholder="Enter Industry..."
+                            className=" placeholder:text-[#b2b2b2] !bg-[#f2f1f6] mt-1 border-[#D0D5DD] rounded-[6px]"
                           />
 
                           <Button
@@ -1393,8 +1393,8 @@ export function CompanyProfileEditor({
                           type="text"
                           value={newClient}
                           onChange={(e) => setNewClient(e.target.value)}
-                          placeholder="Client name..."
-                          className="placeholder:text-[#b2b2b2] mt-1 border-[#D0D5DD] rounded-[6px]"
+                          placeholder="Enter Client Name..."
+                          className="placeholder:text-[#b2b2b2] !bg-[#f2f1f6] mt-1 border-[#D0D5DD] rounded-[6px]"
                         />
 
                         <Button

@@ -260,6 +260,14 @@ if (loading) {
           </thead>
 
           <tbody>
+            {
+            subscribers.length===0 && (
+              <tr>
+                    <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+                      No users found
+                    </td>
+                  </tr>
+                )}
             {subscribers.map((sub, i) => (
               <tr
                 key={i}
