@@ -5,6 +5,7 @@ import Provider from "@/models/Provider";
 import { getCurrentUser } from "@/lib/auth/jwt";
 import "@/models/Subscription";
 import mongoose from "mongoose";
+import FreeTrailConfig from "@/models/FreeTrailConfig";
 
 export async function GET(
   request: NextRequest,
@@ -31,6 +32,8 @@ export async function GET(
     if (user.userId !== id && user.role !== "admin") {
       return NextResponse.json({ error: "Not authorized" }, { status: 403 });
     }
+
+    const freeTrailPlan = await FreeTrailConfig.findOne()
 
     const userData = await User.findById(id)
       .select("-password")
@@ -65,6 +68,8 @@ export async function GET(
       subscription = {
         type: "trial",
         title: "Free Trial",
+        proposalsPerMonth: freeTrailPlan?.proposalLimit || 0,
+        caseStudiesCount: freeTrailPlan?.caseStudiesCount || 0,
         price: 0,
         billingCycle: "Monthly",
         features: [],

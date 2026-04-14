@@ -332,9 +332,11 @@ export default function ReportedContentPage() {
                   ))}
                </tbody>
               :
-              <tbody className="text-center">
-                <p className="text-gray-500 text-xl">No Reports for now</p>
-              </tbody>
+              <tr>
+                    <td colSpan={7} className="px-4 py-8 text-center text-md text-gray-500">
+                      No reports found
+                    </td>
+                  </tr>
               
             }
           

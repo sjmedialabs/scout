@@ -51,7 +51,7 @@ const isLarge = variant === "large";
   const awardItems = provider.awards ?? []
 
  return (
-    <section id="portfolio" className="px-6 sm:px-6 lg:px-0 py-12 max-w-7xl mx-auto bg-white">
+    <section id="portfolio" className="px-6 sm:px-6 lg:px-0 py-2 max-w-7xl mx-auto bg-white">
 
       {/* ================= PORTFOLIO CARD ================= */}
 
@@ -125,7 +125,7 @@ const isLarge = variant === "large";
       {/* ================= AWARDS CARD ================= */}
 
       {/* Header */}
-        <div className="mb-2">
+        <div className="mb-2 mt-12">
           <h3 className="text-xl font-bold text-gray-500">
             AWARDS
           </h3>
