@@ -582,7 +582,7 @@ if (resLoading) {
                           </Badge>
                         )}
                         {provider.isFeatured && (
-                          <Badge className="bg-orangeButton text-white rounded-full px-3 py-0.5 text-[10px] font-semibold">
+                          <Badge className="bg-orangeButton text-white rounded-full px-3 py-0.5 text-xs font-semibold">
                             Featured
                           </Badge>
                         )}

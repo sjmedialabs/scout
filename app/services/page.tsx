@@ -661,14 +661,14 @@ useEffect(() => {
                   <div className="relative flex items-center -mt-1 h-2">
 
                     {/* LEFT — Verified */}
-                    <div className="absolute left-0">
+                    <div className="absolute left-0 ">
                       {p.isVerified && (
-                        <span className="inline-flex items-center rounded-full border font-bold px-2 py-0 text-[10px] text-white bg-[#232a85]">
+                        <span className="inline-flex mr-2 items-center rounded-full border font-bold px-2 py-0 text-xs text-white bg-[#232a85]">
                           Verified
                         </span>
                       )}
                       {p.isFeatured && (
-                            <span className="bg-[#F54A0C] inline-flex items-center rounded-full border font-bold px-2 py-0 text-[10px] text-white">
+                            <span className="bg-[#F54A0C] inline-flex items-center rounded-full border font-bold px-2 py-0 text-xs text-white">
                               Featured
                             </span>
                           )}
@@ -716,7 +716,7 @@ useEffect(() => {
                   </div>
 
                   {/* Info Row */}
-                  <div className=" grid-cols-3 text-[10px] font-semibold text-[#616161] mt-1">
+                  <div className=" grid-cols-3 text-[11px] font-semibold text-[#616161] mt-1">
                     <div className="inline-flex items-center mr-6 gap-1">
                       <img
                         src="/Location_Icon.jpg"
