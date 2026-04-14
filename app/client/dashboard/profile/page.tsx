@@ -671,7 +671,7 @@ const getFormattedPhone = () => {
                 />
               ) : (
 
-                <div className={`${styles.inputCardContainer} ${!profileData.bio ? "text-gray-300":""}`}>
+                <div className={`${styles.inputCardContainer} ${!profileData.bio ? "text-gray-300":""} h-auto`}>
                   <p className={styles.paraTag}>
                   {profileData.bio || "No bio provided"} 
                 </p>

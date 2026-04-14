@@ -265,6 +265,9 @@ const formats = [
             
           </Card>
         ))}
+        {jobs.length===0 &&(
+          <p className="text-center text-gray-500 py-10">No jobs posted yet.</p>
+        )}
       </div>
 
       {/* POST JOB MODAL */}

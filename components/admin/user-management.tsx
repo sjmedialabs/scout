@@ -260,6 +260,16 @@ export function UserManagement({ users, onUpdateUserStatus, onSendMessage }: Use
                     </TableCell>
                   </TableRow>
                 ))}
+                {filteredUsers.length === 0 && (
+                  <TableRow>
+                    <TableCell
+                      colSpan={7}
+                      className="text-center text-sm text-gray-500 py-6"
+                    >
+                      No users found matching the criteria.
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </div>

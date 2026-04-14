@@ -220,6 +220,11 @@ interface AnalyticsDashboardProps {
                 <Progress value={eachItem.percentage} className="h-2" />
               </div>
             ))}
+            {
+              subscriptionStats.length === 0 && (
+                <p className="text-gray-500 text-center mt-10">No data available</p>
+              )
+            }
           </CardContent>
           {/* <CardContent className="-space-y-4 grid grid-cols-2 gap-6">
             {
@@ -358,6 +363,11 @@ interface AnalyticsDashboardProps {
 
   </div>
 ))}
+{
+  topProviders.length === 0 && (
+    <p className="text-gray-500 text-center mt-10">No top providers available</p>
+  )
+}
           {/* <div className="space-y-1">
             {topProviders.map((provider, index) => (
               <div 

@@ -8,6 +8,7 @@ import Provider from "@/models/Provider";
 import Seeker from "@/models/Seeker";
 import Requirement from "@/models/Requirement";
 import Notification from "@/models/Notification";
+import FreeTrialConfig from "@/models/FreeTrailConfig";
 import User from "@/models/User"
 
 export async function GET(request: NextRequest) {
@@ -143,14 +144,14 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
     if (user.role !== "agency") {
       return NextResponse.json(
         { error: "Only agencies can submit proposals" },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -163,9 +164,12 @@ export async function POST(request: NextRequest) {
 
     await connectToDatabase();
 
-    const userObjectId = new mongoose.Types.ObjectId(user.userId);
+    const userObjectId = new mongoose.Types.ObjectId(
+      user.userId
+    );
 
     const body = await request.json();
+
     const {
       requirementId,
       proposalDescription,
@@ -181,25 +185,32 @@ export async function POST(request: NextRequest) {
     if (!mongoose.Types.ObjectId.isValid(requirementId)) {
       return NextResponse.json(
         { error: "Invalid requirement ID" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
-    const provider = await Provider.findOne({ userId: user.userId });
+    const provider = await Provider.findOne({
+      userId: user.userId,
+    });
 
     if (!provider) {
       return NextResponse.json(
         { error: "Provider profile not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
-    const project = await Requirement.findById(requirementId);
+    const project = await Requirement.findById(
+      requirementId
+    );
 
-    if (!project || project.status.toLowerCase() === "closed") {
+    if (
+      !project ||
+      project.status.toLowerCase() === "closed"
+    ) {
       return NextResponse.json(
         { error: "Project not accepting proposals" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -211,16 +222,17 @@ export async function POST(request: NextRequest) {
     if (existing) {
       return NextResponse.json(
         { error: "Proposal already submitted" },
-        { status: 409 },
+        { status: 409 }
       );
     }
 
-    // ================================
-    //  NEW LOGIC — CHECK MONTHLY LIMIT
-    // ================================
+    // ============================================
+    // PROPOSAL LIMIT LOGIC (FREE + PAID SUPPORT)
+    // ============================================
 
-    const userDoc = await User.findById(user.userId)
-      .populate("subscriptionPlanId");
+    const userDoc = await User.findById(
+      user.userId
+    ).populate("subscriptionPlanId");
 
     if (!userDoc) {
       return NextResponse.json(
@@ -229,66 +241,110 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check subscription expiry
-    if (
-      userDoc.subscriptionEndDate &&
-      new Date() > userDoc.subscriptionEndDate
-    ) {
-      return NextResponse.json(
-        { error: "Subscription expired" },
-        { status: 403 }
-      );
-    }
-
     const plan: any = userDoc.subscriptionPlanId;
 
+    // ============================================
+    // FREE USER LOGIC (TOTAL LIMIT — NOT MONTHLY)
+    // ============================================
+
     if (!plan) {
-      return NextResponse.json(
-        { error: "Subscription plan not found" },
-        { status: 403 }
+      const freeConfig =
+        await FreeTrialConfig.findOne();
+
+      if (!freeConfig) {
+        return NextResponse.json(
+          {
+            error:
+              "Free trial configuration not found",
+          },
+          { status: 500 }
+        );
+      }
+
+      if (
+        userDoc.proposalCount >=
+        freeConfig.proposalLimit
+      ) {
+        return NextResponse.json(
+          {
+            error:
+              "Free proposal limit reached. Please upgrade your plan to continue submitting proposals.",
+          },
+          { status: 403 }
+        );
+      }
+    }
+
+    // ============================================
+    // PAID USER LOGIC (MONTHLY LIMIT)
+    // ============================================
+
+    if (plan) {
+      // Check subscription expiry
+
+      if (
+        userDoc.subscriptionEndDate &&
+        new Date() >
+          userDoc.subscriptionEndDate
+      ) {
+        return NextResponse.json(
+          { error: "Subscription expired" },
+          { status: 403 }
+        );
+      }
+
+      // Monthly reset logic
+
+      const now = new Date();
+      const start = new Date(
+        userDoc.subscriptionStartDate
       );
-    }
 
-    //  Monthly reset logic using subscriptionStartDate
+      const monthsPassed =
+        (now.getFullYear() -
+          start.getFullYear()) *
+          12 +
+        (now.getMonth() -
+          start.getMonth());
 
-    const now = new Date();
-    const start = new Date(userDoc.subscriptionStartDate);
+      const currentCycleStart = new Date(start);
 
-    const monthsPassed =
-      (now.getFullYear() - start.getFullYear()) * 12 +
-      (now.getMonth() - start.getMonth());
-
-    const currentCycleStart = new Date(start);
-    currentCycleStart.setMonth(
-      start.getMonth() + monthsPassed
-    );
-
-    const nextCycle = new Date(currentCycleStart);
-    nextCycle.setMonth(nextCycle.getMonth() + 1);
-
-    if (now >= nextCycle) {
-      userDoc.monthlyProposalCount = 0;
-      await userDoc.save();
-    }
-
-    //  Check limit
-
-    if (
-      userDoc.monthlyProposalCount >=
-      (plan?.proposalsPerMonth || 100)
-    ) {
-      return NextResponse.json(
-        {
-          error:
-            "Monthly proposal limit reached. Please upgrade your plan or wait for next cycle.",
-        },
-        { status: 403 }
+      currentCycleStart.setMonth(
+        start.getMonth() + monthsPassed
       );
+
+      const nextCycle = new Date(
+        currentCycleStart
+      );
+
+      nextCycle.setMonth(
+        nextCycle.getMonth() + 1
+      );
+
+      if (now >= nextCycle) {
+        userDoc.monthlyProposalCount = 0;
+        await userDoc.save();
+      }
+
+      // Check monthly limit
+
+      if (
+        userDoc.monthlyProposalCount >=
+        (plan?.proposalsPerMonth || 100)
+      ) {
+        return NextResponse.json(
+          {
+            error:
+              "Monthly proposal limit reached. Please upgrade your plan or wait for next cycle.",
+          },
+          { status: 403 }
+        );
+      }
     }
 
-    // ================================
-    // EXISTING FUNCTIONALITY CONTINUES
-    // ================================
+    // ============================================
+    // CREATE PROPOSAL
+    // ============================================
 
     const proposal = await Proposal.create({
       requirementId,
@@ -305,23 +361,37 @@ export async function POST(request: NextRequest) {
       attachments: attachments || [],
     });
 
-    // Update project proposal count
+    // Update requirement proposal count
+
     await Requirement.findByIdAndUpdate(
       requirementId,
-      { $inc: { proposals: 1 } }
+      {
+        $inc: { proposals: 1 },
+      }
     );
 
-    // ✅ UPDATED USER COUNTS (safe update)
+    // ============================================
+    // UPDATE USER COUNTS
+    // ============================================
+
+    const updateFields: any = {
+      proposalCount: 1, // always increase total
+    };
+
+    if (plan) {
+      updateFields.monthlyProposalCount = 1;
+    }
 
     await User.findByIdAndUpdate(
       user.userId,
       {
-        $inc: {
-          proposalCount: 1,          // existing
-          monthlyProposalCount: 1,   // NEW
-        },
+        $inc: updateFields,
       }
     );
+
+    // ============================================
+    // CREATE NOTIFICATION
+    // ============================================
 
     await Notification.create({
       userId: clientId,
@@ -340,11 +410,14 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error("Error creating proposal:", error);
+    console.error(
+      "Error creating proposal:",
+      error
+    );
 
     return NextResponse.json(
       { error: "Failed to create proposal" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

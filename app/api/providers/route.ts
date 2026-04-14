@@ -116,6 +116,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import Provider from "@/models/Provider";
 import User from "@/models/User"
+import Subscription from "@/models/Subscription";
 
 /* -----------------------------
    CORS CONFIG
@@ -133,7 +134,7 @@ export async function OPTIONS() {
   return NextResponse.json({}, { headers: corsHeaders });
 }
 
-/* -----------------------------
+/* ----------------------------- 
    GET Providers
 ------------------------------ */
 export async function GET(request: NextRequest) {
@@ -146,6 +147,7 @@ export async function GET(request: NextRequest) {
     const service = searchParams.get("service");
     const minRating = searchParams.get("minRating");
     const featured = searchParams.get("featured");
+
     const limit = Number.parseInt(searchParams.get("limit") || "50");
     const page = Number.parseInt(searchParams.get("page") || "1");
 
@@ -163,26 +165,26 @@ export async function GET(request: NextRequest) {
       query.rating = { $gte: Number(minRating) };
     }
 
-    if (featured === "true") {
-      query.isFeatured = true;
-    }
-
     const skip = (page - 1) * limit;
 
+    // STEP 1 — Get Providers
     const [providers, total] = await Promise.all([
       Provider.find(query)
-        .sort({ isFeatured: -1, rating: -1 })
+        .sort({ rating: -1 }) // remove provider.isFeatured sorting
         .skip(skip)
         .limit(limit)
         .lean(),
+
       Provider.countDocuments(query),
     ]);
 
+    // STEP 2 — Get User IDs
     const userIds = providers
       .map((p: any) => p.userId)
       .filter(Boolean);
 
-      const users = await User.find(
+    // STEP 3 — Get Users
+    const users = await User.find(
       { _id: { $in: userIds } },
       {
         subscriptionPlanId: 1,
@@ -192,62 +194,116 @@ export async function GET(request: NextRequest) {
     ).lean();
 
     const userSubscriptionMap = new Map(
-  users.map((u: any) => [
-    u._id.toString(),
-    {
-      subscriptionPlanId: u.subscriptionPlanId,
-      subscriptionStartDate: u.subscriptionStartDate,
-      subscriptionEndDate: u.subscriptionEndDate,
-    },
-  ])
-);
+      users.map((u: any) => [
+        u._id.toString(),
+        {
+          subscriptionPlanId: u.subscriptionPlanId,
+          subscriptionStartDate: u.subscriptionStartDate,
+          subscriptionEndDate: u.subscriptionEndDate,
+        },
+      ])
+    );
 
+    // STEP 4 — Get Plan IDs
+    const planIds = users
+      .map((u: any) => u.subscriptionPlanId)
+      .filter(Boolean);
 
+    // STEP 5 — Get Plans
+    const plans = await Subscription.find(
+      { _id: { $in: planIds } },
+      { isFeatured: 1 }
+    ).lean();
 
-    const formattedProviders = providers.map((p: any) => ({
-      id: p._id.toString(),
-      userId: p.userId?.toString(),
-      name: p.name,
-      tagline: p.tagline,
-      description: p.description,
-      logo: p.logo,
-      coverImage: p.coverImage,
-      location: p.location,
-      website: p.website,
-      email: p.email,
-      salesEmail: p.salesEmail,
-      phone: p.phone,
-      adminContactPhone: p.adminContactPhone,
-      services: p.services,
-      technologies: p.technologies,
-      industries: p.industries,
-      clients: p.clients,
-      rating: p.rating,
-      reviewCount: p.reviewCount,
-      costRating: p.costRating,
-      qualityRating: p.qualityRating,
-      scheduleRating: p.scheduleRating,
-      willingToReferRating: p.willingToReferRating,
-      projectsCompleted: p.projectsCompleted,
-      hourlyRate: p?.hourlyRate || 0,
-      minProjectSize: p.minProjectSize,
-      teamSize: p.teamSize,
-      foundedYear: p.foundedYear,
-      portfolio: p.portfolio,
-      testimonials: p.testimonials,
-      certifications: p.certifications,
-      awards: p.awards,
-      socialLinks: p.socialLinks,
-      isFeatured: p.isFeatured,
-      isVerified: p.isVerified,
-      createdAt: p.createdAt,
+    const planMap = new Map(
+      plans.map((p: any) => [
+        p._id.toString(),
+        {
+          isFeatured: p.isFeatured,
+        },
+      ])
+    );
 
-      // ✅ NEW (non-breaking)
-  subscriptionDetails:
-    p.userId && userSubscriptionMap.get(p.userId.toString())
-      ? userSubscriptionMap.get(p.userId.toString())
-      : null,
-    }));
+    // STEP 6 — Format Providers
+    let formattedProviders = providers.map((p: any) => {
+      const userSub =
+        p.userId &&
+        userSubscriptionMap.get(p.userId.toString());
+
+      let computedIsFeatured = false;
+
+      // If user has plan
+      if (userSub?.subscriptionPlanId) {
+        const plan =
+          planMap.get(
+            userSub.subscriptionPlanId.toString()
+          );
+
+        computedIsFeatured =
+          plan?.isFeatured || false;
+      }
+
+      return {
+        id: p._id.toString(),
+        userId: p.userId?.toString(),
+
+        name: p.name,
+        tagline: p.tagline,
+        description: p.description,
+        logo: p.logo,
+        coverImage: p.coverImage,
+        location: p.location,
+        website: p.website,
+        email: p.email,
+        salesEmail: p.salesEmail,
+        phone: p.phone,
+        adminContactPhone: p.adminContactPhone,
+        services: p.services,
+        technologies: p.technologies,
+        industries: p.industries,
+        clients: p.clients,
+        rating: p.rating,
+        reviewCount: p.reviewCount,
+        costRating: p.costRating,
+        qualityRating: p.qualityRating,
+        scheduleRating: p.scheduleRating,
+        willingToReferRating: p.willingToReferRating,
+        projectsCompleted: p.projectsCompleted,
+        hourlyRate: p?.hourlyRate || 0,
+        minProjectSize: p.minProjectSize,
+        teamSize: p.teamSize,
+        foundedYear: p.foundedYear,
+        portfolio: p.portfolio,
+        testimonials: p.testimonials,
+        certifications: p.certifications,
+        awards: p.awards,
+        socialLinks: p.socialLinks,
+
+        // ✅ NEW FEATURED FROM PLAN
+        isFeatured: computedIsFeatured,
+
+        isVerified: p.isVerified,
+        createdAt: p.createdAt,
+
+        // existing subscription details
+        subscriptionDetails: userSub || null,
+      };
+    });
+
+    // STEP 7 — Apply Featured Filter (if requested)
+    if (featured === "true") {
+      formattedProviders =
+        formattedProviders.filter(
+          (p: any) => p.isFeatured === true
+        );
+    }
+
+    // STEP 8 — Sort Featured First
+    formattedProviders.sort(
+      (a: any, b: any) =>
+        Number(b.isFeatured) -
+        Number(a.isFeatured)
+    );
 
     return NextResponse.json(
       {
@@ -259,13 +315,17 @@ export async function GET(request: NextRequest) {
           pages: Math.ceil(total / limit),
         },
       },
-      { headers: corsHeaders },
+      { headers: corsHeaders }
     );
   } catch (error) {
-    console.error("Error fetching providers:", error);
+    console.error(
+      "Error fetching providers:",
+      error
+    );
+
     return NextResponse.json(
       { error: "Failed to fetch providers" },
-      { status: 500, headers: corsHeaders },
+      { status: 500, headers: corsHeaders }
     );
   }
 }
