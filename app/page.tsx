@@ -255,23 +255,23 @@ if (resLoading) {
               key={index}
               className="w-[calc((100%-48px)/3)] shrink-0"
             >
-              <div className="bg-[#0F2A2F] text-white rounded-3xl px-6 py-4 min-h-[420px]">
+              <div className="bg-[#0F2A2F] text-white rounded-3xl px-3 py-3 min-h-[420px]">
                 
                 <p className="text-green-400 text-sm font-semibold mb-2">
                   {section?.tag || "Step"}
                 </p>
 
-                <h3 className="text-2xl font-bold mb-3">
+                <h3 className="text-2xl font-bold mb-2">
                   {section.title}
                 </h3>
 
-                <p className="text-gray-300 text-sm">
+                <p className="text-gray-300 text-sm mb-4 line-clamp-2">
                   {section.description}
                 </p>
 
                 <img
                   src={section.image}
-                  className="mt-6 rounded-xl w-full"
+                  className=" rounded-xl w-full min-h-[280px] max-h-[280px]"
                 />
               </div>
             </div>
@@ -570,7 +570,8 @@ if (resLoading) {
                         className="rounded-t-3xl w-full h-full object-cover object-center"
                       />
                     </div>
-                    <div className="flex items-center justify-between mb-2 px-4 sm:px-6 lg:px-4 mt-4">
+                    <div className="py-3">
+                    <div className="flex items-center justify-between   sm:px-6 lg:px-4 ">
                       {/* FEATURED & VERIFIED BADGES */}
                       <div className="flex items-center gap-2">
                         {provider.isVerified && (
@@ -612,12 +613,13 @@ if (resLoading) {
                         </span>
                       </div>
                     </div>
+                    </div>
 
                     <h3 className="text-base text-base sm:text-lg px-4 sm:px-6 lg:px-4 font-bold capitalize">
                       {provider.name}
                     </h3>
                   </div>
-                  <div className="pb-4 px-4 sm:px-6 lg:px-4 flex flex-col flex-1">
+                  <div className=" px-4 sm:px-6 lg:px-4 flex flex-col flex-1">
                     <p className="text-sm text-gray-500 leading-8 -mt-1 mb-0 line-clamp-1">
                         {provider.description}
                       </p>
@@ -643,7 +645,7 @@ if (resLoading) {
                       </div>
 
                       {/* VIEW DETAILS BUTTON */}
-                      <div className="-mt-1">
+                      <div className="mt-auto pb-3">
                         <Button
                           variant="outline"
                           size="sm"
