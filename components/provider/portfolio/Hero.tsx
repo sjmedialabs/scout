@@ -75,7 +75,7 @@ export default function Hero({ provider, onContact }: any) {
               className="primary-button"
               onClick={() => setOpen(true)}
             >
-              Start a Project
+              Get a Quote
             </Button>
 
             <Button

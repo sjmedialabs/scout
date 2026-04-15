@@ -58,7 +58,7 @@ const isLarge = variant === "large";
        {/* Header */}
 
         <div className="mb-2">
-          <h3 className="text-xl font-bold text-gray-500">
+          <h3 className="text-xl font-bold text-orangeButton">
             PORTFOLIO
           </h3>
 
@@ -126,7 +126,7 @@ const isLarge = variant === "large";
 
       {/* Header */}
         <div className="mb-2 mt-12">
-          <h3 className="text-xl font-bold text-gray-500">
+          <h3 className="text-xl font-bold text-orangeButton">
             AWARDS
           </h3>
 

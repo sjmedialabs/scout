@@ -111,7 +111,7 @@ const { cms, providers, projects, categories, blogs } = data;
 
 
 const items = cms?.homeWorkSection || [];
-const showArrows = (items?.length || 0) > 3;
+const showArrows = (items?.length || 0) > 4;
 
 const handlePrev = () => {
   setCurrentIndex((prev) => (prev === 0 ? items.length - 1 : prev - 1));

@@ -30,7 +30,7 @@ const handlePrev = () => {
     <section id="case-studies" className="px-6 sm:px-6 lg:px-0 py-6 max-w-7xl mt-4 mx-auto bg-white">
 
       {/* HEADER */}
-      <p className="text-lg font-bold text-gray-500 mb-0 uppercase tracking-wide">
+      <p className="text-lg font-extrabold text-orangeButton mb-0 uppercase tracking-wide">
         CASE STUDIES
       </p>
 
@@ -68,7 +68,7 @@ const handlePrev = () => {
                     Next →
                     </button>
 
-                </div>
+                </div>    
                 )}
 
           {/* META */}
@@ -81,7 +81,7 @@ const handlePrev = () => {
             {/* LEFT */}
             <div className="max-w-3xl">
 
-              <h3 className="text-2xl font-semibold mb-3">
+              <h3 className="text-2xl text-blueButton font-semibold mb-3">
                 {project?.projectTitle || "Project Title"}
               </h3>
 
@@ -95,7 +95,7 @@ const handlePrev = () => {
                 {(project?.technologiesUsed || []).map((t: string, i: number) => (
                   <span
                     key={i}
-                    className="bg-[#EEF6F0] text-[#1F7A4D] px-3 py-1 rounded-md text-xs"
+                    className="bg-green-100 text-[#1F7A4D] px-3 py-1 rounded-full text-xs"
                   >
                     {t}
                   </span>
