@@ -283,14 +283,14 @@ if (resLoading) {
           <>
             <button
               onClick={() => scroll("left")}
-              className="absolute -left-12 ml-2 top-1/2 cursor-pointer -translate-y-1/2 bg-[#0f2a2f] text-white p-2 rounded-full shadow z-10"            >
-              <ChevronLeft />
+              className="absolute -left-12 ml-3 top-1/2 cursor-pointer -translate-y-1/2 bg-[#0f2a2f] text-white p-2 rounded-full shadow z-10"            >
+              <ChevronLeft size={15} />
             </button>
 
             <button
               onClick={() => scroll("right")}
               className="absolute -right-12 mr-2 top-1/2 cursor-pointer -translate-y-1/2 bg-[#0f2a2f] text-white p-2 rounded-full shadow z-10"            >
-              <ChevronRight />
+              <ChevronRight size={15}/>
             </button>
           </>
         )}
@@ -397,7 +397,7 @@ if (resLoading) {
                   bg-gradient-to-r from-[#F54A0C] to-[#2C34A1]
                 "
               >
-                Browse all services →
+                Browse All Services →
               </Button>
             </Link>
           </div>
@@ -489,7 +489,7 @@ if (resLoading) {
 
                   {/* Budget */}
                   <div className="mt-auto">
-                    <div className="px-6 mt-0">
+                    <div className="mt-0 text-center">
                       <span className="text-sm font-bold text-green-700">
                         ${project.budgetMin.toLocaleString()} - $
                         {project.budgetMax.toLocaleString()}
@@ -527,7 +527,7 @@ if (resLoading) {
                   "
                   size={"lg"}
                 >
-                  Browse all requirements →
+                  Browse All Requirements →
                 </Button>
               </Link>
             </div>
@@ -718,9 +718,9 @@ if (resLoading) {
                     />
 
                     {/* Content */}
-                    <div className="pb-4 px-4 sm:px-6 lg:px-4 flex flex-col flex-1">
+                    <div className="py-3 px-4 sm:px-6 lg:px-4 flex flex-col flex-1">
                       {/* Title */}
-                      <h3 className="text-base sm:text-lg font-bold line-clamp-2 min-h-12">
+                      <h3 className="text-base sm:text-[15px] font-semibold line-clamp-2 min-h-12">
                         {blog.title}
                       </h3>
 
@@ -734,7 +734,7 @@ if (resLoading) {
                       />
 
                       {/* Button */}
-                      <div className="mt-auto pt-3">
+                      <div className="mt-auto pt-2">
                         <Button
                           size="sm"
                           className="primary-button !text-xs w-[110px] h-[30px]"
@@ -756,7 +756,7 @@ if (resLoading) {
                   size="lg"
                   className="rounded-full mt-8 text-sm sm:text-lg px-5 sm:px-8 py-2 sm:py-3 font-bold bg-gradient-to-r from-[#F54A0C] to-[#2C34A1]"
                 >
-                  View all blogs →
+                  View All Blogs →
                 </Button>
               </Link>
             </div>
