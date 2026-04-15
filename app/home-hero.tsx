@@ -95,9 +95,7 @@ export function HomeHero({ cms }: HomeHeroProps) {
          <div className="text-center">
            <h1
             className="text-5xl font-normal  text-white mb-4 max-w-[700px]  text-center  leading-tight"
-            style={{
-              fontFamily: "'Cinzel', serif",
-            }}
+           
           >
             {cms?.homeBannerTitle ||
               "Connect with trusted companies for your next project."}

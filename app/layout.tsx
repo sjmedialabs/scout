@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter, JetBrains_Mono,Plus_Jakarta_Sans } from "next/font/google"
+import { Inter, JetBrains_Mono, Plus_Jakarta_Sans, Playfair_Display } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from "@/contexts/auth-context"
 import { Navigation } from "@/components/navigation"
@@ -25,6 +25,11 @@ const plusJakarta = Plus_Jakarta_Sans({
   display: 'swap',
 });
 
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+})
+
 export const metadata: Metadata = {
   title: "Scout - B2B Service Platform",
   description: "Connect service seekers with verified providers",
@@ -37,13 +42,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} ${plusJakarta.variable}`}>
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} ${plusJakarta.variable} ${playfair.variable}`}>
       <body className="font-sans antialiased overflow-x-hidden">
 <ClientLayout>{children}</ClientLayout>
       </body>
