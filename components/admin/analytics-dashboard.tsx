@@ -220,11 +220,6 @@ interface AnalyticsDashboardProps {
                 <Progress value={eachItem.percentage} className="h-2" />
               </div>
             ))}
-            {
-              subscriptionStats.length === 0 && (
-                <p className="text-gray-500 text-center mt-10">No data available</p>
-              )
-            }
           </CardContent>
           {/* <CardContent className="-space-y-4 grid grid-cols-2 gap-6">
             {
@@ -326,9 +321,9 @@ interface AnalyticsDashboardProps {
 
     {/* Agency */}
     <div className="flex items-center gap-3">
-      {/* <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold">
+      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold">
         {provider.name?.charAt(0)}
-      </div> */}
+      </div>
 
       <div>
         <div className="font-semibold">{provider.name}</div>
@@ -363,11 +358,6 @@ interface AnalyticsDashboardProps {
 
   </div>
 ))}
-{
-  topProviders.length === 0 && (
-    <p className="text-gray-500 text-center mt-10">No top providers available</p>
-  )
-}
           {/* <div className="space-y-1">
             {topProviders.map((provider, index) => (
               <div 

@@ -170,8 +170,7 @@ const filterByDate = (data:any[]) => {
           authFetch("/api/subscription"),
           authFetch("/api/reported-content")
         ]);
-        const usersDataRes = await usersRes.json()
-        const usersData = usersDataRes.filter((item:any)=>item.role!=="admin");
+        const usersData = await usersRes.json();
         const filteredUsers = filterByDate(usersData.users)
         // let totalUsers = usersData.users.length;
         let totalUsers = filteredUsers.length;
@@ -629,7 +628,7 @@ const getARPU = (payments) => {
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm bg-white shadow-sm "
+            className="border rounded-lg px-3 py-2 text-sm bg-white shadow-sm"
           >
             <option value="all">All Time</option>
             <option value="today">Today</option>
@@ -658,21 +657,16 @@ const getARPU = (payments) => {
     <span className="text-gray-500">to</span>
 
     <input
-        type="date"
-        value={dateRange.end ? dateRange.end.toISOString().split("T")[0] : ""}
-        min={
-          dateRange.start
-            ? dateRange.start.toISOString().split("T")[0]
-            : undefined
-        }
-        onChange={(e) =>
-          setDateRange((prev) => ({
-            ...prev,
-            end: new Date(e.target.value),
-          }))
-        }
-        className="border rounded-md px-3 py-2 text-sm"
-      />
+      type="date"
+      value={dateRange.end ? dateRange.end.toISOString().split("T")[0] : ""}
+      onChange={(e) =>
+        setDateRange((prev) => ({
+          ...prev,
+          end: new Date(e.target.value),
+        }))
+      }
+      className="border rounded-md px-3 py-2 text-sm"
+    />
   </div>
 )}
 
