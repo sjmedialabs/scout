@@ -15,7 +15,7 @@ import Subscription from "@/models/Subscription";
 
 export async function GET(req: Request) {
   try {
-    await connectToDatabase();
+    await connectToDatabase(); 
 
     const { searchParams } = new URL(req.url);
     const isAdmin = searchParams.get("admin") === "true";
@@ -52,6 +52,11 @@ export async function POST(req: Request) {
         body.features = body.features.split(',').map((f: string) => f.trim());
     }
 
+    // Calculate pricePerYear from pricePerMonth
+    if (body.pricePerMonth) {
+      body.pricePerYear = body.pricePerMonth * 12
+    }
+
     const newPlan = await Subscription.create(body);
     return NextResponse.json(newPlan, { status: 201 });
   } catch (error) {
@@ -66,10 +71,14 @@ export async function PUT(req: Request) {
     const body = await req.json();
     const { _id, ...updates } = body;
 
+    if (updates.pricePerMonth) {
+      updates.pricePerYear = updates.pricePerMonth * 12
+    }
+
     const updatedPlan = await Subscription.findByIdAndUpdate(_id, updates, { new: true });
     return NextResponse.json(updatedPlan);
   } catch (error) {
     console.error("Error updating plan:", error);
     return NextResponse.json({ error: "Failed to update plan" }, { status: 500 });
   }
-}
+} 

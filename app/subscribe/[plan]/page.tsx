@@ -73,6 +73,22 @@ export default function SubscribePage({ params }: SubscribePageProps) {
     );
   }
 
+  const discountPercentage =
+    selectedPlan &&
+    (billing === "yearly"
+      ? selectedPlan.yearlyDiscountPercentage
+      : selectedPlan.monthlyDiscountPercentage);
+  const originalPrice =
+    selectedPlan &&
+    (billing === "yearly"
+      ? selectedPlan.pricePerYear
+      : selectedPlan.pricePerMonth);
+  const discountAmount =
+    selectedPlan && discountPercentage > 0
+      ? (originalPrice * discountPercentage) / 100
+      : 0;
+  const finalPrice = selectedPlan ? originalPrice - discountAmount : 0;
+
   // if (!selectedPlan) {
   //   return(
   //     <div className="py-20 text-center">
@@ -118,18 +134,22 @@ export default function SubscribePage({ params }: SubscribePageProps) {
                   {/* Plan Row */}
                   <div className="flex items-center pt-7 justify-between border-b pb-4">
                     {/* Left */}
-                    <p className="font-bold text-zinc-900">
-                      {selectedPlan.title} Plan
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-bold text-zinc-900">
+                        {selectedPlan.title} Plan
+                      </p>
+                      {discountPercentage > 0 && (
+                        <div className="text-xs text-green-600 font-semibold bg-green-100 px-2 py-0.5 rounded-full">
+                          {discountPercentage}% off
+                        </div>
+                      )}
+                    </div>
 
                     {/* Right */}
                     <div className="flex items-center gap-3">
                       <p className="font-bold text-zinc-900">
-                        $
-                        {billing === "yearly"
-                          ? selectedPlan.pricePerYear
-                          : selectedPlan.pricePerMonth}
-                        /{billing === "yearly" ? "yearly" : "monthly"}
+                        ₹
+                        {originalPrice}/{billing === "yearly" ? "yearly" : "monthly"}
                       </p>
                       <Link href="/pricing">
                         <button
@@ -201,20 +221,23 @@ export default function SubscribePage({ params }: SubscribePageProps) {
                   </div>
 
                   {/* Total*/}
-                  <div className="border-t pt-4">
-                    <div className="flex items-center justify-between font-bold text-zinc-900">
-                      <span>Total</span>
-                      <span>
-                        $
-                        {billing === "yearly"
-                          ? selectedPlan.pricePerYear
-                          : selectedPlan.pricePerMonth}
-                        /{billing === "yearly" ? "yearly" : "monthly"}
-                      </span>
+                  <div className="border-t pt-4 space-y-2">
+                    <div className="flex items-center justify-between text-zinc-700">
+                      <span>Plan Price</span>
+                      <span>₹{originalPrice.toFixed(2)}</span>
                     </div>
-                    <p className="text-xs text-zinc-5000 mt-0">
-                      {selectedPlan.trialDays ?? 14}-day free trial · Cancel
-                      anytime
+                    {discountAmount > 0 && (
+                      <div className="flex items-center justify-between text-green-600">
+                        <span>Discount ({discountPercentage}%)</span>
+                        <span>-₹{discountAmount.toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between font-bold text-zinc-900 pt-2 border-t mt-2">
+                      <span>Total</span>
+                      <span>₹{finalPrice.toFixed(2)}</span>
+                    </div>
+                    <p className="text-xs text-right text-zinc-500">
+                      /{billing === "yearly" ? "year" : "month"}
                     </p>
                   </div>
 

@@ -1,18 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { authFetch } from "@/lib/auth-fetch";
-import { Badge } from "@/components/ui/badge";
-import { Check, Star } from "lucide-react";
 import Link from "next/link";
-import { subscriptionPlans } from "@/lib/subscription-plans";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
@@ -26,14 +15,15 @@ interface CmsPlan {
   features: string[];
   isActive: boolean;
   slug?: string;
+  monthlyDiscountPercentage?: number;
+  yearlyDiscountPercentage?: number;
 }
 
 
 export default function PricingPage() {
   const router=useRouter();
-  const [isAnnual, setIsAnnual] = useState(true);
+  const [isAnnual, setIsAnnual] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [cmsFeatures, setCmsFeatures] = useState<Record<string, string[]>>({});
   const [subscriptions, setSubscriptions] = useState<CmsPlan[]>([]);
 
   const [loading, setLoading] = useState(false);
@@ -44,29 +34,45 @@ export default function PricingPage() {
       setLoading(true);
       setFailed(false);
       try {
-        const res = await fetch("/api/subscription");
+        const [res, freeTrailRes] = await Promise.all([
+          fetch("/api/subscription"),
+          fetch("/api/free-trail-config"),
+        ]);
 
-        if (res.ok) {
-        const data: CmsPlan[] = await res.json();
-        console.log("Fetched CMS subscription plans:", data);
+        if (res.ok && freeTrailRes.ok) {
+          const data: CmsPlan[] = await res.json();
+          const freeTrailData = await freeTrailRes.json();
+          console.log("Fetched CMS subscription plans:", data);
 
-  // show only active plans on public page
-  const activePlans = data.filter((plan) => plan.isActive);
+          const freePlan: CmsPlan = {
+            _id: "free-trial",
+            title: "Free Trial",
+            pricePerMonth: 0,
+            pricePerYear: 0,
+            description:
+              freeTrailData.description || "Perfect to get started",
+            features: [
+              
+              ...(freeTrailData.features || []),
+            ],
+            isActive: freeTrailData.isActive,
+            monthlyDiscountPercentage: 0,
+            yearlyDiscountPercentage: 0,
+          };
 
-  setSubscriptions(activePlans);
+          // show only active plans on public page
+          const activePlans = data.filter((plan) => plan.isActive);
 
+          const allPlans = [];
+          if (freePlan.isActive) {
+            allPlans.push(freePlan);
+          }
+          allPlans.push(...activePlans);
 
-          const featureMap: Record<string, string[]> = {};
-
-          data.forEach((plan) => {
-            // map CMS plan → frontend plan id
-            const key = plan.slug || plan.title?.toLowerCase() || plan._id;
-
-            featureMap[key] = plan.features || [];
-          });
-
-          setCmsFeatures(featureMap);
+          setSubscriptions(allPlans);
           setFailed(false);
+        } else {
+          setFailed(true);
         }
       } catch (error) {
         console.error("Failed to fetch CMS features", error);
@@ -138,7 +144,7 @@ export default function PricingPage() {
               isAnnual ? "text-slate-900" : "text-slate-500"
             }`}
           >
-            Annually <span className="text-green-500">(save 15%)</span>
+            Annually
           </span>
         </div>
 
@@ -148,13 +154,14 @@ export default function PricingPage() {
     {subscriptions.map((plan) => {
       const selected = selectedId === plan._id
       const { label } = getDisplayPrice(plan)
+      const discount = isAnnual ? plan.yearlyDiscountPercentage : plan.monthlyDiscountPercentage;
 
       return (
         <div
           key={plan._id}
           
           tabIndex={0}
-          onClick={() =>router.push(`/subscribe/${plan._id}?billing=${
+          onClick={() =>router.push(plan.title === "Free Trial" ? "/register" : `/subscribe/${plan._id}?billing=${
                   isAnnual ? "yearly" : "monthly"
                 }`)}
           onKeyDown={(e) =>
@@ -174,20 +181,26 @@ export default function PricingPage() {
           {/* Card body */}
           <div className="flex flex-col flex-1 p-6">
 
-            {/* Title */}
-            <h3 className="text-3xl font-semibold text-zinc-900">
-              {plan.title}
-            </h3>
+            <div className="flex items-center gap-3">
+              <h3 className="text-3xl font-semibold text-zinc-900">
+                {plan.title}
+              </h3>
+              {discount && discount > 0 ? (
+                <div className="text-sm text-green-600 font-semibold bg-green-100 px-2 py-0.5 rounded-full">
+                  {discount}% off
+                </div>
+              ) : null}
+            </div>
 
             {/* Price */}
             <div className="mt-3 flex items-baseline gap-1">
-              <span className="text-4xl font-semibold text-zinc-900">
-                ${isAnnual ? plan.pricePerYear : plan.pricePerMonth}
-              </span>
-              <span className="text-sm font-medium text-zinc-900">
-                /{label}
-              </span>
-            </div>
+            <span className="text-4xl font-semibold text-zinc-900">
+              ₹{isAnnual ? plan.pricePerYear : plan.pricePerMonth}
+            </span>
+            <span className="text-sm font-medium text-zinc-900">
+              /{label}
+            </span>
+          </div>
 
             {/* Description */}
             <p className="mt-2 text-[15px] text-zinc-400">
@@ -227,12 +240,12 @@ export default function PricingPage() {
               asChild
             >
               <Link
-                href={`/subscribe/${plan._id}?billing=${
+                href={plan.title === "Free Trial" ? "/register" : `/subscribe/${plan._id}?billing=${
                   isAnnual ? "yearly" : "monthly"
                 }`}
               >
-                {plan.id === "basic"
-                  ? "Get Started Free"
+                {plan.title === "Free Trial"
+                  ? "Get Started"
                   : `Choose ${plan.title}`}
               </Link>
             </Button>

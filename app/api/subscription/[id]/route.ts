@@ -36,6 +36,8 @@ export async function GET(
         isActive: subscription.isActive,
         createdAt: subscription.createdAt,
         updatedAt: subscription.updatedAt,
+        monthlyDiscountPercentage: subscription?.monthlyDiscountPercentage || 0,
+        yearlyDiscountPercentage: subscription?.yearlyDiscountPercentage || 0,
       },
     })
   } catch (error) {
@@ -71,10 +73,10 @@ export async function PUT(
 
     // Update only provided fields
     if (body.title !== undefined) subscription.title = body.title
-    if (body.pricePerMonth !== undefined)
+    if (body.pricePerMonth !== undefined) {
       subscription.pricePerMonth = body.pricePerMonth
-    if (body.pricePerYear !== undefined)
-      subscription.pricePerYear = body.pricePerYear
+      subscription.pricePerYear = body.pricePerMonth * 12
+    }
     if (body.yearlySubscription !== undefined)
       subscription.yearlySubscription = body.yearlySubscription
     if (body.description !== undefined)
@@ -90,12 +92,19 @@ export async function PUT(
     if (body.isFeatured != undefined)
       subscription.isFeatured = body.isFeatured
 
+    if(body.monthlyDiscountPercentage != undefined){
+      subscription.monthlyDiscountPercentage = body.monthlyDiscountPercentage
+    }
+    if(body.yearlyDiscountPercentage != undefined){
+      subscription.yearlyDiscountPercentage = body.yearlyDiscountPercentage
+    }
+
     await subscription.save()
 
     return NextResponse.json({
       success: true,
       message: "Subscription updated successfully",
-      data: {
+      data: { 
         id: subscription._id.toString(),
         title: subscription.title,
         pricePerMonth: subscription.pricePerMonth,
@@ -105,6 +114,8 @@ export async function PUT(
         features: subscription.features,
         isActive: subscription.isActive,
         updatedAt: subscription.updatedAt,
+        monthlyDiscountPercentage: subscription?.monthlyDiscountPercentage || 0,
+        yearlyDiscountPercentage: subscription?.yearlyDiscountPercentage || 0,
       },
     })
   } catch (error: any) {

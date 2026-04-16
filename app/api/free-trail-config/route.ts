@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     await connectToDatabase();
 
-    const { proposalLimit, caseStudiesCount } = await request.json();
+    const { proposalLimit, caseStudiesCount, price, description, features, isActive } = await request.json();
 
     if (proposalLimit === undefined || proposalLimit < 0) {
       return NextResponse.json(
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const config = await FreeTrialConfig.create({ proposalLimit, caseStudiesCount: caseStudiesCount ?? 0 });
+    const config = await FreeTrialConfig.create({ proposalLimit, caseStudiesCount: caseStudiesCount ?? 0, description, features, isActive: isActive ?? true });
 
     return NextResponse.json(
       {
@@ -40,6 +40,9 @@ export async function POST(request: NextRequest) {
         message: "Free trial proposal limit created",
         proposalLimit: config.proposalLimit,
         caseStudiesCount: config.caseStudiesCount,
+        description: config.description,
+        features: config.features,
+        isActive: config.isActive,
       },
       { status: 201 }
     );
@@ -63,12 +66,15 @@ export async function GET(_request: NextRequest) {
         { error: "Free trial config not found" },
         { status: 404 }
       );
-    }
+    } 
 
     return NextResponse.json({
       success: true,
       proposalLimit: config.proposalLimit,
       caseStudiesCount: config.caseStudiesCount,
+      description: config.description,
+      features: config.features,
+      isActive: config.isActive,
     });
   } catch (error) {
     console.error("GET FreeTrialConfig error:", error);
@@ -91,9 +97,9 @@ export async function PUT(request: NextRequest) {
 
     await connectToDatabase();
 
-    const { proposalLimit, caseStudiesCount } = await request.json();
+    const { proposalLimit, caseStudiesCount, price, description, features, isActive} = await request.json();
 
-    if (proposalLimit === undefined || proposalLimit < 0) {
+    if (proposalLimit !== undefined && proposalLimit < 0) {
       return NextResponse.json(
         { error: "Invalid proposal limit" },
         { status: 400 }
@@ -102,7 +108,7 @@ export async function PUT(request: NextRequest) {
 
     const updatedConfig = await FreeTrialConfig.findOneAndUpdate(
       {},
-      { proposalLimit, ...(caseStudiesCount !== undefined && { caseStudiesCount }) },
+      { ...(proposalLimit !== undefined && { proposalLimit }), ...(caseStudiesCount !== undefined && { caseStudiesCount }), ...(price !== undefined && { price }), ...(description !== undefined && { description }), ...(features !== undefined && { features }), ...(isActive !== undefined && { isActive }) },
       { new: true }
     );
 
@@ -118,6 +124,9 @@ export async function PUT(request: NextRequest) {
       message: "Free trial proposal limit updated",
       proposalLimit: updatedConfig.proposalLimit,
       caseStudiesCount: updatedConfig.caseStudiesCount,
+      description: updatedConfig.description,
+      features: updatedConfig.features,
+      isActive: updatedConfig.isActive,
     });
   } catch (error) {
     console.error("PUT FreeTrialConfig error:", error);

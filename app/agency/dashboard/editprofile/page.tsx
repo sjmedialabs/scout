@@ -16,25 +16,7 @@ const EditProfile = () => {
   const router = useRouter();
   const { user, loading } = useAuth();
 
-  const [provider, setProvider] = useState({
-    id: "1",
-    name: "Jane Smith",
-    email: "jane@sparkdev.com",
-    subscriptionTier: "standard",
-    isVerified: true,
-    isFeatured: true,
-    profileCompletion: 85,
-    totalProjects: 47,
-    activeProjects: 8,
-    completedProjects: 39,
-    totalEarnings: 125000,
-    monthlyEarnings: 12500,
-    rating: 4.9,
-    responseTime: "2 hours",
-    successRate: 98,
-    minimumBudget: 500,
-    hourlyRate: { min: 25, max: 150 },
-  });
+ 
   const [userDetails, setUserDetails] = useState({});
   const [providerDetails, setProviderDetails] = useState({});
   const [responseLoading, setResponseLoading] = useState(true);
@@ -50,13 +32,29 @@ const EditProfile = () => {
       const userRes = await authFetch(`/api/users/${user?.id}`)
       const data = await response.json();
       const userData = await userRes.json();
-
+      
+      setUserDetails(userData);
       setProviderDetails(data.provider);
 
-      if ((data.provider?.caseStudies.length || 0) >= (userData?.subscription?.caseStudiesCount || 0)) {
-        console.log("Entered into if condition:::::::::::::", userData?.subscription?.caseStudiesCount, data.provider?.caseStudies.length)
-        setIsCaseStudiesLimitReached(true)
-      }
+      
+      //  if(userData.subscription.type==="paid"){
+
+      //     if ((data.provider?.caseStudies.length || 0) >= (userData?.user?.caseStudiesLimit || 0)) {
+      //       console.log("Entered into if condition:::::::::::::", userData?.subscription?.caseStudiesCount, data.provider?.caseStudies.length)
+      //       setIsCaseStudiesLimitReached(true)
+      //     }
+
+           
+      //   }
+      //   else{
+      //         if ((data.provider?.caseStudies.length || 0) >= (userData?.subscription?.caseStudiesCount || 0)) {
+      //           console.log("Entered into if condition:::::::::::::", userData?.subscription?.caseStudiesCount, data.provider?.caseStudies.length)
+      //           setIsCaseStudiesLimitReached(true)
+      //         }
+
+              
+      //   }
+
     } catch (error) {
       console.log("Failed to get the data::", error);
       setFailed(true);
@@ -118,7 +116,7 @@ const EditProfile = () => {
       </div>
     );
   }
-
+ 
   return (
     <div className="space-y-1">
       {/* <div>
@@ -134,7 +132,7 @@ const EditProfile = () => {
       {providerDetails && (
         <CompanyProfileEditor
           provider={providerDetails}
-          isCaseStudiesLimitReached={isCaseStudiesLimitReached}
+          userDetails={userDetails}
           onSave={handleSaveProfile}
         />
       )}

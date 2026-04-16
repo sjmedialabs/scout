@@ -27,7 +27,12 @@ export default function SubscriptionPlansPage() {
 
   const [freeTrailProposalCount, setFreeTrailProposalCount] = useState(0);
   const [freeTrailCaseStudiesCount, setFreeTrailCaseStudiesCount] = useState(0);
+  const [freeTrailDescription, setFreeTrailDescription] = useState("");
+  const [freeTrailFeatures, setFreeTrailFeatures] = useState<string[]>([]);
+  const [freeTrailFeatureInput, setFreeTrailFeatureInput] = useState("");
+  const [isEditingFreeTrail, setIsEditingFreeTrail] = useState(false);
   const [freeTrailSending, setFreeTrailSending] = useState(false);
+  const [freeTrailIsActive, setFreeTrailIsActive] = useState(true);
 
   // Feature tag-input state
   const [newFeatureInput, setNewFeatureInput] = useState("");
@@ -37,13 +42,14 @@ export default function SubscriptionPlansPage() {
   const [newPlan, setNewPlan] = useState({
     title: "",
     pricePerMonth: "",
-    pricePerYear: "",
     proposalsPerMonth: "",
     caseStudiesCount: "",
     isFeatured: false,
     description: "",
     features: [] as string[],
     yearlySubscription: false,
+    monthlyDiscountPercentage: "",
+    yearlyDiscountPercentage: "",
   });
 
   useEffect(() => {
@@ -63,6 +69,9 @@ export default function SubscriptionPlansPage() {
         setPlans(data);
         setFreeTrailProposalCount(freeTrailData.proposalLimit);
         setFreeTrailCaseStudiesCount(freeTrailData.caseStudiesCount ?? 0);
+        setFreeTrailDescription(freeTrailData.description || "");
+        setFreeTrailFeatures(freeTrailData.features || []);
+        setFreeTrailIsActive(freeTrailData.isActive);
       }
     } catch (error) {
       console.error("Failed to fetch plans", error);
@@ -80,9 +89,6 @@ export default function SubscriptionPlansPage() {
     const newData = {
       title: newPlan.title,
       pricePerMonth: parseFloat(newPlan.pricePerMonth),
-      pricePerYear:
-        parseFloat(newPlan.pricePerYear) ||
-        parseFloat(newPlan.pricePerMonth) * 12,
       proposalsPerMonth: parseInt(newPlan.proposalsPerMonth) || 0,
       caseStudiesCount: parseInt(newPlan.caseStudiesCount) || 0,
       isFeatured: newPlan.isFeatured,
@@ -90,6 +96,8 @@ export default function SubscriptionPlansPage() {
       features: newPlan.features,
       yearlySubscription: newPlan.yearlySubscription,
       isActive: true,
+      monthlyDiscountPercentage: parseFloat(newPlan.monthlyDiscountPercentage) || 0,
+      yearlyDiscountPercentage: parseFloat(newPlan.yearlyDiscountPercentage) || 0,
     };
 
     const res = await authFetch("/api/subscription", {
@@ -103,13 +111,14 @@ export default function SubscriptionPlansPage() {
       setNewPlan({
         title: "",
         pricePerMonth: "",
-        pricePerYear: "",
         proposalsPerMonth: "",
         caseStudiesCount: "",
         isFeatured: false,
         description: "",
         features: [],
         yearlySubscription: false,
+        monthlyDiscountPercentage: "",
+        yearlyDiscountPercentage: "",
       });
       toast.success("Plan added successfully");
       await fetchPlans();
@@ -141,6 +150,25 @@ export default function SubscriptionPlansPage() {
     await saveEdit(plan._id, { isActive: !plan.isActive });
   };
 
+  const toggleFreeTrailStatus = async () => {
+    try {
+      const res = await authFetch("/api/free-trail-config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive: !freeTrailIsActive }),
+      });
+
+      if (res.ok) {
+        await fetchPlans();
+        toast.success("Free trial status updated successfully");
+      } else {
+        toast.error("Failed to update free trial status");
+      }
+    } catch (error) {
+      toast.error("An error occurred while updating free trial status");
+    }
+  };
+
   // free trail plan updation
 
   const freeTrailProposalCountUpdate = async () => {
@@ -154,10 +182,13 @@ export default function SubscriptionPlansPage() {
         body: JSON.stringify({
           proposalLimit: freeTrailProposalCount,
           caseStudiesCount: freeTrailCaseStudiesCount,
+          description: freeTrailDescription,
+          features: freeTrailFeatures,
         })
       })
       if (res.ok) {
         toast.success("Updated the Free trail config")
+        setIsEditingFreeTrail(false);
       }
 
     } catch (error) {
@@ -181,48 +212,6 @@ export default function SubscriptionPlansPage() {
         </p>
       </div>
 
-      {/*Free Plan */}
-
-      <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
-        <h2 className="text-xl font-semibold flex items-center gap-2">
-          Update Free Trial Config
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Proposal Limit */}
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-600">Free Proposals / Month</label>
-            <Input
-              className="border-gray-300 rounded-2xl placeholder:text-gray-500"
-              type="number"
-              min={1}
-              placeholder="Number of free proposals"
-              value={freeTrailProposalCount}
-              onChange={(e) => setFreeTrailProposalCount(parseInt(e.target.value))}
-            />
-          </div>
-          {/* Case Studies Count */}
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-600">Free Case Studies Count</label>
-            <Input
-              className="border-gray-300 rounded-2xl placeholder:text-gray-500"
-              type="number"
-              min={0}
-              placeholder="Number of free case studies"
-              value={freeTrailCaseStudiesCount}
-              onChange={(e) => setFreeTrailCaseStudiesCount(parseInt(e.target.value))}
-            />
-          </div>
-        </div>
-
-        <Button
-          className={`${freeTrailSending ? "bg-orange-400 cursor-not-allowed" : "bg-orangeButton cursor-pointer"} primary-button h-[30px]`}
-          disabled={freeTrailSending}
-          onClick={freeTrailProposalCountUpdate}
-        >
-          {freeTrailSending ? "Updating..." : "Update"}
-        </Button>
-      </div>
-
       {/* ADD PLAN */}
       <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-2">
         <h2 className="text-xl font-semibold flex  items-center gap-2">
@@ -230,67 +219,102 @@ export default function SubscriptionPlansPage() {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <Input
-            className="border-gray-300 rounded-2xl placeholder:text-gray-500"
-            placeholder="Enter Plan Title"
-            value={newPlan.title}
-            onChange={(e) => setNewPlan({ ...newPlan, title: e.target.value })}
-          />
-          <Input
-            className="border-gray-300 rounded-2xl placeholder:text-gray-500"
-            placeholder="Price / Month"
-            type="number"
-            value={newPlan.pricePerMonth}
-            onChange={(e) =>
-              setNewPlan({ ...newPlan, pricePerMonth: e.target.value })
-            }
-          />
-          <Input
-            className="border-gray-300 rounded-2xl placeholder:text-gray-500"
-            placeholder="Price / Year"
-            type="number"
-            value={newPlan.pricePerYear}
-            onChange={(e) =>
-              setNewPlan({ ...newPlan, pricePerYear: e.target.value })
-            }
-          />
-          <Input
-            className="border-gray-300 rounded-2xl placeholder:text-gray-500"
-            placeholder="Proposals / Month"
-            type="number"
-            min={0}
-            value={newPlan.proposalsPerMonth}
-            onChange={(e) =>
-              setNewPlan({ ...newPlan, proposalsPerMonth: e.target.value })
-            }
-          />
-          <Input
-            className="border-gray-300 rounded-2xl placeholder:text-gray-500"
-            placeholder="Case Studies Count"
-            type="number"
-            min={0}
-            value={newPlan.caseStudiesCount}
-            onChange={(e) =>
-              setNewPlan({ ...newPlan, caseStudiesCount: e.target.value })
-            }
-          />
-          <Select
-            value={newPlan.isFeatured ? "true" : "false"}
-            onValueChange={(val) =>
-              setNewPlan({ ...newPlan, isFeatured: val === "true" })
-            }
-          >
-            <SelectTrigger className="border-gray-300 rounded-2xl data-[placeholder]:text-gray-500 text-[#000]">
-              <SelectValue placeholder="Featured?" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="false">Not Featured</SelectItem>
-              <SelectItem value="true">Featured</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="space-y-1 text-left">
+            <label className="text-sm font-semibold text-gray-600">Plan Title</label>
+            <Input
+              className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+              placeholder="Enter Plan Title"
+              value={newPlan.title}
+              onChange={(e) => setNewPlan({ ...newPlan, title: e.target.value })}
+            />
+          </div>
+          <div className="space-y-1 text-left">
+            <label className="text-sm font-semibold text-gray-600">Price / Month (₹)</label>
+            <Input
+              className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+              placeholder="Price / Month"
+              type="number"
+              value={newPlan.pricePerMonth}
+              onChange={(e) =>
+                setNewPlan({ ...newPlan, pricePerMonth: e.target.value })
+              }
+            />
+          </div>
+          <div className="space-y-1 text-left">
+            <label className="text-sm font-semibold text-gray-600">Monthly Discount (%)</label>
+            <Input
+              className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+              placeholder="Monthly Discount %"
+              type="number"
+              min={0}
+              max={100}
+              value={newPlan.monthlyDiscountPercentage}
+              onChange={(e) =>
+                setNewPlan({ ...newPlan, monthlyDiscountPercentage: e.target.value })
+              }
+            />
+          </div>
+          <div className="space-y-1 text-left">
+            <label className="text-sm font-semibold text-gray-600">Yearly Discount (%)</label>
+            <Input
+              className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+              placeholder="Yearly Discount %"
+              type="number"
+              min={0}
+              max={100}
+              value={newPlan.yearlyDiscountPercentage}
+              onChange={(e) =>
+                setNewPlan({ ...newPlan, yearlyDiscountPercentage: e.target.value })
+              }
+            />
+          </div>
+          <div className="space-y-1 text-left">
+            <label className="text-sm font-semibold text-gray-600">Proposals / Month</label>
+            <Input
+              className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+              placeholder="Proposals / Month"
+              type="number"
+              min={0}
+              value={newPlan.proposalsPerMonth}
+              onChange={(e) =>
+                setNewPlan({ ...newPlan, proposalsPerMonth: e.target.value })
+              }
+            />
+          </div>
+          <div className="space-y-1 text-left">
+            <label className="text-sm font-semibold text-gray-600">Case Studies Count</label>
+            <Input
+              className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+              placeholder="Case Studies Count"
+              type="number"
+              min={0}
+              value={newPlan.caseStudiesCount}
+              onChange={(e) =>
+                setNewPlan({ ...newPlan, caseStudiesCount: e.target.value })
+              }
+            />
+          </div>
+          <div className="space-y-1 text-left">
+            <label className="text-sm font-semibold text-gray-600">Featured Plan</label>
+            <Select
+              value={newPlan.isFeatured ? "true" : "false"}
+              onValueChange={(val) =>
+                setNewPlan({ ...newPlan, isFeatured: val === "true" })
+              }
+            >
+              <SelectTrigger className="border-gray-300 rounded-2xl data-[placeholder]:text-gray-500 text-[#000]">
+                <SelectValue placeholder="Featured?" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="false">Not Featured</SelectItem>
+                <SelectItem value="true">Featured</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        <div className="mb-4">
+        <div className="mb-4 space-y-1 text-left">
+          <label className="text-sm font-semibold text-gray-600">Description</label>
           <Textarea
             className="border-gray-300 rounded-2xl placeholder:text-gray-500"
             placeholder="Enter plan description"
@@ -397,6 +421,200 @@ export default function SubscriptionPlansPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+          {/* FREE TRIAL AS A CARD */}
+          <div className="relative bg-[#fafafa] border rounded-2xl p-8 flex flex-col h-full border-gray-200 shadow-sm">
+            <h3 className="text-xl font-semibold text-center ">
+              <span className="flex items-center justify-center gap-2">
+                Free Trial
+              </span>
+            </h3>
+
+            <div className="text-center mt-4 ">
+              <p className="text-3xl font-bold">
+                 ₹0
+                <span className="text-sm text-gray-500 font-medium">
+                  /monthly
+                </span>
+              </p>
+            </div>
+
+            <div className="mt-3">
+              {isEditingFreeTrail ? (
+                <div className="flex gap-2">
+                  <div className="flex-1 text-left space-y-1">
+                    <label className="text-xs text-gray-500 font-medium">Proposals / Month</label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={freeTrailProposalCount ?? 0}
+                      className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+                      placeholder="Proposals / Month"
+                      onChange={(e) => setFreeTrailProposalCount(Number(e.target.value))}
+                    />
+                  </div>
+                  <div className="flex-1 text-left space-y-1">
+                    <label className="text-xs text-gray-500 font-medium">Case Studies</label>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={freeTrailCaseStudiesCount ?? 0}
+                      className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+                      placeholder="Case Studies Count"
+                      onChange={(e) => setFreeTrailCaseStudiesCount(Number(e.target.value))}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex justify-center gap-4 text-sm text-gray-500">
+                  <span>
+                    <span className="font-semibold text-gray-700">{freeTrailProposalCount ?? 0}</span> proposals/mo
+                  </span>
+                  <span>
+                    <span className="font-semibold text-gray-700">{freeTrailCaseStudiesCount ?? 0}</span> case studies
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className="text-center mt-2">
+              {isEditingFreeTrail ? (
+                <div className="text-left space-y-1">
+                  <label className="text-xs text-gray-500 font-medium">Description</label>
+                  <Textarea
+                    value={freeTrailDescription}
+                    onChange={(e) => setFreeTrailDescription(e.target.value)}
+                    placeholder="Enter plan description"
+                    className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+                  />
+                </div>
+              ) : (
+                <p className="text-gray-500 text-sm">
+                  {freeTrailDescription || "Perfect to get started"}
+                </p>
+              )}
+            </div>
+
+            <div className="mt-6 flex-1">
+              {isEditingFreeTrail ? (
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-gray-500">Features</p>
+                  <div className="flex gap-2">
+                    <Input
+                      className="border-gray-300 rounded-2xl placeholder:text-gray-500 text-sm"
+                      placeholder="Type a feature and click Add"
+                      value={freeTrailFeatureInput}
+                      onChange={(e) => setFreeTrailFeatureInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && freeTrailFeatureInput.trim()) {
+                          e.preventDefault();
+                          setFreeTrailFeatures((prev) => [...prev, freeTrailFeatureInput.trim()]);
+                          setFreeTrailFeatureInput("");
+                        }
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="primary-button h-[35px]"
+                      onClick={() => {
+                        if (freeTrailFeatureInput.trim()) {
+                          setFreeTrailFeatures((prev) => [...prev, freeTrailFeatureInput.trim()]);
+                          setFreeTrailFeatureInput("");
+                        }
+                      }}
+                    >
+                      <PlusCircle className="w-3.5 h-3.5 mr-1" />
+                      Add
+                    </Button>
+                  </div>
+                  {freeTrailFeatures.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {freeTrailFeatures.map((f, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 text-gray-700 text-xs px-2.5 py-1 rounded-xl"
+                        >
+                          <span>{f}</span>
+                          <button
+                            type="button"
+                            title="Edit feature"
+                            onClick={() => {
+                              setFreeTrailFeatureInput(f);
+                              setFreeTrailFeatures((prev) => prev.filter((_, idx) => idx !== i));
+                            }}
+                            className="text-gray-400 hover:text-blue-500 transition-colors"
+                          >
+                            <Edit className="w-3 h-3" />
+                          </button>
+                          <button
+                            type="button"
+                            title="Remove feature"
+                            onClick={() => setFreeTrailFeatures((prev) => prev.filter((_, idx) => idx !== i))}
+                            className="text-gray-400 hover:text-red-500 transition-colors"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {freeTrailFeatures.map((f, i) => (
+                    <div key={i} className="flex items-center gap-2 text-sm text-gray-500">
+                      <Check className="w-4 h-4 text-green-600" />
+                      {f}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="mt-auto pt-6 flex items-center gap-3">
+              {isEditingFreeTrail ? (
+                <>
+                  <Button
+                    className="primary-button h-[30px]"
+                    disabled={freeTrailSending}
+                    onClick={freeTrailProposalCountUpdate}
+                  >
+                    {freeTrailSending ? "Saving..." : "Save"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsEditingFreeTrail(false);
+                      fetchPlans();
+                    }}
+                    className="btn-blackButton h-[30px]"
+                  >
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  variant="outline"
+                  onClick={() => setIsEditingFreeTrail(true)}
+                  className="flex items-center gap-2 rounded-2xl"
+                >
+                  <Edit className="w-4 h-4" />
+                  Edit
+                </Button>
+              )}
+              <Button
+                onClick={toggleFreeTrailStatus}
+                className={
+                  freeTrailIsActive
+                    ? "bg-red-100 text-red-700 hover:bg-red-200 rounded-2xl"
+                    : "bg-green-100 text-green-700 hover:bg-green-200 rounded-2xl"
+                }
+              >
+                {freeTrailIsActive ? "Disable" : "Activate"}
+              </Button>
+            </div>
+          </div>
           {plans.map((plan, index) => {
             const isPopular = index === 1;
 
@@ -417,19 +635,22 @@ export default function SubscriptionPlansPage() {
 
                 <h3 className="text-xl font-semibold text-center ">
                   {editingId === plan._id ? (
-                    <Input
-                      value={plan.title}
-                      onChange={(e) =>
-                        setPlans((prev) =>
-                          prev.map((p) =>
-                            p._id === plan._id
-                              ? { ...p, title: e.target.value }
-                              : p,
-                          ),
-                        )
-                      }
-                      className="border-gray-300 rounded-2xl placeholder:text-gray-500"
-                    />
+                    <div className="w-full text-left space-y-1">
+                      <label className="text-xs text-gray-500 font-medium">Plan Title</label>
+                      <Input
+                        value={plan.title}
+                        onChange={(e) =>
+                          setPlans((prev) =>
+                            prev.map((p) =>
+                              p._id === plan._id
+                                ? { ...p, title: e.target.value }
+                                : p,
+                            ),
+                          )
+                        }
+                        className="border-gray-300 rounded-2xl placeholder:text-gray-500 text-base"
+                      />
+                    </div>
                   ) : (
                     <span className="flex items-center justify-center gap-2">
                       {plan.title}
@@ -445,7 +666,8 @@ export default function SubscriptionPlansPage() {
 
                 {/* isFeatured select — edit mode only */}
                 {editingId === plan._id && (
-                  <div className="mt-2">
+                  <div className="mt-4 text-left space-y-1">
+                    <label className="text-xs text-gray-500 font-medium">Featured Plan</label>
                     <Select
                       value={plan.isFeatured ? "true" : "false"}
                       onValueChange={(val) =>
@@ -471,49 +693,92 @@ export default function SubscriptionPlansPage() {
 
                 <div className="text-center mt-4 ">
                   {editingId === plan._id ? (
-                    <div className="flex gap-2">
-                      <Input
-                        type="number"
-                        value={plan.pricePerMonth}
-                        className="border-gray-300 rounded-2xl placeholder:text-gray-500"
-                        onChange={(e) =>
-                          setPlans((prev) =>
-                            prev.map((p) =>
-                              p._id === plan._id
-                                ? {
-                                  ...p,
-                                  pricePerMonth: Number(e.target.value),
-                                }
-                                : p,
-                            ),
-                          )
-                        }
-                      />
-                      <Input
-                        type="number"
-                        value={plan.pricePerYear}
-                        className="border-gray-300 rounded-2xl placeholder:text-gray-500"
-                        onChange={(e) =>
-                          setPlans((prev) =>
-                            prev.map((p) =>
-                              p._id === plan._id
-                                ? {
-                                  ...p,
-                                  pricePerYear: Number(e.target.value),
-                                }
-                                : p,
-                            ),
-                          )
-                        }
-                      />
-                    </div>
+                    <>
+                      <div className="flex gap-2">
+                        <div className="flex-1 text-left space-y-1">
+                          <label className="text-xs text-gray-500 font-medium">Price / Month (₹)</label>
+                          <Input
+                            type="number"
+                            value={plan.pricePerMonth}
+                            className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+                            onChange={(e) =>
+                              setPlans((prev) =>
+                                prev.map((p) =>
+                                  p._id === plan._id
+                                    ? {
+                                      ...p,
+                                      pricePerMonth: Number(e.target.value),
+                                    }
+                                    : p,
+                                ),
+                              )
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="flex gap-2 mt-2">
+                        <div className="flex-1 text-left space-y-1">
+                          <label className="text-xs text-gray-500 font-medium">Monthly Disc. (%)</label>
+                          <Input
+                            type="number"
+                            min={0}
+                            max={100}
+                            placeholder="Monthly Disc. %"
+                            value={plan.monthlyDiscountPercentage || 0}
+                            className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+                            onChange={(e) =>
+                              setPlans((prev) =>
+                                prev.map((p) =>
+                                  p._id === plan._id
+                                    ? { ...p, monthlyDiscountPercentage: Number(e.target.value) }
+                                    : p
+                                )
+                              )
+                            }
+                          />
+                        </div>
+                        <div className="flex-1 text-left space-y-1">
+                          <label className="text-xs text-gray-500 font-medium">Yearly Disc. (%)</label>
+                          <Input
+                            type="number"
+                            min={0}
+                            max={100}
+                            placeholder="Yearly Disc. %"
+                            value={plan.yearlyDiscountPercentage || 0}
+                            className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+                            onChange={(e) =>
+                              setPlans((prev) =>
+                                prev.map((p) =>
+                                  p._id === plan._id
+                                    ? { ...p, yearlyDiscountPercentage: Number(e.target.value) }
+                                    : p
+                                )
+                              )
+                            }
+                          />
+                        </div>
+                      </div>
+                    </>
                   ) : (
-                    <p className="text-3xl font-bold">
-                      ${plan.pricePerMonth}
-                      <span className="text-sm text-gray-500 font-medium">
-                        /monthly
-                      </span>
-                    </p>
+                    <>
+                      <p className="text-3xl font-bold">
+                         ₹{plan.pricePerMonth}
+                        <span className="text-sm text-gray-500 font-medium">
+                          /monthly
+                        </span>
+                      </p>
+                      {(plan.monthlyDiscountPercentage || plan.yearlyDiscountPercentage) ? (
+                        <div className="text-xs text-green-600 font-semibold mt-1">
+                          {plan.monthlyDiscountPercentage > 0 && (
+                            <span>{plan.monthlyDiscountPercentage}% off monthly</span>
+                          )}
+                          {plan.monthlyDiscountPercentage > 0 && plan.yearlyDiscountPercentage > 0 && ' • '}
+                          {plan.yearlyDiscountPercentage > 0 && (
+                            <span>{plan.yearlyDiscountPercentage}% off yearly</span>
+                          )}
+                        </div>
+                      ) : null}
+                    </>
                   )}
                 </div>
 
@@ -521,38 +786,44 @@ export default function SubscriptionPlansPage() {
                 <div className="mt-3">
                   {editingId === plan._id ? (
                     <div className="flex gap-2">
-                      <Input
-                        type="number"
-                        min={0}
-                        value={plan.proposalsPerMonth ?? 0}
-                        className="border-gray-300 rounded-2xl placeholder:text-gray-500"
-                        placeholder="Proposals / Month"
-                        onChange={(e) =>
-                          setPlans((prev) =>
-                            prev.map((p) =>
-                              p._id === plan._id
-                                ? { ...p, proposalsPerMonth: Number(e.target.value) }
-                                : p,
-                            ),
-                          )
-                        }
-                      />
-                      <Input
-                        type="number"
-                        min={0}
-                        value={plan.caseStudiesCount ?? 0}
-                        className="border-gray-300 rounded-2xl placeholder:text-gray-500"
-                        placeholder="Case Studies Count"
-                        onChange={(e) =>
-                          setPlans((prev) =>
-                            prev.map((p) =>
-                              p._id === plan._id
-                                ? { ...p, caseStudiesCount: Number(e.target.value) }
-                                : p,
-                            ),
-                          )
-                        }
-                      />
+                      <div className="flex-1 text-left space-y-1">
+                        <label className="text-xs text-gray-500 font-medium">Proposals / Month</label>
+                        <Input
+                          type="number"
+                          min={0}
+                          value={plan.proposalsPerMonth ?? 0}
+                          className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+                          placeholder="Proposals / Month"
+                          onChange={(e) =>
+                            setPlans((prev) =>
+                              prev.map((p) =>
+                                p._id === plan._id
+                                  ? { ...p, proposalsPerMonth: Number(e.target.value) }
+                                  : p,
+                              ),
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="flex-1 text-left space-y-1">
+                        <label className="text-xs text-gray-500 font-medium">Case Studies</label>
+                        <Input
+                          type="number"
+                          min={0}
+                          value={plan.caseStudiesCount ?? 0}
+                          className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+                          placeholder="Case Studies Count"
+                          onChange={(e) =>
+                            setPlans((prev) =>
+                              prev.map((p) =>
+                                p._id === plan._id
+                                  ? { ...p, caseStudiesCount: Number(e.target.value) }
+                                  : p,
+                              ),
+                            )
+                          }
+                        />
+                      </div>
                     </div>
                   ) : (
                     <div className="flex justify-center gap-4 text-sm text-gray-500">
@@ -568,20 +839,23 @@ export default function SubscriptionPlansPage() {
 
                 <div className="text-center mt-2">
                   {editingId === plan._id ? (
-                    <Textarea
-                      value={plan.description || ""}
-                      onChange={(e) =>
-                        setPlans((prev) =>
-                          prev.map((p) =>
-                            p._id === plan._id
-                              ? { ...p, description: e.target.value }
-                              : p,
-                          ),
-                        )
-                      }
-                      placeholder="Enter plan description"
-                      className="border-gray-300 rounded-2xl placeholder:text-gray-500"
-                    />
+                    <div className="text-left space-y-1">
+                      <label className="text-xs text-gray-500 font-medium">Description</label>
+                      <Textarea
+                        value={plan.description || ""}
+                        onChange={(e) =>
+                          setPlans((prev) =>
+                            prev.map((p) =>
+                              p._id === plan._id
+                                ? { ...p, description: e.target.value }
+                                : p,
+                            ),
+                          )
+                        }
+                        placeholder="Enter plan description"
+                        className="border-gray-300 rounded-2xl placeholder:text-gray-500"
+                      />
+                    </div>
                   ) : (
                     <p className="text-gray-500 text-sm">
                       {plan.description || "Perfect for growing businesses"}
@@ -756,6 +1030,8 @@ export default function SubscriptionPlansPage() {
               </div>
             );
           })}
+
+          
         </div>
       )}
     </div>

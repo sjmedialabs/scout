@@ -43,6 +43,7 @@ interface CompanyProfileEditorProps {
   provider: Provider;
   onSave: (provider: Provider) => void;
   isCaseStudiesLimitReached: Boolean;
+  userDetails: any;
 }
 
 const validateEmail = (email: string): boolean => {
@@ -102,7 +103,7 @@ const languages = [
 
 export function CompanyProfileEditor({
   provider,
-  isCaseStudiesLimitReached,
+  userDetails,
   onSave,
 
 }: CompanyProfileEditorProps) {
@@ -144,6 +145,8 @@ export function CompanyProfileEditor({
       instagram: provider.socialLinks.instagram || "",
     },
   });
+
+ const[isCaseStudiesLimitReached, setIsCaseStudiesLimitReached] = useState(false);
 
   const [newService, setNewService] = useState("");
   const [portfolioForm, setPortfolioForm] = useState<Partial<PortfolioItem>>(
@@ -189,6 +192,26 @@ export function CompanyProfileEditor({
       console.error("Error fetching categories:", error);
     }
   };
+
+  useEffect(()=>{
+   if(userDetails?.subscription?.type==="paid"){
+
+          if ((formData?.caseStudies.length || 0) >= (userDetails?.user?.caseStudiesLimit || 0)) {
+            setIsCaseStudiesLimitReached(true)
+          } else {
+            setIsCaseStudiesLimitReached(false)
+          }
+        }
+        else{
+              if ((formData?.caseStudies.length || 0) >= (userDetails?.subscription?.caseStudiesCount || 0)) {
+                setIsCaseStudiesLimitReached(true)
+              } else {
+                setIsCaseStudiesLimitReached(false)
+              }
+        }
+ },[formData.caseStudies, userDetails])
+
+
 
   useEffect(() => {
     loadData();
@@ -2388,7 +2411,7 @@ export function CompanyProfileEditor({
       </div> */}
         <TabsContent value="caseStudies">
           <CaseStudiesSection
-            formData={formData}
+            formData={formData} 
             setFormData={setFormData}
             isEditMode={isEditMode}
             isCaseStudiesLimitReached={isCaseStudiesLimitReached}

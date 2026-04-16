@@ -82,10 +82,19 @@ export default function ServicesPage() {
       const providerRes = await fetch("/api/providers");
       const providerData = await providerRes.json();
 
-      const sortedProviders = [...(providerData.providers || [])].sort(
-  (a, b) => b.rating - a.rating
-);
+      console.log("Fetched Providers:::", providerData.providers);
 
+ const sortedProviders = [...(providerData.providers || [])].sort(
+  (a, b) => {
+    // First priority → rating (higher first)
+    if (b.rating !== a.rating) {
+      return b.rating - a.rating;
+    }
+
+    // Second priority → planPrice (higher first)
+    return b.planPrice - a.planPrice;
+  }
+);
       setProviders(sortedProviders);
       setFilteredProviders(sortedProviders);
       if (data.success) {

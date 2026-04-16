@@ -70,6 +70,8 @@ export async function POST(req: Request) {
       subscriptionStartDate: startDate,
       subscriptionEndDate: endDate,
       monthlyProposalCount: 0,
+      monthlyProposalLimit: plan.proposalsPerMonth,
+      caseStudiesLimit: plan.caseStudiesCount,
       billingCycle, // store Monthly / Yearly
     })
 
