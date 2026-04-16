@@ -228,7 +228,7 @@ const hasAnyChartData = hasServiceData || hasIndustryData;
 
             {/* FOCUS AREAS */}
             {provider?.focusArea &&
-             <div className="mt-8">
+             <div className="mt-0">
              <h3 className="font-semibold mb-2 text-sm">FOCUS AREAS</h3>
             <p className="text-sm text-gray-600">
               {provider?.focusArea || "Focus area not added yet"}
