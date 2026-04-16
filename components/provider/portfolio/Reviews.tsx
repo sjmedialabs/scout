@@ -48,7 +48,7 @@ export default function Reviews({ reviews, provider }: any) {
     <section id="reviews" className="px-6 sm:px-6 lg:px-0 py-6 max-w-7xl mx-auto bg-white">
 
       {/* HEADER */}
-      <p className="text-lg font-bold text-gray-500 mb-2">CLIENT REVIEWS</p>
+      <p className="text-lg font-bold text-orangeButton mb-2">CLIENT REVIEWS</p>
       <h2 className="text-lg font-bold mb-10">
         {provider?.rating} across {total} verified reviews
       </h2>

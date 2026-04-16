@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DollarSign,
+  IndianRupeeIcon,
   Calendar,
   MessageSquare,
   Eye,
@@ -431,10 +432,10 @@ const getStatusText = (status: string) => {
 
                       <div className="flex items-center gap-2">
                         <div className="p-1 rounded-full bg-[#F54A0C]">
-                          <DollarSign size={12} className="text-white" />
+                          <IndianRupeeIcon size={12} className="text-white" />
                         </div>
                         <span>
-                          ${project.proposedBudget.toLocaleString()}
+                          ₹{project.proposedBudget.toLocaleString()}
                         </span>
                       </div>
 
@@ -651,10 +652,10 @@ const getStatusText = (status: string) => {
                               {/* Budget */}
                               <div className="flex items-center gap-2">
                                 <div className="p-1 rounded-full bg-[#F54A0C]">
-                                  <DollarSign size={12} className="text-white" />
+                                  <IndianRupeeIcon size={12} className="text-white" />
                                 </div>
                                 <span>
-                                  ${project.proposedBudget.toLocaleString()}
+                                  ₹{project.proposedBudget.toLocaleString()}
                                 </span>
                               </div>
 
@@ -889,10 +890,10 @@ const getStatusText = (status: string) => {
                           {/* Budget */}
                           <div className="flex items-center gap-2">
                             <div className="p-1 rounded-full bg-[#F54A0C]">
-                              <DollarSign size={12} className="text-white" />
+                              <IndianRupeeIcon size={12} className="text-white" />
                             </div>
                             <span>
-                              ${project.proposedBudget.toLocaleString()}
+                              ₹{project.proposedBudget.toLocaleString()}
                             </span>
                           </div>
 

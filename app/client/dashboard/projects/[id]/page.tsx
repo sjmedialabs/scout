@@ -632,7 +632,7 @@ const downloadFile = async (url: string) => {
                               {/* RIGHT COST SECTION */}
                               <div className=" shrink-0">
                                 <div className="text-md font-bold text-[#39A935]">
-                                  <span className="text-[#000]">Proposed Budget:</span> <span className="text-md"> ${proposal.proposedBudget.toLocaleString()}</span> 
+                                  <span className="text-[#000]">Proposed Budget:</span> <span className="text-md"> ₹{proposal.proposedBudget.toLocaleString()}</span> 
                                 </div>
                                 <div className="text-xs  font-bold text-[#A0A0A0] mt-1">
                                  <span className="text-[#000]">Proposed Timeline:</span> <span className="text-md">{proposal.proposedTimeline}</span>

@@ -288,7 +288,7 @@ export default function SubmitProposalPage() {
               {/* Proposed Cost */}
               <div className="space-y-2">
                 <label className="text-[14px] font-bold text-[#98A0B4]">
-                  Proposed cost ($)
+                  Proposed cost (₹)
                 </label>
 
                 <Input
@@ -308,7 +308,7 @@ export default function SubmitProposalPage() {
                 />
 
                 <p className="text-[12px] text-gray-300">
-                  Client budget: ${requirement.budgetMin} – $
+                  Client budget: ₹{requirement.budgetMin} – ₹
                   {requirement.budgetMax}
                 </p>
               </div>

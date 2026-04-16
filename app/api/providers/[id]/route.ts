@@ -120,6 +120,7 @@ export async function GET(
         services: provider.services,
         technologies: provider.technologies,
         clients: provider.clients,
+        topServicesManual: provider.topServicesManual || [],
         industries: provider.industries,
         rating: provider.rating,
         communicationRating:
@@ -265,6 +266,7 @@ export async function PUT(
       "countryCode",
       "country",
       "services",
+      "topServicesManual",
       "technologies",
       "clients",
       "industries",

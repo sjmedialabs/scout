@@ -434,10 +434,10 @@ return (
                     {row.month}
                   </td>
                   <td className="py-5 px-6 font-medium text-black">
-                    ${row.mrr.toLocaleString()}
+                    ₹{row.mrr.toLocaleString()}
                   </td>
                   <td className="py-5 px-6 font-medium text-black">
-                    ${row.arpu.toLocaleString()}
+                    ₹{row.arpu.toLocaleString()}
                   </td>
                   <td className="py-5 px-6">
                     <Badge className="bg-green-50 text-green-600 border border-green-200 rounded-full px-3 py-1 text-xs">
@@ -445,7 +445,7 @@ return (
                     </Badge>
                   </td>
                   <td className="py-5 px-6 font-medium text-black">
-                    ${row.ltv.toLocaleString()}
+                    ₹{row.ltv.toLocaleString()}
                   </td>
                 </tr>
               ))}

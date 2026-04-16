@@ -111,7 +111,7 @@ const { cms, providers, projects, categories, blogs } = data;
 
 
 const items = cms?.homeWorkSection || [];
-const showArrows = (items?.length || 0) > 3;
+const showArrows = (items?.length || 0) > 4;
 
 const handlePrev = () => {
   setCurrentIndex((prev) => (prev === 0 ? items.length - 1 : prev - 1));
@@ -245,55 +245,35 @@ if (resLoading) {
           {/* DESKTOP GRID */}
           <div className="hidden md:block relative overflow-visible">
 
-        {/* Scroll Container */}
-        <div
-          ref={scrollRef}
-          className="flex gap-6 overflow-x-auto scroll-smooth no-scrollbar"
-        >
+        {/* Grid Container */}
+        <div className="grid grid-cols-4 gap-6">
           {items.map((section: any, index: number) => (
             <div
               key={index}
-              className="w-[calc((100%-48px)/3)] shrink-0"
             >
-              <div className="bg-[#0F2A2F] text-white rounded-3xl px-3 py-3 min-h-[420px]">
-                
+              <div className="bg-[#0F2A2F] text-white rounded-3xl px-3 py-3 min-h-[400px] max-h-[420px] flex flex-col">
+                <div>
                 <p className="text-green-400 text-sm font-semibold mb-2">
                   {section?.tag || "Step"}
                 </p>
 
-                <h3 className="text-2xl font-bold mb-2">
+                <h3 className="text-xl font-bold mb-2">
                   {section.title}
                 </h3>
 
-                <p className="text-gray-300 text-sm mb-4 line-clamp-2">
+                <p className="text-gray-300 text-sm mb-4 line-clamp-3">
                   {section.description}
                 </p>
+                </div>
 
                 <img
                   src={section.image}
-                  className=" rounded-xl w-full min-h-[280px] max-h-[280px]"
+                  className=" rounded-xl w-full mb-2 min-h-[250px] max-h-[280px] mt-auto "
                 />
               </div>
             </div>
           ))}
         </div>
-
-        {/* Arrows */}
-        {showArrows && (
-          <>
-            <button
-              onClick={() => scroll("left")}
-              className="absolute -left-12 ml-3 top-1/2 cursor-pointer -translate-y-1/2 bg-[#0f2a2f] text-white p-2 rounded-full shadow z-10"            >
-              <ChevronLeft size={15} />
-            </button>
-
-            <button
-              onClick={() => scroll("right")}
-              className="absolute -right-12 mr-2 top-1/2 cursor-pointer -translate-y-1/2 bg-[#0f2a2f] text-white p-2 rounded-full shadow z-10"            >
-              <ChevronRight size={15}/>
-            </button>
-          </>
-        )}
 
       </div>
 
@@ -335,11 +315,11 @@ if (resLoading) {
                   <div
                     key={category._id}
                     
-                    className={`group bg-white/70 h-[285px] backdrop-blur-sm rounded-4xl px-6 py-6 border lg:pl-8 ${colors.hover} hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col`}
+                    className={`group bg-white/70 h-[260px] backdrop-blur-sm rounded-4xl px-6 py-4 border lg:pl-8 ${colors.hover} hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col`}
                   >
                     {/* Top Content */}
                     <div>
-                      <div className="flex items-center gap-2 mb-4">
+                      <div className="flex items-center gap-2 mb-2">
                         <img
                           src={category?.icon || "/images/icon-1.png"}
                           alt=""
@@ -368,7 +348,7 @@ if (resLoading) {
                     </div>
 
                     {/* Button pushed to bottom */}
-                    <div className="mt-auto pt-6">
+                    <div className="mt-4">
                       <Button
                         size="sm"
                         className=" bg-blueButton cursor-pointer text-sm  text-white rounded-full"
@@ -491,13 +471,13 @@ if (resLoading) {
                   <div className="mt-auto">
                     <div className="mt-0 text-center">
                       <span className="text-sm font-bold text-green-700">
-                        ${project.budgetMin.toLocaleString()} - $
+                        ₹{project.budgetMin.toLocaleString()} - ₹
                         {project.budgetMax.toLocaleString()}
                       </span>
                     </div>
 
                     {/* Button */}
-                    <div className="px-6 pb-6 mt-1">
+                    <div className="px-6 pb-3 mt-1">
                       <Link href={`/login?to=requirement-details&id=${project._id}`}>
                         <Button
                           variant="outline"
@@ -546,7 +526,7 @@ if (resLoading) {
                 </span>
               </div>
               <h2 className="text-md uppercase font-bold text-blueButton ">
-                {cms?.topProvidersTitle || "Top Providers"}
+                {cms?.topProvidersTitle}
               </h2>
               <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
                 {cms?.topProvidersSubTitle || "Discover opportunities from businesses lookking for your services"}

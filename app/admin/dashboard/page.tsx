@@ -228,7 +228,7 @@ if(isLoading){
           }
           gradient="from-purple-100 to-purple-200"
           accentColor="#88c6ac"
-          value={`$${revenueStats.monthlyRevenue.toLocaleString()}`}
+          value={`₹${revenueStats.monthlyRevenue.toLocaleString()}`}
           helper={`${revenueStats.increasedPercentageThanLastMonth}% ${revenueStats.increasedPercentageThanLastMonth>=0?"growth":"drop"}`}
         />
       </div>

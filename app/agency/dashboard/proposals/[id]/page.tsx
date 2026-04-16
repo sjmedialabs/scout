@@ -177,9 +177,9 @@ export default function ProposalViewDetailsPage() {
                   <div className="absolute right-3 top-3 rounded-full bg-orange-100 p-1.5">
                     <DollarSign className="h-4 w-4 text-orangeButton" />
                   </div>
-                  <p className="text-sm font-semibold text-[#667085]">Proposed Cost ($)</p>
+                  <p className="text-sm font-semibold text-[#667085]">Proposed Cost (₹)</p>
                   <p className="mt-1 text-2xl font-bold text-[#344054]">
-                    ${proposal.proposedBudget.toLocaleString()}
+                    ₹{proposal.proposedBudget.toLocaleString()}
                   </p>
                 </div>
                 <div className="relative rounded-xl border border-gray-200 bg-white p-4 shadow-sm">

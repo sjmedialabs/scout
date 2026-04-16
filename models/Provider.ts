@@ -54,7 +54,7 @@ export interface IProvider extends Document {
   clients:string[]
   scheduleRating?:number
   costRating?:number
-
+  topServicesManual?:string[]
   rating: number
   reviewCount: number
   communicationRating?:number
@@ -174,6 +174,7 @@ const ProviderSchema = new Schema<IProvider>(
     country:{type:String},
     countryCode:{type:String},
     services: [{ type: String }],
+    topServicesManual: [{ type: String }],
     technologies: [{ type: String }],
     industries: [{ type: String }],
     clients:[{type:String,default:[]}],
