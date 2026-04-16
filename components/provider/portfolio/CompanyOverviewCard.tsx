@@ -100,7 +100,7 @@ const isLarge = variant === "large";
             isLarge ? "text-[10px] text-gray-500" :
             "text-[12px]"
           }`}>
-           $ {provider.minProjectSize || "—"}
+           ₹{provider.minProjectSize || "—"}
           </span>
         </div>
           <div className={`${isLarge ? "text-[10px]" : "text-[11px]"} font-semibold text-gray-900 gap-1 flex`}>
@@ -111,7 +111,7 @@ const isLarge = variant === "large";
             isLarge ? "text-[10px] text-gray-500" :
             "text-[12px]"
           }`}>
-            ${provider.hourlyRate || "—"}/hr
+            ₹{provider.hourlyRate || "—"}/hr
           </span>
         </div>
       </div>

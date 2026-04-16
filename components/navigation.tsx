@@ -313,7 +313,7 @@ const overflowCategories = mainCategories.slice(5);
               className={`hidden flex-1 min-w-0 lg:flex  items-center
                 gap-2
                 
-                lg:gap-3 xl:gap-6 2xl:gap-6
+                lg:gap-3 xl:gap-4 2xl:gap-6
                 transition-all duration-300`}
                           >
               {visibleCategories.map((category) => (
@@ -372,6 +372,13 @@ const overflowCategories = mainCategories.slice(5);
               >
                 Pricing
               </Link>
+              <Link
+                href="/blogs"
+                className="text-slate-600 mt-1 hover:text-slate-900 text-sm"
+                onClick={() => setMobileMenuOpen(false)}
+                >
+                Blogs
+                </Link>
 
                   {/* <Link
                     href="/about"
@@ -391,7 +398,7 @@ const overflowCategories = mainCategories.slice(5);
 
                     >
               <DropdownMenuTrigger asChild>
-                <button className="p-1 text-[14px] font-medium text-gray-500 cursor-pointer">
+                <button className="p-1 text-[14px] font-medium text-gray-500 hover:text-slate-900  cursor-pointer">
                     {/* <FaBars className="text-red cursor-pointer hover:text-slate-900 h-6 w-6" /> */}
                     More
                   </button> 
@@ -632,6 +639,13 @@ const overflowCategories = mainCategories.slice(5);
           onClick={() => setMobileMenuOpen(false)}
           >
           Pricing
+          </Link>
+          <Link
+          href="/blogs"
+          className="text-slate-600 text-sm"
+          onClick={() => setMobileMenuOpen(false)}
+          >
+          Blogs
           </Link>
 
           {/* <Link

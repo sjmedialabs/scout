@@ -454,7 +454,7 @@ const WishListPage = () => {
                   {/* Rate */}
                   <div className="text-xs text-[#616161] font-bold py-1">
                     Starting Price:
-                    <span className="ml-1 text-gray-400">{p.agency.hourlyRate ||0}/hr</span>
+                    <span className="ml-1 text-gray-400">₹{p.agency.hourlyRate ||0}/hr</span>
                   </div>
 
                   {/* Buttons */}

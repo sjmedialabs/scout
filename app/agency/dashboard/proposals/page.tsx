@@ -17,6 +17,7 @@ import {
   Users,
   Award,
   DollarSign,
+  IndianRupeeIcon,
   Calendar,
   Eye,
   Edit,
@@ -572,11 +573,11 @@ const ProposalsPage = () => {
                         {/* Budget */}
                         <div className="flex items-center gap-3">
                           <div className="h-6 w-6 rounded-full bg-[#F4561C] flex items-center justify-center shrink-0">
-                            <DollarSign className="h-3 w-3 text-white" />
+                            <IndianRupeeIcon className="h-3 w-3 text-white" />
                           </div>
                           <span className="text-[13px] font-semibold text-black">
                             {proposal.proposedBudget
-                              ? `$${proposal.proposedBudget.toLocaleString()}`
+                              ? `₹${proposal.proposedBudget.toLocaleString()}`
                               : "N/A"}
                           </span>
                         </div>

@@ -188,10 +188,10 @@ export default function AllSubscribersPage() {
 
         <div className="flex flex-row gap-3">
           
-          <Button className="btn-blackButton h-[30px]" onClick={()=>router.push("/admin/subscribers/all-subscribers/add")}>
+          {/* <Button className="btn-blackButton h-[30px]" onClick={()=>router.push("/admin/subscribers/all-subscribers/add")}>
             <Plus className="h-3 w-3" />
             Add Subscriber
-          </Button>
+          </Button> */}
           <Button className="BackButton rounded-full mt-0 !h-[30px] " onClick={()=>router.push("/admin/subscribers")}>
              Back to subcribers
           </Button>
@@ -313,7 +313,7 @@ export default function AllSubscribersPage() {
                   {sub.users.toString().padStart(2, "0")}
                 </td>
 
-                <td className="p-4 text-sm">${sub.revenue.toLocaleString()}</td>
+                <td className="p-4 text-sm">₹{sub.revenue.toLocaleString()}</td>
 
                 <td className="p-4 flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-gray-500" />

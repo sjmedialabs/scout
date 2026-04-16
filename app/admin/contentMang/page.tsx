@@ -453,7 +453,7 @@ const isValidPhone = (phone) => {
                 />
 
                 <Input
-                  placeholder="Title"
+                  placeholder="Enter Title"
                   className="border-gray-200 rounded-xl placeholder:text-gray-200"
                   value={item.title}
                   onChange={(e) => {
@@ -463,16 +463,33 @@ const isValidPhone = (phone) => {
                   }}
                 />
 
-                <Textarea
-                className="border-gray-200 rounded-xl placeholder:text-gray-200"
-                  placeholder="Description"
-                  value={item.description}
-                  onChange={(e) => {
-                    const updated = [...cms.homeWorkSection];
-                    updated[index].description = e.target.value;
-                    updateField("homeWorkSection", updated);
-                  }}
-                />
+                
+                <div>
+                  <Textarea
+                    className="border-gray-200 rounded-xl placeholder:text-gray-200"
+                    placeholder="Enter Description"
+                    maxLength={100}
+                    value={item.description}
+                    onChange={(e) => {
+                      const value = e.target.value.slice(0, 100); // paste-safe
+                      const updated = [...cms.homeWorkSection];
+                      updated[index].description = value;
+                      updateField("homeWorkSection", updated);
+                    }}
+                  />
+
+                  <div className="flex justify-between items-center mt-1">
+                    <p className="text-xs text-gray-400">
+                      {(item.description || "").length} / 100
+                    </p>
+
+                    {(item.description || "").length >= 100 && (
+                      <p className="text-xs text-orange-500">
+                      Character limit reached
+                      </p>
+                    )}
+                  </div>
+                </div>
 
                 <Button
                 className="primary-button h-[30px]"

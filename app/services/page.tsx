@@ -744,7 +744,7 @@ useEffect(() => {
                   {/* Rate */}
                   <div className="text-xs text-[#616161] font-bold py-1">
                     Starting Price:
-                    <span className="ml-1 text-gray-400">{p.hourlyRate}/hr</span>
+                    <span className="ml-1 text-gray-400">{p.hourlyRate}₹/hr</span>
                   </div>
 
                   {/* Buttons */}
