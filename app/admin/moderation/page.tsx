@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import {
   Search,
   DollarSign,
+  IndianRupeeIcon,
   Clock,
   Inbox,
 } from "lucide-react";
@@ -305,7 +306,7 @@ if (resLoading) {
             
             <div className="flex flex-col sm:flex-row mt-1 gap-2 sm:gap-10  w-full">
               <div className="flex items-center gap-2 text-sm">
-                <DollarSign className="h-4 w-4 text-[#ff4d00]" />
+                <IndianRupeeIcon className="h-4 w-4 text-[#ff4d00]" />
                 <span className="font-semibold">
                   {eachItem.budgetMin.toLocaleString()} – 
                   {eachItem.budgetMax.toLocaleString()}

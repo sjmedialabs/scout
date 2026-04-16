@@ -146,7 +146,7 @@ export function BrowseRequirements({
   }
 
   const formatBudget = (min: number, max: number) =>
-    `$${min.toLocaleString()} - $${max.toLocaleString()}`
+    `₹${min.toLocaleString()} - ₹${max.toLocaleString()}`
 
   return (
     <div className="min-h-screen">

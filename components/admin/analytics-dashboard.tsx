@@ -145,7 +145,7 @@ interface AnalyticsDashboardProps {
   <CardContent>
     <div className="flex items-center justify-between -mt-2">
       <div className="text-2xl font-bold">
-        ${lifetimeRevenue.toLocaleString()}
+        ₹{lifetimeRevenue.toLocaleString()}
       </div>
 
       <div
@@ -358,7 +358,7 @@ interface AnalyticsDashboardProps {
 
     {/* Revenue */}
     <div className="text-right font-semibold">
-      ${(provider.revenue || 0).toLocaleString()}
+      ₹{(provider.revenue || 0).toLocaleString()}
     </div>
 
   </div>

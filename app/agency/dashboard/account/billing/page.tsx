@@ -311,7 +311,7 @@ const handleDownload = async (paymentId) => {
             </CardHeader>
             <CardContent>
               <p className="text-blue-600 font-medium">
-                {`${subscriptionDetails?.price || 0} / ${subscriptionDetails?.billingCycle || "Monthly"}`}
+                ₹{`${subscriptionDetails?.price || 0} / ${subscriptionDetails?.billingCycle || "Monthly"}`}
               </p>
             </CardContent>
           </Card>
@@ -387,7 +387,7 @@ const handleDownload = async (paymentId) => {
                         ● {row.status === "success"?row.status:"failed"}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3">{row.amount}</td>
+                    <td className="px-4 py-3">₹{row.amount}</td>
                     <td className="px-4 py-3 text-right">
                      <Button
                         variant="ghost"

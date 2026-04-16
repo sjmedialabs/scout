@@ -37,6 +37,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { isValidPhoneNumber } from "libphonenumber-js";
 import CaseStudiesSection from "./caseStudiesSection";
+import { toast } from "@/lib/toast";
 
 interface CompanyProfileEditorProps {
   provider: Provider;
@@ -334,6 +335,26 @@ export function CompanyProfileEditor({
     setFormData((prev) => ({
       ...prev,
       services: (prev.services || []).filter((s) => s !== service),
+    }));
+  };
+
+  const addTopService = (service: string) => {
+    if (service && !(formData.topServicesManual || []).includes(service)) {
+      if ((formData.topServicesManual || []).length >= 5) {
+        toast.error("You can only add up to 5 top services.");
+        return;
+      }
+      setFormData((prev) => ({
+        ...prev,
+        topServicesManual: [...(prev.topServicesManual || []), service],
+      }));
+    }
+  };
+
+  const removeTopService = (service: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      topServicesManual: (prev.topServicesManual || []).filter((s) => s !== service),
     }));
   };
 
@@ -1547,71 +1568,63 @@ export function CompanyProfileEditor({
           </div>
 
           {/* ================= TOP SERVICES (MANUAL SELECTION) ================= */}
+          <div className="mt-6">
+            <h3 className="text-sm font-semibold mb-2">Top Services</h3>
+            <p className="text-xs text-gray-500 mb-3">
+              These will be used only if you don’t have rating data. You can
+              select up to 5.
+            </p>
 
-        <div className="mt-6">
-          <h3 className="text-sm font-semibold mb-2">
-            Top Services
-          </h3>
+            {isEditMode && (
+              <div className="space-y-3">
+                <Select onValueChange={addTopService}>
+                  <SelectTrigger className="w-[50%] mt-1 !bg-[#f2f1f6]">
+                    <SelectValue placeholder="Select a top service" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(formData.services || [])
+                      .filter(
+                        (s) => !(formData.topServicesManual || []).includes(s),
+                      )
+                      .map((service) => (
+                        <SelectItem key={service} value={service}>
+                          {service}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+                <div className="flex flex-wrap gap-2">
+                  {(formData.topServicesManual || []).map((service) => (
+                    <Badge
+                      key={service}
+                      variant="secondary"
+                      className="flex items-center gap-2 bg-[#1C96F4]"
+                    >
+                      {service}
+                      <div onClick={() => removeTopService(service)}>
+                        <X className="h-3 w-3 cursor-pointer" />
+                      </div>
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
 
-          <p className="text-xs text-gray-500 mb-3">
-            These will be used only if you don’t have rating data
-          </p>
-
-          {/* SELECTABLE SERVICES */}
-          {isEditMode && (
-            <div className="flex flex-col gap-2">
-              {(formData.services || []).map((service) => {
-                const selected = (formData.topServicesManual || []).includes(service);
-
-                return (
-                  <label key={service} className="flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={selected}
-                      onChange={() => {
-                        setFormData((prev) => {
-                          const current = prev.topServicesManual || [];
-
-                          if (selected) {
-                            return {
-                              ...prev,
-                              topServicesManual: current.filter((s) => s !== service),
-                            };
-                          }
-
-                          if (current.length >= 5) return prev;
-
-                          return {
-                            ...prev,
-                            topServicesManual: [...current, service],
-                          };
-                        });
-                      }}
-                    />
+            {!isEditMode && (
+              <div className="flex flex-wrap gap-2">
+                {(formData.topServicesManual || []).map((service) => (
+                  <Badge key={service} className="bg-yellow-100 text-yellow-800">
                     {service}
-                  </label>
-                );
-              })}
-            </div>
-          )}
-
-          {/* VIEW MODE */}
-          {!isEditMode && (
-            <div className="flex flex-wrap gap-2">
-              {(formData.topServicesManual || []).map((service) => (
-                <Badge key={service} className="bg-yellow-100 text-yellow-800">
-                  {service}
-                </Badge>
-              ))}
-
-              {(formData.topServicesManual || []).length === 0 && (
-                <p className="text-gray-400 text-sm">
-                  No manual top services selected
-                </p>
-              )}
-            </div>
-          )}
-        </div>
+                  </Badge>
+                ))}
+                {(formData.topServicesManual || []).length === 0 && (
+                  <p className="text-gray-400 text-sm">
+                    No manual top services selected
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
         </TabsContent>
 
         {/* Portfolio */}

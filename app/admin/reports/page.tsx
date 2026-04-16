@@ -1337,7 +1337,7 @@ const getARPU = (payments) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       <KPICard
         title="Total Revenue"
-        value={topCardStats.totalRevenue.toString()}
+        value={`₹${topCardStats.totalRevenue.toString()}`}
         subtitle={`${topCardStats.lastMonthRevenuePercentage.toFixed(2).toString()}% from last month`}
       />
       <KPICard
@@ -1486,13 +1486,13 @@ const getARPU = (payments) => {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <SummaryCard
         title="Monthly Recurring Revenue"
-        value={bottomCardStats.monthlyRecurringRevenue.toFixed(2).toString()}
+        value={`₹${bottomCardStats.monthlyRecurringRevenue.toFixed(2).toString()}`}
         subtitle={`From ${bottomCardStats.activeSubscriberCount} active subscriptions`}
         icon="/images/admin-monthlyRevenue.png"
       />
       <SummaryCard
         title="Average Revenue Per User"
-        value={bottomCardStats.avgRevenuePereUser.toFixed(2).toString()}
+        value={`₹${bottomCardStats.avgRevenuePereUser.toFixed(2).toString()}`}
         subtitle="Per paying user"
         icon="/images/admin-user.png"
       />

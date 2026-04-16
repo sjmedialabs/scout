@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Users, MessageCircle } from "lucide-react";
-import { Star, DollarSign, Layers, MapPin , Grid2x2 } from "lucide-react";
+import { Star, DollarSign, IndianRupeeIcon, Layers, MapPin , Grid2x2 } from "lucide-react";
 import { BriefcaseBusiness } from "lucide-react";
 import {
   Select,
@@ -260,7 +260,7 @@ const paginatedProviders = filteredProviders.slice(
           </div>
           {[
             { value: ratingFilter, set: setRatingFilter, placeholder: "Rating", icon: <Star size={16} className="text-[#9B96C8]" /> },
-            { value: priceFilter, set: setPriceFilter, placeholder: "Price", icon: <DollarSign size={16} className="text-[#9B96C8]" /> },
+            { value: priceFilter, set: setPriceFilter, placeholder: "Price", icon: <IndianRupeeIcon size={16} className="text-[#9B96C8]" /> },
             { value: projectFilter, set: setProjectFilter, placeholder: "Projects", icon: <Layers size={16} className="text-[#9B96C8]" /> },
           ].map((f, i) => (
             <Select key={i} value={f.value} onValueChange={f.set}>
@@ -358,7 +358,7 @@ const paginatedProviders = filteredProviders.slice(
           //     </div>
 
           //     <p className="mt-1 text-gray-400 text-xs">
-          //       Starting Price: <span className="font-semibold">${p.hourlyRate}/hr</span>
+          //       Starting Price: <span className="font-semibold">₹{p.hourlyRate}/hr</span>
           //     </p>
           //   </div>
 
@@ -499,7 +499,7 @@ const paginatedProviders = filteredProviders.slice(
                   {/* Rate */}
                   <div className="text-xs text-[#616161] font-bold py-1">
                     Starting Price:
-                    <span className="ml-1 text-gray-400">{p.hourlyRate}/hr</span>
+                    <span className="ml-1 text-gray-400">₹{p.hourlyRate}/hr</span>
                   </div>
 
                   {/* Buttons */}

@@ -1006,7 +1006,7 @@ const paginatedRequirements = filteredRequirements?.slice(
                     <div className="flex items-center gap-4 text-sm flex-wrap text-muted-foreground">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                         <HiCurrencyDollar color="#F54A0C" className="h-8 w-8" />
-                        <span className="text-[14px] font-bold text-[#000]">{`$ ${project.budgetMin} - $ ${project.budgetMax}`}</span>
+                        <span className="text-[14px] font-bold text-[#000]">{`₹ ${project.budgetMin} - ₹ ${project.budgetMax}`}</span>
                       </div>
                       {/* <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2 ">
                         <div className="bg-[#F54A0C] rounded-[50%] flex justify-center items-center h-6 w-6">

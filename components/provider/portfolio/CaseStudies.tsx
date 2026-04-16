@@ -109,7 +109,7 @@ const handlePrev = () => {
               <div>
                 <p className="text-xl font-semibold">Budget</p>
                 <p className="text-xs text-gray-500">
-                  {project?.budget || "$0"}
+                  ₹{project?.budget || "$0"}
                 </p>
               </div>
 

@@ -715,7 +715,7 @@ const getARPU = (payments) => {
             />
           }
           gradient="from-purple-100 to-purple-200"
-          value={`$${userDistribution.monthlyRevenue.toLocaleString()}`}
+          value={`₹${userDistribution.monthlyRevenue.toLocaleString()}`}
           helper={<span className={helperColor}>{helperText}</span>}
         />
       </div>

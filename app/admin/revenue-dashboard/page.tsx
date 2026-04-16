@@ -569,7 +569,7 @@ console.log("Caluclated pie data is::::::",pieData)
       <div className="grid grid-cols-1 md:grid-cols-3  gap-6">
         <KpiCard 
           title="Current MRR"
-          value={topCardStats.currentMonthRecurringRevenue}
+          value={`₹${topCardStats.currentMonthRecurringRevenue}`}
           note={`${topCardStats.recurringRevenuePercentageIncLastMonth}% from last month`}
           noteColor={topCardStats.recurringRevenuePercentageIncLastMonth>=0?"text-green-600":"text-red-600"}
           icon={< RiExchangeDollarFill className="text-orangeButton bg-[#eef7fe]" />}
@@ -577,7 +577,7 @@ console.log("Caluclated pie data is::::::",pieData)
 
         <KpiCard
           title="Annual Revenue"
-          value={topCardStats.annualRevenue}
+          value={`₹${topCardStats.annualRevenue}`}
           note={`${topCardStats.annualRevenuePercentageIncLastYear}% growth YoY`}
           noteColor={topCardStats.annualRevenuePercentageIncLastYear>=0?"text-green-600":"text-red-600"}
           icon={<IoMdTrendingUp className="text-orangeButton" />}

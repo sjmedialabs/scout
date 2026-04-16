@@ -99,8 +99,8 @@ export default function ProposalHeader({
               <div className="hidden sm:block w-[1px] h-4 bg-gray-400"></div>
 
               <p className="text-[#828293] text-xs">
-                <span className="font-semibold text-[#000]">Budget: </span>$
-                {proposal.requirement.budgetMin} - $
+                <span className="font-semibold text-[#000]">Budget: </span>₹
+                {proposal.requirement.budgetMin} - ₹
                 {proposal.requirement.budgetMax}
               </p>
 

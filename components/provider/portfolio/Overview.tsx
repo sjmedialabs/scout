@@ -164,7 +164,7 @@ const hasAnyChartData = hasServiceData || hasIndustryData;
             label="Hourly rate"
             value={
               provider?.hourlyRate
-                ? `$${provider.hourlyRate }`
+                ? `₹${provider.hourlyRate }`
                 : "N/A"
             }
           />
@@ -173,7 +173,7 @@ const hasAnyChartData = hasServiceData || hasIndustryData;
             label="Min. project"
             value={
               provider?.minProjectSize
-                ? `$${provider.minProjectSize}`
+                ? `₹${provider.minProjectSize}`
                 : "N/A"
             }
           />

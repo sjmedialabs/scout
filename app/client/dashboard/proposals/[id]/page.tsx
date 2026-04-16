@@ -594,7 +594,7 @@ const downloadFile = async (url: string) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {/* <div className="space-y-4">
                     <label className="text-sm font-semibold text-[#667085]">
-                      Proposed Cost ($)
+                      Proposed Cost (₹)
                     </label>
                     <div className="h-[40px] rounded-xl border border-[#E4E7EC] bg-[#F9FAFB] flex items-center px-4 text-[#344054] font-medium">
                       ${proposal.proposedBudget}
@@ -602,9 +602,9 @@ const downloadFile = async (url: string) => {
                   </div> */}
                   <div className="p-2 rounded-xl border border-[#E4E7EC] bg-[#F9FAFB]">
                      <label className="text-md font-semibold text-[#667085]">
-                      Proposed Cost ($)
+                      Proposed Cost (₹)
                     </label>
-                    <p className="text-sm text-[#667085] mt-0">${proposal.proposedBudget}</p>
+                    <p className="text-sm text-[#667085] mt-0">₹{proposal.proposedBudget}</p>
                   </div>
 
                   {/* <div className="space-y-2">

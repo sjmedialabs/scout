@@ -268,7 +268,7 @@ if (resLoading) {
 
                 <img
                   src={section.image}
-                  className=" rounded-xl w-full min-h-[250px] max-h-[280px] mt-auto "
+                  className=" rounded-xl w-full mb-2 min-h-[250px] max-h-[280px] mt-auto "
                 />
               </div>
             </div>
@@ -315,11 +315,11 @@ if (resLoading) {
                   <div
                     key={category._id}
                     
-                    className={`group bg-white/70 h-[285px] backdrop-blur-sm rounded-4xl px-6 py-6 border lg:pl-8 ${colors.hover} hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col`}
+                    className={`group bg-white/70 h-[260px] backdrop-blur-sm rounded-4xl px-6 py-4 border lg:pl-8 ${colors.hover} hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col`}
                   >
                     {/* Top Content */}
                     <div>
-                      <div className="flex items-center gap-2 mb-4">
+                      <div className="flex items-center gap-2 mb-2">
                         <img
                           src={category?.icon || "/images/icon-1.png"}
                           alt=""
@@ -348,7 +348,7 @@ if (resLoading) {
                     </div>
 
                     {/* Button pushed to bottom */}
-                    <div className="mt-auto pt-6">
+                    <div className="mt-4">
                       <Button
                         size="sm"
                         className=" bg-blueButton cursor-pointer text-sm  text-white rounded-full"
@@ -471,13 +471,13 @@ if (resLoading) {
                   <div className="mt-auto">
                     <div className="mt-0 text-center">
                       <span className="text-sm font-bold text-green-700">
-                        ${project.budgetMin.toLocaleString()} - $
+                        ₹{project.budgetMin.toLocaleString()} - ₹
                         {project.budgetMax.toLocaleString()}
                       </span>
                     </div>
 
                     {/* Button */}
-                    <div className="px-6 pb-6 mt-1">
+                    <div className="px-6 pb-3 mt-1">
                       <Link href={`/login?to=requirement-details&id=${project._id}`}>
                         <Button
                           variant="outline"

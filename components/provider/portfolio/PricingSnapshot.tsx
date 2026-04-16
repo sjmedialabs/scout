@@ -33,7 +33,7 @@ const isLarge = variant === "large";
             <span className="text-xs sm:hidden">:</span>
 
             <span className={`${isCompact ? "text-[10px]" : "text-[16px]"} text-gray-600 text-center font-bold sm:text-black`}>
-              ${provider?.minProjectSize ?? 0}+
+              ₹{provider?.minProjectSize ?? 0}+
             </span>
           </div>
 
