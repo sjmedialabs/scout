@@ -6,7 +6,7 @@ import { CreditCard, Lock, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { getSubscriptionPlan } from "@/lib/subscription-plans"
 import { IoIosCheckmarkCircle } from "react-icons/io"
-import { useState,useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useParams, useSearchParams,useRouter } from "next/navigation"
 import { features } from "process"
 import { useAuth } from "@/contexts/auth-context"
@@ -47,8 +47,27 @@ export default function SubscribePage({params}:SubscribePageProps) {
   const[showMoreFeatures,setShowMoreFeatures]=useState(false);
   const [paymentRequestStatus,setPaymentRequestStatus]=useState(false)
 
+  const newPlanOriginalPrice =
+    selectedPlan &&
+    (billing === "yearly"
+      ? selectedPlan.pricePerYear
+      : selectedPlan.pricePerMonth);
+
+  const discountPercentage =
+    selectedPlan &&
+    (billing === "yearly"
+      ? selectedPlan.yearlyDiscountPercentage
+      : selectedPlan.monthlyDiscountPercentage);
+
+  const discountAmount =
+    selectedPlan && discountPercentage > 0
+      ? (newPlanOriginalPrice * discountPercentage) / 100
+      : 0;
+
+  const newPlanPriceAfterDiscount = selectedPlan ? newPlanOriginalPrice - discountAmount : 0;
+
    //it returns the total amount of the after dedudction the remainng amount
-  const calculateUpgradeAmount=(
+  const calculateUpgradeAmount = useCallback((
     currentPrice: number,
     billingCycle: "Monthly" | "Yearly",
     startDate: string | Date,
@@ -61,7 +80,9 @@ export default function SubscribePage({params}:SubscribePageProps) {
     const end = new Date(endDate)
   
     if (now >= end) {
-      return newPlanPrice // subscription expired
+      setRemaianingAMount(0);
+      setPaymableAmount(newPlanPrice);
+      return newPlanPrice; // subscription expired
     }
   
     const totalDays =
@@ -74,7 +95,11 @@ export default function SubscribePage({params}:SubscribePageProps) {
     console.log("end time is:::::",end.getTime())
   
     const perDayCost = currentPrice / totalDays
-    const unusedAmount = perDayCost * remainingDays
+    let unusedAmount = perDayCost * remainingDays
+
+    if (unusedAmount > newPlanPrice) {
+      unusedAmount = 0;
+    }
     setRemaianingAMount(unusedAmount)
   
     const payableAmount = Math.max(
@@ -84,7 +109,7 @@ export default function SubscribePage({params}:SubscribePageProps) {
     setPaymableAmount(payableAmount)
   
     return payableAmount
-  }
+  }, []);
   
 
   const  loadData=async()=>{
@@ -124,31 +149,27 @@ export default function SubscribePage({params}:SubscribePageProps) {
        }
      }, [user, loading, router])
    useEffect(() => {
-    console.log(subscriptionDetails?.price)
-  if (
-    !subscriptionDetails?.price ||
-    !subscriptionDetails?.billingCycle ||
-    !userDetails?.subscriptionEndDate ||
-    !userDetails?.subscriptionStartDate
-  ) {
-    return
-  }
-console.log("calling")
-  const newPlanPrice =
-    billing === "yearly"
-      ? selectedPlan.pricePerYear
-      : selectedPlan.pricePerMonth
+    if (!selectedPlan || !user) return;
 
-  const payable = calculateUpgradeAmount(
-    subscriptionDetails.price,
-    subscriptionDetails.billingCycle,
-    userDetails.subscriptionStartDate,
-    userDetails.subscriptionEndDate,
-    newPlanPrice
-  )
+    if (
+      !subscriptionDetails?.price ||
+      !subscriptionDetails?.billingCycle ||
+      !userDetails?.subscriptionEndDate ||
+      !userDetails?.subscriptionStartDate
+    ) {
+      setPaymableAmount(newPlanPriceAfterDiscount);
+      setRemaianingAMount(0);
+      return;
+    }
 
-  console.log("Payable amount:", payable)
-}, [subscriptionDetails, selectedPlan, billing,userDetails])
+    calculateUpgradeAmount(
+      subscriptionDetails.price,
+      subscriptionDetails.billingCycle,
+      userDetails.subscriptionStartDate,
+      userDetails.subscriptionEndDate,
+      newPlanPriceAfterDiscount
+    );
+  }, [subscriptionDetails, selectedPlan, billing, userDetails, calculateUpgradeAmount, user, newPlanPriceAfterDiscount]);
 
 
   if(resLoading){
@@ -177,7 +198,7 @@ const handlePayment = async () => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       planId: params.id,
-      amount: payableAmount>0?payableAmount:billing==="yearly"?selectedPlan.pricePerYear:selectedPlan.pricePerMonth|| 0,
+      amount: payableAmount || 0,
     }),
   })
 
@@ -210,7 +231,15 @@ const handlePayment = async () => {
 
       if (data.success) {
         alert("Payment successful 🎉")
-        router.push("/agency/dashboard/")
+
+        // router.replace("/agency/dashboard")
+
+        window.location.reload()
+
+        // setTimeout(() => {
+        //   window.location.reload()
+        // }, 500)
+
       } else {
         alert("Payment verification failed")
       }
@@ -238,148 +267,172 @@ const handlePayment = async () => {
   // const visibleFeatures = selectedPlan.features.slice(0, 5)
   // const remainingCount = selectedPlan.features.length - visibleFeatures.length
 
-  return (
-    <div>
-      <div className="px-4 ">
+ return (
+  <div>
+    <div className="px-4 ">
       {
         !resLoading && !failed && selectedPlan && (
-            <div className="max-w-7xl mx-auto">
+          <div className="max-w-7xl mx-auto">
 
-          {/* Header */}
-          <div className="text-center">
-            <p className="text-orangeButton text-xl font-bold">
-              Subscribe to {selectedPlan.title}
-            </p>
-            <h1 className="text-md font-medium">
-              Complet your subscription to unlock all {selectedPlan.title} features
-            </h1>
-          </div>
+            {/* Header */}
+            <div className="text-center">
+              <p className="text-orangeButton text-xl font-bold">
+                Subscribe to {selectedPlan.title}
+              </p>
+              <h1 className="text-md font-medium">
+                Complete your subscription to unlock all {selectedPlan.title} features
+              </h1>
+            </div>
 
-          {/* Order Summary Card*/}
-          <div className="flex justify-center">
-            <Card className="w-full max-w-md rounded-2xl mt-2 shadow-md border border-slate-200 bg-white">
-              <CardContent className="p-3 space-y-2 py-1">
+            {/* Order Summary Card */}
+            <div className="flex justify-center">
+              <Card className="w-full max-w-md rounded-2xl mt-2 shadow-md border border-slate-200 bg-white">
+                <CardContent className="p-3 space-y-2 py-1">
 
-                <div className="flex items-center h-0 justify-between">
-                  <h2 className="text-orangeButton font-bold text-lg">
-                    Order Summary
-                  </h2>
-                </div>
+                  {/* Order Title */}
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-orangeButton font-bold text-lg">
+                      Order Summary
+                    </h2>
+                  </div>
 
-                {/* Plan Row */}
-                <div className="flex items-center justify-between border-b pb-4">
-                  {/* Left */}
-                  <p className="font-bold text-zinc-900">
-                    {selectedPlan.title} Plan
-                  </p>
+                  {/* Plan Row */}
+                  <div className="flex items-center justify-between border-b pb-4">
 
-                  {/* Right */}
-                  <div className="flex items-center gap-3">
-                    <p className="font-bold text-zinc-900">
-                      ${billing==="yearly"?selectedPlan.pricePerYear:selectedPlan.pricePerMonth}/{billing==="yearly"?"yearly":"monthly"}
+                    {/* Left */}
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-zinc-900">
+                        {selectedPlan.title}
+                      </p>
+
+                      {discountPercentage > 0 && (
+                        <div className="text-xs text-green-600 font-semibold bg-green-100 px-2 py-0.5 rounded-full">
+                          {discountPercentage}% off
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Right */}
+                    <div className="flex items-center gap-3">
+                      <p className="font-bold text-zinc-900">
+                        ₹{newPlanOriginalPrice}/
+                        {billing === "yearly" ? "yearly" : "monthly"}
+                      </p>
+
+                      <Link href="/agency/dashboard/account/subscriptions">
+                        <button
+                          type="button"
+                          className="h-7 px-3 rounded-full text-xs font-medium
+                          border border-zinc-300 bg-zinc-700
+                          hover:bg-zinc-600 text-white
+                          transition-colors"
+                        >
+                          Change
+                        </button>
+                      </Link>
+                    </div>
+
+                  </div>
+
+                  {/* Features */}
+                  <div>
+                    <p className="font-bold text-md mb-3">
+                      What's included:
                     </p>
-                    <Link
-                      href="/agency/dashboard/account/subscriptions"
-                    >
-                      <button
-                        type="button"
-                        className="h-7 px-3 rounded-full text-xs font-medium
-                                  border border-zinc-300 bg-zinc-700
-                                  hover:bg-zinc-600 text-white
-                                  transition-colors"
-                      >
-                        Change
-                      </button>
-                    </Link>
+
+                    <ul className="space-y-3">
+
+                      {(selectedPlan.features || [])
+                        .slice(0, 2)
+                        .map((feature, index) => (
+                          <li
+                            key={index}
+                            className="flex items-start gap-3 text-sm text-zinc-700"
+                          >
+                            <IoIosCheckmarkCircle
+                              className="h-4 w-5 text-orangeButton shrink-0 mt-px"
+                            />
+                            <span>{feature}</span>
+                          </li>
+                        ))}
+
+                      {
+                        (selectedPlan.features || []).length > 2 &&
+                        !showMoreFeatures && (
+                          <li
+                            className="text-sm text-zinc-700 underline cursor-pointer"
+                            onClick={() => setShowMoreFeatures(true)}
+                          >
+                            + {(selectedPlan.features || []).length - 2} more features
+                          </li>
+                        )
+                      }
+
+                      {
+                        showMoreFeatures &&
+                        (selectedPlan.features || [])
+                          .slice(2)
+                          .map((feature, index) => (
+                            <li
+                              key={index}
+                              className="flex items-start gap-3 text-sm text-zinc-700"
+                            >
+                              <IoIosCheckmarkCircle
+                                className="h-4 w-5 text-orangeButton shrink-0 mt-px"
+                              />
+                              <span>{feature}</span>
+                            </li>
+                          ))
+                      }
+
+                      {
+                        showMoreFeatures &&
+                        (selectedPlan.features || []).length > 2 && (
+                          <li
+                            className="text-sm text-zinc-700 underline cursor-pointer"
+                            onClick={() => setShowMoreFeatures(false)}
+                          >
+                            hide
+                          </li>
+                        )
+                      }
+
+                    </ul>
                   </div>
-                </div>
 
-                {/* Features */}
-                <div>
-                  <p className="font-bold text-md mb-3">
-                    What's included:
-                  </p>
-                  <ul className="space-y-3">
-                    {(selectedPlan.features || []).slice(0,2).map((feature, index) => (
-                      <li
-                        key={index}
-                        className="flex items-startgap-3 text-sm text-zinc-700"
-                      >
-                        <IoIosCheckmarkCircle 
-                          className="h-4 w-5 text-orangeButton shrink-0 mt-px" 
-                        />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                    {
-                      (selectedPlan.features || []).length > 2 && !showMoreFeatures && (
-                       <li className="text-sm text-zinc-700 underline cursor-pointer" onClick={()=>setShowMoreFeatures(true)}>
-                        + {(selectedPlan.features || []).length-2} more features
-                      </li>
-                      )
-                    }
-                    {/*{remainingCount > 0 && (
-                      <li className="text-sm text-zinc-700 underline cursor-pointer">
-                        + {remainingCount} more features
-                      </li>
-                    )} */}
+                  {/* Total Section */}
+                  <div className="border-t pt-4 space-y-2">
 
-                    {
-                      showMoreFeatures && (selectedPlan.features || []).slice(2).map((feature, index) => (
-                      <li
-                        key={index}
-                        className="flex items-startgap-3 text-sm text-zinc-700"
-                      >
-                        <IoIosCheckmarkCircle 
-                          className="h-4 w-5 text-orangeButton shrink-0 mt-px" 
-                        />
-                        <span>{feature}</span>
-                      </li>
-                    ))
-                    }
+                    <div className="flex items-center justify-between font-bold text-zinc-900">
+                      <span>Plan Price</span>
+                      <span>₹{newPlanOriginalPrice?.toFixed(2)}</span>
+                    </div>
 
-                    {
-                      showMoreFeatures && (selectedPlan.features || []).length > 2 && (
-                        <li className="text-sm text-zinc-700 underline cursor-pointer" onClick={()=>setShowMoreFeatures(false)}>hide</li>
-                      )
-                    }
+                    {discountAmount > 0 && (
+                      <div className="flex items-center justify-between text-green-600">
+                        <span>Discount ({discountPercentage}%)</span>
+                        <span>-₹{discountAmount.toFixed(2)}</span>
+                      </div>
+                    )}
 
-                  </ul>
-                </div>
+                    {remainingAmount > 0 && (
+                      <div className="flex items-center justify-between text-zinc-700">
+                        <span>Credit from previous plan</span>
+                        <span>-₹{remainingAmount.toFixed(2)}</span>
+                      </div>
+                    )}
 
-                {/* Total*/}
-                <div className="border-t pt-4">
-                  <div className="flex items-center justify-between font-bold text-zinc-900">
-                    <span>Plan Price</span>
-                    <span>
-                      ${billing==="yearly"?selectedPlan.pricePerYear:selectedPlan.pricePerMonth}
-                    </span>
+                    <div className="flex items-center justify-between font-bold text-zinc-900 pt-2 border-t mt-2">
+                      <span>Total Payable</span>
+                      <span>₹{payableAmount.toFixed(2)}</span>
+                    </div>
+
                   </div>
-                  {
-                    (selectedPlan?.pricePerYear>remainingAmount &&selectedPlan?.pricePerMonth>remainingAmount ) && (
-                      <div className="flex items-center justify-between font-bold text-zinc-900">
-                    <span>Previous Plan Amount</span>
-                    <span>
-                      ${remainingAmount.toFixed(2) || 0}
-                    </span>
-                  </div>
-                    )
-                  }
-                   <div className="flex items-center justify-between font-bold text-zinc-900">
-                    <span>Total</span>
-                    <span>
-                      ${payableAmount>0?payableAmount:billing==="yearly"?selectedPlan.pricePerYear:selectedPlan.pricePerMonth}
-                    </span>
-                  </div>
-                  <p className="text-xs text-zinc-5000 mt-0">
-                    {(selectedPlan.trialDays ?? 14)}-day free trial · Cancel anytime
-                  </p>
-                </div>
 
-                {/* Actions */}
-                <div className="flex items-center gap-2 pt-1">
-                  {/* Proceed to pay */}
-                  <button
+                  {/* Actions */}
+                  <div className="flex items-center gap-2 pt-1">
+
+                    <button
                       type="button"
                       disabled={paymentRequestStatus}
                       onClick={handlePayment}
@@ -387,49 +440,51 @@ const handlePayment = async () => {
                         h-9 px-8 rounded-full
                         text-[10px] font-medium
                         transition-all duration-200
-
                         ${
                           paymentRequestStatus
-                            ? "bg-orangeButton/20 cursor-not-allowed " 
+                            ? "bg-orangeButton/20 cursor-not-allowed"
                             : "bg-orangeButton text-white hover:bg-orange-600 cursor-pointer"
                         }
                       `}
                     >
-                      {paymentRequestStatus ? "Proceeding to pay..." : "Proceed to pay"}
+                      {paymentRequestStatus
+                        ? "Proceeding to pay..."
+                        : "Proceed to pay"}
                     </button>
 
+                    <Link href="/agency/dashboard/account/subscriptions">
+                      <button
+                        type="button"
+                        className="h-9 px-8 rounded-full
+                        bg-zinc-700 text-white text-[10px] font-medium
+                        hover:bg-zinc-800
+                        transition-colors"
+                      >
+                        Cancel/Exit
+                      </button>
+                    </Link>
 
-                  {/* Cancel / Exit */}
-                  <Link href="/agency/dashboard/account/subscriptions">
-                    <button
-                      type="button"
-                      className="h-9 px-8 rounded-full
-                                bg-zinc-700 text-white text-[10px] font-medium
-                                hover:bg-zinc-800
-                                transition-colors"
-                    >
-                      Cancel/Exit
-                    </button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                  </div>
 
-          {/* Back Link */}
-          <div className="mt-4 text-center">
-            <Link
-              href="/agency/dashboard/account/subscriptions"
-              className="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-700"
-            >
-              <ArrowLeft className="h-4 w-4 mr-1" />
-              Back to Pricing
-            </Link>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Back Link */}
+            <div className="mt-4 text-center">
+              <Link
+                href="/agency/dashboard/account/subscriptions"
+                className="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-700"
+              >
+                <ArrowLeft className="h-4 w-4 mr-1" />
+                Back to Pricing
+              </Link>
+            </div>
+
           </div>
-        </div>
         )
       }
-      </div>
     </div>
-  )
+  </div>
+)
 }

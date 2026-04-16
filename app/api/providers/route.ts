@@ -212,7 +212,9 @@ export async function GET(request: NextRequest) {
     // STEP 5 — Get Plans
     const plans = await Subscription.find(
       { _id: { $in: planIds } },
-      { isFeatured: 1 }
+      { isFeatured: 1,
+        pricePerMonth:1,
+       }
     ).lean();
 
     const planMap = new Map(
@@ -220,6 +222,7 @@ export async function GET(request: NextRequest) {
         p._id.toString(),
         {
           isFeatured: p.isFeatured,
+          price: p.pricePerMonth, 
         },
       ])
     );
@@ -231,6 +234,7 @@ export async function GET(request: NextRequest) {
         userSubscriptionMap.get(p.userId.toString());
 
       let computedIsFeatured = false;
+      let computedPlanPrice=0;
 
       // If user has plan
       if (userSub?.subscriptionPlanId) {
@@ -241,6 +245,7 @@ export async function GET(request: NextRequest) {
 
         computedIsFeatured =
           plan?.isFeatured || false;
+         computedPlanPrice=plan?.price || 0;
       }
 
       return {
@@ -281,6 +286,8 @@ export async function GET(request: NextRequest) {
 
         // ✅ NEW FEATURED FROM PLAN
         isFeatured: computedIsFeatured,
+
+        planPrice: computedPlanPrice,
 
         isVerified: p.isVerified,
         createdAt: p.createdAt,

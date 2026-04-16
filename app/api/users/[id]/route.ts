@@ -95,6 +95,8 @@ export async function GET(
         subscriptionPlanId: userData?.subscriptionPlanId,
         proposalCount: userData?.proposalCount || 0,
         monthlyProposalCount: userData?.monthlyProposalCount || 0,
+        monthlyProposalLimit: userData?.monthlyProposalLimit || 0,
+        caseStudiesLimit: userData?.caseStudiesLimit || 0,
         lastLogin: userData.lastLogin,
         createdAt: userData.createdAt,
 

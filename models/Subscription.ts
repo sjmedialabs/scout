@@ -10,6 +10,10 @@ export interface ISubscription extends Document {
   yearlySubscription: boolean
   description?: string
   features: string[]
+
+  //discounts
+  monthlyDiscountPercentage?: number
+  yearlyDiscountPercentage?:number
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -39,7 +43,7 @@ const SubscriptionSchema = new Schema<ISubscription>(
     },
 
     isFeatured: {
-      type: Boolean,
+      type: Boolean, 
       default: false,
     },
 
@@ -67,6 +71,21 @@ const SubscriptionSchema = new Schema<ISubscription>(
       type: Boolean,
       default: true,
     },
+
+   monthlyDiscountPercentage:{
+    type:Number,
+    default:0,
+    min:0,
+    max:100
+   },
+   
+   yearlyDiscountPercentage:{
+    type:Number,
+    default:0,
+    min:0,
+    max:100
+   }
+    
   },
   {
     timestamps: true,

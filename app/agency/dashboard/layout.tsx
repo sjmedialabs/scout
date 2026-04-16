@@ -101,11 +101,20 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
         const freeTrailData=await freeTrailRes.json();
         console.log("Free Taril Data::::::",freeTrailData)
 
-        const isExpired = data.user?.subscriptionStartDate
+        let isExpired = false;
+        if(freeTrailData.isActive){
+            isExpired = data.user?.subscriptionStartDate
           ? new Date(data.user.subscriptionEndDate) < new Date()
           : (data.user?.proposalCount || 0) >= freeTrailData.proposalLimit
 
         setExpired(isExpired)
+        }
+        else{
+          isExpired=true;
+          setExpired(isExpired)
+        }
+
+       
 
         // 🔑 MENU DECISION HERE
         if (isExpired) {

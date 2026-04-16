@@ -87,13 +87,23 @@ const paginatedProviders = filteredProviders.slice(
         
         const providersList = providerData.providers || [];
 
-          setProviders(providersList);
+      const sortedProviders = [...(providerData.providers || [])].sort(
+  (a, b) => {
+    // First priority → rating (higher first)
+    if (b.rating !== a.rating) {
+      return b.rating - a.rating;
+    }
 
-          setFilteredProviders(
-            [...providersList].sort(
-              (a: any, b: any) => b.rating - a.rating
-            )
-          );
+    // Second priority → planPrice (higher first)
+    return b.planPrice - a.planPrice;
+  }
+);
+
+        setProviders(sortedProviders);
+
+        setFilteredProviders(sortedProviders);
+
+          
 
         if (data.success) {
           setCategories(data.data || []);
@@ -422,12 +432,17 @@ const paginatedProviders = filteredProviders.slice(
                           Verified
                         </span>
                       )}
+                       {p.isFeatured && (
+                        <span className="inline-flex items-center rounded-lg border font-bold px-2 py-0 text-[10px] text-white bg-[#F54A0C]">
+                          Featured
+                        </span>
+                      )}
                     </div>
 
                     {/* RIGHT — Rating */}
                     <div className="absolute right-0 flex items-center gap-1.5">
                       <div className="flex items-center gap-0.5">
-                        <RatingStars rating={p.rating} />
+                        <RatingStars rating={p.rating} size={12}/>
                       </div>
 
                       <span className="text-xs font-semibold text-[#0E0E0E]">

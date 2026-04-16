@@ -64,17 +64,31 @@ export default function SubmitProposalPage() {
         setFailed(false);
         setRequirement(data.requirements[0]);
 
-        console.log("Requirement details::::", data.requirements[0])
+        // console.log("Requirement details::::", data.requirements[0])
 
         const proposalsCount = (proposalData.proposals || []).filter((eachItem) => id === eachItem.requirement.id && eachItem.agency.userId === user?.id)
 
         // setShowForm(proposalsCount.length === 0)
 
-        if ((userData.user?.monthlyProposalCount || 0) >= (userData.subscription?.proposalsPerMonth || 0)) {
-          console.log("Entered to if condition is::;")
-          // setIsProposalLimitReached(true)
-          setShowForm(false)
+        if(userData.subscription.type==="paid"){
+           console.log("Entered to paid  if condition is::;")
+           if ((userData.user?.monthlyProposalCount || 0) >= (userData.user?.monthlyProposalLimit || 0)){
+              console.log("Entered to if condition is::;")
+              // setIsProposalLimitReached(true)
+              setShowForm(false)
+            }
+          }
+        else{
+              if ((userData.user?.monthlyProposalCount || 0) >= (userData.subscription?.proposalsPerMonth || 0)) {
+                console.log("Entered to if condition is::;")
+              // setIsProposalLimitReached(true)
+               setShowForm(false)
+            }
         }
+
+        
+
+       
 
         // setProposals(proposalData.proposals.filter((eachItem)=>id===eachItem.requirement.id && eachItem.agencyId===user?.id))
       }

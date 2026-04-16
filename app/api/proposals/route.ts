@@ -330,7 +330,7 @@ export async function POST(request: NextRequest) {
 
       if (
         userDoc.monthlyProposalCount >=
-        (plan?.proposalsPerMonth || 100)
+        (userDoc?.monthlyProposalLimit || 0)
       ) {
         return NextResponse.json(
           {
@@ -366,7 +366,7 @@ export async function POST(request: NextRequest) {
     await Requirement.findByIdAndUpdate(
       requirementId,
       {
-        $inc: { proposals: 1 },
+        $inc: { proposals: 1 }, 
       }
     );
 

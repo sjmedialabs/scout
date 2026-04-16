@@ -21,6 +21,9 @@ export interface IUser extends Document {
   proposalCount: Number
   monthlyProposalCount: Number
 
+  monthlyProposalLimit:Number
+  caseStudiesLimit:Number
+ 
   otp?: {
     code: string
     expiresAt: Date
@@ -54,6 +57,8 @@ const UserSchema = new Schema<IUser>(
       type: Number,
       default: 0
     },
+    monthlyProposalLimit:{type: Number, default: 0},
+    caseStudiesLimit:{type: Number, default: 0},
     lastLogin: { type: Date },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
