@@ -245,55 +245,35 @@ if (resLoading) {
           {/* DESKTOP GRID */}
           <div className="hidden md:block relative overflow-visible">
 
-        {/* Scroll Container */}
-        <div
-          ref={scrollRef}
-          className="flex gap-6 overflow-x-auto scroll-smooth no-scrollbar"
-        >
+        {/* Grid Container */}
+        <div className="grid grid-cols-4 gap-6">
           {items.map((section: any, index: number) => (
             <div
               key={index}
-              className="w-[calc((100%-48px)/3)] shrink-0"
             >
-              <div className="bg-[#0F2A2F] text-white rounded-3xl px-3 py-3 min-h-[420px]">
-                
+              <div className="bg-[#0F2A2F] text-white rounded-3xl px-3 py-3 min-h-[400px] max-h-[420px] flex flex-col">
+                <div>
                 <p className="text-green-400 text-sm font-semibold mb-2">
                   {section?.tag || "Step"}
                 </p>
 
-                <h3 className="text-2xl font-bold mb-2">
+                <h3 className="text-xl font-bold mb-2">
                   {section.title}
                 </h3>
 
-                <p className="text-gray-300 text-sm mb-4 line-clamp-2">
+                <p className="text-gray-300 text-sm mb-4 line-clamp-3">
                   {section.description}
                 </p>
+                </div>
 
                 <img
                   src={section.image}
-                  className=" rounded-xl w-full min-h-[280px] max-h-[280px]"
+                  className=" rounded-xl w-full min-h-[250px] max-h-[280px] mt-auto "
                 />
               </div>
             </div>
           ))}
         </div>
-
-        {/* Arrows */}
-        {showArrows && (
-          <>
-            <button
-              onClick={() => scroll("left")}
-              className="absolute -left-12 ml-3 top-1/2 cursor-pointer -translate-y-1/2 bg-[#0f2a2f] text-white p-2 rounded-full shadow z-10"            >
-              <ChevronLeft size={15} />
-            </button>
-
-            <button
-              onClick={() => scroll("right")}
-              className="absolute -right-12 mr-2 top-1/2 cursor-pointer -translate-y-1/2 bg-[#0f2a2f] text-white p-2 rounded-full shadow z-10"            >
-              <ChevronRight size={15}/>
-            </button>
-          </>
-        )}
 
       </div>
 
@@ -546,7 +526,7 @@ if (resLoading) {
                 </span>
               </div>
               <h2 className="text-md uppercase font-bold text-blueButton ">
-                {cms?.topProvidersTitle || "Top Providers"}
+                {cms?.topProvidersTitle}
               </h2>
               <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
                 {cms?.topProvidersSubTitle || "Discover opportunities from businesses lookking for your services"}

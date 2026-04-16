@@ -13,10 +13,11 @@ export default function Hero({ provider, onContact }: any) {
   console.log("Provider data in Hero:", provider);
 
   return (
-    <section className="bg-white px-6 sm:px-6 lg:px-0 py-6 max-w-7xl mx-auto">
+    <section className="bg-gradient-to-br from-[#EEF6FF] to-[#F5F7FA] ">
+      <div className="px-6 sm:px-6 lg:px-0 py-6 max-w-7xl mx-auto">
       <div className="flex flex-col lg:flex-row justify-between lg:items-center items-start gap-5">
 
-        <div className="flex gap-6 items-start flex-1">
+        <div className="flex gap-6 items-center flex-1">
 
         {/* LOGO SECTION  */}
         <div className="flex justify-start lg:justify-center items-start">
@@ -103,7 +104,7 @@ export default function Hero({ provider, onContact }: any) {
         </div>
 
         {/* RIGHT BUTTONS  */}
-        <div className="flex flex-col gap-3 justify-center items-start lg:items-end">
+        <div className="flex flex-col gap-3 justify-center items-center lg:items-end">
 
           <Button
             className="primary-button"
@@ -132,6 +133,8 @@ export default function Hero({ provider, onContact }: any) {
         onClose={() => setOpen(false)}
         userId={provider?.userId}
       />
+
+      </div>
 
     </section>
   );

@@ -118,7 +118,30 @@ const topServices = topServicesRaw.map((item) => ({
     : 0,
 }));
 
-const hasServiceData = topServices.length > 0;
+// ================= MANUAL FALLBACK =================
+
+const hasRatingsData = Object.keys(serviceCountMap).length > 0;
+
+let finalTopServices = topServices;
+
+// If NO ratings → use manual
+if (!hasRatingsData && provider?.topServicesManual?.length > 0) {
+  const manualRaw = provider.topServicesManual.slice(0, 5).map((name: string) => ({
+    name,
+    value: 1,
+  }));
+
+  const manualTotal = manualRaw.length;
+
+  finalTopServices = manualRaw.map((item) => ({
+    ...item,
+    percent: manualTotal
+      ? ((item.value / manualTotal) * 100).toFixed(0)
+      : 0,
+  }));
+}
+
+const hasServiceData = finalTopServices.length > 0;
 const hasIndustryData = industries.length > 0;
 const hasAnyChartData = hasServiceData || hasIndustryData;
 
@@ -243,13 +266,13 @@ const hasAnyChartData = hasServiceData || hasIndustryData;
               
               {/* DONUT */}
               <DonutChart
-                data={topServices}
+                data={finalTopServices}
                 colors={["#14532D", "#15803D", "#34D399", "#6EE7B7", "#A7F3D0"]}
               />
 
               {/* LEGEND */}
               <div className="text-sm space-y-2">
-                {topServices.map((item: any, i: number) => (
+                {finalTopServices.map((item: any, i: number) => (
                   <LegendItem
                     key={i}
                     label={item.name}

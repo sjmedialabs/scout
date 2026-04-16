@@ -128,6 +128,7 @@ export function CompanyProfileEditor({
     companyVideoLink: provider.companyVideoLink || "",
     languagesSpoken: provider.languagesSpoken || [],
     services: provider.services || [],
+    topServicesManual: provider.topServicesManual || [],
     technologies: provider.technologies || [],
     awards: provider.awards || [],
     certifications: provider.certifications || [],
@@ -191,6 +192,16 @@ export function CompanyProfileEditor({
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+  setFormData((prev) => ({
+    ...prev,
+    ...provider,
+    companyName: provider.companyName || provider.name || "",
+    services: provider.services || [],
+    topServicesManual: provider.topServicesManual || [],
+  }));
+}, [provider]);
 
   const handleSave = () => {
     const newErrors: Record<string, string> = {};
@@ -279,6 +290,7 @@ export function CompanyProfileEditor({
         clients: formData.clients,
 
         services: formData.services || [],
+        topServicesManual: formData.topServicesManual || [],
         technologies: formData.technologies || [],
         industries: formData.industries || [],
 
@@ -1434,7 +1446,7 @@ export function CompanyProfileEditor({
                     >
                       {service}
 
-                      {/* ❌ remove icon hidden in view mode */}
+                      {/* remove icon hidden in view mode */}
                       {isEditMode && (
                         <div onClick={() => removeService(service)}>
                           <X className="h-3 w-3 cursor-pointer" />
@@ -1533,6 +1545,73 @@ export function CompanyProfileEditor({
               </CardContent>
             </Card>
           </div>
+
+          {/* ================= TOP SERVICES (MANUAL SELECTION) ================= */}
+
+        <div className="mt-6">
+          <h3 className="text-sm font-semibold mb-2">
+            Top Services
+          </h3>
+
+          <p className="text-xs text-gray-500 mb-3">
+            These will be used only if you don’t have rating data
+          </p>
+
+          {/* SELECTABLE SERVICES */}
+          {isEditMode && (
+            <div className="flex flex-col gap-2">
+              {(formData.services || []).map((service) => {
+                const selected = (formData.topServicesManual || []).includes(service);
+
+                return (
+                  <label key={service} className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={selected}
+                      onChange={() => {
+                        setFormData((prev) => {
+                          const current = prev.topServicesManual || [];
+
+                          if (selected) {
+                            return {
+                              ...prev,
+                              topServicesManual: current.filter((s) => s !== service),
+                            };
+                          }
+
+                          if (current.length >= 5) return prev;
+
+                          return {
+                            ...prev,
+                            topServicesManual: [...current, service],
+                          };
+                        });
+                      }}
+                    />
+                    {service}
+                  </label>
+                );
+              })}
+            </div>
+          )}
+
+          {/* VIEW MODE */}
+          {!isEditMode && (
+            <div className="flex flex-wrap gap-2">
+              {(formData.topServicesManual || []).map((service) => (
+                <Badge key={service} className="bg-yellow-100 text-yellow-800">
+                  {service}
+                </Badge>
+              ))}
+
+              {(formData.topServicesManual || []).length === 0 && (
+                <p className="text-gray-400 text-sm">
+                  No manual top services selected
+                </p>
+              )}
+            </div>
+          )}
+        </div>
         </TabsContent>
 
         {/* Portfolio */}
