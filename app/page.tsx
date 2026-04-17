@@ -251,7 +251,7 @@ if (resLoading) {
             <div
               key={index}
             >
-              <div className="bg-[#0F2A2F] text-white rounded-3xl px-3 py-3 min-h-[400px] max-h-[420px] flex flex-col">
+              <div className="bg-[#0F2A2F] text-white rounded-3xl px-3 py-3 h-[420px] flex flex-col">
                 <div>
                 <p className="text-green-400 text-sm font-semibold mb-2">
                   {section?.tag || "Step"}
@@ -268,7 +268,7 @@ if (resLoading) {
 
                 <img
                   src={section.image}
-                  className=" rounded-xl w-full mb-2 min-h-[250px] max-h-[280px] mt-auto "
+                  className=" rounded-xl w-full mb-2 h-[250px]  mt-auto "
                 />
               </div>
             </div>
