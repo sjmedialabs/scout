@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,10 +8,12 @@ import { PlusCircle, Trash, Pencil,  } from "lucide-react";
 import FileUpload from "@/components/file-upload";
 import { FaRegEdit } from "react-icons/fa";
 import { authFetch } from "@/lib/auth-fetch";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 interface ServiceItem {
   title: string;
   slug: string;
+  image?: string | null;
 }
 
 interface SubCategory {
@@ -42,6 +44,7 @@ const [editSubTitle, setEditSubTitle] = useState("");
 // For editing service items
 const [editingItem, setEditingItem] = useState<{ catId: string; subIndex: number; itemIndex: number } | null>(null);
 const [editItemTitle, setEditItemTitle] = useState("");
+const [editItemImage, setEditItemImage] = useState<string | null>(null);
 
 const [deleteTarget, setDeleteTarget] = useState<{
   catId: string
@@ -118,13 +121,14 @@ const [collapsedSubs, setCollapsedSubs] = useState<string[]>([])
   };
 
   // Add service item to subcategory
-  const addServiceItem = async (catId: string, subIndex: number, title: string) => {
+  const addServiceItem = async (catId: string, subIndex: number, title: string, image: string | null = null) => {
     const updatedCats = [...categories];
     updatedCats.forEach((cat) => {
       if (cat._id === catId) {
         cat.children[subIndex].items.push({
           title,
           slug: slugify(title),
+          image,
         });
       }
     });
@@ -433,35 +437,48 @@ const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
       </div>
 
       {/* ADD SERVICE ITEM */}
-      <AddInput
+      <AddServiceInput
         placeholder="Add service item..."
-        onAdd={(val) => addServiceItem(cat._id!, subIndex, val)}
+        onAdd={(title, image) => addServiceItem(cat._id!, subIndex, title, image)}
       />
 
       {/* SERVICE ITEMS LIST */}
       <div className="flex flex-col  sm:flex-row sm:flex-wrap gap-2 mt-3">
-        {sub.items.map((item, itemIndex) => (
-          <div key={itemIndex} className="flex items-center gap-2">
+        {sub.items.map((item, itemIndex) => {
+          const isEditing = editingItem?.catId === cat._id &&
+                            editingItem?.subIndex === subIndex &&
+                            editingItem?.itemIndex === itemIndex;
+          return (
+          <div key={itemIndex} className={`flex gap-2 ${isEditing ? "items-start" : "items-center"}`}>
 
             {/* SERVICE ITEM TITLE / INPUT */}
-            {editingItem?.catId === cat._id &&
-             editingItem?.subIndex === subIndex &&
-             editingItem?.itemIndex === itemIndex ? (
-              <Input
-                value={editItemTitle}
-                onChange={(e) => setEditItemTitle(e.target.value)}
-                className="h-8 w-48 border-gray-200 rounded-2xl"
-              />
+            {isEditing ? (
+              <div className="flex items-start gap-2">
+                <div className="w-[150px]">
+                  <ImageUpload
+                    className="!space-y-0"
+                    value={editItemImage || ""}
+                    onChange={(url) => setEditItemImage(url)}
+                    previewClassName="w-8 h-8"
+                    showUrl={false}
+                    allowUrl={false}
+                  />
+                </div>
+                <Input
+                  value={editItemTitle}
+                  onChange={(e) => setEditItemTitle(e.target.value)}
+                  className="h-8 w-48 border-gray-200 rounded-2xl"
+                />
+              </div>
             ) : (
-              <Badge className="bg-white text-black border px-3 py-2 rounded-xl shadow">
+              <Badge className="bg-white text-black border px-3 py-2 rounded-xl shadow flex items-center gap-2">
+                {item.image && <img src={item.image} alt={item.title} className="w-6 h-6 object-cover rounded-full border" />}
                 {item.title}
               </Badge>    
             )}
 
             {/* SERVICE ITEM ACTION BUTTONS */}
-            {editingItem?.catId === cat._id &&
-            editingItem?.subIndex === subIndex &&
-            editingItem?.itemIndex === itemIndex ? (
+            {isEditing ? (
               <>
                 <Button
                   size="sm"
@@ -472,6 +489,8 @@ const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
                       editItemTitle;
                     updated.children[subIndex].items[itemIndex].slug =
                       slugify(editItemTitle);
+                    updated.children[subIndex].items[itemIndex].image =
+                      editItemImage;
 
                     await updateCategory(cat._id!, updated);
                     setEditingItem(null);
@@ -501,6 +520,7 @@ const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
                     itemIndex,
                   });
                   setEditItemTitle(item.title);
+                  setEditItemImage(item.image || null);
                 }}
               />
             )}
@@ -517,7 +537,8 @@ const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
               }}
             />
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   ))}
@@ -630,4 +651,46 @@ function AddInput({
   
 }
 
+// 🟦 Reusable Add Input Component for Service Items
+function AddServiceInput({
+  placeholder,
+  onAdd,
+}: {
+  placeholder: string;
+  onAdd: (title: string, image: string | null) => void;
+}) {
+  const [value, setValue] = useState("");
+  const [image, setImage] = useState<string | null>(null);
 
+  return (
+    <div className="flex gap-3 mt-3 text-black items-start">
+      <div className="w-[200px]">
+        <ImageUpload
+          className="!space-y-2"
+          value={image || ""}
+          onChange={(url) => setImage(url)}
+          previewClassName="w-10 h-10"
+          showUrl={false}
+          allowUrl={false}
+        />
+      </div>
+      <Input
+        className="border-gray-200 rounded-2xl placeholder:text-gray-500 max-w-[250px] h-[35px]"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+      <Button
+        className="primary-button h-[35px]"
+        onClick={() => {
+          if (!value.trim()) return;
+          onAdd(value, image);
+          setValue("");
+          setImage(null);
+        }}
+      >
+        <PlusCircle className="w-4 h-4 mr-1" /> Add
+      </Button>
+    </div>
+  );
+}

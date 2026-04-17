@@ -439,7 +439,7 @@ if (resLoading) {
                   <img
                     src={project.image || "/requirements.jpg"}
                     alt={project.title}
-                    className="w-full h-[150px] object-cover rounded-t-3xl"
+                    className="w-full h-[150px] object-cover border-b rounded-t-3xl"
                   />
 
                   {/* Category + Timeline */}
