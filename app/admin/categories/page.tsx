@@ -444,17 +444,19 @@ const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
 
       {/* SERVICE ITEMS LIST */}
       <div className="flex flex-col  sm:flex-row sm:flex-wrap gap-2 mt-3">
-        {sub.items.map((item, itemIndex) => (
-          <div key={itemIndex} className="flex items-center gap-2">
+        {sub.items.map((item, itemIndex) => {
+          const isEditing = editingItem?.catId === cat._id &&
+                            editingItem?.subIndex === subIndex &&
+                            editingItem?.itemIndex === itemIndex;
+          return (
+          <div key={itemIndex} className={`flex gap-2 ${isEditing ? "items-start" : "items-center"}`}>
 
             {/* SERVICE ITEM TITLE / INPUT */}
-            {editingItem?.catId === cat._id &&
-             editingItem?.subIndex === subIndex &&
-             editingItem?.itemIndex === itemIndex ? (
-              <div className="flex items-center gap-2">
+            {isEditing ? (
+              <div className="flex items-start gap-2">
                 <div className="w-[150px]">
                   <ImageUpload
-                  
+                    className="!space-y-0"
                     value={editItemImage || ""}
                     onChange={(url) => setEditItemImage(url)}
                     previewClassName="w-8 h-8"
@@ -476,9 +478,7 @@ const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
             )}
 
             {/* SERVICE ITEM ACTION BUTTONS */}
-            {editingItem?.catId === cat._id &&
-            editingItem?.subIndex === subIndex &&
-            editingItem?.itemIndex === itemIndex ? (
+            {isEditing ? (
               <>
                 <Button
                   size="sm"
@@ -537,7 +537,8 @@ const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
               }}
             />
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   ))}
@@ -662,9 +663,10 @@ function AddServiceInput({
   const [image, setImage] = useState<string | null>(null);
 
   return (
-    <div className="flex gap-3 mt-3 text-black items-center">
+    <div className="flex gap-3 mt-3 text-black items-start">
       <div className="w-[200px]">
         <ImageUpload
+          className="!space-y-2"
           value={image || ""}
           onChange={(url) => setImage(url)}
           previewClassName="w-10 h-10"
@@ -673,7 +675,7 @@ function AddServiceInput({
         />
       </div>
       <Input
-        className="border-gray-200 rounded-2xl placeholder:text-gray-500 max-w-[250px]"
+        className="border-gray-200 rounded-2xl placeholder:text-gray-500 max-w-[250px] h-[35px]"
         placeholder={placeholder}
         value={value}
         onChange={(e) => setValue(e.target.value)}
