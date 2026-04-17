@@ -45,6 +45,23 @@ export function PostRequirementForm({
     timeline: "",
   })
 
+  const [categories, setCategories] = useState<any[]>([])
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const res = await fetch("/api/service-categories")
+        const data = await res.json()
+        if (data.success) {
+          setCategories(data.data)
+        }
+      } catch (err) {
+        console.error("Failed to fetch categories:", err)
+      }
+    }
+    fetchCategories()
+  }, [])
+
   useEffect(() => {
     if (sendingStatus) {
       setFormData({
@@ -92,6 +109,18 @@ export function PostRequirementForm({
     }
 
     onSubmit(payload)
+  }
+
+  const findImageForCategory = (val: string) => {
+    for (const cat of categories) {
+      if (cat.title === val && cat.icon) return cat.icon;
+      for (const sub of (cat.children || [])) {
+        for (const item of (sub.items || [])) {
+          if (item.title === val && item.image) return item.image;
+        }
+      }
+    }
+    return "";
   }
 
  const StepTab = ({
@@ -215,9 +244,10 @@ console.log("Form Data Url is:::",formData.documentUrl)
                 </Label>
                 <ServiceDropdown
                   value={formData.category}
-                  onChange={(value) =>
-                    setFormData((p) => ({ ...p, category: value }))
-                  }
+                  onChange={(value) => {
+                    const autoImage = findImageForCategory(value)
+                    setFormData((p) => ({ ...p, category: value, ...(autoImage ? { image: autoImage } : {}) }))
+                  }}
                   placeholder="Select service"
                   triggerClassName="border-2 border-[#D0D5DD] text-[#000] rounded-[8px] p-4
                       text-xs"
@@ -253,6 +283,7 @@ console.log("Form Data Url is:::",formData.documentUrl)
                     description="Upload your Requirement Image (PNG, JPG) or provide a URL"
                     previewClassName="w-24 h-24 border"
                   />
+                  
               </div>
             </div>
           )}

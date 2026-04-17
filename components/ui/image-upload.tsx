@@ -22,6 +22,8 @@ interface ImageUploadProps {
   /** ✅ NEW */
   maxSizeMB?: number;
   allowedTypes?: string[];
+  showUrl?: boolean;
+  allowUrl?: boolean;
 }
 
 export function ImageUpload({
@@ -36,6 +38,8 @@ export function ImageUpload({
   /** ✅ new default props */
   maxSizeMB = 5,
   allowedTypes = ["image/*", "application/pdf"],
+  showUrl = true,
+  allowUrl = true,
 }: ImageUploadProps) {
   const [uploadMethod, setUploadMethod] = useState<"upload" | "url">("upload");
   const [urlInput, setUrlInput] = useState(value || "");
@@ -122,6 +126,7 @@ export function ImageUpload({
 
   const isImageType = value ? isImage(value) : false;
 
+  const displayUrl = showUrl && allowUrl;
 
   if (!isEditable) {
   return (
@@ -185,16 +190,18 @@ export function ImageUpload({
         value={uploadMethod}
         onValueChange={(v) => setUploadMethod(v as "upload" | "url")}
       >
-        <TabsList className="grid w-full max-w-md grid-cols-2 border !bg-[#f2f1f6]">
-          <TabsTrigger value="upload">
-            <Upload className="h-4 w-4 mr-2" />
-            Upload File
-          </TabsTrigger>
-          <TabsTrigger value="url">
-            <LinkIcon className="h-4 w-4 mr-2" />
-            URL
-          </TabsTrigger>
-        </TabsList>
+        {displayUrl && (
+          <TabsList className="grid w-full max-w-md grid-cols-2 border !bg-[#f2f1f6]">
+            <TabsTrigger value="upload">
+              <Upload className="h-4 w-4 mr-2" />
+              Upload File
+            </TabsTrigger>
+            <TabsTrigger value="url">
+              <LinkIcon className="h-4 w-4 mr-2" />
+              URL
+            </TabsTrigger>
+          </TabsList>
+        )}
 
         <TabsContent value="upload" className="space-y-2">
           <div className="flex items-center gap-2">
@@ -212,16 +219,18 @@ export function ImageUpload({
           </p>
         </TabsContent>
 
-        <TabsContent value="url" className="space-y-2">
-          <Input
-            type="url"
-            placeholder="https://example.com/file"
-            value={urlInput}
-            onChange={(e) => handleUrlChange(e.target.value)}
-            className="max-w-md"
-          />
-          <p className="text-sm text-muted-foreground">Enter direct URL</p>
-        </TabsContent>
+        {displayUrl && (
+          <TabsContent value="url" className="space-y-2">
+            <Input
+              type="url"
+              placeholder="https://example.com/file"
+              value={urlInput}
+              onChange={(e) => handleUrlChange(e.target.value)}
+              className="max-w-md"
+            />
+            <p className="text-sm text-muted-foreground">Enter direct URL</p>
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );
