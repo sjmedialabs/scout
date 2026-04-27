@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { ChevronRight, ChevronDown } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ExternalLink, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -667,34 +669,37 @@ useEffect(() => {
                 <div className="flex flex-col flex-1 p-4 justify-between">
 
                   {/* Verified + Rating */}
-                  <div className="relative flex items-center -mt-1 h-2">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between -mt-1">
 
-                    {/* LEFT — Verified */}
-                    <div className="absolute left-0 ">
-                      {p.isVerified && (
-                        <span className="inline-flex mr-2 items-center rounded-full border font-bold px-2 py-0 text-xs text-white bg-[#232a85]">
-                          Verified
-                        </span>
-                      )}
-                      {p.isFeatured && (
-                            <span className="bg-[#F54A0C] inline-flex items-center rounded-full border font-bold px-2 py-0 text-xs text-white">
-                              Featured
-                            </span>
-                          )}
-                    </div>
+                      {/* LEFT — Verified */}
+                      <div className="flex flex-wrap gap-1">
+                        {p?.isVerified && (
+                          <Badge className="bg-green-100 text-green-700 rounded-full text-xs">
+                            <CheckCircle2 className="h-3 w-3 mr-1" />
+                            Verified
+                          </Badge>
+                        )}
 
-                    {/* RIGHT — Rating */}
-                    <div className="absolute right-0 flex items-center gap-1.5">
-                      <div className="flex items-center gap-0.5">
-                        <RatingStars rating={p.rating} />
+                        {p?.isFeatured && (
+                          <Badge className="bg-blue-100 text-blue-700 rounded-full text-xs">
+                            <Star className="h-3 w-3 mr-1 fill-blue-100" />
+                            Featured
+                          </Badge>
+                        )}
                       </div>
 
-                      <span className="text-xs font-semibold text-[#0E0E0E]">
-                        {p.rating.toFixed(1)}
-                      </span>
-                    </div>
+                      {/* RIGHT — Rating */}
+                      <div className="flex items-center gap-1.5 mt-1 lg:mt-0">
+                        <div className="flex items-center gap-0.5">
+                          <RatingStars rating={p.rating} />
+                        </div>
 
-                  </div>
+                        <span className="text-xs font-semibold text-[#0E0E0E]">
+                          {p.rating.toFixed(1)}
+                        </span>
+                      </div>
+
+                    </div>
 
                   {/* Title + Description */}
                   <div className="py-3">

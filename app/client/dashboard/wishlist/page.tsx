@@ -70,6 +70,7 @@ import {
   Heart,
   SeparatorVertical as Separator,
   Search,
+  CheckCircle2,
 } from "lucide-react";
 import {
   mockRequirements,
@@ -230,7 +231,7 @@ const WishListPage = () => {
       )}
 
       {(wishListData || []).length !== 0 && !resLoading && !failed && (
-        <div className="grid grid-cols-1 md:grid-cols-2  lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2  lg:grid-cols-3 gap-3">
           {wishListData.map((p) => (
             // <Card
             //   key={provider._id}
@@ -368,34 +369,37 @@ const WishListPage = () => {
                 <div className="flex flex-col flex-1 p-4 justify-between">
 
                   {/* Verified + Rating */}
-                  <div className="relative flex items-center -mt-1 h-2">
+                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between -mt-1">
 
-                    {/* LEFT — Verified */}
-                    <div className="absolute left-0">
-                      {p.agency.isVerified && (
-                        <span className="inline-flex items-center rounded-lg border font-bold px-2 py-0 text-[10px] text-white bg-[#232a8f]">
-                          Verified
-                        </span>
-                      )}
-                      {p.agency.isFeatured && (
-                        <span className="inline-flex items-center rounded-lg border font-bold px-2 py-0 text-[10px] text-white bg-[#f54a0c]">
-                          Featured
-                        </span>
-                      )}
-                    </div> 
+                      {/* LEFT — Verified */}
+                      <div className="flex flex-wrap gap-1">
+                        {p?.agency?.isVerified && (
+                          <Badge className="bg-green-100 text-green-700 rounded-full text-xs">
+                            <CheckCircle2 className="h-3 w-3 mr-1" />
+                            Verified
+                          </Badge>
+                        )}
 
-                    {/* RIGHT — Rating */}
-                    <div className="absolute right-0 flex items-center gap-1.5">
-                      <div className="flex items-center gap-0.5">
-                        <RatingStars rating={p.agency.rating} size={12} />
+                        {p?.agency.isFeatured && (
+                          <Badge className="bg-blue-100 text-blue-700 rounded-full text-xs">
+                            <Star className="h-3 w-3 mr-1 fill-blue-100" />
+                            Featured
+                          </Badge>
+                        )}
                       </div>
 
-                      <span className="text-xs font-semibold text-[#0E0E0E]">
-                        {p?.agency.rating?.toFixed(1)}
-                      </span>
-                    </div>
+                      {/* RIGHT — Rating */}
+                      <div className="flex items-center gap-1.5 mt-1 lg:mt-0">
+                        <div className="flex items-center gap-0.5">
+                          <RatingStars rating={p?.agency?.rating || 0} />
+                        </div>
 
-                  </div>
+                        <span className="text-xs font-semibold text-[#0E0E0E]">
+                          {p?.agency?.rating?.toFixed(1) || 0}
+                        </span>
+                      </div>
+
+                    </div>
 
                   {/* Title + Description */}
                   <div className="mt-2">

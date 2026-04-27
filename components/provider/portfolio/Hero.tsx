@@ -64,13 +64,13 @@ export default function Hero({ provider, onContact }: any) {
             </h2>
           )}
 
-          {/* {provider?.description && (
-            <p className="text-gray-600 text-base md:text-lg leading-relaxed">
+          {provider?.description && (
+            <p className="text-gray-600 text-sm leading-relaxed">
               {provider.description}
             </p>
-          )} */}
+          )}
 
-          <div className="flex flex-wrap gap-3 mt-6">
+          {/* <div className="flex flex-wrap gap-3 mt-6">
 
             <Button
               className="primary-button"
@@ -99,7 +99,7 @@ export default function Hero({ provider, onContact }: any) {
               View Case Studies
             </Button>
 
-          </div>
+          </div> */}
         </div>
         </div>
 
@@ -115,7 +115,7 @@ export default function Hero({ provider, onContact }: any) {
 
           {provider?.website && (
             <a href={provider.website} target="_blank">
-              <Button
+              <Button 
                 variant="outline"
                 className="btn-blackButton"
               >

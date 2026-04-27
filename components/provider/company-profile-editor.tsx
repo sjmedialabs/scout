@@ -26,6 +26,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Plus, X, ExternalLink, Lock } from "lucide-react";
 import type { Provider, PortfolioItem, TestimonialItem } from "@/lib/types";
 import { categories } from "@/lib/mock-data";
@@ -44,6 +50,7 @@ interface CompanyProfileEditorProps {
   onSave: (provider: Provider) => void;
   isCaseStudiesLimitReached: Boolean;
   userDetails: any;
+  serviceRequests:any;
 }
 
 const validateEmail = (email: string): boolean => {
@@ -105,6 +112,7 @@ export function CompanyProfileEditor({
   provider,
   userDetails,
   onSave,
+  serviceRequests,
 
 }: CompanyProfileEditorProps) {
   const [formData, setFormData] = useState({
@@ -183,6 +191,70 @@ export function CompanyProfileEditor({
   const [categories, setCategories] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
   const [selectedChild, setSelectedChild] = useState<any>(null);
+  const [showServiceRequestModal, setShowServiceRequestModal] = useState(false);
+  const [isSendingRequest, setIsSendingRequest] = useState(false);
+  const [serviceRequestForm, setServiceRequestForm] = useState({
+    mainCategory: "",
+    subCategory: "",
+    serviceName: "",
+    description: "",
+  });
+  const [localServiceRequests, setLocalServiceRequests] = useState<any[]>(serviceRequests || []);
+
+  useEffect(() => {
+    setLocalServiceRequests(serviceRequests || []);
+  }, [serviceRequests]);
+
+  const handleSendServiceRequest = async () => {
+    const { mainCategory, subCategory, serviceName, description } = serviceRequestForm;
+
+    if (!mainCategory.trim() || !subCategory.trim() || !serviceName.trim() || !description.trim()) {
+      toast.error("All fields are required.");
+      return;
+    }
+
+    setIsSendingRequest(true);
+    const payload={
+      mainCategory: serviceRequestForm.mainCategory,
+      subCategory: serviceRequestForm.subCategory,
+      childCategory: serviceRequestForm.serviceName,
+      description: serviceRequestForm.description,
+    }
+    try {
+      const response = await authFetch("/api/servicerequests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        toast.success("Service request sent successfully!");
+        
+        // Optimistically update the list so the new request shows up immediately
+        setLocalServiceRequests((prev) => [
+          {
+            mainCategory: payload.mainCategory,
+            subCategory: payload.subCategory,
+            childCategory: payload.childCategory,
+            description: payload.description,
+            status: "pending",
+          },
+          ...prev
+        ]);
+
+        setServiceRequestForm({ mainCategory: "", subCategory: "", serviceName: "", description: "" });
+        setShowServiceRequestModal(false);
+      } else {
+        toast.error("Failed to send service request.");
+      }
+    } catch (error) {
+      console.error("Error sending service request:", error);
+      toast.error("An error occurred while sending the request.");
+    } finally {
+      setIsSendingRequest(false);
+    }
+  };
+
   const loadData = async () => {
     try {
       const response = await authFetch("/api/service-categories");
@@ -1473,9 +1545,22 @@ export function CompanyProfileEditor({
         {/* Services Offered */}
         <TabsContent value="services">
           <div className="-mt-6">
-            <h1 className="font-inter text-xl mb-2 text-[#000000] font-normal leading-6">
-              Services Offered
-            </h1>
+            <div className="flex flex-col md:flex-row items-center justify-between">
+              <h1 className="font-inter text-xl   text-[#000000] font-normal leading-6">
+                Services Offered
+              </h1>
+              {
+                isEditMode &&(
+              
+              <Button 
+                className="primary-button h-[30px] mb-1"
+                onClick={() => setShowServiceRequestModal(true)}
+              >
+                Send Service Request
+              </Button>
+                )
+              }
+            </div>
 
             <Card className="bg-[#fff] border border-[#D0D5DD] rounded-[6px] shadow-none">
               <CardContent className="space-y-4 py-2">
@@ -1647,6 +1732,66 @@ export function CompanyProfileEditor({
                 )}
               </div>
             )}
+          </div>
+
+          {/* ================= SERVICE REQUESTS ================= */}
+          <div className="mt-8">
+            <h3 className="font-inter text-xl text-[#000000] font-normal leading-6 mb-2">
+              My Service Requests
+            </h3>
+            <p className="font-inter text-sm text-gray-500 mb-4">
+              Track the status of your requested services
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              {(localServiceRequests || []).map((req: any, index: number) => (
+                <Card key={index || req.id} className="bg-white border border-[#D0D5DD] rounded-[6px] shadow-sm">
+                  <CardContent className="px-3 py-1 space-y-2">
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="font-semibold text-md text-[#000]">
+                        {req.childCategory || req.serviceName || "Unknown Service"}
+                      </div>
+                      <Badge
+                        variant="secondary"
+                        className={`text-xs capitalize rounded-2xl shrink-0 ${
+                          req.status?.toLowerCase() === "accepted"
+                            ? "bg-[#d1fadf] text-[#008a2e]"
+                            : req.status?.toLowerCase() === "rejected"
+                            ? "bg-[#fee4e2] text-[#e02d3c]"
+                            : "bg-[#fef0c7] text-[#dc6803]"
+                        }`}
+                      >
+                        {req.status || "Pending"}
+                      </Badge>
+                    </div>
+                    
+                    <div className="text-xs text-[#98A0B4] flex flex-wrap items-center gap-1">
+                      <span>{req.mainCategory}</span>
+                      {req.subCategory && (
+                        <>
+                          <span>/</span>
+                          <span>{req.subCategory}</span>
+                        </>
+                      )}
+                    </div>
+
+                    {req.description && (
+                      <p className="text-sm text-[#656565] mt-2 line-clamp-2">
+                        {req.description}
+                      </p>
+                    )}
+
+                    {req?.reason && (
+                      <p className="text-md font-normal text-red-500"><span className="text-[#000] text-md font-semibold">Reason: </span>{req.reason}</p>
+                    ) }
+                  </CardContent>
+                </Card>
+              ))}
+              
+              {(!localServiceRequests || localServiceRequests.length === 0) && (
+                <p className="text-gray-500 text-sm text-center col-span-2">No service requests submitted yet.</p>
+              )}
+            </div>
           </div>
         </TabsContent>
 
@@ -2418,6 +2563,98 @@ export function CompanyProfileEditor({
           />
         </TabsContent>
       </Tabs>
+
+      {/* Service Request Modal */}
+      <Dialog open={showServiceRequestModal} onOpenChange={setShowServiceRequestModal}>
+        <DialogContent className="md:max-w-md rounded-2xl flex flex-col p-0">
+          <DialogHeader className="px-6 py-4 border-b shrink-0">
+            <DialogTitle className="text-xl font-bold text-[#F4561C]">
+              Send Service Request
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="p-6 space-y-4 w-full">
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold">Main Category</Label>
+              <Input
+                value={serviceRequestForm.mainCategory}
+                onChange={(e) =>
+                  setServiceRequestForm((prev) => ({
+                    ...prev,
+                    mainCategory: e.target.value,
+                  }))
+                }
+                placeholder="Enter Main Category"
+                className="bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px] placeholder:text-gray-400"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold">Sub Category</Label>
+              <Input
+                value={serviceRequestForm.subCategory}
+                onChange={(e) =>
+                  setServiceRequestForm((prev) => ({
+                    ...prev,
+                    subCategory: e.target.value,
+                  }))
+                }
+                placeholder="Enter Sub Category"
+                className="bg-[#f2f1f6] border-[#D0D5DD] placeholder:text-gray-400 rounded-[6px]"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold">Service Name</Label>
+              <Input
+                value={serviceRequestForm.serviceName}
+                onChange={(e) =>
+                  setServiceRequestForm((prev) => ({
+                    ...prev,
+                    serviceName: e.target.value,
+                  }))
+                }
+                placeholder="Enter Service Name"
+                className="bg-[#f2f1f6] border-[#D0D5DD]  placeholder:text-gray-400  rounded-[6px]"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold">Description</Label>
+              <Textarea
+                value={serviceRequestForm.description}
+                onChange={(e) =>
+                  setServiceRequestForm((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+                placeholder="Enter Description"
+                rows={4}
+                className="bg-[#f2f1f6] border-[#D0D5DD] placeholder:text-gray-400 rounded-[6px]"
+              />
+            </div>
+          </div>
+
+          <div className="px-6 py-4 border-t flex gap-4 shrink-0 justify-end">
+            <Button
+              variant="outline"
+              className="btn-blackButton h-[35px]"
+              onClick={() => setShowServiceRequestModal(false)}
+              disabled={isSendingRequest}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="primary-button h-[35px]"
+              onClick={handleSendServiceRequest}
+              disabled={isSendingRequest}
+            >
+              {isSendingRequest ? "Sending..." : "Send"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
