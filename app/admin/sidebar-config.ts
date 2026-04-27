@@ -41,6 +41,7 @@ export const adminMenu = [
   // ===== PLATFORM =====
   // { id: "settings", label: "Platform Settings", icon: Settings },
   { id: "categories", label: "Category Management", icon: Building2 },
+  {id:"service-requests", label:"Service Requests", icon: Globe},
   // { id: "notifications", label: "System Notifications", icon: Bell },
   { id: "careers", label: "Careers", icon: Shield },
 

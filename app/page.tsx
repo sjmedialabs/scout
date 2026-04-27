@@ -13,9 +13,12 @@ import {
   Briefcase,
   Shield,
   ChevronLeft, ChevronRight,
+  Star,
+  CheckCircle2,
 } from "lucide-react";
 import { authFetch } from "@/lib/auth-fetch";
 import { useRouter } from "next/navigation";
+import RatingStars from "@/components/rating -star-servicesPage";
 
 interface ServiceChild {
   _id: string;
@@ -551,48 +554,38 @@ if (resLoading) {
                       />
                     </div>
                     <div className="py-3">
-                    <div className="flex items-center justify-between   sm:px-6 lg:px-4 ">
-                      {/* FEATURED & VERIFIED BADGES */}
-                      <div className="flex items-center gap-2">
-                        {provider.isVerified && (
-                          <Badge
-                            variant="outline"
-                            className="bg-[#232a8f] text-white rounded-full px-3 py-0.5 text-xs font-semibold"
-                          >
-                            Verified
-                          </Badge>
-                        )}
-                        {provider.isFeatured && (
-                          <Badge className="bg-orangeButton text-white rounded-full px-3 py-0.5 text-xs font-semibold">
-                            Featured
-                          </Badge>
-                        )}
-                      </div>
+                    {/* Verified + Rating */}
+                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between -mt-1 px-2">
 
-                      {/* ⭐ RATING STARS */}
-                      <div className="flex items-center justify-center gap-0.2">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <svg
-                            key={i}
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill={i < provider.rating ? "#F59E0B" : "#D1D5DB"} // yellow or gray
-                            className="w-4 h-4"
-                          >
-                            <path
-                              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 
-                              0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 
-                              1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 
-                              1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                          </svg>
-                        ))}
+                          {/* LEFT — Verified */}
+                          <div className="flex flex-wrap gap-1">
+                            {provider?.isVerified && (
+                              <Badge className="bg-green-100 text-green-700 rounded-full text-xs">
+                                <CheckCircle2 className="h-3 w-3 mr-1" />
+                                Verified
+                              </Badge>
+                            )}
 
-                        <span className="text-sm font-semibold text-gray-700 ml-1">
-                          {provider.rating?.toFixed(1) || "0.0"}
-                        </span>
-                      </div>
-                    </div>
+                            {provider?.isFeatured && (
+                              <Badge className="bg-blue-100 text-blue-700 rounded-full text-xs">
+                                <Star className="h-3 w-3 mr-1 fill-blue-100" />
+                                Featured
+                              </Badge>
+                            )}
+                          </div>
+
+                          {/* RIGHT — Rating */}
+                          <div className="flex items-center gap-1.5 mt-1 lg:mt-0">
+                            <div className="flex items-center gap-0.5">
+                              <RatingStars rating={provider.rating} />
+                            </div>
+
+                            <span className="text-xs font-semibold text-[#0E0E0E]">
+                              {provider.rating.toFixed(1)}
+                            </span>
+                          </div>
+
+                        </div>
                     </div>
 
                     <h3 className="text-base text-base sm:text-lg px-4 sm:px-6 lg:px-4 font-bold capitalize">

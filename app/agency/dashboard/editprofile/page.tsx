@@ -22,6 +22,8 @@ const EditProfile = () => {
   const [responseLoading, setResponseLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const [isCaseStudiesLimitReached, setIsCaseStudiesLimitReached] = useState(false);
+
+  const[serviceRequests,setServiceRequests]=useState([]);
   console.log("fetched user Details are from the edit profie is:::::", user)
 
   const loadData = async () => {
@@ -32,9 +34,14 @@ const EditProfile = () => {
       const userRes = await authFetch(`/api/users/${user?.id}`)
       const data = await response.json();
       const userData = await userRes.json();
+
+      const serviceRequestsRes=await authFetch(`/api/servicerequests`);
+      const serviceRequestsData=await serviceRequestsRes.json();
+      console.log("Service Requests data::::", serviceRequestsData)
       
       setUserDetails(userData);
       setProviderDetails(data.provider);
+      setServiceRequests(serviceRequestsData.serviceRequests);
 
       
       //  if(userData.subscription.type==="paid"){
@@ -133,6 +140,7 @@ const EditProfile = () => {
         <CompanyProfileEditor
           provider={providerDetails}
           userDetails={userDetails}
+          serviceRequests={serviceRequests}
           onSave={handleSaveProfile}
         />
       )}
