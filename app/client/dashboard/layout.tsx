@@ -14,6 +14,7 @@ export default function ClientDashboardLayout({
 }) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const[cms,setCms]=useState<any>(null);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -22,6 +23,20 @@ export default function ClientDashboardLayout({
       router.push("/login");
     }
   }, [user, loading, router]);
+
+  const  fetchCMSContent=async()=>{
+    try{
+      const cmsRes=await fetch("/api/cms");
+      const cmsData=await cmsRes.json();
+      setCms(cmsData.data);
+
+    }catch(err){
+      console.error("Error fetching CMS content:", err);
+    }
+  }
+  useEffect( ()=>{
+    fetchCMSContent();
+  }, [])
 
   return (
     <>
@@ -33,6 +48,7 @@ export default function ClientDashboardLayout({
             user={user}
             isOpen={sidebarOpen}
             onClose={() => setSidebarOpen(false)}
+            cms={cms}
           />
 
           <div className="flex-1 flex flex-col">

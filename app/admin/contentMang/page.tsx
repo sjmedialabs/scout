@@ -1263,6 +1263,28 @@ const isValidPhone = (phone) => {
               }
               className="border-gray-200 rounded-xl placeholder:text-gray-400"
             />
+            {/*Header Logo */}
+            <div>
+              <label className="text-md text-gray-600">Header Logo</label>
+                <ImageUpload
+                value={cms?.contact?.headerLogo}
+                onChange={(url) => updateNested("contact", "headerLogo", url)}
+                description="Upload header logo (PNG, JPG) or provide a URL"
+                previewClassName="w-100 h-24"
+              />
+            </div>
+
+            {/*Footer Logo */}
+            <div>
+              <label className="text-md text-gray-600">Footer Logo</label>
+              <ImageUpload
+                value={cms?.contact?.footerLogo}
+                onChange={(url) => updateNested("contact", "footerLogo", url)}
+                description="Upload footer logo (PNG, JPG) or provide a URL"
+                previewClassName="w-100 h-24"
+              />
+            </div>
+
           </section>
         </TabsContent>
 

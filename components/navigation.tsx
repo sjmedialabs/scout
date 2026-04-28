@@ -31,6 +31,7 @@ import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { CircleUserIcon } from "lucide-react";
 import { CircleUserRound } from "lucide-react";
+import { set } from "mongoose";
 
 export function Navigation() {
   const { user, logout } = useAuth();
@@ -45,6 +46,8 @@ export function Navigation() {
   const [serviceCategories, setServiceCategories] = useState<any[]>([]);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileOpenMenu, setMobileOpenMenu] = useState<string | null>(null);
+  const [cms, setCMS] = useState<any>(null);
+
 
   const timeoutRef = useRef<any>(null);
 
@@ -79,6 +82,11 @@ export function Navigation() {
         const res = await fetch("/api/service-categories", {
           credentials: "include",
         });
+
+        const cmsRes = await fetch("/api/cms");
+        const cmsData=await cmsRes.json();
+        console.log("CMS Data in Navigation:", cmsData);
+        setCMS(cmsData.data);
 
         if (!res.ok) return;
 
@@ -231,7 +239,7 @@ const overflowCategories = mainCategories.slice(5);
       {/* {isSticky && <div className="h-14" />} */}
       <nav
         className={`border-b border-border bg-white transition-all duration-300
-        ${isSticky ? "fixed top-0 left-0 right-0 z-50 shadow-md" : "relative"}`}
+        ${isSticky ? "fixed top-0 left-0 right-0 z-50 shadow-md" : "relative"}`} 
       >
        
         <div
@@ -242,7 +250,7 @@ const overflowCategories = mainCategories.slice(5);
              <div className="flex justify-between items-center h-8 xl:mr-30 lg:mr-1">
             <div>
               <Link href="/" className="flex items-center space-x-2">
-                <img src="/scoutHeaderLogo.png" alt="" className="h-14" />
+                <img src={cms?.contact?.headerLogo || "/scoutHeaderLogo.png"} alt="" className="h-14" />
               </Link>
             </div>
          </div>
