@@ -659,7 +659,7 @@ console.log("Filtered Providers:::", filteredProviders);
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-7 max-h-[100vh] overflow-y-auto [scrollbar-width:none] 
           [-ms-overflow-style:none]        
           [&::-webkit-scrollbar]:hidden">
-            {filteredProviders.slice(0, visibleCount).map((p: any) => (
+            {filteredProviders.slice(0, visibleCount).map((p: any,index:number) => (
             <div className="overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:shadow-md flex flex-col h-full">
 
                 {/* Image */}
@@ -712,7 +712,7 @@ console.log("Filtered Providers:::", filteredProviders);
                   {/* Title + Description */}
                   <div className="py-3">
                     <h3
-                      className="text-md font-bold text-[#0E0E0E] leading-tight"
+                      className="text-md font-bold text-[#232a8f] leading-tight"
                       
                     >
                       {p.name}
@@ -726,72 +726,86 @@ console.log("Filtered Providers:::", filteredProviders);
                     </p> */}
                   </div>
 
-                  {/* Tags */}
-                    <TooltipProvider>
-                      <div className="flex flex-wrap py-0 -mt-2 items-center gap-2">
+   
+{(() => {
+  const allServices = p?.services || [];
 
-                        {p?.topServicesManual?.length > 0 && (
-                          <>
-                            {/* First Service */}
-                            <span className="inline-flex items-center rounded-lg bg-[#f2f2f2] border px-3 py-0.5 text-[10px] font-semibold text-slate-700 whitespace-nowrap">
-                              {p.topServicesManual[0].percentage}%{" "}
-                              {p.topServicesManual[0].service}
-                            </span>
+  const primaryService =
+    activeService && allServices.includes(activeService)
+      ? activeService
+      : allServices[0];
 
-                            {/* +N Services */}
-                            {p.topServicesManual.length > 1 && (
+  const otherServices = allServices.filter(
+    (s: string) => s !== primaryService
+  );
 
-                              <Tooltip>
+  return (
+    <TooltipProvider>
+      <div className="flex flex-wrap py-0 -mt-2 items-center gap-2">
 
-                                {/* Trigger */}
-                                <TooltipTrigger asChild>
-                                  <span className="text-blue-600 underline text-[12px] font-semibold cursor-pointer whitespace-nowrap">
-                                    +{p.topServicesManual.length - 1} services
-                                  </span>
-                                </TooltipTrigger>
+        {/* ===== PRIMARY SERVICE ===== */}
+        {primaryService && (
+          <span className="inline-flex items-center text-[14px] font-semibold text-[#000] whitespace-nowrap">
+            {primaryService}
+          </span>
+        )}
 
-                                {/* Tooltip Content */}
-                                <TooltipContent
-                                  side="top"
-                                  align="center"
-                                  sideOffset={8}
-                                  className="
-                                    flex flex-wrap gap-2
-                                    bg-white border shadow-lg
-                                    rounded-xl p-3
-                                    max-w-[260px]
-                                    [&_svg]:overflow-visible
-                                  [&_svg_path:first-child]:fill-slate-200
-                                  [&_svg_path:last-child]:fill-white
-                                  "
-                                >
+        {/* ===== +N SERVICES ===== */}
+        {otherServices.length > 0 && (
+          <Tooltip>
 
-                                  {p.topServicesManual
-                                    .slice(1)
-                                    .map((s: any, index: number) => (
+            {/* Trigger */}
+            <TooltipTrigger asChild>
+              <span className="text-blue-600 underline text-[10px] font-semibold whitespace-nowrap cursor-pointer hover:text-blue-700 transition-colors duration-150">
+                +{otherServices.length} services
+              </span>
+            </TooltipTrigger>
 
-                                      <span
-                                        key={index}
-                                        className="inline-flex items-center rounded-lg 
-                                                  bg-[#f2f2f2] border px-3 py-0.5 
-                                                  text-[10px] font-semibold text-slate-700 whitespace-nowrap"
-                                      >
-                                        {s.percentage}% {s.service}
-                                      </span>
+            {/* Tooltip Content */}
+            <TooltipContent
+              side="top"
+              align="center"
+              sideOffset={0}
+              className="
+                bg-white
+                border border-gray-200
+                shadow-lg
+                rounded-lg
+                p-4
+                flex flex-wrap gap-2
+                max-w-[260px]
+               [&>svg]:bg-white [&>svg]:fill-white [&>svg]:stroke-gray-200
+              "
+            >
 
-                                    ))}
+              {/* SERVICES */}
+              {otherServices.map((s: string, index: number) => (
+                <span
+                  key={index}
+                  className="inline-flex items-center text-[10px] font-semibold text-[#000] whitespace-nowrap"
+                >
+                  {s}
+                </span>
+              ))}
 
-                                </TooltipContent>
+              {/* ✅ WHITE ARROW FIX */}
+              {/* <TooltipArrow
+                className="
+                  fill-white
+                  stroke-gray-200
+                "
+              /> */}
 
-                              </Tooltip>
+            </TooltipContent>
 
-                            )}
+          </Tooltip>
+        )}
 
-                          </>
-                        )}
-
-                      </div>
-                    </TooltipProvider>
+      </div>
+    </TooltipProvider>
+  );
+})()}
+ 
 
 
                   {/* Info Row */}

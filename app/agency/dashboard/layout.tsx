@@ -78,6 +78,7 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
   const [filteredMenuItems, setFilteredMenuItems] = useState<MenuItem[]>([])
 
   const[freeTrailProposalCount,setFreeTrailProposalCount]=useState(0);
+  const[cmsData,setCMSData]=useState<any>(null);
 
   const isSubscriptionPage =
     pathname.startsWith("/agency/dashboard/account/subscriptions") ||
@@ -96,9 +97,13 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
       try {
         const res = await authFetch(`/api/users/${user.id}`)
         const freeTrailRes=await fetch("/api/free-trail-config")
-        if (!res.ok || !freeTrailRes.ok) throw new Error()
+        const cmsRes=await fetch("/api/cms");
+
+        if (!res.ok || !freeTrailRes.ok || !cmsRes.ok)  throw new Error()
         const data = await res.json()
         const freeTrailData=await freeTrailRes.json();
+        const cmsData=await cmsRes.json();
+        setCMSData(cmsData?.data);
         console.log("Free Taril Data::::::",freeTrailData)
 
         let isExpired = false;
@@ -178,6 +183,7 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
         setIsCollapsed={setIsCollapsed}
         isMobileOpen={isMobileOpen}
         setIsMobileOpen={setIsMobileOpen}
+        cmsData={cmsData}
       />
 
       {/* MAIN CONTENT */}

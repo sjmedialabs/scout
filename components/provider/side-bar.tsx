@@ -26,6 +26,7 @@ interface SidebarProps {
   isMobileOpen: boolean;
   setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
   setIsMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  cmsData: any;
 }
 
 export default function Sidebar({
@@ -35,6 +36,7 @@ export default function Sidebar({
   isMobileOpen,
   setIsCollapsed,
   setIsMobileOpen,
+  cmsData,
 }: SidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -95,7 +97,7 @@ export default function Sidebar({
               {/* <h2 className="text-xl font-bold tracking-tight">
                 Agency Dashboard
               </h2> */}
-              <img src="/scoutFooterLogo.png" className="h-[45px] w-[120px]"/>
+              <img src={cmsData?.contact?.footerLogo || "/scoutFooterLogo.png"} className="h-[45px] w-[150px]"/>
               {/* <p className="text-sm text-gray-600 mt-0.5">
                 Welcome back, {user?.name || "User"}
               </p> */}

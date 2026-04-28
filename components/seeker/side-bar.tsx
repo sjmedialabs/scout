@@ -55,10 +55,12 @@ export default function ClientSidebar({
   user,
   isOpen,
   onClose,
+  cms
 }: {
   user: any
   isOpen: boolean
   onClose: () => void
+  cms:any
 }) {
   const router = useRouter()
   const pathname = usePathname()
@@ -88,6 +90,7 @@ export default function ClientSidebar({
     await logout()
     router.replace("/login")
   }
+  console.log("CMS Content in client  Sidebar:", cms); // Debug log to check CMS content
 
   return (
     <>
@@ -118,7 +121,7 @@ export default function ClientSidebar({
               {/* <h2 className="text-xl font-bold text-[#000]">
                 Client Dashboard
               </h2> */}
-              <img src="/scoutFooterLogo.png" className="h-[45px] w-[120px] cursor-pointer" onClick={()=>(router.push("/client/dashboard"))}/>
+              <img src={cms?.contact?.footerLogo || "/scoutFooterLogo.png"} className="h-[45px] w-[150px] cursor-pointer" onClick={()=>(router.push("/client/dashboard"))}/>
               {/* <p className="text-sm text-[#8B8585]">
                 Welcome back, {user.name}
               </p> */}

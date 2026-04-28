@@ -35,7 +35,7 @@ export interface ICMSContent extends Document {
   aboutBannerImage?: string
   aboutBannerTitle?: string
   aboutBannerSubtitle?: string
-  aboutDescription1?: string 
+  aboutDescription1?: string  
   aboutDescription2?: string
   aboutPoints?: string[]
   aboutSideImage?: string
@@ -61,6 +61,8 @@ export interface ICMSContent extends Document {
     twitterUrl?: string
     youtubeUrl?: string
     footerCopyRightMsg?:string
+    headerLogo?:string
+    footerLogo?:string
   }
   helpCenter?:{
     title?:string
@@ -148,7 +150,9 @@ const CMSContentSchema = new Schema<ICMSContent>(
       linkedinUrl: { type: String },
       twitterUrl: { type: String },
       youtubeUrl: { type: String },
-      footerCopyRightMsg:{type:String}
+      footerCopyRightMsg:{type:String},
+      headerLogo:{type:String},
+      footerLogo:{type:String},
 
     },
     helpCenter:{

@@ -117,7 +117,7 @@ export function Footer() {
           <div className="">
             <Link href={"/"}>
               <img
-                src="/scoutFooterLogo.png"
+                src={cms?.contact?.footerLogo || "/scoutFooterLogo.png"}
                 alt=""
                 className="col-span-1 py-2 -ml-2 h-24"
               />
