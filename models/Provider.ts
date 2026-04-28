@@ -32,6 +32,16 @@ export interface ITestimonial {
   avatar?: string
 }
 
+export interface IManualTopService {
+  service?:string,
+  percentage?:number
+}
+
+export interface IClients{
+  client?:string,
+  percentage?:number
+}
+
 export interface IProvider extends Document {
   _id: mongoose.Types.ObjectId
   userId: mongoose.Types.ObjectId
@@ -51,10 +61,10 @@ export interface IProvider extends Document {
   services: string[]
   technologies: string[]
   industries: string[]
-  clients:string[]
+  clients:IClients[]
   scheduleRating?:number
   costRating?:number
-  topServicesManual?:string[]
+  topServicesManual?:IManualTopService[]
   rating: number
   reviewCount: number
   communicationRating?:number
@@ -156,6 +166,16 @@ const TestimonialSchema = new Schema({
   avatar: { type: String },
 })
 
+const ManualTopServiceSchema = new Schema({
+  service: { type: String, },
+  percentage: { type: Number, min: 0, max: 100 },
+})
+
+const ClientsSchema = new Schema({
+  client: { type: String, },
+  percentage: { type: Number, min: 0, max: 100 },
+})
+
 const ProviderSchema = new Schema<IProvider>(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -174,10 +194,10 @@ const ProviderSchema = new Schema<IProvider>(
     country:{type:String},
     countryCode:{type:String},
     services: [{ type: String }],
-    topServicesManual: [{ type: String }],
+    topServicesManual:[ManualTopServiceSchema],
     technologies: [{ type: String }],
     industries: [{ type: String }],
-    clients:[{type:String,default:[]}],
+    clients:[ClientsSchema],
     scheduleRating: { type: Number, default: 0, min: 0, max: 5 },
     costRating: { type: Number, default: 0, min: 0, max: 5 },
 

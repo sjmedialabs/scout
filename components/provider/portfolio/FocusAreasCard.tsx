@@ -89,6 +89,8 @@ if (Object.keys(serviceRatings).length === 0) {
   })
 }
 
+console.log("manual top services in the focus area card:::",provider?.topServicesManual)
+
 // STEP 3: Final top services
   const totalValue = Object.values(serviceRatings).reduce(
   (acc, curr) => acc + curr.count,
@@ -158,86 +160,68 @@ const topServices = Object.keys(serviceRatings)
       </div>
 
             {/* Clients */}
-      
-    { provider?.clients?.length >0 && (<div className="shadow-md rounded-2xl border border-orange-100 bg-white p-5 space-y-1">
-        <h3 className={`${
-            isCompact ? "text-[14px]" :
-            isLarge ? "text-[18px]" :
-            "text-[16px]"
-          } font-semibold text-orangeButton`}>
-          Clients
-        </h3>
-          <div className="flex flex-wrap gap-2">
-            {provider?.clients?.map((client, index) => (
-              <Badge
-                key={index}
-                className="text-[12px] leading-[1.6] bg-[#F54A0C] min-w-[60px] h-[20px]"
-              >
-                {client}
-              </Badge>
-            ))}
-         </div>
-      </div>)}
-
-      {topServices.length > 0 && (
-        <div className="bg-white rounded-2xl p-6 shadow-md border border-orange-100">
-          <h3 className={`${
-            isCompact ? "text-[14px]" :
-            isLarge ? "text-[18px]" :
-            "text-[16px]"
-          } font-semibold text-orangeButton`}>
-            Top Services
-          </h3>
-
-          <div className="w-full h-[250px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={topServices}
-                  dataKey="value"
-                  nameKey="name"
-                  outerRadius={90}
-                  label={({ percent }) => {
-                    if (typeof window !== "undefined" && window.innerWidth < 768) {
-                      // return `${(percent * 100).toFixed(0)}%` 
-                    }
-                    return "" 
-                  }}
-                  labelLine={false}
+                  
+            {provider?.clients?.length > 0 && (
+              <div className="shadow-md rounded-2xl border border-orange-100 bg-white p-5 space-y-1">
+                
+                <h3
+                  className={`${
+                    isCompact
+                      ? "text-[14px]"
+                      : isLarge
+                      ? "text-[18px]"
+                      : "text-[16px]"
+                  } font-semibold text-orangeButton`}
                 >
-                  {topServices.map((_, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={SERVICE_COLORS[index % SERVICE_COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value, name, props) => {
-                    const total = props?.payload?.payload?.total || 0
-                    const percent = total
-                      ? ((value / total) * 100).toFixed(1)
-                      : 0
+                  Clients
+                </h3>
 
-                    return [`${percent}%`, name]
-                  }}
-                />
-                <Legend
-                  layout="vertical"
-                  verticalAlign="bottom"
-                  align="center"
-                  iconType="circle"  
-                  iconSize={8}
-                  wrapperStyle={{
-                    fontSize: "12px",
-                    paddingTop: "0px",
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      )}
+                <div className="flex flex-wrap gap-2">
+                  {provider?.clients?.map((clientObj, index) => (
+                    <Badge
+                      key={index}
+                      className="text-[12px] leading-[1.6] bg-[#F54A0C] min-w-[60px] h-[20px]"
+                    >
+                      {clientObj?.client} ({clientObj?.percentage}%)
+                    </Badge>
+                  ))}
+                </div>
+
+              </div>
+            )}
+
+            {provider?.topServicesManual?.length > 0 && (
+            <div className="shadow-md rounded-2xl border border-orange-100 bg-white p-5 space-y-1">
+              
+              <h3
+                className={`${
+                  isCompact
+                    ? "text-[14px]"
+                    : isLarge
+                    ? "text-[18px]"
+                    : "text-[16px]"
+                } font-semibold text-orangeButton`}
+              >
+                Top Services
+              </h3>
+
+              <div className="flex flex-wrap gap-2">
+                {provider?.topServicesManual?.map(
+                  (serviceObj, index) => (
+                    <Badge
+                      key={index}
+                      className="text-[12px] leading-[1.6] bg-[#F54A0C] min-w-[60px] h-[20px]"
+                    >
+                      {serviceObj?.service} ({serviceObj?.percentage}%)
+                    </Badge>
+                  )
+                )}
+              </div>
+
+            </div>
+          )}
+
+  
 
     </div>
   )

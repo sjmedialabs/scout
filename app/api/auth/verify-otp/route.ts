@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
         name: companyName || "",
         email: email.toLowerCase(),
         description: "New agency profile",
-        location: "Not specified",
+        location: "N/A",
         services: [],
         technologies: [],
         industries: [],

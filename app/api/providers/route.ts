@@ -283,6 +283,7 @@ export async function GET(request: NextRequest) {
         certifications: p.certifications,
         awards: p.awards,
         socialLinks: p.socialLinks,
+        topServicesManual:p?.topServicesManual || [],
 
         // ✅ NEW FEATURED FROM PLAN
         isFeatured: computedIsFeatured,

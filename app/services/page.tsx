@@ -17,6 +17,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import RatingStars from "@/components/rating -star-servicesPage";
 import { Menu } from "lucide-react";
 import ContactProviderModal from "@/components/leadPopupForm";
@@ -29,7 +35,7 @@ export default function ServicesPage() {
   const categoryId = searchParams.get("category") || null;
   const subCategoryId=searchParams.get("subcategory") || null;
   const searchTerm=decodeURIComponent(searchParams.get("q") || "");
-  console.log("Search Term is::::",searchTerm)
+  // console.log("Search Term is::::",searchTerm)
 
   
 
@@ -319,6 +325,8 @@ useEffect(() => {
 
   // setFilteredProviders(filtered);
 };
+
+console.log("Filtered Providers:::", filteredProviders);
 
  return (
   <div className="flex flex-col lg:flex-row w-full min-h-screen bg-white max-w-7xl mx-auto">
@@ -719,15 +727,72 @@ useEffect(() => {
                   </div>
 
                   {/* Tags */}
-                  <div className="flex flex-wrap py-0 -mt-2">
-                    {activeService && (
-                      <span
-                        className="inline-flex items-center rounded-lg bg-[#f2f2f2] border px-3 py-0.5 text-[10px] font-semibold text-slate-700"
-                      >
-                        {activeService}
-                      </span>
-                    )}
-                  </div>
+                    <TooltipProvider>
+                      <div className="flex flex-wrap py-0 -mt-2 items-center gap-2">
+
+                        {p?.topServicesManual?.length > 0 && (
+                          <>
+                            {/* First Service */}
+                            <span className="inline-flex items-center rounded-lg bg-[#f2f2f2] border px-3 py-0.5 text-[10px] font-semibold text-slate-700 whitespace-nowrap">
+                              {p.topServicesManual[0].percentage}%{" "}
+                              {p.topServicesManual[0].service}
+                            </span>
+
+                            {/* +N Services */}
+                            {p.topServicesManual.length > 1 && (
+
+                              <Tooltip>
+
+                                {/* Trigger */}
+                                <TooltipTrigger asChild>
+                                  <span className="text-blue-600 underline text-[12px] font-semibold cursor-pointer whitespace-nowrap">
+                                    +{p.topServicesManual.length - 1} services
+                                  </span>
+                                </TooltipTrigger>
+
+                                {/* Tooltip Content */}
+                                <TooltipContent
+                                  side="top"
+                                  align="center"
+                                  sideOffset={8}
+                                  className="
+                                    flex flex-wrap gap-2
+                                    bg-white border shadow-lg
+                                    rounded-xl p-3
+                                    max-w-[260px]
+                                    [&_svg]:overflow-visible
+                                  [&_svg_path:first-child]:fill-slate-200
+                                  [&_svg_path:last-child]:fill-white
+                                  "
+                                >
+
+                                  {p.topServicesManual
+                                    .slice(1)
+                                    .map((s: any, index: number) => (
+
+                                      <span
+                                        key={index}
+                                        className="inline-flex items-center rounded-lg 
+                                                  bg-[#f2f2f2] border px-3 py-0.5 
+                                                  text-[10px] font-semibold text-slate-700 whitespace-nowrap"
+                                      >
+                                        {s.percentage}% {s.service}
+                                      </span>
+
+                                    ))}
+
+                                </TooltipContent>
+
+                              </Tooltip>
+
+                            )}
+
+                          </>
+                        )}
+
+                      </div>
+                    </TooltipProvider>
+
 
                   {/* Info Row */}
                   <div className=" grid-cols-3 text-[11px] font-semibold text-[#616161] mt-1">
@@ -737,7 +802,7 @@ useEffect(() => {
                         alt="Location"
                         className="h-3 w-3 object-contain"
                       />
-                      {p.location || "Not specified"}
+                      {p.location || "N/A"}
                     </div>
 
                     <div className="inline-flex items-center mr-6 gap-1">
@@ -751,7 +816,7 @@ useEffect(() => {
 
                     <div className="inline-flex items-center gap-1">
                       <Users className="h-3 w-3 text-orangeButton" />
-                      {p.teamSize || "Not specified"}
+                      {p.teamSize || "0"}
                     </div>
                   </div>
 
