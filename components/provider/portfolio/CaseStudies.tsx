@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { IndianRupee , Clock } from "lucide-react";
+
 
 export default function CaseStudies({ provider }: any) {
 
@@ -104,20 +106,30 @@ const handlePrev = () => {
             </div>
 
             {/* RIGHT SIDE */}
-            <div className="flex sm:flex-row md:flex-col gap-6 min-w-[140px] space-y-6">
+            <div className="flex flex-col sm:flex-row md:flex-col gap-6 min-w-[140px]">
 
-              <div>
-                <p className="text-xl font-semibold">Budget</p>
-                <p className="text-xs text-gray-500">
-                  ₹{project?.budget || "$0"}
-                </p>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center h-10 w-10 rounded-full bg-orange-50 text-orangeButton shrink-0">
+                  <IndianRupee className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-xl font-semibold">Budget</p>
+                  <p className="text-xs text-gray-500">
+                    ₹{project?.budget || "0"}
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <p className="text-xl font-semibold">Timeline</p>
-                <p className="text-xs text-gray-500">
-                  {project?.timeline || "-"}
-                </p>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center h-10 w-10 rounded-full bg-blue-50 text-blueButton shrink-0">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-xl font-semibold">Timeline</p>
+                  <p className="text-xs text-gray-500">
+                    {project?.timeline || "-"}
+                  </p>
+                </div>
               </div>
 
             </div>

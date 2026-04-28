@@ -48,6 +48,7 @@ export default function ServiceRequestsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [isUpdating, setIsUpdating] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showApproveModal, setShowApproveModal] = useState(false);
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const [showViewModal, setShowViewModal] = useState(false);
@@ -103,16 +104,23 @@ export default function ServiceRequestsPage() {
     setStatusFilter("all");
   };
 
-  const handleApprove = async (id: string) => {
+  const openApproveModal = (id: string) => {
+    setSelectedRequestId(id);
+    setShowApproveModal(true);
+  };
+
+  const handleApprove = async () => {
+    if (!selectedRequestId) return;
     setIsUpdating(true);
     try {
-      const res = await authFetch(`/api/servicerequests/${id}`, {
+      const res = await authFetch(`/api/servicerequests/${selectedRequestId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "accepted" }), 
       });
       if (!res.ok) throw new Error("Failed to approve");
       toast.success("Service request approved!");
+      setShowApproveModal(false);
       loadData();
     } catch (error) {
       console.error("Approve error:", error);
@@ -269,17 +277,23 @@ export default function ServiceRequestsPage() {
                       >
                         <Eye className="h-4 w-4" strokeWidth={2.5} />
                       </Button>
-                      <Button
+                     {
+                      req.status?.toLowerCase()==="pending"&&(
+                         <Button
                         size="sm"
                         variant="outline"
                         className="h-8 w-8 p-0 rounded-full border-green-500 text-green-600 hover:bg-green-50 hover:text-green-700 disabled:border-green-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                        onClick={() => handleApprove(req._id)}
+                        onClick={() => openApproveModal(req._id)}
                         disabled={isUpdating || ["accepted", "approved"].includes((req.status || "pending").toLowerCase())}
                         title="Approve Request"
                       >
                         <Check className="h-4 w-4" strokeWidth={3} />
                       </Button>
-                      <Button
+                      )
+                     }
+                     {
+                      req.status?.toLowerCase()==="pending" && (
+                         <Button
                         size="sm"
                         variant="outline"
                         className="h-8 w-8 p-0 rounded-full border-red-500 text-red-600 hover:bg-red-50 hover:text-red-700 disabled:border-red-200 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -289,6 +303,8 @@ export default function ServiceRequestsPage() {
                       >
                         <X className="h-4 w-4" strokeWidth={3} />
                       </Button>
+                      )
+                     }
                     </div>
                   </td>
                 </tr>
@@ -376,6 +392,41 @@ export default function ServiceRequestsPage() {
         </DialogContent>
       </Dialog>
 
+    {/* APPROVE MODAL */}
+    <Dialog open={showApproveModal} onOpenChange={setShowApproveModal}>
+      <DialogContent className="md:max-w-md rounded-2xl flex flex-col p-0">
+        <DialogHeader className="px-6 py-4 border-b shrink-0">
+          <DialogTitle className="text-xl font-bold text-[#39A935]">
+            Approve Service Request
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="px-6 py-4 space-y-4 w-full">
+          <p className="text-gray-700 text-sm">
+            Are you sure you want to approve this service request?
+          </p>
+        </div>
+
+        <div className="px-6 py-4 border-t flex gap-4 shrink-0 justify-end">
+          <Button
+            variant="outline"
+            className="btn-blackButton h-[35px]"
+            onClick={() => setShowApproveModal(false)}
+            disabled={isUpdating}
+          >
+            Cancel
+          </Button>
+          <Button
+            className="primary-button h-[35px]"
+            onClick={handleApprove}
+            disabled={isUpdating}
+          >
+            {isUpdating ? "Approving..." : "Approve Request"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+
       {/* VIEW DETAILS MODAL */}
       <Dialog open={showViewModal} onOpenChange={setShowViewModal}>
   <DialogContent
@@ -401,8 +452,8 @@ export default function ServiceRequestsPage() {
       <div className="flex items-center gap-2.5">
 
         {/* Smaller Icon */}
-        <div className="h-9 w-9 flex items-center justify-center rounded-full bg-orange-100">
-          <FileText className="text-[#F4561C] h-4 w-4" />
+        <div className="h-9 w-9 flex items-center justify-center rounded-full bg-[#F4561C]">
+          <FileText className="text-white h-4 w-4" />
         </div>
 
         <DialogTitle className="text-lg font-bold text-gray-900">

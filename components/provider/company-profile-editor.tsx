@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect,useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Tabs,
@@ -168,7 +168,7 @@ export function CompanyProfileEditor({
   );
   const [newTechnology, setNewTechnology] = useState("");
   const [newIndustry, setNewIndustry] = useState("");
-  const [newClient, setNewClient] = useState("");
+  
 
   const [isEditMode, setIsEditMode] = useState(false);
   // const [newAward, setNewAward] = useState("");
@@ -200,6 +200,29 @@ export function CompanyProfileEditor({
     description: "",
   });
   const [localServiceRequests, setLocalServiceRequests] = useState<any[]>(serviceRequests || []);
+
+  const [selectedService, setSelectedService] = useState("");
+   const [percentage, setPercentage] = useState("");
+   const totalPercentage = useMemo(() => {
+  return (formData.topServicesManual || []).reduce(
+    (sum, s) => sum + (s.percentage || 0),
+    0
+  );
+}, [formData.topServicesManual]);
+
+const isTotalComplete = totalPercentage === 100;
+
+//client handling
+const [newClient, setNewClient] = useState("");
+const [clientPercentage, setClientPercentage] = useState("");
+const clientTotalPercentage = useMemo(() => {
+  return (formData.clients || []).reduce(
+    (sum, c) => sum + (c.percentage || 0),
+    0
+  );
+}, [formData.clients]);
+
+const isClientTotalComplete = clientTotalPercentage === 100;
 
   useEffect(() => {
     setLocalServiceRequests(serviceRequests || []);
@@ -433,25 +456,94 @@ export function CompanyProfileEditor({
     }));
   };
 
-  const addTopService = (service: string) => {
-    if (service && !(formData.topServicesManual || []).includes(service)) {
-      if ((formData.topServicesManual || []).length >= 5) {
-        toast.error("You can only add up to 5 top services.");
-        return;
-      }
-      setFormData((prev) => ({
-        ...prev,
-        topServicesManual: [...(prev.topServicesManual || []), service],
-      }));
-    }
-  };
+
+
+const addTopService = () => {
+  const service = selectedService;
+  const percentValue = Number(percentage);
+
+  if (!service) {
+    toast.error("Please select a service.");
+    return;
+  }
+
+  if (!percentage) {
+    toast.error("Percentage is required.");
+    return;
+  }
+
+  if (percentValue <= 0 || percentValue > 100) {
+    toast.error("Percentage must be between 1 and 100.");
+    return;
+  }
+
+  const existing = formData.topServicesManual || [];
+
+  if (existing.find((s) => s.service === service)) {
+    toast.error("Service already added.");
+    return;
+  }
+
+  if (existing.length >= 5) {
+    toast.error("You can only add up to 5 top services.");
+    return;
+  }
+
+  const currentTotal = getTotalPercentage();
+  const newTotal = currentTotal + percentValue;
+
+  if (newTotal > 100) {
+    toast.error(
+      `Total percentage cannot exceed 100%. Remaining: ${
+        100 - currentTotal
+      }%`
+    );
+    return;
+  }
+
+  setFormData((prev) => ({
+    ...prev,
+    topServicesManual: [
+      ...(prev.topServicesManual || []),
+      {
+        service,
+        percentage: percentValue,
+      },
+    ],
+  }));
+
+  setSelectedService("");
+  setPercentage("");
+};
 
   const removeTopService = (service: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      topServicesManual: (prev.topServicesManual || []).filter((s) => s !== service),
-    }));
-  };
+  setFormData((prev) => ({
+    ...prev,
+    topServicesManual: (prev.topServicesManual || []).filter(
+      (s) => s.service !== service,
+    ),
+  }));
+};
+
+const getTotalPercentage = () => {
+  return (formData.topServicesManual || []).reduce(
+    (sum, s) => sum + (s.percentage || 0),
+    0
+  );
+};
+const validateTopServicesTotal = () => {
+  const total = (formData.topServicesManual || []).reduce(
+    (sum, s) => sum + (s.percentage || 0),
+    0,
+  );
+
+  if (total !== 100) {
+    toast.error("Total percentage must be exactly 100%.");
+    return false;
+  }
+
+  return true;
+};
 
   const addTech = () => {
     if (
@@ -514,24 +606,65 @@ export function CompanyProfileEditor({
     }));
   };
 
-  const addClient = () => {
-    if (
-      newClient.trim() &&
-      !(formData.clients || []).includes(newClient)
-    ) {
-      setFormData((prev) => ({
-        ...prev,
-        clients: [...(prev.clients || []), newClient],
-      }));
-      setNewClient("");
-    }
+ const addClient = () => {
+  const clientName = newClient.trim();
+  const percentValue = Number(clientPercentage);
+
+  if (!clientName) {
+    toast.error("Client name is required.");
+    return;
   }
-  const removeClient = (client: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      clients: prev.clients.filter((item: string) => item !== client),
-    }));
+
+  if (!clientPercentage) {
+    toast.error("Percentage is required.");
+    return;
   }
+
+  if (percentValue <= 0 || percentValue > 100) {
+    toast.error("Percentage must be between 1 and 100.");
+    return;
+  }
+
+  const existing = formData.clients || [];
+
+  if (existing.find((c) => c.client === clientName)) {
+    toast.error("Client already added.");
+    return;
+  }
+
+  const newTotal = clientTotalPercentage + percentValue;
+
+  if (newTotal > 100) {
+    toast.error(
+      `Total percentage cannot exceed 100%. Remaining: ${
+        100 - clientTotalPercentage
+      }%`
+    );
+    return;
+  }
+
+  setFormData((prev) => ({
+    ...prev,
+    clients: [
+      ...(prev.clients || []),
+      {
+        client: clientName,
+        percentage: percentValue
+      }
+    ]
+  }));
+
+  setNewClient("");
+  setClientPercentage("");
+};
+  const removeClient = (clientName: string) => {
+  setFormData((prev) => ({
+    ...prev,
+    clients: (prev.clients || []).filter(
+      (c) => c.client !== clientName
+    ),
+  }));
+};
 
   const addLanguage = (language: string) => {
     if (language && !(formData.languagesSpoken || []).includes(language)) {
@@ -1488,19 +1621,19 @@ export function CompanyProfileEditor({
                     {/* Client Badges */}
                     <div className="flex flex-wrap gap-2">
                       {(formData.clients || []).map((client) => (
-                        <Badge
-                          key={client}
-                          variant="secondary"
-                          className="flex items-center gap-2 bg-[#1C96F4]"
-                        >
-                          {client}
+                         <Badge
+                        key={client.client}
+                        variant="secondary"
+                        className="flex items-center gap-2 bg-[#1C96F4]"
+                      >
+                        {client.client} ({client.percentage}%)
 
-                          {isEditMode && (
-                            <div onClick={() => removeClient(client)}>
-                              <X className="h-3 w-3 cursor-pointer" />
-                            </div>
-                          )}
-                        </Badge>
+                        {isEditMode && (
+                          <div onClick={() => removeClient(client.client)}>
+                            <X className="h-3 w-3 cursor-pointer" />
+                          </div>
+                        )}
+                      </Badge>
                       ))}
                       {/* {
                 (formData.clients || []).length === 0 &&(
@@ -1508,6 +1641,7 @@ export function CompanyProfileEditor({
                 )
               } */}
                     </div>
+                    
                     {
                       !isEditMode && (formData.clients || []).length === 0 && (
                         <p className="text-gray-500 text-md text-center ">No Clients are yet</p>
@@ -1516,23 +1650,54 @@ export function CompanyProfileEditor({
 
                     {/* Add Client Input */}
                     {isEditMode && (
-                      <div className="flex gap-2 w-[50%]">
-                        <Input
-                          type="text"
-                          value={newClient}
-                          onChange={(e) => setNewClient(e.target.value)}
-                          placeholder="Enter Client Name..."
-                          className="placeholder:text-[#b2b2b2] !bg-[#f2f1f6] mt-1 border-[#D0D5DD] rounded-[6px]"
-                        />
+                      <>
+  <div className="flex flex-row gap-2 w-full md:w-[40%]">
 
-                        <Button
-                          onClick={addClient}
-                          className="bg-[#F54A0C] h-[36px] w-[70px] mt-1.5"
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    )}
+    {/* Client Name */}
+    <Input
+      type="text"
+      value={newClient}
+      onChange={(e) => setNewClient(e.target.value)}
+      placeholder="Enter Client Name..."
+      className="placeholder:text-[#b2b2b2] !bg-[#f2f1f6] mt-1 border-[#D0D5DD] rounded-[6px]"
+    />
+
+    {/* Percentage */}
+    <Input
+      type="number"
+      value={clientPercentage}
+      onChange={(e) => setClientPercentage(e.target.value)}
+      placeholder="%"
+      min={0}
+      max={100}
+      className="w-[100px] !bg-[#f2f1f6] mt-1 border-[#D0D5DD] rounded-[6px]"
+    />
+
+    {/* Add Button */}
+    <Button
+      onClick={addClient}
+      disabled={isClientTotalComplete}
+      className={`h-[36px] w-[70px] mt-1.5 ${
+        isClientTotalComplete
+          ? "bg-gray-400 cursor-not-allowed"
+          : "bg-[#F54A0C]"
+      }`}
+    >
+      <Plus className="h-4 w-4" />
+    </Button>
+
+  </div>
+  <p className="text-xs text-gray-500 mt-2">
+  Total: {clientTotalPercentage}%
+
+  {clientTotalPercentage < 100 && (
+    <span className="ml-2">
+      Remaining: {100 - clientTotalPercentage}%
+    </span>
+  )}
+</p>
+</>
+)}
 
                   </CardContent>
                 </Card>
@@ -1683,47 +1848,116 @@ export function CompanyProfileEditor({
               select up to 5.
             </p>
 
-            {isEditMode && (
+         {isEditMode && (
               <div className="space-y-3">
-                <Select onValueChange={addTopService}>
-                  <SelectTrigger className="w-[50%] mt-1 !bg-[#f2f1f6]">
-                    <SelectValue placeholder="Select a top service" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(formData.services || [])
-                      .filter(
-                        (s) => !(formData.topServicesManual || []).includes(s),
-                      )
-                      .map((service) => (
-                        <SelectItem key={service} value={service}>
-                          {service}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
+
+                {/* Card Input */}
+                <div className="flex flex-wrap items-end gap-3 bg-[#ffff] border-1 border-[#d0d5dd] p-3 rounded-xl w-full md:w-[70%]">
+
+                  {/* Service Select */}
+                  <div className="flex-1 min-w-[150px]">
+                    <Select
+                      value={selectedService}
+                      onValueChange={setSelectedService}
+                    >
+                      <SelectTrigger className="w-full !bg-[#f2f1f6]">
+                        <SelectValue placeholder="Select service" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        {(formData.services || [])
+                          .filter(
+                            (s) =>
+                              !(formData.topServicesManual || []).some(
+                                (t) => t.service === s,
+                              ),
+                          )
+                          .map((service) => (
+                            <SelectItem key={service} value={service}>
+                              {service}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Percentage Input */}
+                  <div className="w-[110px]">
+                    <input
+                      type="number"
+                      placeholder="%"
+                      value={percentage}
+                      onChange={(e) => setPercentage(e.target.value)}
+                      className="w-full px-3 py-2 rounded-md border bg-white text-sm"
+                      min={0}
+                      max={100}
+                    />
+                  </div>
+
+                  {/* Add Button */}
+                <button
+              type="button"
+              onClick={addTopService}
+              disabled={isTotalComplete}
+              className={`px-3 py-2 rounded-md text-sm text-white ${
+                (isTotalComplete || formData.topServicesManual?.length === 5)
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-[#1C96F4]"
+              }`}
+            >
+              Add
+            </button>
+
+                </div>
+
+                {/* Added Services */}
                 <div className="flex flex-wrap gap-2">
-                  {(formData.topServicesManual || []).map((service) => (
+                  {(formData.topServicesManual || []).map((item) => (
                     <Badge
-                      key={service}
+                      key={item.service}
                       variant="secondary"
                       className="flex items-center gap-2 bg-[#1C96F4]"
                     >
-                      {service}
-                      <div onClick={() => removeTopService(service)}>
+                      {item.service} ({item.percentage}%)
+
+                      <div
+                        onClick={() => removeTopService(item.service)}
+                      >
                         <X className="h-3 w-3 cursor-pointer" />
                       </div>
                     </Badge>
                   ))}
+                  
                 </div>
+                <p className="text-xs text-gray-500">
+              Total: {totalPercentage}%
+
+              {totalPercentage < 100 && (
+                <span className="ml-2">
+                  Remaining: {100 - totalPercentage}%
+                </span>
+              )}
+            </p>
+
               </div>
-            )}
+          )}
 
             {!isEditMode && (
               <div className="flex flex-wrap gap-2">
-                {(formData.topServicesManual || []).map((service) => (
-                  <Badge key={service} className="bg-yellow-100 text-yellow-800">
-                    {service}
-                  </Badge>
+                {(formData.topServicesManual || []).map((item) => (
+                  <Badge
+          key={item.service}
+          variant="secondary"
+          className="flex items-center gap-2 bg-[#1C96F4]"
+        >
+          {item.service} ({item.percentage}%)
+
+          <div
+            onClick={() => removeTopService(item.service)}
+          >
+            <X className="h-3 w-3 cursor-pointer" />
+          </div>
+        </Badge>
                 ))}
                 {(formData.topServicesManual || []).length === 0 && (
                   <p className="text-gray-400 text-sm">

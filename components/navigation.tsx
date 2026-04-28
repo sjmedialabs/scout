@@ -400,7 +400,7 @@ const overflowCategories = mainCategories.slice(5);
                 </DropdownMenuTrigger>
                 <Link
                 href="/pricing"
-                className="text-[14px] font-medium text-[#000]  mt-1"
+                className="text-[14px] font-semibold text-[#000]  mt-1"
               >
                 Pricing
               </Link>
@@ -645,7 +645,7 @@ const overflowCategories = mainCategories.slice(5);
 
            <Link
           href="/pricing"
-          className="text-[#000] text-sm"
+          className="text-[#000] text-sm font-semibold"
           onClick={() => setMobileMenuOpen(false)}
           >
           Pricing

@@ -114,7 +114,7 @@ const { cms, providers, projects, categories, blogs } = data;
 
 
 const items = cms?.homeWorkSection || [];
-const showArrows = (items?.length || 0) > 4;
+const showArrows = (items?.length || 0) > 1;
 
 const handlePrev = () => {
   setCurrentIndex((prev) => (prev === 0 ? items.length - 1 : prev - 1));
@@ -204,17 +204,17 @@ if (resLoading) {
             
             {/* Card */}
             {items.length > 0 && (
-              <div className="bg-[#0F2A2F] text-white rounded-3xl px-6 py-4 min-h-[420px]">
+              <div className="bg-[#e7f0f8] text-white rounded-3xl px-6 py-4 min-h-[420px]">
                 
-                <p className="text-green-400 text-sm font-semibold mb-2">
+                <p className="text-[#2C34A1] text-sm font-semibold mb-2">
                   {items[currentIndex]?.tag || "Step"}
                 </p>
 
-                <h3 className="text-2xl font-bold mb-3">
+                <h3 className="text-2xl text-[#F4561C] font-bold mb-3">
                   {items[currentIndex]?.title}
                 </h3>
 
-                <p className="text-gray-300 text-sm">
+                <p className="text-gray-500 text-sm">
                   {items[currentIndex]?.description}
                 </p>
 
@@ -230,16 +230,16 @@ if (resLoading) {
               <>
                 <button
                   onClick={handlePrev}
-                  className="absolute -left-5 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow z-10"
+                  className="absolute -left-5 top-1/2 -translate-y-1/2 bg-[#000] p-2 rounded-full shadow z-10"
                 >
-                  <ChevronLeft />
+                  <ChevronLeft color="white" />
                 </button>
 
                 <button
                   onClick={handleNext}
-                  className="absolute -right-5 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow z-10"
+                  className="absolute -right-5 top-1/2 -translate-y-1/2 bg-[#000] p-2 rounded-full shadow z-10"
                 >
-                  <ChevronRight />
+                  <ChevronRight color="white" />
                 </button>
               </>
             )}
@@ -254,17 +254,17 @@ if (resLoading) {
             <div
               key={index}
             >
-              <div className="bg-[#0F2A2F] text-white rounded-3xl px-3 py-3 h-[420px] flex flex-col">
+              <div className="bg-[#e7f0f8]  text-white rounded-3xl px-3 py-3 h-[420px] flex flex-col">
                 <div>
-                <p className="text-green-400 text-sm font-semibold mb-2">
+                <p className="text-[#2C34A1] text-sm font-semibold mb-2">
                   {section?.tag || "Step"}
                 </p>
 
-                <h3 className="text-xl font-bold mb-2">
+                <h3 className="text-xl font-bold mb-2 text-[#F4561C]">
                   {section.title}
                 </h3>
 
-                <p className="text-gray-300 text-sm mb-4 line-clamp-3">
+                <p className="text-gray-500 text-sm mb-4 line-clamp-3">
                   {section.description}
                 </p>
                 </div>
