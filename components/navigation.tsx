@@ -375,13 +375,7 @@ const overflowCategories = mainCategories.slice(5);
 
               <div className="hidden lg:flex gap-4 lg:gap-6 xl:gap-6 2xl:gap-6">
               
-              <Link
-                href="/blogs"
-                className="text-slate-600 mt-1 hover:text-slate-900 text-sm"
-                onClick={() => setMobileMenuOpen(false)}
-                >
-                Blogs
-                </Link>
+              
 
                   {/* <Link
                     href="/about"
@@ -408,10 +402,18 @@ const overflowCategories = mainCategories.slice(5);
                 </DropdownMenuTrigger>
                 <Link
                 href="/pricing"
-                className="text-[14px] font-semibold text-[#000]  mt-1"
+                className="text-black mt-1 hover:text-slate-900 text-sm  font-medium"
               >
                 Pricing
               </Link>
+
+              <Link
+                href="/blogs"
+                className="text-black mt-1 font-medium hover:text-slate-900 text-sm"
+                onClick={() => setMobileMenuOpen(false)}
+                >
+                Blogs
+                </Link>
 
 
                 <DropdownMenuContent className="w-93 p-2 rounded-xl">
@@ -643,13 +645,7 @@ const overflowCategories = mainCategories.slice(5);
 
           {/* Static Links */}
          
-          <Link
-          href="/blogs"
-          className="text-slate-600 text-sm"
-          onClick={() => setMobileMenuOpen(false)}
-          >
-          Blogs
-          </Link>
+          
 
            <Link
           href="/pricing"
@@ -657,6 +653,14 @@ const overflowCategories = mainCategories.slice(5);
           onClick={() => setMobileMenuOpen(false)}
           >
           Pricing
+          </Link>
+
+          <Link
+          href="/blogs"
+          className="text-[#000] text-sm font-semibold"
+          onClick={() => setMobileMenuOpen(false)}
+          >
+          Blogs
           </Link>
 
           {/* <Link
