@@ -124,28 +124,28 @@ export function Footer() {
             </Link>
             <ul className="space-y-2 text-lg text-white">
               <li>
-                <Link href="/browse" className=" hover:text-foreground">
+                
                   <span className="flex flex-col font-semibold text-[15px]">
                     Address{" "}
                     <span className="font-normal">
                      {cms?.contact?.address || "123 Business Ave San Fancisco, CA 94105"}
                     </span>
                   </span>
-                </Link>
+                
               </li>
               <li>
-                <Link href="/providers" className=" hover:text-foreground">
+               
                   <span className="flex text-[15px] flex-col font-semibold">
                     Phone <span className="font-normal">{cms?.contact?.phone}</span>
                   </span>
-                </Link>
+                
               </li>
               <li>
-                <Link href="/register" className=" hover:text-foreground">
+               
                   <span className="flex flex-col text-[15px] font-semibold">
                     Email <span className="font-normal">{cms?.contact?.email || "hello@spark.com"}</span>
                   </span>
-                </Link>
+                
               </li>
             </ul>
             {/* <ul className="space-y-2 text-lg text-white">
