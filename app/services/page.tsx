@@ -784,7 +784,7 @@ console.log("Filtered Providers:::", filteredProviders);
                   key={index}
                   className="inline-flex items-center text-[10px] font-semibold text-[#000] whitespace-nowrap"
                 >
-                  {s}
+                  {s} {index!== otherServices.length - 1 ?<span className="font-semibold">{`${" "},`}</span> :""}
                 </span>
               ))}
 
