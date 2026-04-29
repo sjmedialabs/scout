@@ -292,8 +292,8 @@ if (resLoading) {
       >
         <div className="max-w-7xl mx-auto flex justify-center flex-col">
           <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] font-extrabold px-4 py-1 rounded-full mb-2">
-              <span className="text-sm font-medium text-[#fff] capitalize">
+            <div className="inline-flex items-center gap-2 border border-gray-500 font-extrabold px-4 py-1 rounded-full mb-2">
+              <span className="text-sm font-bold text-[#F4561C] capitalize">
                 Service Categories
               </span>
             </div>
@@ -303,7 +303,7 @@ if (resLoading) {
                 any project
               </span> */}
             </h2>
-            <p className="text-sm text-gray-500 max-w-lg mx-auto leading-relaxed">
+            <p className="text-sm text-gray-500 max-w-lg mx-auto">
              {cms?.homeServiceSubTitle}
             </p>
           </div>
@@ -392,15 +392,15 @@ if (resLoading) {
         <section className="py-6 px-6 md:px-10">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] font-extrabold px-4 py-1 rounded-full  mb-2">
-                <span className="text-sm font-medium text-white capitalize">
+              <div className="inline-flex items-center gap-2 border-gray-500 border font-extrabold px-4 py-1 rounded-full  mb-2">
+                <span className="text-sm font-bold text-[#F4561C] capitalize">
                   Newly added
                 </span>
               </div>
               <h2 className="text-md uppercase font-bold text-blueButton ">
                 {cms?.recentRequirementTitle || "Requirements"}
               </h2>
-              <p className="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">
+              <p className="text-sm text-gray-500 max-w-md mx-auto">
                 {cms?.recentRequirementSubTitle || "Discover opportunities from businesses lookking for your services"}
               </p>
             </div>
@@ -523,15 +523,15 @@ if (resLoading) {
         <section className="py-6 px-6 md:px-10 bg-blueBackground">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] font-extrabold px-4 py-1 rounded-full  mb-2">
-                <span className="text-sm font-medium text-white capitalize">
+              <div className="inline-flex items-center gap-2 border border-gray-500 font-extrabold px-4 py-1 rounded-full  mb-2">
+                <span className="text-sm font-bold text-[#F4561C] capitalize">
                   Top Agencies
                 </span>
               </div>
               <h2 className="text-md uppercase font-bold text-blueButton ">
                 {cms?.topProvidersTitle}
               </h2>
-              <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+              <p className="text-sm text-slate-600 max-w-md mx-auto">
                 {cms?.topProvidersSubTitle || "Discover opportunities from businesses lookking for your services"}
               </p>
             </div>
@@ -665,15 +665,15 @@ if (resLoading) {
           <div className="max-w-7xl mx-auto">
             {/* Heading */}
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] font-extrabold px-4 py-1 rounded-full mb-2">
-                <span className="text-sm font-medium text-white capitalize">
+              <div className="inline-flex items-center gap-2 border border-gray-500 font-extrabold px-4 py-1 rounded-full mb-2">
+                <span className="text-sm font-bold text-[#F4561C] capitalize">
                   Latest Insights
                 </span>
               </div>
               <h2 className="text-md uppercase font-bold text-blueButton">
                 {cms?.blogSection?.title ?? "Latest Blogs"}
               </h2>
-              <p className="text-sm text-gray-500 max-w-md mx-auto leading-relaxed">
+              <p className="text-sm text-gray-500 max-w-md mx-auto">
                 {cms?.blogSection?.subTitle ?? "Stay updated with insights"}
               </p>
             </div>
