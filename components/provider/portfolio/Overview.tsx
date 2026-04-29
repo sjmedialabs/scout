@@ -352,16 +352,16 @@ function ChartCard({
 
         <div className="text-sm space-y-2">
 
-          {data.map((item: any, i: number) => (
-
-            <LegendItem
-              key={i}
-              label={item.name}
-              value={`${item.percent}%`}
-              color={colors[i]}
-            />
-
-          ))}
+         {[...data]
+  .sort((a: any, b: any) => b.percent - a.percent)
+  .map((item: any, i: number) => (
+    <LegendItem
+      key={i}
+      label={item.name}
+      value={`${item.percent}%`}
+      color={colors[i]}
+    />
+))}
 
         </div>
 
