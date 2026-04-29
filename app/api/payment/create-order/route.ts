@@ -4,12 +4,19 @@ import { connectToDatabase } from "@/lib/mongodb"
 import Payment from "@/models/Payment"
 import { getCurrentUser } from "@/lib/auth/jwt"
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
-})
+export const dynamic = "force-dynamic"
+export const runtime = "nodejs"
 
-console.log("Key Id ::::::::::::::", process.env.RAZORPAY_KEY_ID)
+function getRazorpay() {
+  const key_id = process.env.RAZORPAY_KEY_ID
+  const key_secret = process.env.RAZORPAY_KEY_SECRET
+  if (!key_id || !key_secret) {
+    throw new Error(
+      "Razorpay env vars (RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET) are not set"
+    )
+  }
+  return new Razorpay({ key_id, key_secret })
+}
 
 export async function POST(req: Request) {
   await connectToDatabase()
@@ -21,13 +28,13 @@ export async function POST(req: Request) {
 
   const { planId, amount } = await req.json()
 
+  const razorpay = getRazorpay()
   const order = await razorpay.orders.create({
     amount: amount * 100,
     currency: "INR",
     receipt: `rcpt_${Date.now()}`,
   })
 
-  // Save payment entry
   await Payment.create({
     userId: user.userId,
     planId,
