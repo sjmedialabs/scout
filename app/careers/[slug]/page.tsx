@@ -30,11 +30,11 @@ export default function JobDetailsPage({
 
   return (
     <>
-    <section className="max-w-7xl mx-auto py-6">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+    <section className="w-full px-6 md:px-8 xl:px-27 py-10">
+      <div className="grid grid-cols-1 lg:grid-cols-10 gap-10">
         
         {/* LEFT CONTENT */}
-        <div className="  lg:col-span-2">
+        <div className="lg:col-span-7">
           {/* Title */}
           <h1 className="text-4xl font-medium text-orangeButton mb-4">
             {job.title}
@@ -74,7 +74,7 @@ export default function JobDetailsPage({
         </div>
 
         {/* RIGHT SIDEBAR */}
-        <div className="lg:sticky lg:top-4 h-fit order-first lg:order-none">
+        <div className="lg:col-span-3 lg:sticky lg:top-4 h-fit order-first lg:order-none">
           <div className="bg-[#eef1f6] rounded-2xl sm:rounded-3xl overflow-hidden">
             <div className="divide-y text-sm text-gray-500 space-y-0">
               <div className="p-6">
