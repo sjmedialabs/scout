@@ -72,10 +72,10 @@ const ConversationSchema = new Schema<IConversation>(
   { timestamps: true }
 )
 
-ConversationSchema.index(
-  { participants: 1 },
-  { unique: true }
-)
+// ConversationSchema.index(
+//   { participants: 1 },
+//   { unique: true }
+// )
 
 
 MessageSchema.index({ conversationId: 1, createdAt: -1 })
