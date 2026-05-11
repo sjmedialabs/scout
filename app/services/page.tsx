@@ -745,9 +745,10 @@ console.log("Filtered Providers:::", filteredProviders);
 
         {/* ===== PRIMARY SERVICE ===== */}
         {primaryService && (
-          <span className="inline-flex items-center text-[14px] font-semibold text-[#000] whitespace-nowrap">
-            {primaryService}
-          </span>
+          
+            <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">
+                                {primaryService}
+            </span>
         )}
 
         {/* ===== +N SERVICES ===== */}
