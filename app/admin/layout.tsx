@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AdminSidebar } from "./components/AdminSidebar";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import AdminHeader from "./components/AdminHeader";
@@ -13,6 +13,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   // Mobile drawer open/close
   const [mobileOpen, setMobileOpen] = useState(false);
+  const[cms, setCms] = useState<any>(null);
+
+  const fetchCms = async () => {
+    try{
+        const res=await fetch("/api/cms");
+        if(!res.ok) throw new Error("Failed to fetch CMS data");
+        const data = await res.json();
+        setCms(data.data);
+
+    }catch(err){
+        console.log("Error fetching CMS data:", err);
+    }
+  }
+  useEffect(()=>{
+    fetchCms();
+  },[]);
 
   return (
     <ProtectedRoute>
@@ -23,6 +39,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           mobileOpen={mobileOpen}
           onCollapseToggle={() => setCollapsed(prev => !prev)}
           onMobileToggle={() => setMobileOpen(prev => !prev)}
+          cms={cms}
         />
 
         <div

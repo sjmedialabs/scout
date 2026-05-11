@@ -697,7 +697,10 @@ const validateTopServicesTotal = () => {
   // };
 
   const addAward = () => {
-    if (!awardForm.title.trim() || !awardForm.imageUrl) return;
+    if (!awardForm.title.trim() || !awardForm.imageUrl) {
+      toast.error("Both title and image are required for awards.");
+      return;
+    };
 
     setFormData((prev) => ({
       ...prev,
@@ -2451,8 +2454,8 @@ const validateTopServicesTotal = () => {
                             title: e.target.value,
                           }))
                         }
-                        placeholder="Best Design Agency 2025"
-                        className="bg-[#f2f1f6]"
+                        placeholder="Enter award title"
+                        className="bg-[#f2f1f6] placeholder:text-gray-400 max-w-[300px]"
                       />
                     </div>
 

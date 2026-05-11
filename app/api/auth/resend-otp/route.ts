@@ -3,6 +3,7 @@ import { connectToDatabase } from "@/lib/mongodb"
 import User from "@/models/User"
 import crypto from "crypto"
 import nodemailer from "nodemailer"
+import { sendOtpSms } from "@/lib/sms"
 
 export async function POST(request: NextRequest) {
   try {
@@ -66,6 +67,15 @@ export async function POST(request: NextRequest) {
     }
 
     await user.save()
+
+    // Best-effort SMS OTP delivery (does not block resend on failure)
+    if (user.phone) {
+      try {
+        await sendOtpSms({ mobile: user.phone, otp: rawOtp })
+      } catch (e) {
+        console.error("[resend-otp] SMS OTP send failed", e)
+      }
+    }
 
     // 📧 Send OTP Email
     const transporter = nodemailer.createTransport({

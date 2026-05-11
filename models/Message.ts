@@ -72,10 +72,10 @@ const ConversationSchema = new Schema<IConversation>(
   { timestamps: true }
 )
 
-ConversationSchema.index(
-  { participants: 1 },
-  { unique: true }
-)
+// ConversationSchema.index(
+//   { participants: 1 },
+//   { unique: true }
+// )
 
 
 MessageSchema.index({ conversationId: 1, createdAt: -1 })
@@ -83,7 +83,6 @@ MessageSchema.index({ senderId: 1 })
 MessageSchema.index({ receiverId: 1 })
 
 
-ConversationSchema.index({ participants: 1 })
 ConversationSchema.index({ lastMessageAt: -1 })
 
 export const Message: Model<IMessage> = mongoose.models.Message || mongoose.model<IMessage>("Message", MessageSchema)

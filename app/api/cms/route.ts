@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import CMSContent from "@/models/CMSContent";
 import { getCurrentUser } from "@/lib/auth/jwt";
+import { revalidatePath } from "next/cache";
+
+export const dynamic = "force-dynamic";
 
 // --------- GET CMS (Fetch the only document) ----------
 export async function GET() {
@@ -87,6 +90,10 @@ export async function PUT(req: NextRequest) {
       runValidators: true,
       setDefaultsOnInsert: true,
     });
+
+    // Trigger revalidation for public pages
+    revalidatePath("/blogs");
+    revalidatePath("/");
 
     return NextResponse.json({ success: true, data: updated });
   } catch (error) {

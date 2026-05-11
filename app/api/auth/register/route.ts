@@ -5,6 +5,7 @@ import Provider from "@/models/Provider"
 import Seeker from "@/models/Seeker"
 import { generateToken, setAuthCookie, hashPassword } from "@/lib/auth/jwt"
 import nodemailer from "nodemailer"
+import { sendOtpSms } from "@/lib/sms"
 
 export const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
     await connectToDatabase()
 
     const body = await request.json()
-    const { email, password, name, role, companyName } = body
+    const { email, password, name, role, companyName, phone } = body
 
     // Validate required fields
     if (!email || !password || !name || !role) {
@@ -135,6 +136,7 @@ export async function POST(request: NextRequest) {
       name,
       role,
       company: companyName,
+      phone,
       isVerified: false,
       isActive: true,
        otp: {
@@ -142,6 +144,15 @@ export async function POST(request: NextRequest) {
         expiresAt,
       },
     })
+
+    // Best-effort SMS OTP delivery (does not block registration on failure)
+    if (phone) {
+      try {
+        await sendOtpSms({ mobile: phone, otp })
+      } catch (e) {
+        console.error("[register] SMS OTP send failed", e)
+      }
+    }
 
     // Create provider profile for agencies
     // if (role === "agency") {

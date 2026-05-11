@@ -19,6 +19,7 @@ interface SidebarProps {
   mobileOpen: boolean;
   onCollapseToggle: () => void;
   onMobileToggle: () => void;
+  cms?:any;
 }
 
 export function AdminSidebar({
@@ -26,6 +27,7 @@ export function AdminSidebar({
   mobileOpen,
   onCollapseToggle,
   onMobileToggle,
+  cms,
 }: SidebarProps) {
   const pathname = usePathname();
   const current = pathname.split("/")[2];
@@ -53,6 +55,8 @@ export function AdminSidebar({
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [collapsed, onCollapseToggle]);
+
+  console.log("CMS Data in admin Sidebar:", cms);
 
   return (
     <>
@@ -83,7 +87,7 @@ export function AdminSidebar({
       // <h2 className="text-md font-extrabold text-[#000]">
       //   Super Admin Dashboard
       // </h2>
-       <img src="/scoutFooterLogo.png" className="h-[45px] w-[120px]"/>
+       <img src= "/scoutFooterLogo.png" className="h-[45px] w-[150px]"/>
     )}
 
     <div className="hidden lg:flex items-center">
