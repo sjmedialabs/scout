@@ -26,6 +26,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import VerificationModal from "@/components/VerificationModal";
 
 
 export default function SubmitProposalPage() {
@@ -44,6 +45,14 @@ export default function SubmitProposalPage() {
   const [requirement, setRequirement] = useState<Requirement[]>([]);
   //if alreadybthe agency provided the proposal for this project dont show the form
   const [showForm, setShowForm] = useState(true);
+  const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
+  const [isUserVerified, setIsUserVerified] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setIsUserVerified(!!(user.isEmailVerifiedInDashboard && user.isMobileNumberVerified));
+    }
+  }, [user]);
 
   const loadData = async () => {
     setResLoading(true);
@@ -70,25 +79,25 @@ export default function SubmitProposalPage() {
 
         // setShowForm(proposalsCount.length === 0)
 
-        if(userData.subscription.type==="paid"){
-           console.log("Entered to paid  if condition is::;")
-           if ((userData.user?.monthlyProposalCount || 0) >= (userData.user?.monthlyProposalLimit || 0)){
-              console.log("Entered to if condition is::;")
-              // setIsProposalLimitReached(true)
-              setShowForm(false)
-            }
+        if (userData.subscription.type === "paid") {
+          console.log("Entered to paid  if condition is::;")
+          if ((userData.user?.monthlyProposalCount || 0) >= (userData.user?.monthlyProposalLimit || 0)) {
+            console.log("Entered to if condition is::;")
+            // setIsProposalLimitReached(true)
+            setShowForm(false)
           }
-        else{
-              if ((userData.user?.monthlyProposalCount || 0) >= (userData.subscription?.proposalsPerMonth || 0)) {
-                console.log("Entered to if condition is::;")
-              // setIsProposalLimitReached(true)
-               setShowForm(false)
-            }
+        }
+        else {
+          if ((userData.user?.monthlyProposalCount || 0) >= (userData.subscription?.proposalsPerMonth || 0)) {
+            console.log("Entered to if condition is::;")
+            // setIsProposalLimitReached(true)
+            setShowForm(false)
+          }
         }
 
-        
 
-       
+
+
 
         // setProposals(proposalData.proposals.filter((eachItem)=>id===eachItem.requirement.id && eachItem.agencyId===user?.id))
       }
@@ -99,6 +108,8 @@ export default function SubmitProposalPage() {
       setResLoading(false);
     }
   };
+
+
 
   // useEffect(()=>{
   //   loadData();
@@ -121,6 +132,14 @@ export default function SubmitProposalPage() {
   console.log("Form status:::::", showForm);
 
   const handleSubmitProposal = async () => {
+    // const isEmailVerified = !!(user?.isEmailVerified || user?.isEmailVerifiedInDashboard);
+    // const isMobileVerified = !!user?.isMobileNumberVerified;
+
+    if (!user?.isEmailVerifiedInDashboard || !user?.isMobileNumberVerified) {
+      setIsVerificationModalOpen(true);
+      return;
+    }
+
     if (!validateForm()) return;
 
     if (!milestones || milestones.length < 2) {
@@ -225,6 +244,8 @@ export default function SubmitProposalPage() {
     return !hasError;
   };
 
+  console.log("User Details is updated :::", user);
+  console.log("hiiiii")
   const [cost, setCost] = useState("");
   const [timeline, setTimeline] = useState("");
   const [timelineUnit, setTimelineUnit] = useState("Days"); // 
@@ -544,6 +565,28 @@ export default function SubmitProposalPage() {
             You have reached the monthly proposal limit for this plan
           </p>
         </div>
+      )}
+
+      {(!user?.isEmailVerifiedInDashboard || !user?.isMobileNumberVerified) && (
+        <VerificationModal
+          isOpen={isVerificationModalOpen}
+          onClose={() => setIsVerificationModalOpen(false)}
+          userId={user?.id || ""}
+          initialEmail={user?.email || ""}
+          initialPhone={user?.phone || ""}
+          isEmailVerified={user?.isEmailVerified}
+          isEmailVerifiedInDashboard={user?.isEmailVerifiedInDashboard}
+          isMobileNumberVerified={user?.isMobileNumberVerified}
+          onVerified={() => {
+            setIsUserVerified(true);
+            toast({
+              title: "Verified",
+              description: "You can now submit your proposal.",
+            });
+            // Reload page to get updated user status or update context
+            setTimeout(() => window.location.reload(), 1500);
+          }}
+        />
       )}
     </div>
   );

@@ -31,7 +31,7 @@ function getToastContainer() {
 
 function Toast({ id, title, description, type = "success", duration = 4000, onClose }: ToastProps) {
   const variant = type === "error" ? "destructive" : "default"
-  
+
   return (
     <RadixToast variant={variant} duration={duration} onOpenChange={(open) => !open && onClose?.()}>
       <div className="grid gap-1">

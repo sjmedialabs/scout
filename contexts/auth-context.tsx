@@ -11,6 +11,9 @@ interface User {
   isActive: boolean;
   companyName?: string;
   avatar?: string;
+  phone?: string;
+  isEmailVerifiedInDashboard?: boolean;
+  isMobileNumberVerified?: boolean;
 }
 
 interface AuthContextType {
@@ -25,6 +28,7 @@ interface AuthContextType {
     companyName?: string,
   ) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (updates: Partial<User>) => void;
   loading: boolean;
   isAuthenticated: boolean;
 }
@@ -110,6 +114,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // ✅ UPDATE USER
+  const updateUser = (updates: Partial<User>) => {
+    if (user) {
+      const updatedUser = { ...user, ...updates };
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -118,6 +131,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         register,
         logout,
+        updateUser,
         loading,
         isAuthenticated: !!user,
       }}

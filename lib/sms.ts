@@ -40,9 +40,9 @@ function normalizeMobile(input: string): string {
 }
 
 function getCreds() {
-  const username = process.env.SMS_USERNAME
-  const apikey = process.env.SMS_API_KEY
-  const senderid = process.env.SMS_SENDER_ID
+  const username = process.env.SMS_USERNAME?.trim()
+  const apikey = process.env.SMS_API_KEY?.trim()
+  const senderid = process.env.SMS_SENDER_ID?.trim()
   if (!username || !apikey || !senderid) {
     throw new Error(
       "SMS env vars not set (SMS_USERNAME, SMS_API_KEY, SMS_SENDER_ID)"
