@@ -11,6 +11,7 @@ import type {
   Notification,
 } from "@/lib/types";
 import { PostRequirementForm } from "@/components/seeker/post-requirement-form";
+import VerificationModal from "@/components/VerificationModal";
 import { authFetch } from "@/lib/auth-fetch"
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth-context";
@@ -39,12 +40,19 @@ import { toast } from "@/lib/toast";
 import { error } from "console";
 
 const PostRequirementPage = () => {
+  const { user } = useAuth();
   const [showPostForm, setShowPostForm] = useState(false);
   const [requirements, setRequirements] =
     useState<Requirement[]>(mockRequirements);
   const [sending, setSending] = useState(false);
+  const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
+  const [pendingRequirement, setPendingRequirement] = useState<any>(null);
 
   const handlePostRequirement = async (newRequirement: any) => {
+    // Optimistic check: if user is already in dashboard and we know they aren't verified
+    // we can show the modal even before the API call if we want, 
+    // but let's rely on the API to be sure about the "first project" logic.
+    
     setSending(true);
     try {
       console.log("Recieved Requirememt to the backend:::", newRequirement);
@@ -69,15 +77,31 @@ const PostRequirementPage = () => {
 
       const data = await res.json();
       console.log("Requirement created on main parent:", data);
+      
       if (!res.ok) {
-        toast.error("Failed to post the requirement");
+        if (data.code === "VERIFICATION_REQUIRED") {
+          setPendingRequirement(newRequirement);
+          setIsVerificationModalOpen(true);
+          toast.error("Verification Required", data.error);
+          return;
+        }
+        toast.error(data.error || "Failed to post the requirement");
+        return;
       }
+      
       toast.success("Requirement Posted successfully");
     } catch (error) {
       console.error("Error posting requirement:", error);
       toast.error("Failed to post the requirement");
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleVerificationComplete = () => {
+    if (pendingRequirement) {
+      handlePostRequirement(pendingRequirement);
+      setPendingRequirement(null);
     }
   };
 
@@ -89,6 +113,20 @@ const PostRequirementPage = () => {
           sendingStatus={sending}
         />
       </div>
+
+      {user && (
+        <VerificationModal
+          isOpen={isVerificationModalOpen}
+          onClose={() => setIsVerificationModalOpen(false)}
+          userId={user.id}
+          onVerified={handleVerificationComplete}
+          initialEmail={user.email}
+          initialPhone={user.phone}
+          isEmailVerifiedInDashboard={user.isEmailVerifiedInDashboard}
+          isMobileNumberVerified={user.isMobileNumberVerified}
+          message="Email and mobile verification is mandatory for your first project post."
+        />
+      )}
     </div>
   );
 };

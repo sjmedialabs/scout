@@ -34,17 +34,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Mobile number is required" }, { status: 400 })
     }
 
-    if (type === "email" && isFreeDomain(email)) {
+    const user = await User.findById(userId)
+ 
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 })
+    }
+
+    if (type === "email" && user.role === "agency" && isFreeDomain(email)) {
       return NextResponse.json(
         { error: "Please use a company email domain (e.g., @company.com)" },
         { status: 400 }
       )
-    }
-
-    const user = await User.findById(userId)
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
 
     // Generate 6-digit OTP

@@ -39,13 +39,16 @@ export async function POST(request: NextRequest) {
       user.isMobileNumberVerified = true
       // user.phone = phone
     }
+    if ((user.isEmailVerifiedInDashboard || user.isEmailVerified) && user.isMobileNumberVerified) {
+      user.isVerified = true
+    }
 
     user.otp = undefined // Clear OTP
     await user.save()
 
     // Update respective models (Provider or Seeker)
     if (user.role === "agency") {
-      const updateData: any = { isVerified: true }
+      const updateData: any = { isVerified: user.isVerified }
       if (type === "email") updateData.email = email.toLowerCase()
       if (type === "mobile") updateData.phone = phone
 
@@ -55,7 +58,7 @@ export async function POST(request: NextRequest) {
         { new: true }
       )
     } else if (user.role === "client") {
-      const updateData: any = { isVerified: true }
+      const updateData: any = { isVerified: user.isVerified }
       if (type === "email") updateData.email = email.toLowerCase()
       if (type === "mobile") updateData.phoneNumber = phone // Seeker uses phoneNumber
 

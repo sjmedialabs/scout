@@ -97,6 +97,39 @@ export async function POST(request: NextRequest) {
     await connectToDatabase();
 
     const body = await request.json();
+
+    // Check if it's the user's first project
+    const projectCount = await Project.countDocuments({ clientId: user.userId });
+
+    if (projectCount === 0) {
+      // Fetch user to check verification status
+      const { default: User } = await import("@/models/User");
+      const userDoc = await User.findById(user.userId);
+      if (!userDoc) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
+
+      // Check if both email and mobile are verified in the dashboard
+      const isEmailVerified = userDoc.isEmailVerifiedInDashboard || userDoc.isEmailVerified;
+      const isMobileVerified = userDoc.isMobileNumberVerified;
+
+      if (!isEmailVerified || !isMobileVerified) {
+        return NextResponse.json(
+          {
+            error: "Email and Mobile verification is mandatory for your first project post.",
+            code: "VERIFICATION_REQUIRED",
+            details: {
+              emailVerified: isEmailVerified,
+              mobileVerified: isMobileVerified,
+              email: userDoc.email,
+              phone: userDoc.phone
+            }
+          },
+          { status: 403 },
+        );
+      }
+    }
+
     const {
       title,
       description,
