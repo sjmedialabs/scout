@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter,useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { Eye, EyeOff, X } from "lucide-react";
 
 export default function LoginPage() {
   // const [role, setRole] = useState<"agency" | "client" | "admin">("client");
 
-  
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,100 +24,100 @@ export default function LoginPage() {
   const router = useRouter();
 
   const handleSubmit = async () => {
-  if (loading) return;
+    if (loading) return;
 
-  setError("");
-  setLoading(true);
+    setError("");
+    setLoading(true);
 
-  try {
-    const user = await login(email, password);
+    try {
+      const user = await login(email, password);
 
-    // Role validation (NEW)
-if (selectedRole && user.role !== selectedRole) {
-  setError(`Above credientials are not registered as ${selectedRole}.`);
-  setLoading(false);
-  return;
-}
+      // Role validation (NEW)
+      if (selectedRole && user.role !== selectedRole) {
+        setError(`Above credientials are not registered as ${selectedRole}.`);
+        setLoading(false);
+        return;
+      }
 
-    // 🔒 Restrict login when coming from requirement "View Details"
-    if (redirectTo === "requirement-details" && user.role !== "agency") {
-  setError("Only service providers (agencies) can view requirement details.");
-  setLoading(false);
-  return;
-}
+      //  Restrict login when coming from requirement "View Details"
+      if (redirectTo === "requirement-details" && user.role !== "agency") {
+        setError("Only service providers (agencies) can view requirement details.");
+        setLoading(false);
+        return;
+      }
 
-// 🔒 Submit Proposal access — ONLY agency allowed
-if (redirectTo === "submit-proposal") {
-  if (user.role !== "agency") {
-    setError("Only service providers (agencies) can submit proposals.");
-    setLoading(false);
-    return; // 🚫 STOP login flow completely
-  }
-}
+      //  Submit Proposal access — ONLY agency allowed
+      if (redirectTo === "submit-proposal") {
+        if (user.role !== "agency") {
+          setError("Only service providers (agencies) can submit proposals.");
+          setLoading(false);
+          return; //  STOP login flow completely
+        }
+      }
 
-    if (user.role === "client") {
-      router.push("/client/dashboard");
-    } 
+      if (user.role === "client") {
+        router.push("/client/dashboard");
+      }
 
-//     else if (user.role === "agency") {
-//   const id = searchParams.get("id");
+      //     else if (user.role === "agency") {
+      //   const id = searchParams.get("id");
 
-//   if (redirectTo === "requirement-details" && id) {
-//     router.push(`/agency/dashboard/project-inquiries/${id}`);
-//   } else {
-//     router.push("/agency/dashboard");
-//   }
-// }
+      //   if (redirectTo === "requirement-details" && id) {
+      //     router.push(`/agency/dashboard/project-inquiries/${id}`);
+      //   } else {
+      //     router.push("/agency/dashboard");
+      //   }
+      // }
 
-else if (user.role === "agency") {
-  const id = searchParams.get("id");
+      else if (user.role === "agency") {
+        const id = searchParams.get("id");
 
-  if (redirectTo === "requirement-details" && id) {
-    router.push(`/agency/dashboard/project-inquiries/${id}`);
-  } 
-  else if (redirectTo === "submit-proposal" && id) {
-    router.push(`/agency/dashboard/project-inquiries/${id}`);
-  }
-  else {
-    router.push("/agency/dashboard");
-  }
-}
+        if (redirectTo === "requirement-details" && id) {
+          router.push(`/agency/dashboard/project-inquiries/${id}`);
+        }
+        else if (redirectTo === "submit-proposal" && id) {
+          router.push(`/agency/dashboard/project-inquiries/${id}`);
+        }
+        else {
+          router.push("/agency/dashboard");
+        }
+      }
 
-else if (user.role === "admin") {
-      router.push("/admin/dashboard");
+      else if (user.role === "admin") {
+        router.push("/admin/dashboard");
+      }
+
+      else {
+        throw new Error("Invalid user role");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Login failed");
+    } finally {
+      setLoading(false);
     }
-
-else {
-      throw new Error("Invalid user role");
-    }
-  } catch (err) {
-    setError(err instanceof Error ? err.message : "Login failed");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
 
-//  try {[]
-//       // 🔑 Backend decides the role
-//       const user = await login(email, password, role);
+  //  try {[]
+  //       // 🔑 Backend decides the role
+  //       const user = await login(email, password, role);
 
-//       // ✅ Redirect based on role from backend
-//       if (user.role === "client") {
-//         router.push("/client/dashboard");
-//       } else if (user.role === "agency") {
-//         router.push("/agency/dashboard");
-//       } else if (user.role === "admin") {
-//         router.push("/admin/dashboard");
-//       } else {
-//         throw new Error("Invalid user role");
-//       }
-//     } catch (err) {
-//       setError(err instanceof Error ? err.message : "Login failed");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+  //       // ✅ Redirect based on role from backend
+  //       if (user.role === "client") {
+  //         router.push("/client/dashboard");
+  //       } else if (user.role === "agency") {
+  //         router.push("/agency/dashboard");
+  //       } else if (user.role === "admin") {
+  //         router.push("/admin/dashboard");
+  //       } else {
+  //         throw new Error("Invalid user role");
+  //       }
+  //     } catch (err) {
+  //       setError(err instanceof Error ? err.message : "Login failed");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
   return (
     <div>
@@ -155,11 +155,11 @@ else {
 
           {/* RIGHT SECTION */}
           <div className="lg:col-span-6 min-h-screen flex flex-col overflow-y-auto p-8 sm:p-10">
-            <div className="flex items-center mb-2">
+            <div className="flex items-center mb-2 xl:mb-14">
               <button
-                  onClick={() => router.push("/")}
+                onClick={() => router.push("/")}
                 className="flex text-sm items-center justify-center rounded-full hover:text-[#e0332c] transition cursor-pointer"
->
+              >
                 ← Back to website
               </button>
             </div>
@@ -207,36 +207,36 @@ else {
             <div className="mt-1 space-y-4 flex flex-col items-center">
               <div className="w-[420px] max-w-full">
                 <label className="text-sm font-bold text-gray-600">E-mail</label>
-                 <div>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter E-Mail"
-                  className="mt-1 w-full rounded-xl placeholder:text-xs border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[12px]"
-                />
+                <div>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter E-Mail"
+                    className="mt-1 w-full rounded-xl placeholder:text-xs border border-gray-200 bg-[#f6f9fe] px-4 py-2 text-[12px]"
+                  />
                 </div>
               </div>
 
               <div className="w-[420px] max-w-full">
                 <label className="text-sm font-bold text-gray-600">Password</label>
                 <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter Password"
-                  className="mt-1 w-full rounded-xl border placeholder:text-xs border-gray-200 bg-[#f6f9fe] px-4 py-2 pr-10 text-[12px]"
-                />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter Password"
+                    className="mt-1 w-full rounded-xl border placeholder:text-xs border-gray-200 bg-[#f6f9fe] px-4 py-2 pr-10 text-[12px]"
+                  />
 
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 cursor-pointer top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                >
-                  {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 cursor-pointer top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
 
               </div>
               <p
@@ -255,14 +255,14 @@ else {
 
             {/* Button */}
             <div className="flex justify-center mb-2">
-            <button
-              onClick={handleSubmit}
-              disabled={loading}
-              className="mt-4 justify-center cursor-pointer rounded-xl bg-black px-6 py-2 text-sm font-medium text-white hover:bg-[#e0332c] transition"
-            >
-              {loading ? "Signing In..." : "Sign in"}
-            </button>
-           </div> 
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="mt-4 justify-center cursor-pointer rounded-xl bg-black px-6 py-2 text-sm font-medium text-white hover:bg-[#e0332c] transition"
+              >
+                {loading ? "Signing In..." : "Sign in"}
+              </button>
+            </div>
 
             {/* Footer */}
             <p className="mt-1 text-center text-sm text-black">
@@ -277,6 +277,6 @@ else {
           </div>
         </div>
       </div>
-     </div>
+    </div>
   );
 }
