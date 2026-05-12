@@ -4,7 +4,7 @@ import { getCurrentUser } from "@/lib/auth/jwt";
 import ReportedContent from "@/models/ReportedContent";
 import mongoose from "mongoose";
 import User from "@/models/User";
-import nodemailer from "nodemailer";
+import { transporter } from "@/lib/mail";
 
 export async function PATCH(
   request: NextRequest,
@@ -65,16 +65,6 @@ export async function PATCH(
       console.log("Suspende user details are::::",userDetails);
 
 
-      // Send email notification
-      const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT),
-        secure: false,
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      });
 
       const emailTemplate = `
       <div style="font-family: Arial, sans-serif; padding:20px; background:#f9f9f9">
@@ -113,7 +103,7 @@ export async function PATCH(
       `;
 
       await transporter.sendMail({
-        from: process.env.SMTP_FROM,
+        from: process.env.SMTP_FROM || `"Support Team" <no-reply@scout.com>`,
         to: report.reportedTo.email,
         subject: "Your Account Has Been Suspended",
         html: emailTemplate,

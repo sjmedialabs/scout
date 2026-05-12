@@ -8,7 +8,7 @@ import User from "@/models/User";
 
 import Notification from "@/models/Notification";
 
-import nodemailer from "nodemailer";
+import { transporter } from "@/lib/mail";
 
 export async function PUT(
   request: NextRequest,
@@ -86,15 +86,6 @@ export async function PUT(
     //  EMAIL SETUP
     // =========================
 
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT),
-      secure: false,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
 
     let subject = "";
     let htmlContent = "";
@@ -190,7 +181,7 @@ export async function PUT(
 
     // Send email
     await transporter.sendMail({
-      from: `"Support Team" <${process.env.SMTP_USER}>`,
+      from: process.env.SMTP_FROM || `"Support Team" <${process.env.SMTP_USER}>`,
       to: requestUser.email,
       subject,
       html: htmlContent,

@@ -51,8 +51,8 @@ export default function AdminCareersPage() {
     .then(setCounts)
 }, [])
 
-const getCount = (title: string) => {
-  const found = counts.find((c) => c._id === title)
+const getCount = (id: string) => {
+  const found = counts.find((c) => c._id === id)
   return found ? found.count : 0
 }
 
@@ -258,7 +258,7 @@ const formats = [
             </Button>
           
             
-                <Button className="btn-blackButton h-[30px]" onClick={()=>router.push(`/admin/careers/${job.title}/applications`)}>Applications:({getCount(job.title)})</Button>
+                <Button className="btn-blackButton h-[30px]" onClick={()=>router.push(`/admin/careers/${job._id}/applications`)}>Applications:({getCount(job._id)})</Button>
               
             </div>
             </div>

@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { connectToDatabase } from "@/lib/mongodb"
 import User from "@/models/User"
-import nodemailer from "nodemailer"
+import { transporter } from "@/lib/mail"
 import { sendOtpSms } from "@/lib/sms"
 
 const FREE_DOMAINS = [
@@ -61,15 +61,6 @@ export async function POST(request: NextRequest) {
 
     if (type === "email") {
       // Send Email OTP
-      const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT) || 587,
-        secure: false,
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      })
 
       await transporter.sendMail({
         from: `"Scout Team" <${process.env.SMTP_USER}>`,

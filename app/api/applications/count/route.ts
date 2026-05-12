@@ -8,7 +8,8 @@ export async function GET() {
   const counts = await Application.aggregate([
     {
       $group: {
-        _id: "$jobTitle",
+        _id: "$jobId",
+        jobTitle: { $first: "$jobTitle" },
         count: { $sum: 1 },
       },
     },
