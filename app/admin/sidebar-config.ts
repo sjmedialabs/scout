@@ -16,7 +16,7 @@ export const adminMenu = [
   { id: "users", label: "All Users", icon: Users },
   { id: "leads", label: "Leads", icon: MessageSquare },
   // { id: "role-management", label: "Role Management", icon: Shield },
-  { id: "user-verification", label: "User Verification", icon: UserCheck },
+  // { id: "user-verification", label: "User Verification", icon: UserCheck },
   // { id: "user-activity", label: "User Activity", icon: Activity },
 
   // ===== SUBSCRIPTIONS =====
@@ -41,7 +41,7 @@ export const adminMenu = [
   // ===== PLATFORM =====
   // { id: "settings", label: "Platform Settings", icon: Settings },
   { id: "categories", label: "Category Management", icon: Building2 },
-  {id:"service-requests", label:"Service Requests", icon: Globe},
+  { id: "service-requests", label: "Service Requests", icon: Globe },
   // { id: "notifications", label: "System Notifications", icon: Bell },
   { id: "careers", label: "Careers", icon: Shield },
 

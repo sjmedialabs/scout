@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect,useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Tabs,
@@ -44,13 +44,15 @@ import "react-phone-input-2/lib/style.css";
 import { isValidPhoneNumber } from "libphonenumber-js";
 import CaseStudiesSection from "./caseStudiesSection";
 import { toast } from "@/lib/toast";
+import VerificationModal from "@/components/VerificationModal";
+import { useAuth } from "@/contexts/auth-context";
 
 interface CompanyProfileEditorProps {
   provider: Provider;
   onSave: (provider: Provider) => void;
   isCaseStudiesLimitReached: Boolean;
   userDetails: any;
-  serviceRequests:any;
+  serviceRequests: any;
 }
 
 const validateEmail = (email: string): boolean => {
@@ -115,6 +117,7 @@ export function CompanyProfileEditor({
   serviceRequests,
 
 }: CompanyProfileEditorProps) {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     ...provider,
     companyName: provider.companyName || provider.name || "",
@@ -128,6 +131,8 @@ export function CompanyProfileEditor({
     clients: provider.clients || [],
     website: provider.website || "",
     salesEmail: provider.salesEmail || "",
+    email: provider?.email || "",
+    phone: provider?.phone || "",
     schedulingLink: provider.schedulingLink || "",
     adminContactPhone: provider.adminContactPhone || "",
     countryCode: provider.countryCode || "91",
@@ -154,7 +159,7 @@ export function CompanyProfileEditor({
     },
   });
 
- const[isCaseStudiesLimitReached, setIsCaseStudiesLimitReached] = useState(false);
+  const [isCaseStudiesLimitReached, setIsCaseStudiesLimitReached] = useState(false);
 
   const [newService, setNewService] = useState("");
   const [portfolioForm, setPortfolioForm] = useState<Partial<PortfolioItem>>(
@@ -168,7 +173,7 @@ export function CompanyProfileEditor({
   );
   const [newTechnology, setNewTechnology] = useState("");
   const [newIndustry, setNewIndustry] = useState("");
-  
+
 
   const [isEditMode, setIsEditMode] = useState(false);
   // const [newAward, setNewAward] = useState("");
@@ -202,27 +207,29 @@ export function CompanyProfileEditor({
   const [localServiceRequests, setLocalServiceRequests] = useState<any[]>(serviceRequests || []);
 
   const [selectedService, setSelectedService] = useState("");
-   const [percentage, setPercentage] = useState("");
-   const totalPercentage = useMemo(() => {
-  return (formData.topServicesManual || []).reduce(
-    (sum, s) => sum + (s.percentage || 0),
-    0
-  );
-}, [formData.topServicesManual]);
+  const [percentage, setPercentage] = useState("");
+  const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
+  const [pendingSavePayload, setPendingSavePayload] = useState<any>(null);
+  const totalPercentage = useMemo(() => {
+    return (formData.topServicesManual || []).reduce(
+      (sum, s) => sum + (s.percentage || 0),
+      0
+    );
+  }, [formData.topServicesManual]);
 
-const isTotalComplete = totalPercentage === 100;
+  const isTotalComplete = totalPercentage === 100;
 
-//client handling
-const [newClient, setNewClient] = useState("");
-const [clientPercentage, setClientPercentage] = useState("");
-const clientTotalPercentage = useMemo(() => {
-  return (formData.clients || []).reduce(
-    (sum, c) => sum + (c.percentage || 0),
-    0
-  );
-}, [formData.clients]);
+  //client handling
+  const [newClient, setNewClient] = useState("");
+  const [clientPercentage, setClientPercentage] = useState("");
+  const clientTotalPercentage = useMemo(() => {
+    return (formData.clients || []).reduce(
+      (sum, c) => sum + (c.percentage || 0),
+      0
+    );
+  }, [formData.clients]);
 
-const isClientTotalComplete = clientTotalPercentage === 100;
+  const isClientTotalComplete = clientTotalPercentage === 100;
 
   useEffect(() => {
     setLocalServiceRequests(serviceRequests || []);
@@ -237,7 +244,7 @@ const isClientTotalComplete = clientTotalPercentage === 100;
     }
 
     setIsSendingRequest(true);
-    const payload={
+    const payload = {
       mainCategory: serviceRequestForm.mainCategory,
       subCategory: serviceRequestForm.subCategory,
       childCategory: serviceRequestForm.serviceName,
@@ -252,7 +259,7 @@ const isClientTotalComplete = clientTotalPercentage === 100;
 
       if (response.ok) {
         toast.success("Service request sent successfully!");
-        
+
         // Optimistically update the list so the new request shows up immediately
         setLocalServiceRequests((prev) => [
           {
@@ -288,23 +295,23 @@ const isClientTotalComplete = clientTotalPercentage === 100;
     }
   };
 
-  useEffect(()=>{
-   if(userDetails?.subscription?.type==="paid"){
+  useEffect(() => {
+    if (userDetails?.subscription?.type === "paid") {
 
-          if ((formData?.caseStudies.length || 0) >= (userDetails?.user?.caseStudiesLimit || 0)) {
-            setIsCaseStudiesLimitReached(true)
-          } else {
-            setIsCaseStudiesLimitReached(false)
-          }
-        }
-        else{
-              if ((formData?.caseStudies.length || 0) >= (userDetails?.subscription?.caseStudiesCount || 0)) {
-                setIsCaseStudiesLimitReached(true)
-              } else {
-                setIsCaseStudiesLimitReached(false)
-              }
-        }
- },[formData.caseStudies, userDetails])
+      if ((formData?.caseStudies.length || 0) >= (userDetails?.user?.caseStudiesLimit || 0)) {
+        setIsCaseStudiesLimitReached(true)
+      } else {
+        setIsCaseStudiesLimitReached(false)
+      }
+    }
+    else {
+      if ((formData?.caseStudies.length || 0) >= (userDetails?.subscription?.caseStudiesCount || 0)) {
+        setIsCaseStudiesLimitReached(true)
+      } else {
+        setIsCaseStudiesLimitReached(false)
+      }
+    }
+  }, [formData.caseStudies, userDetails])
 
 
 
@@ -313,14 +320,14 @@ const isClientTotalComplete = clientTotalPercentage === 100;
   }, []);
 
   useEffect(() => {
-  setFormData((prev) => ({
-    ...prev,
-    ...provider,
-    companyName: provider.companyName || provider.name || "",
-    services: provider.services || [],
-    topServicesManual: provider.topServicesManual || [],
-  }));
-}, [provider]);
+    setFormData((prev) => ({
+      ...prev,
+      ...provider,
+      companyName: provider.companyName || provider.name || "",
+      services: provider.services || [],
+      topServicesManual: provider.topServicesManual || [],
+    }));
+  }, [provider]);
 
   const handleSave = () => {
     const newErrors: Record<string, string> = {};
@@ -372,12 +379,7 @@ const isClientTotalComplete = clientTotalPercentage === 100;
       newErrors.schedulingLink = "Please enter a valid URL";
     }
 
-    if (
-      formData.adminContactPhone &&
-      !validatePhone(formData.countryCode, formData.adminContactPhone)
-    ) {
-      newErrors.adminContactPhone = "Please enter a valid phone number";
-    }
+
 
     if (formData.companyVideoLink && !validateURL(formData.companyVideoLink)) {
       newErrors.companyVideoLink = "Please enter a valid URL";
@@ -433,6 +435,12 @@ const isClientTotalComplete = clientTotalPercentage === 100;
         },
       };
 
+      if (!user?.isEmailVerifiedInDashboard || !user?.isMobileNumberVerified) {
+        setPendingSavePayload(payload);
+        setIsVerificationModalOpen(true);
+        return;
+      }
+
       onSave(payload);
 
       setIsEditMode(false);
@@ -458,92 +466,91 @@ const isClientTotalComplete = clientTotalPercentage === 100;
 
 
 
-const addTopService = () => {
-  const service = selectedService;
-  const percentValue = Number(percentage);
+  const addTopService = () => {
+    const service = selectedService;
+    const percentValue = Number(percentage);
 
-  if (!service) {
-    toast.error("Please select a service.");
-    return;
-  }
+    if (!service) {
+      toast.error("Please select a service.");
+      return;
+    }
 
-  if (!percentage) {
-    toast.error("Percentage is required.");
-    return;
-  }
+    if (!percentage) {
+      toast.error("Percentage is required.");
+      return;
+    }
 
-  if (percentValue <= 0 || percentValue > 100) {
-    toast.error("Percentage must be between 1 and 100.");
-    return;
-  }
+    if (percentValue <= 0 || percentValue > 100) {
+      toast.error("Percentage must be between 1 and 100.");
+      return;
+    }
 
-  const existing = formData.topServicesManual || [];
+    const existing = formData.topServicesManual || [];
 
-  if (existing.find((s) => s.service === service)) {
-    toast.error("Service already added.");
-    return;
-  }
+    if (existing.find((s) => s.service === service)) {
+      toast.error("Service already added.");
+      return;
+    }
 
-  if (existing.length >= 5) {
-    toast.error("You can only add up to 5 top services.");
-    return;
-  }
+    if (existing.length >= 5) {
+      toast.error("You can only add up to 5 top services.");
+      return;
+    }
 
-  const currentTotal = getTotalPercentage();
-  const newTotal = currentTotal + percentValue;
+    const currentTotal = getTotalPercentage();
+    const newTotal = currentTotal + percentValue;
 
-  if (newTotal > 100) {
-    toast.error(
-      `Total percentage cannot exceed 100%. Remaining: ${
-        100 - currentTotal
-      }%`
-    );
-    return;
-  }
+    if (newTotal > 100) {
+      toast.error(
+        `Total percentage cannot exceed 100%. Remaining: ${100 - currentTotal
+        }%`
+      );
+      return;
+    }
 
-  setFormData((prev) => ({
-    ...prev,
-    topServicesManual: [
-      ...(prev.topServicesManual || []),
-      {
-        service,
-        percentage: percentValue,
-      },
-    ],
-  }));
+    setFormData((prev) => ({
+      ...prev,
+      topServicesManual: [
+        ...(prev.topServicesManual || []),
+        {
+          service,
+          percentage: percentValue,
+        },
+      ],
+    }));
 
-  setSelectedService("");
-  setPercentage("");
-};
+    setSelectedService("");
+    setPercentage("");
+  };
 
   const removeTopService = (service: string) => {
-  setFormData((prev) => ({
-    ...prev,
-    topServicesManual: (prev.topServicesManual || []).filter(
-      (s) => s.service !== service,
-    ),
-  }));
-};
+    setFormData((prev) => ({
+      ...prev,
+      topServicesManual: (prev.topServicesManual || []).filter(
+        (s) => s.service !== service,
+      ),
+    }));
+  };
 
-const getTotalPercentage = () => {
-  return (formData.topServicesManual || []).reduce(
-    (sum, s) => sum + (s.percentage || 0),
-    0
-  );
-};
-const validateTopServicesTotal = () => {
-  const total = (formData.topServicesManual || []).reduce(
-    (sum, s) => sum + (s.percentage || 0),
-    0,
-  );
+  const getTotalPercentage = () => {
+    return (formData.topServicesManual || []).reduce(
+      (sum, s) => sum + (s.percentage || 0),
+      0
+    );
+  };
+  const validateTopServicesTotal = () => {
+    const total = (formData.topServicesManual || []).reduce(
+      (sum, s) => sum + (s.percentage || 0),
+      0,
+    );
 
-  if (total !== 100) {
-    toast.error("Total percentage must be exactly 100%.");
-    return false;
-  }
+    if (total !== 100) {
+      toast.error("Total percentage must be exactly 100%.");
+      return false;
+    }
 
-  return true;
-};
+    return true;
+  };
 
   const addTech = () => {
     if (
@@ -606,65 +613,64 @@ const validateTopServicesTotal = () => {
     }));
   };
 
- const addClient = () => {
-  const clientName = newClient.trim();
-  const percentValue = Number(clientPercentage);
+  const addClient = () => {
+    const clientName = newClient.trim();
+    const percentValue = Number(clientPercentage);
 
-  if (!clientName) {
-    toast.error("Client name is required.");
-    return;
-  }
+    if (!clientName) {
+      toast.error("Client name is required.");
+      return;
+    }
 
-  if (!clientPercentage) {
-    toast.error("Percentage is required.");
-    return;
-  }
+    if (!clientPercentage) {
+      toast.error("Percentage is required.");
+      return;
+    }
 
-  if (percentValue <= 0 || percentValue > 100) {
-    toast.error("Percentage must be between 1 and 100.");
-    return;
-  }
+    if (percentValue <= 0 || percentValue > 100) {
+      toast.error("Percentage must be between 1 and 100.");
+      return;
+    }
 
-  const existing = formData.clients || [];
+    const existing = formData.clients || [];
 
-  if (existing.find((c) => c.client === clientName)) {
-    toast.error("Client already added.");
-    return;
-  }
+    if (existing.find((c) => c.client === clientName)) {
+      toast.error("Client already added.");
+      return;
+    }
 
-  const newTotal = clientTotalPercentage + percentValue;
+    const newTotal = clientTotalPercentage + percentValue;
 
-  if (newTotal > 100) {
-    toast.error(
-      `Total percentage cannot exceed 100%. Remaining: ${
-        100 - clientTotalPercentage
-      }%`
-    );
-    return;
-  }
+    if (newTotal > 100) {
+      toast.error(
+        `Total percentage cannot exceed 100%. Remaining: ${100 - clientTotalPercentage
+        }%`
+      );
+      return;
+    }
 
-  setFormData((prev) => ({
-    ...prev,
-    clients: [
-      ...(prev.clients || []),
-      {
-        client: clientName,
-        percentage: percentValue
-      }
-    ]
-  }));
+    setFormData((prev) => ({
+      ...prev,
+      clients: [
+        ...(prev.clients || []),
+        {
+          client: clientName,
+          percentage: percentValue
+        }
+      ]
+    }));
 
-  setNewClient("");
-  setClientPercentage("");
-};
+    setNewClient("");
+    setClientPercentage("");
+  };
   const removeClient = (clientName: string) => {
-  setFormData((prev) => ({
-    ...prev,
-    clients: (prev.clients || []).filter(
-      (c) => c.client !== clientName
-    ),
-  }));
-};
+    setFormData((prev) => ({
+      ...prev,
+      clients: (prev.clients || []).filter(
+        (c) => c.client !== clientName
+      ),
+    }));
+  };
 
   const addLanguage = (language: string) => {
     if (language && !(formData.languagesSpoken || []).includes(language)) {
@@ -994,77 +1000,27 @@ const validateTopServicesTotal = () => {
 
                 <div className="space-y-2">
                   <Label
-                    htmlFor="adminContactPhone"
-                    className="text-sm text-[#98A0B4] font-semibold font-inter"
+                    htmlFor="min-project-size"
+                    className="text-sm font-inter text-[#98A0B4] font-semibold"
                   >
-                    Contact Number
+                    Min Project Price
                   </Label>
-
-                  <PhoneInput
-                    country={"in"}
-                    enableSearch={true}                 
-                    searchPlaceholder="Search country"
-                    searchNotFound="No country found"
-                    autocompleteSearch={true}
-                    value={`${formData.countryCode || ""}${formData.adminContactPhone || ""}`}
-                    onChange={(value, data: any) => {
-                      const dialCode = data.dialCode;
-                      const phoneNumber = value.slice(dialCode.length);
-
+                  <Input
+                    id="min-project-size"
+                    value={formData.minProjectSize}
+                    type="number"
+                    onChange={(e) => {
                       setFormData((prev) => ({
                         ...prev,
-                        adminContactPhone: phoneNumber,
-                        country: data.name,
-                        countryCode: dialCode,
+                        minProjectSize: e.target.value,
                       }));
-
-                      if (errors.adminContactPhone) {
-                        setErrors((prev) => ({ ...prev, adminContactPhone: "" }));
-                      }
                     }}
-                    inputProps={{
-                      name: "adminContactPhone",
-                      required: true,
-                    }}
-                    inputClass={`!w-full !h-[39px] !text-sm !bg-[#f2f1f6] !border-[#D0D5DD] !rounded-[6px] font-inter ${errors.adminContactPhone ? "!border-red-500" : ""
-                      }`}
-                    buttonClass="!border-[#D0D5DD] !rounded-l-[6px] "
-                    containerClass="!w-full "
+                    className={`placeholder:text-[#b2b2b2] !bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px] font-inter`}
+                    placeholder="200"
                   />
-
-                  {errors.adminContactPhone && (
-                    <p className="text-sm text-red-500">
-                      {errors.adminContactPhone}
-                    </p>
-                  )}
                 </div>
 
-                {/* <div className="space-y-2">
-            <Label
-              htmlFor="salesEmail"
-              className="text-sm font-inter text-[#98A0B4] font-semibold"
-            >
-              Sales Email
-            </Label>
-            <Input
-              id="salesEmail"
-              type="email"
-              value={formData.salesEmail}
-              onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  salesEmail: e.target.value,
-                }));
-                if (errors.salesEmail)
-                  setErrors((prev) => ({ ...prev, salesEmail: "" }));
-              }}
-              className={`${errors.salesEmail ? "border-red-500" : ""} placeholder:text-[#b2b2b2] border-[#D0D5DD] rounded-[6px] font-inter`}
-              placeholder="value@digidzn.com"
-            />
-            {errors.salesEmail && (
-              <p className="text-sm text-red-500">{errors.salesEmail}</p>
-            )}
-          </div> */}
+
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
@@ -1436,27 +1392,39 @@ const validateTopServicesTotal = () => {
               ))}
             </div>
           </div> */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="min-project-size"
-                    className="text-sm font-inter text-[#98A0B4] font-semibold"
-                  >
-                    Min Project Price
-                  </Label>
-                  <Input
-                    id="min-project-size"
-                    value={formData.minProjectSize}
-                    type="number"
-                    onChange={(e) => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        minProjectSize: e.target.value,
-                      }));
-                    }}
-                    className={`placeholder:text-[#b2b2b2] !bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px] font-inter`}
-                    placeholder="200"
-                  />
-                </div>
+
+
+                {!isEditMode && user?.isMobileNumberVerified && (
+                  <div className="space-y-2">
+                    <Label
+                      className="text-sm text-[#98A0B4] font-semibold font-inter"
+                    >
+                      Contact Number
+                    </Label>
+                    <Input
+                      disabled
+                      value={formData?.phone || ""}
+                      style={{ color: "black", opacity: 1, WebkitTextFillColor: "black" }}
+                      className="!h-[39px] bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px] font-inter text-[#000] cursor-not-allowed"
+                    />
+                  </div>
+                )}
+
+                {!isEditMode && user?.isEmailVerifiedInDashboard && (
+                  <div className="space-y-2">
+                    <Label
+                      className="text-sm text-[#98A0B4] font-semibold"
+                    >
+                      Company Email
+                    </Label>
+                    <Input
+                      disabled
+                      value={formData?.email || ""}
+                      style={{ color: "black", opacity: 1, WebkitTextFillColor: "black" }}
+                      className="!h-[39px] bg-[#f2f1f6] border-[#D0D5DD] rounded-[6px]  text-[#000] cursor-not-allowed"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2 mb-2">
@@ -1624,19 +1592,19 @@ const validateTopServicesTotal = () => {
                     {/* Client Badges */}
                     <div className="flex flex-wrap gap-2">
                       {(formData.clients || []).map((client) => (
-                         <Badge
-                        key={client.client}
-                        variant="secondary"
-                        className="flex items-center gap-2 bg-[#1C96F4]"
-                      >
-                        {client.client} ({client.percentage}%)
+                        <Badge
+                          key={client.client}
+                          variant="secondary"
+                          className="flex items-center gap-2 bg-[#1C96F4]"
+                        >
+                          {client.client} ({client.percentage}%)
 
-                        {isEditMode && (
-                          <div onClick={() => removeClient(client.client)}>
-                            <X className="h-3 w-3 cursor-pointer" />
-                          </div>
-                        )}
-                      </Badge>
+                          {isEditMode && (
+                            <div onClick={() => removeClient(client.client)}>
+                              <X className="h-3 w-3 cursor-pointer" />
+                            </div>
+                          )}
+                        </Badge>
                       ))}
                       {/* {
                 (formData.clients || []).length === 0 &&(
@@ -1644,7 +1612,7 @@ const validateTopServicesTotal = () => {
                 )
               } */}
                     </div>
-                    
+
                     {
                       !isEditMode && (formData.clients || []).length === 0 && (
                         <p className="text-gray-500 text-md text-center ">No Clients are yet</p>
@@ -1654,53 +1622,52 @@ const validateTopServicesTotal = () => {
                     {/* Add Client Input */}
                     {isEditMode && (
                       <>
-  <div className="flex flex-row gap-2 w-full md:w-[40%]">
+                        <div className="flex flex-row gap-2 w-full md:w-[40%]">
 
-    {/* Client Name */}
-    <Input
-      type="text"
-      value={newClient}
-      onChange={(e) => setNewClient(e.target.value)}
-      placeholder="Enter Client Name..."
-      className="placeholder:text-[#b2b2b2] !bg-[#f2f1f6] mt-1 border-[#D0D5DD] rounded-[6px]"
-    />
+                          {/* Client Name */}
+                          <Input
+                            type="text"
+                            value={newClient}
+                            onChange={(e) => setNewClient(e.target.value)}
+                            placeholder="Enter Client Name..."
+                            className="placeholder:text-[#b2b2b2] !bg-[#f2f1f6] mt-1 border-[#D0D5DD] rounded-[6px]"
+                          />
 
-    {/* Percentage */}
-    <Input
-      type="number"
-      value={clientPercentage}
-      onChange={(e) => setClientPercentage(e.target.value)}
-      placeholder="%"
-      min={0}
-      max={100}
-      className="w-[100px] !bg-[#f2f1f6] mt-1 border-[#D0D5DD] rounded-[6px]"
-    />
+                          {/* Percentage */}
+                          <Input
+                            type="number"
+                            value={clientPercentage}
+                            onChange={(e) => setClientPercentage(e.target.value)}
+                            placeholder="%"
+                            min={0}
+                            max={100}
+                            className="w-[100px] !bg-[#f2f1f6] mt-1 border-[#D0D5DD] rounded-[6px]"
+                          />
 
-    {/* Add Button */}
-    <Button
-      onClick={addClient}
-      disabled={isClientTotalComplete}
-      className={`h-[36px] w-[70px] mt-1.5 ${
-        isClientTotalComplete
-          ? "bg-gray-400 cursor-not-allowed"
-          : "bg-[#F54A0C]"
-      }`}
-    >
-      <Plus className="h-4 w-4" />
-    </Button>
+                          {/* Add Button */}
+                          <Button
+                            onClick={addClient}
+                            disabled={isClientTotalComplete}
+                            className={`h-[36px] w-[70px] mt-1.5 ${isClientTotalComplete
+                              ? "bg-gray-400 cursor-not-allowed"
+                              : "bg-[#F54A0C]"
+                              }`}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
 
-  </div>
-  <p className="text-xs text-gray-500 mt-2">
-  Total: {clientTotalPercentage}%
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2">
+                          Total: {clientTotalPercentage}%
 
-  {clientTotalPercentage < 100 && (
-    <span className="ml-2">
-      Remaining: {100 - clientTotalPercentage}%
-    </span>
-  )}
-</p>
-</>
-)}
+                          {clientTotalPercentage < 100 && (
+                            <span className="ml-2">
+                              Remaining: {100 - clientTotalPercentage}%
+                            </span>
+                          )}
+                        </p>
+                      </>
+                    )}
 
                   </CardContent>
                 </Card>
@@ -1718,14 +1685,14 @@ const validateTopServicesTotal = () => {
                 Services Offered
               </h1>
               {
-                isEditMode &&(
-              
-              <Button 
-                className="primary-button h-[30px] mb-1"
-                onClick={() => setShowServiceRequestModal(true)}
-              >
-                Send Service Request
-              </Button>
+                isEditMode && (
+
+                  <Button
+                    className="primary-button h-[30px] mb-1"
+                    onClick={() => setShowServiceRequestModal(true)}
+                  >
+                    Send Service Request
+                  </Button>
                 )
               }
             </div>
@@ -1851,7 +1818,7 @@ const validateTopServicesTotal = () => {
               select up to 5.
             </p>
 
-         {isEditMode && (
+            {isEditMode && (
               <div className="space-y-3">
 
                 {/* Card Input */}
@@ -1898,18 +1865,17 @@ const validateTopServicesTotal = () => {
                   </div>
 
                   {/* Add Button */}
-                <button
-              type="button"
-              onClick={addTopService}
-              disabled={isTotalComplete}
-              className={`px-3 py-2 rounded-md text-sm text-white ${
-                (isTotalComplete || formData.topServicesManual?.length === 5)
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-[#1C96F4]"
-              }`}
-            >
-              Add
-            </button>
+                  <button
+                    type="button"
+                    onClick={addTopService}
+                    disabled={isTotalComplete}
+                    className={`px-3 py-2 rounded-md text-sm text-white ${(isTotalComplete || formData.topServicesManual?.length === 5)
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-[#1C96F4]"
+                      }`}
+                  >
+                    Add
+                  </button>
 
                 </div>
 
@@ -1930,37 +1896,37 @@ const validateTopServicesTotal = () => {
                       </div>
                     </Badge>
                   ))}
-                  
+
                 </div>
                 <p className="text-xs text-gray-500">
-              Total: {totalPercentage}%
+                  Total: {totalPercentage}%
 
-              {totalPercentage < 100 && (
-                <span className="ml-2">
-                  Remaining: {100 - totalPercentage}%
-                </span>
-              )}
-            </p>
+                  {totalPercentage < 100 && (
+                    <span className="ml-2">
+                      Remaining: {100 - totalPercentage}%
+                    </span>
+                  )}
+                </p>
 
               </div>
-          )}
+            )}
 
             {!isEditMode && (
               <div className="flex flex-wrap gap-2">
                 {(formData.topServicesManual || []).map((item) => (
                   <Badge
-          key={item.service}
-          variant="secondary"
-          className="flex items-center gap-2 bg-[#1C96F4]"
-        >
-          {item.service} ({item.percentage}%)
+                    key={item.service}
+                    variant="secondary"
+                    className="flex items-center gap-2 bg-[#1C96F4]"
+                  >
+                    {item.service} ({item.percentage}%)
 
-          <div
-            onClick={() => removeTopService(item.service)}
-          >
-            <X className="h-3 w-3 cursor-pointer" />
-          </div>
-        </Badge>
+                    <div
+                      onClick={() => removeTopService(item.service)}
+                    >
+                      <X className="h-3 w-3 cursor-pointer" />
+                    </div>
+                  </Badge>
                 ))}
                 {(formData.topServicesManual || []).length === 0 && (
                   <p className="text-gray-400 text-sm">
@@ -1990,18 +1956,17 @@ const validateTopServicesTotal = () => {
                       </div>
                       <Badge
                         variant="secondary"
-                        className={`text-xs capitalize rounded-2xl shrink-0 ${
-                          req.status?.toLowerCase() === "accepted"
-                            ? "bg-[#d1fadf] text-[#008a2e]"
-                            : req.status?.toLowerCase() === "rejected"
+                        className={`text-xs capitalize rounded-2xl shrink-0 ${req.status?.toLowerCase() === "accepted"
+                          ? "bg-[#d1fadf] text-[#008a2e]"
+                          : req.status?.toLowerCase() === "rejected"
                             ? "bg-[#fee4e2] text-[#e02d3c]"
                             : "bg-[#fef0c7] text-[#dc6803]"
-                        }`}
+                          }`}
                       >
                         {req.status || "Pending"}
                       </Badge>
                     </div>
-                    
+
                     <div className="text-xs text-[#98A0B4] flex flex-wrap items-center gap-1">
                       <span>{req.mainCategory}</span>
                       {req.subCategory && (
@@ -2020,11 +1985,11 @@ const validateTopServicesTotal = () => {
 
                     {req?.reason && (
                       <p className="text-md font-normal text-red-500"><span className="text-[#000] text-md font-semibold">Reason: </span>{req.reason}</p>
-                    ) }
+                    )}
                   </CardContent>
                 </Card>
               ))}
-              
+
               {(!localServiceRequests || localServiceRequests.length === 0) && (
                 <p className="text-gray-500 text-sm text-center col-span-2">No service requests submitted yet.</p>
               )}
@@ -2793,7 +2758,7 @@ const validateTopServicesTotal = () => {
       </div> */}
         <TabsContent value="caseStudies">
           <CaseStudiesSection
-            formData={formData} 
+            formData={formData}
             setFormData={setFormData}
             isEditMode={isEditMode}
             isCaseStudiesLimitReached={isCaseStudiesLimitReached}
@@ -2892,6 +2857,26 @@ const validateTopServicesTotal = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {(!user?.isEmailVerifiedInDashboard || !user?.isMobileNumberVerified) && (
+        <VerificationModal
+          isOpen={isVerificationModalOpen}
+          onClose={() => setIsVerificationModalOpen(false)}
+          userId={user?.id || user?._id || ""}
+          initialEmail=""
+          initialPhone=""
+          isEmailVerified={user?.isEmailVerified}
+          isEmailVerifiedInDashboard={user?.isEmailVerifiedInDashboard}
+          isMobileNumberVerified={user?.isMobileNumberVerified}
+          onVerified={() => {
+            if (pendingSavePayload) {
+              onSave(pendingSavePayload);
+              setIsEditMode(false);
+              setPendingSavePayload(null);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

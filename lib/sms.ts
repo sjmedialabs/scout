@@ -60,6 +60,7 @@ export async function sendSms(opts: SendSmsOptions): Promise<SmsResult> {
   const mobile = normalizeMobile(opts.mobile)
   const message = String(opts.message ?? "")
   if (!message) throw new Error("SMS message is empty")
+  console.log("recieved opts:::", opts)
 
   const params = new URLSearchParams({
     username,
@@ -67,7 +68,9 @@ export async function sendSms(opts: SendSmsOptions): Promise<SmsResult> {
     senderid,
     mobile,
     message,
+    type: "text",
   })
+  console.log("URL Paramas:::::", params)
   if (opts.templateId) params.set("templateid", opts.templateId)
 
   const url = `${ENDPOINT}?${params.toString()}`

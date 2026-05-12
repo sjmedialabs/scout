@@ -48,10 +48,11 @@ export default function VerificationModal({
   const [phone, setPhone] = useState(initialPhone);
   const [emailVerified, setEmailVerified] = useState(isEmailVerified || isEmailVerifiedInDashboard);
   const [phoneVerified, setPhoneVerified] = useState(isMobileNumberVerified);
-  
+
   const [verifying, setVerifying] = useState<"none" | "email" | "mobile">("none");
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [sendingType, setSendingType] = useState<"none" | "email" | "mobile">("none");
 
   // Sync state with props when modal opens
   useEffect(() => {
@@ -88,6 +89,7 @@ export default function VerificationModal({
     }
 
     setIsLoading(true);
+    setSendingType(type);
     try {
       const res = await fetch("/api/user/verify-dashboard/send-otp", {
         method: "POST",
@@ -107,6 +109,7 @@ export default function VerificationModal({
       toast.error("Error", "Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
+      setSendingType("none");
     }
   };
 
@@ -130,26 +133,29 @@ export default function VerificationModal({
         if (verifying === "email") setEmailVerified(true);
         if (verifying === "mobile") setPhoneVerified(true);
         setVerifying("none");
-        
-        // Update user state context incrementally
-        if (verifying === "email") {
-           updateUser({ isEmailVerifiedInDashboard: true, email: email });
-        }
-        if (verifying === "mobile") {
-           updateUser({ isMobileNumberVerified: true, phone: phone });
-        }
 
         // Check if now fully verified
         const nowEmailVerified = verifying === "email" ? true : emailVerified;
         const nowPhoneVerified = verifying === "mobile" ? true : phoneVerified;
-        
+
+        const updates: Partial<any> = {};
+        if (verifying === "email") {
+          updates.isEmailVerifiedInDashboard = true;
+          updates.email = email;
+        } else {
+          console.log("Entered to mobile number otp veririfesd");
+          updates.isMobileNumberVerified = true;
+        }
+
         if (nowEmailVerified && nowPhoneVerified) {
-          updateUser({ isVerified: true });
+          updates.isVerified = true;
           setTimeout(() => {
-             onVerified();
-             onClose();
+            onVerified();
+            onClose();
           }, 1000);
         }
+
+        updateUser(updates);
       } else {
         toast.error("Error", data.error || "Invalid OTP.");
       }
@@ -176,14 +182,14 @@ export default function VerificationModal({
           </DialogDescription>
         </div>
 
-        <div className="p-8 space-y-8">
+        <div className="px-8 py-4 space-y-2">
           {verifying === "none" ? (
-            <div className="space-y-6">
+            <div className="space-y-3">
               {/* EMAIL STEP - Only show if not verified */}
               {!(isEmailVerified || isEmailVerifiedInDashboard) && (
                 <div className={cn(
                   "group relative p-6 rounded-2xl border transition-all duration-300",
-                  emailVerified ? "bg-green-50 border-green-200" : "bg-gray-50 border-gray-100 hover:border-gray-300"
+                  emailVerified ? "bg-green-50 border-green-200" : "bg-gray-50 border-gray-400"
                 )}>
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
@@ -200,23 +206,23 @@ export default function VerificationModal({
                     </div>
                     {emailVerified && <CheckCircle2 className="w-6 h-6 text-green-500" />}
                   </div>
-                  
+
                   <div className="flex gap-2">
                     <Input
                       placeholder="name@company.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       disabled={emailVerified || isLoading}
-                      className="h-11 rounded-xl bg-white border-gray-200"
+                      className="h-11 rounded-xl bg-white border-gray-200 placeholder:text-gray-400"
                     />
                     {!emailVerified && (
-                      <Button 
-                        onClick={() => handleSendOTP("email")} 
+                      <Button
+                        onClick={() => handleSendOTP("email")}
                         disabled={isLoading}
                         style={{ backgroundColor: "#F54A0C" }}
                         className="h-11 rounded-xl px-4 text-white hover:opacity-90"
                       >
-                        {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
+                        {isLoading && sendingType === "email" ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
                       </Button>
                     )}
                   </div>
@@ -227,7 +233,7 @@ export default function VerificationModal({
               {!isMobileNumberVerified && (
                 <div className={cn(
                   "group relative p-6 rounded-2xl border transition-all duration-300",
-                  phoneVerified ? "bg-green-50 border-green-200" : "bg-gray-50 border-gray-100 hover:border-gray-300"
+                  phoneVerified ? "bg-green-50 border-green-200" : "bg-gray-50 border-gray-400"
                 )}>
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
@@ -251,30 +257,30 @@ export default function VerificationModal({
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       disabled={phoneVerified || isLoading}
-                      className="h-11 rounded-xl bg-white border-gray-200"
+                      className="h-11 rounded-xl bg-white border-gray-200 placeholder:text-gray-400"
                     />
                     {!phoneVerified && (
-                      <Button 
-                        onClick={() => handleSendOTP("mobile")} 
+                      <Button
+                        onClick={() => handleSendOTP("mobile")}
                         disabled={isLoading}
                         style={{ backgroundColor: "#F54A0C" }}
                         className="h-11 rounded-xl px-4 text-white hover:opacity-90"
                       >
-                        {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
+                        {isLoading && sendingType === "mobile" ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
                       </Button>
                     )}
                   </div>
                 </div>
               )}
-              
-              <Button 
+
+              {/* <Button
                 className="w-full h-14 rounded-2xl text-lg font-bold text-white hover:opacity-90 disabled:bg-gray-200"
                 style={{ backgroundColor: (emailVerified && phoneVerified) ? "#2C34A1" : "#F54A0C" }}
                 disabled={!emailVerified || !phoneVerified}
                 onClick={onClose}
               >
                 {emailVerified && phoneVerified ? "Complete Verification" : "Please verify above fields"}
-              </Button>
+              </Button> */}
             </div>
           ) : (
             <div className="space-y-8 py-4 animate-in fade-in zoom-in duration-300">
