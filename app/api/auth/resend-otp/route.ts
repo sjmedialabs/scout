@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server"
 import { connectToDatabase } from "@/lib/mongodb"
 import User from "@/models/User"
 import crypto from "crypto"
-import nodemailer from "nodemailer"
+import { transporter } from "@/lib/mail"
 import { sendOtpSms } from "@/lib/sms"
 
 export async function POST(request: NextRequest) {
@@ -78,18 +78,9 @@ export async function POST(request: NextRequest) {
     }
 
     // 📧 Send OTP Email
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    })
 
    await transporter.sendMail({
-           from: `"Scout Team" <${process.env.SMTP_USER}>`,
+           from: process.env.SMTP_FROM || `"Scout Team" <no-reply@scout.com>`,
            to: email,
            subject: "🔐 Verify Your Email - OTP Code",
            html: `

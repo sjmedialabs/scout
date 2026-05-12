@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PostRequirementForm } from "@/components/seeker/post-requirement-form";
+import VerificationModal from "@/components/VerificationModal";
 import { RequirementList } from "@/components/seeker/requirement-list";
 import { ProposalList } from "@/components/seeker/proposal-list";
 import { RequirementDetailsModal } from "@/components/seeker/requirement-details-modal";
@@ -249,6 +250,9 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
   //for sending the form staus
   const [sending, setSending] = useState(false);
 
+  const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
+  const [pendingRequirement, setPendingRequirement] = useState<any>(null);
+
 
   
 
@@ -389,7 +393,13 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
         const data = await res.json();
         console.log("Requirement created:::", data);
         if (!res.ok) {
-          toast.error("Failed to post the requirement");
+          if (data.code === "VERIFICATION_REQUIRED") {
+            setPendingRequirement(payload);
+            setIsVerificationModalOpen(true);
+            return;
+          }
+          toast.error(data.error || "Failed to post the requirement");
+          return;
         }
         toast.success("Requirement Posted successfully");
 
@@ -416,6 +426,45 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
 
     // console.log("Requirement submitted:", formData)
   };
+
+  const handleVerificationComplete = () => {
+    if (pendingRequirement) {
+      // Create a fake event for handleSubmit
+      const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
+      // We need to re-invoke the creation logic.
+      // Since handleSubmit uses formData, we should ideally pass the pending requirement.
+      // But handleSubmit is tied to the form state.
+      // Let's refactor a bit or just call the API directly here.
+      postRequirement(pendingRequirement);
+      setPendingRequirement(null);
+    }
+  };
+
+  const postRequirement = async (payload: any) => {
+     try {
+      setSending(true);
+      const res = await authFetch("/api/requirements", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        credentials: "include" 
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || "Failed to post the requirement");
+        return;
+      }
+      toast.success("Requirement Posted successfully");
+      setRequirements((prev) => [data.requirement, ...prev]);
+      setShowCreateProject(false);
+    } catch (error) {
+      console.error("Error posting requirement:", error);
+      toast.error("Failed to post the requirement");
+    } finally {
+      setSending(false);
+    }
+  }
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const projectTemp = requirements.find(
@@ -1585,6 +1634,20 @@ const paginatedRequirements = filteredRequirements?.slice(
             </div>
           </DialogContent>
         </Dialog>
+      )}
+
+      {user && (
+        <VerificationModal
+          isOpen={isVerificationModalOpen}
+          onClose={() => setIsVerificationModalOpen(false)}
+          userId={user.id}
+          onVerified={handleVerificationComplete}
+          initialEmail={user.email}
+          initialPhone={user.phone}
+          isEmailVerifiedInDashboard={user.isEmailVerifiedInDashboard}
+          isMobileNumberVerified={user.isMobileNumberVerified}
+          message="Email and mobile verification is mandatory for your first project post."
+        />
       )}
     </div>
   );

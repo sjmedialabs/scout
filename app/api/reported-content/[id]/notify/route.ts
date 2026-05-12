@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
-import nodemailer from "nodemailer";
+import { transporter } from "@/lib/mail";
 import { connectToDatabase } from "@/lib/mongodb";
 import ReportedContent from "@/models/ReportedContent";
 import { getCurrentUser } from "@/lib/auth/jwt";
@@ -38,15 +38,6 @@ export async function POST(
       return NextResponse.json({ error: "Report not found" }, { status: 404 });
     }
 
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT),
-      secure: false,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
 
     const htmlTemplate = `
     <div style="font-family:Arial;background:#f6f7fb;padding:40px">
@@ -86,7 +77,7 @@ export async function POST(
     `;
 
     await transporter.sendMail({
-      from: process.env.SMTP_FROM,
+      from: process.env.SMTP_FROM || `"Scout Team" <no-reply@scout.com>`,
       to: report.reportedTo.email,
       subject: "Important Notification About Your Account",
       html: htmlTemplate,

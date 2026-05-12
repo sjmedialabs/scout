@@ -19,13 +19,13 @@ export async function POST(req: NextRequest) {
     // 2. Create notifications
     if (admins.length > 0) {
       const notifications = admins.map((admin) => ({
-        userId: admin._id, // receiver (admin)
-        triggeredBy: null, // optional (no logged-in user here)
+        userId: admin._id,
+        triggeredBy: null,
         title: "New Job Application",
         message: `${app.firstName} ${app.lastName} applied for ${app.jobTitle}.`,
         type: "NEW_APPLICATION",
         userRole: "admin",
-        linkUrl: `/admin/careers/${app.jobTitle}/applications`, // adjust if needed
+        linkUrl: `/admin/careers/applications/${app.jobId}`, 
         sourceId: app._id,
         isRead: false,
       }));

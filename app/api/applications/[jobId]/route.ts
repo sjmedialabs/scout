@@ -4,14 +4,14 @@ import Application from "@/models/Application"
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { jobTitle: string } }
+  { params }: { params: { jobId: string } }
 ) {
   try {
     await connectToDatabase()
 
-    const jobTitle = decodeURIComponent(params.jobTitle)
+    const { jobId } = params
 
-    const apps = await Application.find({ jobTitle })
+    const apps = await Application.find({ jobId })
 
     return NextResponse.json(apps)
   } catch (error) {

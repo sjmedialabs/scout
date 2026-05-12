@@ -4,18 +4,8 @@ import User from "@/models/User"
 import Provider from "@/models/Provider"
 import Seeker from "@/models/Seeker"
 import { generateToken, setAuthCookie, hashPassword } from "@/lib/auth/jwt"
-import nodemailer from "nodemailer"
+import { transporter } from "@/lib/mail"
 import { sendOtpSms } from "@/lib/sms"
-
-export const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-})
 
 export async function POST(request: NextRequest) {
   try {
@@ -60,7 +50,7 @@ export async function POST(request: NextRequest) {
       const expiresAt = new Date(Date.now() + 5 * 60 * 1000) // 5 mins
 
       await transporter.sendMail({
-        from: `"Scout Team" <${process.env.SMTP_USER}>`,
+        from: process.env.SMTP_FROM || `"Scout Team" <no-reply@scout.com>`,
         to: email,
         subject: "🔐 Verify Your Email - OTP Code",
         html: `

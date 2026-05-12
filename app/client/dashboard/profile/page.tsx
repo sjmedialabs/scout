@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import VerificationModal from "@/components/VerificationModal";
 import { toast } from "@/lib/toast";
 import { MdVerified } from "react-icons/md";
 import { LuCircleX } from "react-icons/lu";
@@ -61,6 +62,7 @@ import {
   Target,
   Heart,
   SeparatorVertical as Separator,
+  Lock,
 } from "lucide-react";
 import { ImageUpload } from "@/components/ui/image-upload";
 import PhoneInput from "react-phone-input-2";
@@ -90,9 +92,9 @@ import { useRouter } from "next/navigation";
 
 const styles = {
   input:
-    "border rounded-[8px] bg-[#f2f1f6] h-7 mt-0.5 border-[#D0D5DD] placeholder:text-gray-300",
- 
-  label:"text-[#000000] font-bold text-xs mb-0 ml-1 -mb-0.5",
+    "border rounded-[8px] bg-[#f2f1f6] h-7 mt-0.5 border-[#D0D5DD] placeholder:text-gray-300 disabled:cursor-not-allowed disabled:opacity-100 text-gray-900",
+
+  label: "text-[#000000] font-bold text-xs mb-0 ml-1 -mb-0.5",
 
   inputCardContainer:
     "border rounded-[8px] h-7 mt-0.5 bg-[#f2f1f6] border-[#D0D5DD] placeholder:text-gray-300",
@@ -115,8 +117,11 @@ const ClientProfilePage = () => {
   const [failed, setFailed] = useState(false);
   // const { user, loading } = useCurrentUser();
   const { user, loading } = useAuth();
-      const router = useRouter(); 
-  const [profileData, setProfileData] = useState({});
+  const router = useRouter();
+  const [profileData, setProfileData] = useState<any>({});
+
+  const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
+  const [verificationType, setVerificationType] = useState<"email" | "mobile" | "all">("all");
   console.log("userDeatails:::", user);
   const requiredFields = [
     "name",
@@ -164,43 +169,62 @@ const ClientProfilePage = () => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
- const isValidPhone = (phone: string) => {
-  return isValidPhoneNumber("+" + phone);
-};
+  const isValidPhone = (phone: string, countryCode?: string) => {
+    const fullPhone = countryCode ? `+${countryCode}${phone}` : (phone.startsWith("+") ? phone : `+${phone}`);
+    return isValidPhoneNumber(fullPhone);
+  };
 
   const isValidURL = (url: string) => {
-  return /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/\S*)?$/.test(url);
-};
+    return /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/\S*)?$/.test(url);
+  };
 
-const getFormattedPhone = () => {
-  if (!profileData.phoneNumber) return null;
+  const getFormattedPhone = () => {
+    if (!profileData.phoneNumber) return null;
 
-  let phone = profileData.phoneNumber.trim();
+    let phone = profileData.phoneNumber.toString().trim();
 
-  // Remove "+" if exists
-  if (phone.startsWith("+")) {
-    phone = phone.slice(1);
-  }
-
-  // If countryCode exists
-  if (profileData.countryCode) {
-    const code = profileData.countryCode;
-
-    // If phone already starts with countryCode → remove it
-    if (phone.startsWith(code)) {
-      phone = phone.slice(code.length);
+    // Remove "+" if exists
+    if (phone.startsWith("+")) {
+      phone = phone.slice(1);
     }
 
-    return `+${code} ${phone}`;
-  }
+    // If countryCode exists
+    if (profileData.countryCode) {
+      const code = profileData.countryCode.toString();
 
-  // If no countryCode → assume India
-  if (phone.startsWith("91")) {
-    phone = phone.slice(2);
-  }
+      // If phone already starts with countryCode → remove it
+      if (phone.startsWith(code)) {
+        phone = phone.slice(code.length);
+      }
 
-  return `+91 ${phone}`;
-};
+      return `+${code} ${phone}`;
+    }
+
+    // If no countryCode → assume India
+    if (phone.startsWith("91")) {
+      phone = phone.slice(2);
+    }
+
+    return `+91 ${phone}`;
+  };
+
+  const getPhoneValue = () => {
+    if (!profileData.phoneNumber) return "";
+    let phone = profileData.phoneNumber.toString().trim();
+    let code = profileData.countryCode?.toString().trim() || "91";
+
+    // Remove "+" from phone if exists
+    if (phone.startsWith("+")) {
+      phone = phone.slice(1);
+    }
+
+    // If phone already starts with the country code, we don't need to prepend it again
+    if (phone.startsWith(code)) {
+      return `+${phone}`;
+    }
+
+    return `+${code}${phone}`;
+  };
 
   const handleSaveProfile = async () => {
     // In a real app, this would make an API call to update the profile
@@ -213,29 +237,38 @@ const getFormattedPhone = () => {
       }
 
       // 🔹 Email validation
-      if (!isValidEmail(profileData.email)) {
+      const isEmailVerified = user?.isEmailVerifiedInDashboard || user?.isEmailVerified || user?.isVerified;
+      if (!isEmailVerified && profileData.email && !isValidEmail(profileData.email)) {
         toast.error("Please enter a valid email address");
         return;
       }
 
-      // 🔹 Phone validation
-      if (!isValidPhone(profileData.phoneNumber)) {
+      const isPhoneVerified = user?.isMobileNumberVerified || user?.isVerified;
+      if (!isPhoneVerified && profileData.phoneNumber && !isValidPhone(profileData.phoneNumber, profileData.countryCode)) {
         toast.error("Please enter a valid phone number");
         return;
       }
 
-      if(profileData.website && !isValidURL(profileData.website)) {
+      if (profileData.website && !isValidURL(profileData.website)) {
         toast.error("Please enter a valid website URL");
         return;
       }
 
+      // 🔹 Clean profile data before sending
+      const updates = { ...profileData };
+      if (isEmailVerified) delete updates.email;
+      if (isPhoneVerified) {
+        delete updates.phoneNumber;
+        delete updates.countryCode;
+      }
+
       const response = await authFetch(`/api/seeker/${user?.id}`, {
         method: "PUT",
-        body: JSON.stringify(profileData),
+        body: JSON.stringify(updates),
         credentials: "include",
       });
 
-      const data=await response.json();
+      const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.message || "Failed to update profile");
@@ -250,6 +283,11 @@ const getFormattedPhone = () => {
       toast.error(error.message || "Failed to update profile");
     }
     // Show success message or toast
+  };
+
+  const handleVerificationComplete = () => {
+    // Refresh user data or just update local state
+    window.location.reload();
   };
 
   const handleCancelEdit = () => {
@@ -363,7 +401,7 @@ const getFormattedPhone = () => {
                 {/* <Badge className="bg-[#39A935] text-[#fff] h-[30px] w-[90px] font-light rounded-3xl">
                   Active User
                 </Badge> */}
-               {
+                {/* {
                 profileData.isVerified && (
                    <Badge
                   variant="secondary"
@@ -373,7 +411,7 @@ const getFormattedPhone = () => {
                   Verified
                 </Badge>
                 )
-               }
+               } */}
               </div>
             </div>
 
@@ -426,7 +464,7 @@ const getFormattedPhone = () => {
                     }
                   />
                 ) : (
-                  <div className={`${styles.inputCardContainer} ${!profileData.name ? "text-gray-300":""}`}>
+                  <div className={`${styles.inputCardContainer} ${!profileData.name ? "text-gray-300" : ""}`}>
                     {" "}
                     <p className={styles.paraTag}>
                       {profileData?.name || "No name provided"}
@@ -443,64 +481,127 @@ const getFormattedPhone = () => {
                   Email Address
                 </Label>
                 {isEditingProfile ? (
-                  <Input
-                    id="email"
-                    className={`${styles.input} !text-xs`}
-                    placeholder="Enter your company email"
-                    type="email"
-                    value={profileData.email}
-                    onChange={(e) =>
-                      handleProfileUpdate("email", e.target.value)
-                    }
-                  />
+                  <div className="flex flex-col gap-1">
+                    <Input
+                      id="email"
+                      className={`${styles.input} !text-xs`}
+                      placeholder="Enter your company email"
+                      type="email"
+                      value={profileData.email}
+                      onChange={(e) =>
+                        handleProfileUpdate("email", e.target.value)
+                      }
+                      disabled={user?.isEmailVerifiedInDashboard || user?.isEmailVerified || user?.isVerified}
+                    />
+                    {!(user?.isEmailVerifiedInDashboard || user?.isEmailVerified || user?.isVerified) && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setVerificationType("email");
+                          setIsVerificationModalOpen(true);
+                        }}
+                        className="text-[10px] text-[#2C34A1] font-bold self-end hover:underline"
+                      >
+                        Verify Email
+                      </button>
+                    )}
+                    {(user?.isEmailVerifiedInDashboard || user?.isEmailVerified || user?.isVerified) && (
+                      <p className="text-[10px] text-green-600 font-bold self-end flex items-center gap-1">
+                        <MdVerified /> Verified
+                      </p>
+                    )}
+                  </div>
                 ) : (
-                  <div className={`${styles.inputCardContainer} ${!profileData.email ? "text-gray-300":""}`}>
+                  <div className={`${styles.inputCardContainer} ${!profileData.email ? "text-gray-300" : ""}`}>
                     {" "}
-                    <p className={styles.paraTag}>
-                      {profileData.email || "No email provided"}
-                    </p>
+                    <div className="flex justify-between items-center pr-2">
+                      <p className={styles.paraTag}>
+                        {profileData.email || "No email provided"}
+                      </p>
+                      {(user?.isEmailVerifiedInDashboard || user?.isEmailVerified || user?.isVerified) && (
+                        <MdVerified className="text-green-600" />
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
 
               <div className="space-y-2">
-  <Label htmlFor="phone" className={styles.label}>
-    Phone Number
-  </Label>
+                <Label htmlFor="phone" className={styles.label}>
+                  Phone Number
+                </Label>
 
-  {isEditingProfile ? (
-    <PhoneInput
-      country={"in"} // default country
-      enableSearch={true}
-      value={profileData.phoneNumber}
-      onChange={(value, country: any) => {
-        handleProfileUpdate("phoneNumber", value);
-        handleProfileUpdate("countryCode", country.dialCode);
-        handleProfileUpdate("country", country.name);
-      }}
-      inputStyle={{
-        width: "100%",
-        height: "28px",
-      }}
-      containerStyle={{
-        width: "100%",
-      }}
-      inputClass={`${styles.input} !text-xs`}
-    />
-  ) : (
-    <div
-  className={`${styles.inputCardContainer} ${
-    !profileData.phoneNumber ? "text-gray-300" : ""
-  }`}
->
-  <p className={styles.paraTag}>
-    {profileData.phoneNumber
-      ? getFormattedPhone()
-      : "No phone number provided"}
-  </p>
-</div>
-  )}
-</div>
+                {isEditingProfile ? (
+                  <div className="flex flex-col gap-1">
+                    <PhoneInput
+                      country={"in"} // default country
+                      enableSearch={true}
+                      value={getPhoneValue()}
+                      onChange={(value, country: any) => {
+                        const dialCode = country.dialCode;
+                        const phoneNumber = value.startsWith(dialCode) ? value.slice(dialCode.length) : value;
+                        handleProfileUpdate("phoneNumber", phoneNumber);
+                        handleProfileUpdate("countryCode", dialCode);
+                        handleProfileUpdate("country", country.name);
+                      }}
+                      disabled={user?.isMobileNumberVerified || user?.isVerified}
+                      inputStyle={{
+                        width: "100%",
+                        height: "28px",
+                        backgroundColor: "#f2f1f6",
+                        border: "1px solid #D0D5DD",
+                        borderRadius: "8px",
+                        color: "#111827",
+                        opacity: "1",
+                      }}
+                      containerStyle={{
+                        width: "100%",
+                      }}
+                      inputClass={`${styles.input} !text-xs`}
+                      buttonStyle={{
+                        backgroundColor: "#f2f1f6",
+                        border: "1px solid #D0D5DD",
+                        borderRadius: "8px 0 0 8px",
+                        opacity: "1",
+                        cursor: (user?.isMobileNumberVerified || user?.isVerified) ? "not-allowed" : "pointer",
+                      }}
+                    />
+                    {!(user?.isMobileNumberVerified || user?.isVerified) && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setVerificationType("mobile");
+                          setIsVerificationModalOpen(true);
+                        }}
+                        className="text-[10px] text-[#2C34A1] font-bold self-end hover:underline"
+                      >
+                        Verify Mobile
+                      </button>
+                    )}
+                    {(user?.isMobileNumberVerified || user?.isVerified) && (
+                      <p className="text-[10px] text-green-600 font-bold self-end flex items-center gap-1">
+                        <MdVerified /> Verified
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <div
+                    className={`${styles.inputCardContainer} ${!profileData.phoneNumber ? "text-gray-300" : ""
+                      }`}
+                  >
+                    <div className="flex justify-between items-center pr-2">
+                      <p className={styles.paraTag}>
+                        {profileData.phoneNumber
+                          ? getFormattedPhone()
+                          : "No phone number provided"}
+                      </p>
+                      {(user?.isMobileNumberVerified || user?.isVerified) && (
+                        <MdVerified className="text-green-600" />
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
 
               <div className="space-y-2">
                 <Label
@@ -520,7 +621,7 @@ const getFormattedPhone = () => {
                     }
                   />
                 ) : (
-                  <div className={`${styles.inputCardContainer} ${!profileData.companyName ? "text-gray-300":""}`}>
+                  <div className={`${styles.inputCardContainer} ${!profileData.companyName ? "text-gray-300" : ""}`}>
                     {" "}
                     <p className={styles.paraTag}>
                       {profileData.companyName || "No company name provided"}
@@ -547,7 +648,7 @@ const getFormattedPhone = () => {
                     }
                   />
                 ) : (
-                  <div className={`${styles.inputCardContainer} ${!profileData.position ? "text-gray-300":""}`}>
+                  <div className={`${styles.inputCardContainer} ${!profileData.position ? "text-gray-300" : ""}`}>
                     {" "}
                     <p className={styles.paraTag}>
                       {profileData.position || "No position provided"}
@@ -586,7 +687,7 @@ const getFormattedPhone = () => {
                     </SelectContent>
                   </Select>
                 ) : (
-                  <div className={`${styles.inputCardContainer} ${!profileData.industry ? "text-gray-300":""}`}>
+                  <div className={`${styles.inputCardContainer} ${!profileData.industry ? "text-gray-300" : ""}`}>
                     {" "}
                     <p className={styles.paraTag}>
                       {profileData.industry || "No industry provided"}
@@ -613,7 +714,7 @@ const getFormattedPhone = () => {
                     }
                   />
                 ) : (
-                  <div className={`${styles.inputCardContainer} ${!profileData.location ? "text-gray-300":""}`}>
+                  <div className={`${styles.inputCardContainer} ${!profileData.location ? "text-gray-300" : ""}`}>
                     {" "}
                     <p className={styles.paraTag}>
                       {profileData.location || "No location provided"}
@@ -640,7 +741,7 @@ const getFormattedPhone = () => {
                     }
                   />
                 ) : (
-                  <div className={`${styles.inputCardContainer} ${!profileData.website ? "text-gray-300":""}`}>
+                  <div className={`${styles.inputCardContainer} ${!profileData.website ? "text-gray-300" : ""}`}>
                     {" "}
                     <p className={styles.paraTag}>
                       {profileData.website || "No website provided"}
@@ -666,17 +767,17 @@ const getFormattedPhone = () => {
                   onChange={(e) => handleProfileUpdate("bio", e.target.value)}
                   rows={2}
 
-                  
+
                   placeholder="Tell us about yourself and your company..."
                 />
               ) : (
 
-                <div className={`${styles.inputCardContainer} ${!profileData.bio ? "text-gray-300":""} h-auto`}>
+                <div className={`${styles.inputCardContainer} ${!profileData.bio ? "text-gray-300" : ""} h-auto`}>
                   <p className={styles.paraTag}>
-                  {profileData.bio || "No bio provided"} 
-                </p>
+                    {profileData.bio || "No bio provided"}
+                  </p>
                 </div>
-                
+
               )}
             </div>
 
@@ -720,7 +821,7 @@ const getFormattedPhone = () => {
                     }
                   >
                     <SelectTrigger className={`${styles.input} data-[placeholder]:text-gray-300 !text-xs`}>
-                      <SelectValue  placeholder="Select preferred communication method"/>
+                      <SelectValue placeholder="Select preferred communication method" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="email">Email</SelectItem>
@@ -730,7 +831,7 @@ const getFormattedPhone = () => {
                     </SelectContent>
                   </Select>
                 ) : (
-                  <div className={`${styles.inputCardContainer} ${!profileData.preferredCommunication ? "text-gray-300":""}`}>
+                  <div className={`${styles.inputCardContainer} ${!profileData.preferredCommunication ? "text-gray-300" : ""}`}>
                     {" "}
                     <p className={styles.paraTag}>
                       {profileData.preferredCommunication || "No preferred communication method provided"}
@@ -797,7 +898,7 @@ const getFormattedPhone = () => {
                     }
                   >
                     <SelectTrigger className={`${styles.input} data-[placeholder]:text-gray-300 !text-xs`}>
-                      <SelectValue  placeholder="Select company size"/>
+                      <SelectValue placeholder="Select company size" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="1-10 employees">
@@ -818,7 +919,7 @@ const getFormattedPhone = () => {
                     </SelectContent>
                   </Select>
                 ) : (
-                  <div className={`${styles.inputCardContainer} ${!profileData.companySize ? "text-gray-300":""}`}>
+                  <div className={`${styles.inputCardContainer} ${!profileData.companySize ? "text-gray-300" : ""}`}>
                     {" "}
                     <p className={styles.paraTag}>
                       {profileData.companySize || "No company size provided"}
@@ -830,6 +931,19 @@ const getFormattedPhone = () => {
           </CardContent>
         </Card>
       </div>
+      {user && (
+        <VerificationModal
+          isOpen={isVerificationModalOpen}
+          onClose={() => setIsVerificationModalOpen(false)}
+          userId={user.id}
+          onVerified={handleVerificationComplete}
+          initialEmail={profileData.email || user.email}
+          initialPhone={profileData.phoneNumber || user.phone}
+          isEmailVerifiedInDashboard={user.isEmailVerifiedInDashboard}
+          isMobileNumberVerified={user.isMobileNumberVerified}
+          message="Verify your contact details to secure your profile."
+        />
+      )}
     </div>
   );
 };

@@ -15,6 +15,7 @@ type ApplyJobModalProps = {
   isOpen: boolean
   onClose: () => void
   jobTitle: string
+  jobId: string
 }
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
@@ -37,6 +38,7 @@ export default function ApplyJobModal({
   isOpen,
   onClose,
   jobTitle,
+  jobId,
 }: ApplyJobModalProps) {
   const [form, setForm] = useState(initialFormState)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -140,6 +142,7 @@ export default function ApplyJobModal({
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
+      jobId,
       jobTitle,
       ...form,
       resumeUrl,

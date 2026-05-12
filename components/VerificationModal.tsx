@@ -30,6 +30,7 @@ interface VerificationModalProps {
   isEmailVerified?: boolean;
   isEmailVerifiedInDashboard?: boolean;
   isMobileNumberVerified?: boolean;
+  message?: string;
 }
 
 export default function VerificationModal({
@@ -42,8 +43,9 @@ export default function VerificationModal({
   isEmailVerified = false,
   isEmailVerifiedInDashboard = false,
   isMobileNumberVerified = false,
+  message = "Verify your details to proceed.",
 }: VerificationModalProps) {
-  const { updateUser } = useAuth();
+  const { user, updateUser } = useAuth();
   const [email, setEmail] = useState(initialEmail);
   const [phone, setPhone] = useState(initialPhone);
   const [emailVerified, setEmailVerified] = useState(isEmailVerified || isEmailVerifiedInDashboard);
@@ -76,7 +78,7 @@ export default function VerificationModal({
         toast.error("Error", "Please enter your company email.");
         return;
       }
-      if (isFreeDomain(email)) {
+      if (user?.role === "agency" && isFreeDomain(email)) {
         toast.error("Invalid Email", "Please use a company domain email (not gmail/yahoo/etc).");
         return;
       }
@@ -172,7 +174,7 @@ export default function VerificationModal({
             <DialogTitle className="text-2xl font-bold">Secure Verification</DialogTitle>
           </div>
           <DialogDescription className="text-blue-100 text-base">
-            Verify your details to proceed with your proposal.
+            {message}
           </DialogDescription>
         </div>
 
@@ -194,8 +196,8 @@ export default function VerificationModal({
                         <Mail className="w-5 h-5" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-gray-900">Company Email</h3>
-                        <p className="text-sm text-gray-500">Business domain required</p>
+                        <h3 className="font-bold text-gray-900">{user?.role === "agency" ? "Company Email" : "Email Address"}</h3>
+                        <p className="text-sm text-gray-500">{user?.role === "agency" ? "Business domain required" : "Enter your email"}</p>
                       </div>
                     </div>
                     {emailVerified && <CheckCircle2 className="w-6 h-6 text-green-500" />}
@@ -203,7 +205,7 @@ export default function VerificationModal({
                   
                   <div className="flex gap-2">
                     <Input
-                      placeholder="name@company.com"
+                      placeholder={user?.role === "agency" ? "name@company.com" : "name@email.com"}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       disabled={emailVerified || isLoading}

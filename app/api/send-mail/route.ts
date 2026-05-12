@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import { transporter } from "@/lib/mail";
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,15 +12,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
 
     const htmlTemplate = `
       <div style="font-family: Arial, Helvetica, sans-serif; background-color: #f4f6f8; padding: 40px;">
@@ -68,7 +59,7 @@ export async function POST(req: NextRequest) {
     `;
 
     await transporter.sendMail({
-      from: `"Scout Super Admin" <${process.env.SMTP_USER}>`,
+      from: process.env.SMTP_FROM || `"Scout Super Admin" <${process.env.SMTP_USER}>`,
       to: email,
       subject: "Message from Scout Super Admin",
       text: message, // fallback for non-HTML clients

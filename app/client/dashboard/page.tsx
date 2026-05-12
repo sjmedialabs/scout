@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/select";
 import RatingStars from "@/components/rating-star";
 import { PostRequirementForm } from "@/components/seeker/post-requirement-form";
+import VerificationModal from "@/components/VerificationModal";
 import { RequirementList } from "@/components/seeker/requirement-list";
 import { ProposalList } from "@/components/seeker/proposal-list";
 import { RequirementDetailsModal } from "@/components/seeker/requirement-details-modal";
@@ -324,6 +325,9 @@ export default function ClientDashboard() {
     avgProposalAmount: 0,
     closedProjectsCount:0
   });
+
+  const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
+  const [pendingRequirement, setPendingRequirement] = useState<any>(null);
 
   const [costDistributionStats, setCostDistributionStats] = useState([
     {
@@ -675,7 +679,13 @@ export default function ClientDashboard() {
 
       const data = await res.json();
       console.log("Requirement created on main parent:", data);
+      
       if (!res.ok) {
+        if (data.code === "VERIFICATION_REQUIRED") {
+          setPendingRequirement(newRequirement);
+          setIsVerificationModalOpen(true);
+          return;
+        }
         console.error(data.error);
         alert(data.error || "Failed to create requirement");
         return;
@@ -706,6 +716,13 @@ export default function ClientDashboard() {
     } catch (error) {
       console.error("Error posting requirement:", error);
       alert("Something went wrong!");
+    }
+  };
+
+  const handleVerificationComplete = () => {
+    if (pendingRequirement) {
+      handlePostRequirement(pendingRequirement);
+      setPendingRequirement(null);
     }
   };
 
@@ -791,6 +808,19 @@ export default function ClientDashboard() {
             onCancel={() => setShowPostForm(false)}
           />
         </div>
+        {user && (
+          <VerificationModal
+            isOpen={isVerificationModalOpen}
+            onClose={() => setIsVerificationModalOpen(false)}
+            userId={user.id}
+            onVerified={handleVerificationComplete}
+            initialEmail={user.email}
+            initialPhone={user.phone}
+            isEmailVerifiedInDashboard={user.isEmailVerifiedInDashboard}
+            isMobileNumberVerified={user.isMobileNumberVerified}
+            message="Email and mobile verification is mandatory for your first project post."
+          />
+        )}
       </div>
     );
   }

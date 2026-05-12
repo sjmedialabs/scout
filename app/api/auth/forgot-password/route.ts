@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
-import nodemailer from "nodemailer";
+import { transporter } from "@/lib/mail";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
 
@@ -40,16 +40,6 @@ export async function POST(req: Request) {
 
     const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password/${resetToken}`;
 
-    // ✅ Nodemailer Transport
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: 587,
-      secure: false, // true for 465
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
 
     // ✅ Beautiful Email Template
     const htmlTemplate = `
@@ -93,7 +83,7 @@ export async function POST(req: Request) {
 
     // ✅ Send Email
     await transporter.sendMail({
-      from: `"Support Team" <${process.env.SMTP_USER}>`,
+      from: process.env.SMTP_FROM || `"Scout Team" <no-reply@scout.com>`,
       to: user.email,
       subject: "Reset Your Password",
       html: htmlTemplate,

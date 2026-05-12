@@ -3,6 +3,10 @@ import mongoose, { Schema, models } from "mongoose"
 const ApplicationSchema = new Schema(
   {
     jobTitle: String,
+    jobId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Job",
+    },
     firstName: String,
     lastName: String,
     phone: String,
@@ -17,6 +21,7 @@ const ApplicationSchema = new Schema(
     coverLetterName: String,
     status: {
       type: String,
+      enum: ["pending", "shortlisted", "selected", "rejected"],
       default: "pending",
     },
   },

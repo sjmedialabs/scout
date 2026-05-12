@@ -91,9 +91,27 @@ export async function PUT(
     console.log("---UserId to update the data::", id);
     const updates = await req.json();
 
-    if (!id) {
+    const userDoc = await User.findById(id);
+    if (!userDoc) {
       return NextResponse.json(
-        { success: false, message: "userId is required" },
+        { success: false, message: "User not found" },
+        { status: 404 },
+      );
+    }
+
+    // Prevent changing verified email
+    const isEmailVerified = userDoc.isEmailVerifiedInDashboard || userDoc.isEmailVerified;
+    if (isEmailVerified && updates.email && updates.email.toLowerCase() !== userDoc.email.toLowerCase()) {
+      return NextResponse.json(
+        { success: false, message: "Verified email cannot be changed" },
+        { status: 400 },
+      );
+    }
+
+    // Prevent changing verified phone
+    if (userDoc.isMobileNumberVerified && updates.phoneNumber && updates.phoneNumber !== userDoc.phone) {
+      return NextResponse.json(
+        { success: false, message: "Verified phone number cannot be changed" },
         { status: 400 },
       );
     }

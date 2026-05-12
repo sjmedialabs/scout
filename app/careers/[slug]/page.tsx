@@ -119,6 +119,7 @@ export default function JobDetailsPage({
         isOpen={open}
         onClose={() => setOpen(false)}
         jobTitle={job.title}
+        jobId={job._id}
       />
     </>
   )
