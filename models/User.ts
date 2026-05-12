@@ -21,14 +21,18 @@ export interface IUser extends Document {
   proposalCount: Number
   monthlyProposalCount: Number
 
-  monthlyProposalLimit:Number
-  caseStudiesLimit:Number
- 
+  monthlyProposalLimit: Number
+  caseStudiesLimit: Number
+
   otp?: {
     code: string
     expiresAt: Date
   }
-  isEmailVerified?: boolean
+  isEmailVerified?: boolean //this field will be used at the time of registeration
+
+  isEmailVerifiedInDashboard?: boolean //this field will be used at the time of verfiy email in dashboard after the registeration
+  isMobileNumberVerified?: boolean //this field will be used at the time of verfiy mobile number in dashboard after the registeration
+
 
 
   createdAt: Date
@@ -57,8 +61,8 @@ const UserSchema = new Schema<IUser>(
       type: Number,
       default: 0
     },
-    monthlyProposalLimit:{type: Number, default: 0},
-    caseStudiesLimit:{type: Number, default: 0},
+    monthlyProposalLimit: { type: Number, default: 0 },
+    caseStudiesLimit: { type: Number, default: 0 },
     lastLogin: { type: Date },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
@@ -66,7 +70,9 @@ const UserSchema = new Schema<IUser>(
       code: String,
       expiresAt: Date,
     },
-    isEmailVerified: { type: Boolean, default: false }
+    isEmailVerified: { type: Boolean, default: false },
+    isEmailVerifiedInDashboard: { type: Boolean, default: false },
+    isMobileNumberVerified: { type: Boolean, default: false },
   },
   { timestamps: true },
 )

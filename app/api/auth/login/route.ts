@@ -43,10 +43,10 @@ export async function POST(request: NextRequest) {
 
     // Check role if provided
     if (role && user.role !== role) {
-    console.warn("Role mismatch:", {
-      selectedRole: role,
-      actualRole: user.role,
-    })
+      console.warn("Role mismatch:", {
+        selectedRole: role,
+        actualRole: user.role,
+      })
     }
 
     // Update last login
@@ -59,17 +59,19 @@ export async function POST(request: NextRequest) {
     // Set auth cookie
     await setAuthCookie(token)
 
-    // Return user data (without password)
+    // Return user data (without password) 
     const userResponse = {
       id: user._id.toString(),
       email: user.email,
       name: user.name,
       role: user.role,
       company: user.company,
-      isActive:user.isActive,
+      isActive: user.isActive,
       isVerified: user.isVerified,
       lastLogin: user.lastLogin,
       createdAt: user.createdAt,
+      isEmailVerifiedInDashboard: user?.isEmailVerifiedInDashboard || false,
+      isMobileNumberVerified: user?.isMobileNumberVerified || false
     }
 
     return NextResponse.json({

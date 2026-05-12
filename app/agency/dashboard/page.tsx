@@ -116,13 +116,13 @@ export default function AgencyDashboard() {
     proposalResponses: 0,
     leadsCount: 0,
     leadsInThisMonth: 0,
-    profileViews:0,
-      profileViewsPercentage:0,
-      websiteClicks:0,
-      websiteClicksPercentage:0,
-      conversionPercentage:0,
-      leadsPercentage:0,
-      leads:0
+    profileViews: 0,
+    profileViewsPercentage: 0,
+    websiteClicks: 0,
+    websiteClicksPercentage: 0,
+    conversionPercentage: 0,
+    leadsPercentage: 0,
+    leads: 0
   });
   const [activeProjects, setActiveProjects] = useState<Requirement[]>([]);
 
@@ -194,10 +194,10 @@ export default function AgencyDashboard() {
         let responsesCount = proposalData.proposals.filter(
           (eachItem: any) => eachItem.status != "pending",
         ).length;
-         let profileViewPercentage=providerDetailsData.provider.currentMonthProfileViews>0?Math.round((providerDetailsData.provider.currentMonthProfileViews/providerDetailsData.provider.profileViews)*100) :0;
-           let websiteClicksPercentage=providerDetailsData.provider.currentMonthWebsiteClicks>0?Math.round((providerDetailsData.provider.currentMonthWebsiteClicks/providerDetailsData.provider.websiteClicks)*100) :0;
-        let totalProjectsDone=requirementData.requirements.filter((eachItem: any)=>eachItem?.allocatedToId===user?.id);
-        let conversionPercentage=proposalData.proposals.length>0?Math.round((totalProjectsDone.length/proposalData.proposals.length)*100):0;
+        let profileViewPercentage = providerDetailsData.provider.currentMonthProfileViews > 0 ? Math.round((providerDetailsData.provider.currentMonthProfileViews / providerDetailsData.provider.profileViews) * 100) : 0;
+        let websiteClicksPercentage = providerDetailsData.provider.currentMonthWebsiteClicks > 0 ? Math.round((providerDetailsData.provider.currentMonthWebsiteClicks / providerDetailsData.provider.websiteClicks) * 100) : 0;
+        let totalProjectsDone = requirementData.requirements.filter((eachItem: any) => eachItem?.allocatedToId === user?.id);
+        let conversionPercentage = proposalData.proposals.length > 0 ? Math.round((totalProjectsDone.length / proposalData.proposals.length) * 100) : 0;
         const projectsInThisMonth = getProjectsInThisMonth(
           proposalData.proposals || []
         )
@@ -210,15 +210,15 @@ export default function AgencyDashboard() {
           proposalResponses: responsesCount,
           leadsCount: (leadsData.data || []).length,
           leadsInThisMonth: leadsInThisMonth,
-                    profileViews:providerDetailsData.provider.profileViews,
-          profileViewsPercentage:profileViewPercentage,
-                    websiteClicks:providerDetailsData.provider.websiteClicks,
-          websiteClicksPercentage:websiteClicksPercentage,
+          profileViews: providerDetailsData.provider.profileViews,
+          profileViewsPercentage: profileViewPercentage,
+          websiteClicks: providerDetailsData.provider.websiteClicks,
+          websiteClicksPercentage: websiteClicksPercentage,
           // proposals:proposalData.proposals.length,
           // proposalResponses:responsesCount,
-          conversionPercentage:conversionPercentage,
-                    leadsPercentage:0,
-          leads:totalProjectsDone.length,
+          conversionPercentage: conversionPercentage,
+          leadsPercentage: 0,
+          leads: totalProjectsDone.length,
         })
 
 
@@ -451,7 +451,7 @@ export default function AgencyDashboard() {
               </div>
               <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {/* Profile views card */}
-                  <div className="relative rounded-xl px-4 py-4 shadow-sm flex flex-col justify-between">
+                <div className="relative rounded-xl px-4 py-4 shadow-sm flex flex-col justify-between">
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-3">
                       <div className="bg-blue-100 p-3 rounded-lg">
@@ -465,7 +465,7 @@ export default function AgencyDashboard() {
                           {dynamicStats.profileViews > 0
                             ? `${dynamicStats.profileViewsPercentage}`
                             : "0"}
-                        % new this month
+                          % new this month
                         </p>
                       </div>
                     </div>
@@ -476,7 +476,7 @@ export default function AgencyDashboard() {
                   </div>
                 </div>
                 {/* praposal cards */}
-                    {/* <div className="relative rounded-xl px-4 py-4 shadow-sm flex flex-col justify-between">
+                {/* <div className="relative rounded-xl px-4 py-4 shadow-sm flex flex-col justify-between">
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-3">
                       <div className="bg-purple-100 p-3 rounded-lg">
@@ -501,7 +501,7 @@ export default function AgencyDashboard() {
                   </div>
                 </div> */}
                 {/* website click cards  */}
-                    <div className="relative rounded-xl px-4 py-4 shadow-sm flex flex-col justify-between">
+                <div className="relative rounded-xl px-4 py-4 shadow-sm flex flex-col justify-between">
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-3">
                       <div className="bg-orange-100 p-3 rounded-lg">
@@ -509,13 +509,13 @@ export default function AgencyDashboard() {
                       </div>
                       <div>
                         <h3 className="text-gray-700 font-medium text-sm">
-                         Website Clicks
+                          Website Clicks
                         </h3>
                         <p className="text-xs text-green-600 mt-1">
                           {dynamicStats.websiteClicks > 0
                             ? `${dynamicStats.websiteClicksPercentage}`
                             : "0"}
-                         % new this month
+                          % new this month
                         </p>
                       </div>
                     </div>
@@ -526,7 +526,7 @@ export default function AgencyDashboard() {
                   </div>
                 </div>
                 {/* client conversion rate card */}
-                    <div className="relative rounded-xl px-4 py-4 shadow-sm flex flex-col justify-between">
+                <div className="relative rounded-xl px-4 py-4 shadow-sm flex flex-col justify-between">
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-3">
                       <div className="bg-teal-100 p-3 rounded-lg">
@@ -540,7 +540,7 @@ export default function AgencyDashboard() {
                           {dynamicStats.conversionPercentage > 0
                             ? `${dynamicStats.conversionPercentage}`
                             : "0"}
-                         % new this month
+                          % new this month
                         </p>
                       </div>
                     </div>
