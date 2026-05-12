@@ -29,13 +29,19 @@ export default function BlogPage() {
     setResLoading(true);
 
     //  Only CMS API call
-    const cmsRes = await fetch(`/api/cms`, options);
+    const cmsRes = await fetch(`/api/cms`, {
+      ...options,
+      cache: 'no-store' // Ensure we don't get a cached response from the browser
+    });
 
-    const cms = cmsRes.ok ? (await cmsRes.json()).data : null;
-    setBlogs(cms.blogs)
+    const resData = await cmsRes.json();
+    const cms = cmsRes.ok ? resData.data : null;
+    
+    if (cms && cms.blogs) {
+      setBlogs(cms.blogs);
+    }
 
-    //  Return structure kept same (others empty)
-    // return { cms, providers: [], projects: [], categories: [] };
+    return { cms, providers: [], projects: [], categories: [] };
 
   } catch (error) {
     console.error("Data Fetch Error:", error);

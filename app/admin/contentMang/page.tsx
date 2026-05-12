@@ -171,18 +171,31 @@ const formats = [
   const handleSave = async () => {
     setLoading(true);
     setMessage("");
-    console.log("Saving CMS data:", cms);
-    const res = await authFetch("/api/cms", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({...cms,blogs}),
-    });
+    try {
+      console.log("Saving CMS data:", cms);
+      
+      // Remove read-only fields to avoid MongoDB issues
+      const { _id, createdAt, updatedAt, __v, ...cmsToSave } = cms;
+      
+      const res = await authFetch("/api/cms", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...cmsToSave, blogs }),
+      });
 
-    const data = await res.json();
-    // setMessage(data.success ? "Saved Successfully!" : data.error);
-    toast.success("Saved Successfully")
-    console.log("CMS save response:", data);
-    setLoading(false);
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Saved Successfully");
+        console.log("CMS save response:", data);
+      } else {
+        toast.error(data.error || "Failed to save");
+      }
+    } catch (error: any) {
+      console.error("Save Error:", error);
+      toast.error(error.message || "An error occurred while saving");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAddOrUpdateBlog = () => {
