@@ -117,11 +117,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // ✅ UPDATE USER
   const updateUser = (updates: Partial<User>) => {
-    if (user) {
-      const updatedUser = { ...user, ...updates };
-      setUser(updatedUser);
+    setUser(prevUser => {
+      if (!prevUser) return prevUser;
+      const updatedUser = { ...prevUser, ...updates };
       localStorage.setItem("user", JSON.stringify(updatedUser));
-    }
+      return updatedUser;
+    });
   };
 
   return (

@@ -572,8 +572,8 @@ export default function SubmitProposalPage() {
           isOpen={isVerificationModalOpen}
           onClose={() => setIsVerificationModalOpen(false)}
           userId={user?.id || ""}
-          initialEmail={user?.email || ""}
-          initialPhone={user?.phone || ""}
+          initialEmail=""
+          initialPhone=""
           isEmailVerified={user?.isEmailVerified}
           isEmailVerifiedInDashboard={user?.isEmailVerifiedInDashboard}
           isMobileNumberVerified={user?.isMobileNumberVerified}
