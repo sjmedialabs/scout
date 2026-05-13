@@ -10,7 +10,7 @@ export async function PUT(request: Request, { params }: any) {
     const { id } = params;
 
     // Whitelist fields allowed to update
-    const allowedFields = ["title", "slug", "icon", "children", "parent", "isMainCategory"];
+    const allowedFields = ["title", "slug", "icon", "image", "children", "parent", "isMainCategory"];
     const updateData: Record<string, any> = {};
 
     for (const key in body) {

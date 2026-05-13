@@ -4,11 +4,12 @@ import { useEffect, useState, useRef } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PlusCircle, Trash, Pencil,  } from "lucide-react";
+import { PlusCircle, Trash, Pencil, } from "lucide-react";
 import FileUpload from "@/components/file-upload";
 import { FaRegEdit } from "react-icons/fa";
 import { authFetch } from "@/lib/auth-fetch";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { toast } from "@/lib/toast";
 
 interface ServiceItem {
   title: string;
@@ -27,6 +28,7 @@ interface MainCategory {
   title: string;
   slug: string;
   icon?: string | null;
+  image?: string | null;
   isMainCategory: boolean;
   children: SubCategory[];
 }
@@ -34,30 +36,32 @@ interface MainCategory {
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<MainCategory[]>([]);
   const [newCategory, setNewCategory] = useState("");
-const [editingId, setEditingId] = useState<string | null>(null);
-const [editTitle, setEditTitle] = useState("");
-const [editIcon, setEditIcon] = useState<string | null>(null);
-// For editing subcategory
-const [editingSub, setEditingSub] = useState<{ catId: string; index: number } | null>(null);
-const [editSubTitle, setEditSubTitle] = useState("");
+  const [newCategoryImage, setNewCategoryImage] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editIcon, setEditIcon] = useState<string | null>(null);
+  const [editImage, setEditImage] = useState<string | null>(null);
+  // For editing subcategory
+  const [editingSub, setEditingSub] = useState<{ catId: string; index: number } | null>(null);
+  const [editSubTitle, setEditSubTitle] = useState("");
 
-// For editing service items
-const [editingItem, setEditingItem] = useState<{ catId: string; subIndex: number; itemIndex: number } | null>(null);
-const [editItemTitle, setEditItemTitle] = useState("");
-const [editItemImage, setEditItemImage] = useState<string | null>(null);
+  // For editing service items
+  const [editingItem, setEditingItem] = useState<{ catId: string; subIndex: number; itemIndex: number } | null>(null);
+  const [editItemTitle, setEditItemTitle] = useState("");
+  const [editItemImage, setEditItemImage] = useState<string | null>(null);
 
-const [deleteTarget, setDeleteTarget] = useState<{
-  catId: string
-  subIndex: number
-} | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<{
+    catId: string
+    subIndex: number
+  } | null>(null)
 
-const [undoData, setUndoData] = useState<{
-  catId: string
-  sub: SubCategory
-  index: number
-} | null>(null)
+  const [undoData, setUndoData] = useState<{
+    catId: string
+    sub: SubCategory
+    index: number
+  } | null>(null)
 
-const [collapsedSubs, setCollapsedSubs] = useState<string[]>([])
+  const [collapsedSubs, setCollapsedSubs] = useState<string[]>([])
 
 
   // Fetch all categories from API
@@ -81,11 +85,20 @@ const [collapsedSubs, setCollapsedSubs] = useState<string[]>([])
 
   // Add Main Category
   const addMainCategory = async () => {
-    if (!newCategory.trim()) return;
+    if (!newCategory.trim()) {
+      toast.error("Name Required", "Please enter a name for the category.");
+      return;
+    }
+
+    if (!newCategoryImage) {
+      toast.error("Image Required", "Please upload an image for the main category.");
+      return;
+    }
 
     const newCat: MainCategory = {
       title: newCategory.trim(),
       slug: slugify(newCategory),
+      image: newCategoryImage || null,
       isMainCategory: true,
       children: [],
     };
@@ -99,6 +112,8 @@ const [collapsedSubs, setCollapsedSubs] = useState<string[]>([])
     if (result.success) {
       setCategories((prev) => [...prev, result.data]);
       setNewCategory("");
+      setNewCategoryImage(null);
+      toast.success("Category created successfully");
     }
   };
 
@@ -107,12 +122,12 @@ const [collapsedSubs, setCollapsedSubs] = useState<string[]>([])
     const updatedCats = categories.map((cat) =>
       cat._id === catId
         ? {
-            ...cat,
-            children: [
-              ...cat.children,
-              { title, slug: slugify(title), items: [] },
-            ],
-          }
+          ...cat,
+          children: [
+            ...cat.children,
+            { title, slug: slugify(title), items: [] },
+          ],
+        }
         : cat
     );
 
@@ -140,230 +155,270 @@ const [collapsedSubs, setCollapsedSubs] = useState<string[]>([])
 
   // Remove anything (main category, subcategory or service item)
   const removeCategory = async (catId: string) => {
-  try {
-    const res = await authFetch(`/api/service-categories/${catId}`, {
-      method: "DELETE",
-    });
+    try {
+      const res = await authFetch(`/api/service-categories/${catId}`, {
+        method: "DELETE",
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok || !data.success) {
-      alert("Failed to delete category");
-      return;
+      if (!res.ok || !data.success) {
+        alert("Failed to delete category");
+        return;
+      }
+
+      setCategories((prev) => prev.filter((c) => c._id !== catId));
+    } catch (err) {
+      console.error(err);
+      alert("Delete failed");
     }
-
-    setCategories((prev) => prev.filter((c) => c._id !== catId));
-  } catch (err) {
-    console.error(err);
-    alert("Delete failed");
-  }
-};
+  };
 
 
-const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
-  try {
-    const res = await fetch(`/api/service-categories/${catId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+  const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
+    try {
+      const res = await fetch(`/api/service-categories/${catId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-    const result = await res.json();
+      const result = await res.json();
 
-    if (!res.ok || !result.success) {
-      console.error("Update failed:", result.message || "Unknown error");
+      if (!res.ok || !result.success) {
+        console.error("Update failed:", result.message || "Unknown error");
+        return false;
+      }
+
+      return result.data; // Return updated category
+    } catch (error) {
+      console.error("Update error:", error);
       return false;
     }
-
-    return result.data; // Return updated category
-  } catch (error) {
-    console.error("Update error:", error);
-    return false;
-  }
-};
+  };
 
 
   return (
     <div className="space-y-1">
-     <div>
-       <h1 className="text-xl font-bold text-orangeButton">Service Category Management</h1>
-      <p className="text-gray-500 ">Manage categories → subcategories → service items.</p>
-     </div>
+      <div>
+        <h1 className="text-xl font-bold text-orangeButton">Service Category Management</h1>
+        <p className="text-gray-500 ">Manage categories → subcategories → service items.</p>
+      </div>
 
       {/* ADD MAIN CATEGORY */}
-      <div className="">
-        <div className="flex items-center gap-3">
+      <div className="bg-white p-4 rounded-2xl border shadow-sm mb-6">
+        {/* <p className="text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Add New Main Category</p> */}
+        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center ">
+          <div className="w-[200px] mt-2">
+            <ImageUpload
+              className="!space-y-0"
+              value={newCategoryImage || ""}
+              onChange={(url) => setNewCategoryImage(url)}
+              previewClassName="w-10 h-10"
+              showUrl={false}
+              allowUrl={false}
+            />
+          </div>
+
           <Input
-          className="rounded-2xl border-gray-200 placeholder:text-gray-500"
-            placeholder="Enter new category..."
+            className="rounded-2xl -mt-4 border-gray-200 placeholder:text-gray-500 h-[40px] flex-1"
+            placeholder="Enter new category name..."
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value)}
           />
-          <Button className="primary-button h-[40px]" onClick={addMainCategory}>
-            <PlusCircle className="w-4 h-4" /> Add Category
+          <Button className="primary-button -mt-4 h-[40px]" onClick={addMainCategory}>
+            <PlusCircle className="w-4 h-4 mr-1" /> Add Category
           </Button>
+
         </div>
+
+
       </div>
 
       {/* DISPLAY CATEGORIES */}
       <div className="space-y-6">
         {categories.map((cat) => (
           <div key={cat._id} className="bg-white px-2 py-3 border rounded-2xl shadow-md">
-          {/* MAIN CATEGORY HEADER */}
-          <div className="flex justify-between items-center">
+            {/* MAIN CATEGORY HEADER */}
+            <div className="flex justify-between items-center">
 
-            {/* ICON + UPLOAD */}
-            <div className="flex gap-3 items-center ">
-              <img
-                src={editingId === cat._id ? editIcon || "/images/placeholder.png" : cat.icon || "/images/placeholder.png"}
-                className="w-10 h-10 object-cover rounded-full border mb-2"
-              />
-
-              {editingId === cat._id && (
+              {/* ICON + IMAGE PREVIEW / UPLOAD */}
+              <div className="flex gap-3 items-center flex-wrap">
                 <div className="flex items-center gap-2">
-                  
-                  {/* Upload */}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-
-                      const reader = new FileReader();
-
-                      reader.onloadend = () => {
-                        setEditIcon(reader.result as string);
-                      };
-
-                      reader.readAsDataURL(file);
-                    }}
-                    className=" text-gray-400 px-3 cursor-pointer py-3 text-sm w-[220px] border"
+                  <img
+                    src={editingId === cat._id ? editIcon || "/images/placeholder.png" : cat.icon || "/images/placeholder.png"}
+                    className="w-10 h-10 object-cover rounded-full border mb-2"
+                    title="Category Icon"
                   />
-
-                  {/* Remove Button */}
-                  {editIcon && (
-                    <button
-                      type="button"
-                      onClick={() => setEditIcon(null)}
-                      className="text-xs text-red-500  cursor-pointer underline"
-                    >
-                      Remove
-                    </button>
+                  {!editingId && cat.image && (
+                    <img
+                      src={cat.image}
+                      className="w-16 h-10 object-cover rounded-lg border mb-2"
+                      title="Main Category Image"
+                    />
                   )}
                 </div>
-              )}
-            </div>
 
-            {/* TITLE OR INPUT */}
-            <div className="flex-1 px-3">
-              {editingId === cat._id ? (
-                <Input
-                placeholder="Add category..."
-                  value={editTitle}
-                  onChange={(e) => setEditTitle(e.target.value)}
-                  className="text-lg font-semibold placeholder:text-gray-400 rounded-2xl border border-gray-200"
-                />
-              ) : (
-                <h2 className="text-xl font-semibold text-orangeButton ">{cat.title}</h2>
-              )}
-            </div>
+                {editingId === cat._id && (
+                  <div className="flex flex-col gap-2 my-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-500 w-12 font-medium">Icon:</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
 
-            {/* ACTION BUTTONS */}
-            <div className="flex items-center gap-3">
+                          const reader = new FileReader();
 
-              {editingId === cat._id ? (
-                <>
-                  {/* SAVE */}
-                  <Button
-                  className="rounded-full bg-orangeButton"
-                    size="sm"
-                    onClick={async () => {
-                      const updated = {
-                        ...cat,
-                        title: editTitle,
-                        slug: slugify(editTitle),
-                        icon: editIcon === null ? null : editIcon || cat.icon
-                      };
+                          reader.onloadend = () => {
+                            setEditIcon(reader.result as string);
+                          };
 
-                      await updateCategory(cat._id!, updated);
-                      setCategories(prev =>
-                        prev.map(c => c._id === cat._id ? updated : c)
-                      );
+                          reader.readAsDataURL(file);
+                        }}
+                        className=" text-gray-400 px-3 cursor-pointer py-1 text-xs w-[220px] border rounded"
+                      />
+                      {editIcon && (
+                        <button
+                          type="button"
+                          onClick={() => setEditIcon(null)}
+                          className="text-xs text-red-500 cursor-pointer underline"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-xs text-gray-500 w-12 font-medium pt-2">Image:</span>
+                      <div className="w-[220px]">
+                        <ImageUpload
+                          className="!space-y-0"
+                          value={editImage || ""}
+                          onChange={(url) => setEditImage(url)}
+                          previewClassName="w-10 h-10"
+                          showUrl={false}
+                          allowUrl={false}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
 
-                      setEditingId(null);
-                      setEditIcon(null);
-                      fetchCategories();
-                    }}
-                  >
-                    Save
-                  </Button>
+              {/* TITLE OR INPUT */}
+              <div className="flex-1 px-3">
+                {editingId === cat._id ? (
+                  <Input
+                    placeholder="Add category..."
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="text-lg font-semibold placeholder:text-gray-400 rounded-2xl border border-gray-200"
+                  />
+                ) : (
+                  <h2 className="text-xl font-semibold text-orangeButton ">{cat.title}</h2>
+                )}
+              </div>
 
-                  {/* CANCEL */}
-                  <Button
-                  className="rounded-full bg-black text-white"
-                    size="sm"
-                    variant="outline"
+              {/* ACTION BUTTONS */}
+              <div className="flex items-center gap-3">
+
+                {editingId === cat._id ? (
+                  <>
+                    {/* SAVE */}
+                    <Button
+                      className="rounded-full bg-orangeButton"
+                      size="sm"
+                      onClick={async () => {
+                        const updated = {
+                          ...cat,
+                          title: editTitle,
+                          slug: slugify(editTitle),
+                          icon: editIcon === null ? null : editIcon || cat.icon,
+                          image: editImage === null ? null : editImage || cat.image
+                        };
+
+                        await updateCategory(cat._id!, updated);
+                        setCategories(prev =>
+                          prev.map(c => c._id === cat._id ? updated : c)
+                        );
+
+                        setEditingId(null);
+                        setEditIcon(null);
+                        setEditImage(null);
+                        fetchCategories();
+                      }}
+                    >
+                      Save
+                    </Button>
+
+                    {/* CANCEL */}
+                    <Button
+                      className="rounded-full bg-black text-white"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setEditingId(null);
+                        setEditIcon(null);
+                        setEditImage(null);
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </>
+                ) : (
+                  <Pencil
+                    className="w-5 h-5 cursor-pointer"
                     onClick={() => {
-                      setEditingId(null);
-                      setEditIcon(null);
+                      setEditingId(cat._id!);
+                      setEditTitle(cat.title);
+                      setEditIcon(cat.icon || null);
+                      setEditImage(cat.image || null);
                     }}
-                  >
-                    Cancel
-                  </Button>
-                </>
-              ) : (
-                <Pencil 
-                className="w-5 h-5 cursor-pointer"
-                  onClick={() => {
-                    setEditingId(cat._id!);
-                    setEditTitle(cat.title);
-                    setEditIcon(cat.icon || null);
-                  }}
-                
-                />
-              )}
 
-              {/* DELETE */}
-              <Trash
-                className="w-5 h-5 cursor-pointer text-red-600"
-                onClick={() => removeCategory(cat._id!)}
-              />
+                  />
+                )}
+
+                {/* DELETE */}
+                <Trash
+                  className="w-5 h-5 cursor-pointer text-red-600"
+                  onClick={() => removeCategory(cat._id!)}
+                />
+              </div>
             </div>
-          </div>
             {/* ADD SUBCATEGORY */}
             <AddInput
-            
+
               placeholder="Add subcategory..."
               onAdd={(val) => addSubcategory(cat._id!, val)}
             />
 
-{/* SUBCATEGORIES LIST */}
-<div className=" mt-4 space-y-4">
-  {cat.children.map((sub, subIndex) => (
-     <div
-        key={subIndex}
-        className={`border p-4 rounded-2xl shadow-md bg-white transition-all duration-300 overflow-hidden ${
-          collapsedSubs.includes(`${cat._id}-${subIndex}`)
-            ? "max-h-12"
-            : "max-h-[500px]"
-        }`}
-      >
+            {/* SUBCATEGORIES LIST */}
+            <div className=" mt-4 space-y-4">
+              {cat.children.map((sub, subIndex) => (
+                <div
+                  key={subIndex}
+                  className={`border p-4 rounded-2xl shadow-md bg-white transition-all duration-300 overflow-hidden ${collapsedSubs.includes(`${cat._id}-${subIndex}`)
+                    ? "max-h-12"
+                    : "max-h-[500px]"
+                    }`}
+                >
 
-      {/* SUBCATEGORY TITLE */}
-      <div className="flex justify-between items-center">
-        {editingSub?.catId === cat._id && editingSub?.index === subIndex ? (
-          <Input
-            value={editSubTitle}
-            onChange={(e) => setEditSubTitle(e.target.value)}
-            className="font-medium text-gray-700 w-64"
-          />
-        ) : (
-          <h3 className="font-medium text-gray-700">{sub.title}</h3>
-        )}
-        {/* <button
+                  {/* SUBCATEGORY TITLE */}
+                  <div className="flex justify-between items-center">
+                    {editingSub?.catId === cat._id && editingSub?.index === subIndex ? (
+                      <Input
+                        value={editSubTitle}
+                        onChange={(e) => setEditSubTitle(e.target.value)}
+                        className="font-medium text-gray-700 w-64"
+                      />
+                    ) : (
+                      <h3 className="font-medium text-gray-700">{sub.title}</h3>
+                    )}
+                    {/* <button
           className="text-xs text-gray-400"
           onClick={() => {
             const key = `${cat._id}-${subIndex}`
@@ -378,240 +433,240 @@ const updateCategory = async (catId: string, data: Partial<MainCategory>) => {
         </button> */}
 
 
-        
-{/* SUBCATEGORY ACTION BUTTONS */}
-<div className="flex items-center gap-2">
-  {editingSub?.catId === cat._id && editingSub?.index === subIndex ? (
-    <>
-      <Button
-        size="sm"
-        onClick={async () => {
-          const updated = { ...cat };
-          updated.children[subIndex].title = editSubTitle;
-          updated.children[subIndex].slug = slugify(editSubTitle);
 
-          await updateCategory(cat._id!, updated);
-          setEditingSub(null);
-          fetchCategories();
-        }}
-      >
-        Save
-      </Button>
+                    {/* SUBCATEGORY ACTION BUTTONS */}
+                    <div className="flex items-center gap-2">
+                      {editingSub?.catId === cat._id && editingSub?.index === subIndex ? (
+                        <>
+                          <Button
+                            size="sm"
+                            onClick={async () => {
+                              const updated = { ...cat };
+                              updated.children[subIndex].title = editSubTitle;
+                              updated.children[subIndex].slug = slugify(editSubTitle);
 
-      <Button
-        size="sm"
-        variant="outline"
-        onClick={() => setEditingSub(null)}
-      >
-        Cancel
-      </Button>
-    </>
-  ) : (
-    <>
-      <Pencil
-        className="h-5 w-5"
-        size="sm"
-      
-        onClick={() => {
-          setEditingSub({ catId: cat._id!, index: subIndex });
-          setEditSubTitle(sub.title);
-        }}
-      />
+                              await updateCategory(cat._id!, updated);
+                              setEditingSub(null);
+                              fetchCategories();
+                            }}
+                          >
+                            Save
+                          </Button>
 
-      {/* DELETE SUBCATEGORY */}
-      <Trash
-        className="w-5 h-5 text-red-600 cursor-pointer"
-        onClick={() => {
-          if (sub.items.length > 0) {
-            alert("Cannot delete subcategory with service items.")
-            return
-          }
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setEditingSub(null)}
+                          >
+                            Cancel
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Pencil
+                            className="h-5 w-5"
+                            size="sm"
 
-          setDeleteTarget({ catId: cat._id!, subIndex })
-        }}
-      />
-    </>
-  )}
-</div>
+                            onClick={() => {
+                              setEditingSub({ catId: cat._id!, index: subIndex });
+                              setEditSubTitle(sub.title);
+                            }}
+                          />
 
-      </div>
+                          {/* DELETE SUBCATEGORY */}
+                          <Trash
+                            className="w-5 h-5 text-red-600 cursor-pointer"
+                            onClick={() => {
+                              if (sub.items.length > 0) {
+                                alert("Cannot delete subcategory with service items.")
+                                return
+                              }
 
-      {/* ADD SERVICE ITEM */}
-      <AddServiceInput
-        placeholder="Add service item..."
-        onAdd={(title, image) => addServiceItem(cat._id!, subIndex, title, image)}
-      />
+                              setDeleteTarget({ catId: cat._id!, subIndex })
+                            }}
+                          />
+                        </>
+                      )}
+                    </div>
 
-      {/* SERVICE ITEMS LIST */}
-      <div className="flex flex-col  sm:flex-row sm:flex-wrap gap-2 mt-3">
-        {sub.items.map((item, itemIndex) => {
-          const isEditing = editingItem?.catId === cat._id &&
-                            editingItem?.subIndex === subIndex &&
-                            editingItem?.itemIndex === itemIndex;
-          return (
-          <div key={itemIndex} className={`flex gap-2 ${isEditing ? "items-start" : "items-center"}`}>
+                  </div>
 
-            {/* SERVICE ITEM TITLE / INPUT */}
-            {isEditing ? (
-              <div className="flex items-start gap-2">
-                <div className="w-[150px]">
-                  <ImageUpload
-                    className="!space-y-0"
-                    value={editItemImage || ""}
-                    onChange={(url) => setEditItemImage(url)}
-                    previewClassName="w-8 h-8"
-                    showUrl={false}
-                    allowUrl={false}
+                  {/* ADD SERVICE ITEM */}
+                  <AddServiceInput
+                    placeholder="Add service item..."
+                    onAdd={(title, image) => addServiceItem(cat._id!, subIndex, title, image)}
                   />
+
+                  {/* SERVICE ITEMS LIST */}
+                  <div className="flex flex-col  sm:flex-row sm:flex-wrap gap-2 mt-3">
+                    {sub.items.map((item, itemIndex) => {
+                      const isEditing = editingItem?.catId === cat._id &&
+                        editingItem?.subIndex === subIndex &&
+                        editingItem?.itemIndex === itemIndex;
+                      return (
+                        <div key={itemIndex} className={`flex gap-2 ${isEditing ? "items-start" : "items-center"}`}>
+
+                          {/* SERVICE ITEM TITLE / INPUT */}
+                          {isEditing ? (
+                            <div className="flex items-start gap-2">
+                              <div className="w-[150px]">
+                                <ImageUpload
+                                  className="!space-y-0"
+                                  value={editItemImage || ""}
+                                  onChange={(url) => setEditItemImage(url)}
+                                  previewClassName="w-8 h-8"
+                                  showUrl={false}
+                                  allowUrl={false}
+                                />
+                              </div>
+                              <Input
+                                value={editItemTitle}
+                                onChange={(e) => setEditItemTitle(e.target.value)}
+                                className="h-8 w-48 border-gray-200 rounded-2xl"
+                              />
+                            </div>
+                          ) : (
+                            <Badge className="bg-white text-black border px-3 py-2 rounded-xl shadow flex items-center gap-2">
+                              {item.image && <img src={item.image} alt={item.title} className="w-6 h-6 object-cover rounded-full border" />}
+                              {item.title}
+                            </Badge>
+                          )}
+
+                          {/* SERVICE ITEM ACTION BUTTONS */}
+                          {isEditing ? (
+                            <>
+                              <Button
+                                size="sm"
+                                className="primary-button"
+                                onClick={async () => {
+                                  const updated = { ...cat };
+                                  updated.children[subIndex].items[itemIndex].title =
+                                    editItemTitle;
+                                  updated.children[subIndex].items[itemIndex].slug =
+                                    slugify(editItemTitle);
+                                  updated.children[subIndex].items[itemIndex].image =
+                                    editItemImage;
+
+                                  await updateCategory(cat._id!, updated);
+                                  setEditingItem(null);
+                                  fetchCategories();
+                                }}
+                              >
+                                Save
+                              </Button>
+
+                              <Button
+                                className="btn-blackButton"
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setEditingItem(null)}
+                              >
+                                Cancel
+                              </Button>
+                            </>
+                          ) : (
+                            <Pencil
+                              className="h-4 w-4 cursor-pointer"
+
+                              onClick={() => {
+                                setEditingItem({
+                                  catId: cat._id!,
+                                  subIndex,
+                                  itemIndex,
+                                });
+                                setEditItemTitle(item.title);
+                                setEditItemImage(item.image || null);
+                              }}
+                            />
+                          )}
+
+                          {/* DELETE SERVICE ITEM */}
+                          <Trash
+                            className="w-4 h-4 text-red-600 cursor-pointer"
+                            onClick={async () => {
+                              const updated = { ...cat };
+                              updated.children[subIndex].items.splice(itemIndex, 1);
+
+                              await updateCategory(cat._id!, updated);
+                              fetchCategories();
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-                <Input
-                  value={editItemTitle}
-                  onChange={(e) => setEditItemTitle(e.target.value)}
-                  className="h-8 w-48 border-gray-200 rounded-2xl"
-                />
-              </div>
-            ) : (
-              <Badge className="bg-white text-black border px-3 py-2 rounded-xl shadow flex items-center gap-2">
-                {item.image && <img src={item.image} alt={item.title} className="w-6 h-6 object-cover rounded-full border" />}
-                {item.title}
-              </Badge>    
-            )}
-
-            {/* SERVICE ITEM ACTION BUTTONS */}
-            {isEditing ? (
-              <>
-                <Button
-                  size="sm"
-                  className="primary-button" 
-                  onClick={async () => {
-                    const updated = { ...cat };
-                    updated.children[subIndex].items[itemIndex].title =
-                      editItemTitle;
-                    updated.children[subIndex].items[itemIndex].slug =
-                      slugify(editItemTitle);
-                    updated.children[subIndex].items[itemIndex].image =
-                      editItemImage;
-
-                    await updateCategory(cat._id!, updated);
-                    setEditingItem(null);
-                    fetchCategories();
-                  }}
-                >
-                  Save
-                </Button>
-
-                <Button
-                className="btn-blackButton"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setEditingItem(null)}
-                >
-                  Cancel
-                </Button>
-              </>
-            ) : (
-              <Pencil
-              className="h-4 w-4 cursor-pointer"
-               
-                onClick={() => {
-                  setEditingItem({
-                    catId: cat._id!,
-                    subIndex,
-                    itemIndex,
-                  });
-                  setEditItemTitle(item.title);
-                  setEditItemImage(item.image || null);
-                }}
-              />
-            )}
-
-            {/* DELETE SERVICE ITEM */}
-            <Trash
-              className="w-4 h-4 text-red-600 cursor-pointer"
-              onClick={async () => {
-                const updated = { ...cat };
-                updated.children[subIndex].items.splice(itemIndex, 1);
-
-                await updateCategory(cat._id!, updated);
-                fetchCategories();
-              }}
-            />
-          </div>
-          );
-        })}
-      </div>
-    </div>
-  ))}
-</div>
+              ))}
+            </div>
 
           </div>
         ))}
       </div>
       {deleteTarget && (
-  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-    <div className="bg-white p-6 rounded-2xl shadow-lg w-96">
-      <h2 className="text-lg font-semibold mb-3">
-        Delete subcategory?
-      </h2>
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-2xl shadow-lg w-96">
+            <h2 className="text-lg font-semibold mb-3">
+              Delete subcategory?
+            </h2>
 
-      <p className="text-sm text-gray-500 mb-6">
-        This action can be undone for a few seconds.
-      </p>
+            <p className="text-sm text-gray-500 mb-6">
+              This action can be undone for a few seconds.
+            </p>
 
-      <div className="flex justify-end gap-3">
-        <Button variant="outline" onClick={() => setDeleteTarget(null)}>
-          Cancel
-        </Button>
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setDeleteTarget(null)}>
+                Cancel
+              </Button>
 
-        <Button
-          className="bg-red-600 text-white"
-          onClick={async () => {
-            const { catId, subIndex } = deleteTarget
+              <Button
+                className="bg-red-600 text-white"
+                onClick={async () => {
+                  const { catId, subIndex } = deleteTarget
 
-            const cat = categories.find(c => c._id === catId)!
-            const removed = cat.children[subIndex]
+                  const cat = categories.find(c => c._id === catId)!
+                  const removed = cat.children[subIndex]
 
-            const updated = { ...cat }
-            updated.children.splice(subIndex, 1)
+                  const updated = { ...cat }
+                  updated.children.splice(subIndex, 1)
 
-            await updateCategory(catId, updated)
-            fetchCategories()
+                  await updateCategory(catId, updated)
+                  fetchCategories()
 
-            setUndoData({ catId, sub: removed, index: subIndex })
-            setDeleteTarget(null)
+                  setUndoData({ catId, sub: removed, index: subIndex })
+                  setDeleteTarget(null)
 
-            setTimeout(() => setUndoData(null), 5000)
-          }}
-        >
-          Delete
-        </Button>
-      </div>
-    </div>
-  </div>
-)}
+                  setTimeout(() => setUndoData(null), 5000)
+                }}
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
-{undoData && (
-  <div className="fixed bottom-6 right-6 bg-black text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3">
-    <span>Subcategory deleted</span>
+      {undoData && (
+        <div className="fixed bottom-6 right-6 bg-black text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3">
+          <span>Subcategory deleted</span>
 
-    <Button
-      size="sm"
-      className="bg-orangeButton"
-      onClick={async () => {
-        const cat = categories.find(c => c._id === undoData.catId)!
-        const updated = { ...cat }
+          <Button
+            size="sm"
+            className="bg-orangeButton"
+            onClick={async () => {
+              const cat = categories.find(c => c._id === undoData.catId)!
+              const updated = { ...cat }
 
-        updated.children.splice(undoData.index, 0, undoData.sub)
+              updated.children.splice(undoData.index, 0, undoData.sub)
 
-        await updateCategory(undoData.catId, updated)
-        fetchCategories()
-        setUndoData(null)
-      }}
-    >
-      Undo
-    </Button>
-  </div>
-)}
+              await updateCategory(undoData.catId, updated)
+              fetchCategories()
+              setUndoData(null)
+            }}
+          >
+            Undo
+          </Button>
+        </div>
+      )}
 
 
     </div>
@@ -631,7 +686,7 @@ function AddInput({
   return (
     <div className="flex gap-3 mt-3 text-black">
       <Input
-      className="border-gray-200 rounded-2xl placeholder:text-gray-500"
+        className="border-gray-200 rounded-2xl placeholder:text-gray-500"
         placeholder={placeholder}
         value={value}
         onChange={(e) => setValue(e.target.value)}
@@ -648,7 +703,7 @@ function AddInput({
       </Button>
     </div>
   );
-  
+
 }
 
 // 🟦 Reusable Add Input Component for Service Items

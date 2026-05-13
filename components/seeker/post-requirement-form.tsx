@@ -14,7 +14,7 @@ import ServiceDropdown from "../select-category-filter"
 import { ChevronRight } from "lucide-react"
 import { Send } from "lucide-react"
 import {
-  Select,
+  Select, 
   SelectContent,
   SelectItem,
   SelectTrigger,
@@ -112,11 +112,13 @@ export function PostRequirementForm({
   }
 
   const findImageForCategory = (val: string) => {
+    console.log("Selected Value:::",val)
     for (const cat of categories) {
-      if (cat.title === val && cat.icon) return cat.icon;
+      if (cat.title === val) return cat?.image || "";
       for (const sub of (cat.children || [])) {
+        if (sub.title === val) return cat?.image || "";
         for (const item of (sub.items || [])) {
-          if (item.title === val && item.image) return item.image;
+          if (item.title === val) return cat?.image || "";
         }
       }
     }
@@ -246,7 +248,8 @@ console.log("Form Data Url is:::",formData.documentUrl)
                   value={formData.category}
                   onChange={(value) => {
                     const autoImage = findImageForCategory(value)
-                    setFormData((p) => ({ ...p, category: value, ...(autoImage ? { image: autoImage } : {}) }))
+                    console.log("auto image is:::::",autoImage)
+                    setFormData((p) => ({ ...p, category: value,  image: autoImage }))
                   }}
                   placeholder="Select service"
                   triggerClassName="border-2 border-[#D0D5DD] text-[#000] rounded-[8px] p-4
