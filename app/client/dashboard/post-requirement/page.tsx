@@ -52,7 +52,7 @@ const PostRequirementPage = () => {
     // Optimistic check: if user is already in dashboard and we know they aren't verified
     // we can show the modal even before the API call if we want, 
     // but let's rely on the API to be sure about the "first project" logic.
-    
+
     setSending(true);
     try {
       console.log("Recieved Requirememt to the backend:::", newRequirement);
@@ -77,7 +77,7 @@ const PostRequirementPage = () => {
 
       const data = await res.json();
       console.log("Requirement created on main parent:", data);
-      
+
       if (!res.ok) {
         if (data.code === "VERIFICATION_REQUIRED") {
           setPendingRequirement(newRequirement);
@@ -88,7 +88,7 @@ const PostRequirementPage = () => {
         toast.error(data.error || "Failed to post the requirement");
         return;
       }
-      
+
       toast.success("Requirement Posted successfully");
     } catch (error) {
       console.error("Error posting requirement:", error);
@@ -122,7 +122,7 @@ const PostRequirementPage = () => {
           onVerified={handleVerificationComplete}
           initialEmail={user.email}
           initialPhone={user.phone}
-          isEmailVerifiedInDashboard={user.isEmailVerifiedInDashboard}
+          isEmailVerifiedInDashboard={true}
           isMobileNumberVerified={user.isMobileNumberVerified}
           message="Email and mobile verification is mandatory for your first project post."
         />

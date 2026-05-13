@@ -939,7 +939,7 @@ const ClientProfilePage = () => {
           onVerified={handleVerificationComplete}
           initialEmail={profileData.email || user.email}
           initialPhone={profileData.phoneNumber || user.phone}
-          isEmailVerifiedInDashboard={user.isEmailVerifiedInDashboard}
+          isEmailVerifiedInDashboard={true}
           isMobileNumberVerified={user.isMobileNumberVerified}
           message="Verify your contact details to secure your profile."
         />
