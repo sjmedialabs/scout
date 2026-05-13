@@ -1,5 +1,5 @@
 "use client";
-import React, { useState,useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -83,117 +83,151 @@ const colorMap: Record<string, { bg: string; hover: string; text: string }> = {
 
 
 export default function HomePage() {
-  const router=useRouter();
-const [data, setData] = useState({
-  cms: null,
-  providers: [],
-  projects: [],
-  categories: [],
-  blogs: [],
-});
-
-const [resLoading, setResLoading] = useState(false);
-
-const scrollRef = useRef<HTMLDivElement>(null);
-
-const scroll = (direction: "left" | "right") => {
-  if (!scrollRef.current) return;
-
-  const card = scrollRef.current.children[0] as HTMLElement;
-
-  scrollRef.current.scrollBy({
-    left: direction === "right"
-      ? card.offsetWidth + 24
-      : -(card.offsetWidth + 24),
-    behavior: "smooth",
+  const router = useRouter();
+  const [data, setData] = useState({
+    cms: null,
+    providers: [],
+    projects: [],
+    categories: [],
+    blogs: [],
   });
-};
 
-const [currentIndex, setCurrentIndex] = useState(0);
-const { cms, providers, projects, categories, blogs } = data;
+  const [resLoading, setResLoading] = useState(false);
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: "left" | "right") => {
+    if (!scrollRef.current) return;
+
+    const card = scrollRef.current.children[0] as HTMLElement;
+
+    scrollRef.current.scrollBy({
+      left: direction === "right"
+        ? card.offsetWidth + 24
+        : -(card.offsetWidth + 24),
+      behavior: "smooth",
+    });
+  };
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const { cms, providers, projects, categories, blogs } = data;
 
 
-const items = cms?.homeWorkSection || [];
-const showArrows = (items?.length || 0) > 1;
+  const items = cms?.homeWorkSection || [];
+  const showArrows = (items?.length || 0) > 1;
 
-const handlePrev = () => {
-  setCurrentIndex((prev) => (prev === 0 ? items.length - 1 : prev - 1));
-};
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev === 0 ? items.length - 1 : prev - 1));
+  };
 
-const handleNext = () => {
-  setCurrentIndex((prev) => (prev === items.length - 1 ? 0 : prev + 1));
-};
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev === items.length - 1 ? 0 : prev + 1));
+  };
 
-async function getData() {
-  let baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+  async function getData() {
+    let baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
 
-  const REVALIDATE_TIME = Number(process.env.CMS_REVALIDATE_TIME) || 10;
-  const options = { next: { revalidate: REVALIDATE_TIME } };
+    const REVALIDATE_TIME = Number(process.env.CMS_REVALIDATE_TIME) || 10;
+    const options = { next: { revalidate: REVALIDATE_TIME } };
 
-  try {
-    setResLoading(true);
+    try {
+      setResLoading(true);
 
-    const [cmsRes, providersRes, projectsRes, categoriesRes] =
-      await Promise.all([
-        fetch(`/api/cms`, options),
-        fetch(`/api/providers`, options),
-        fetch(`/api/requirements`, options),
-        fetch(`/api/service-categories`, options),
-      ]);
+      const [cmsRes, providersRes, projectsRes, categoriesRes] =
+        await Promise.all([
+          fetch(`/api/cms`, options),
+          fetch(`/api/providers`, options),
+          fetch(`/api/requirements`, options),
+          fetch(`/api/service-categories`, options),
+        ]);
 
-    const cms = cmsRes.ok ? (await cmsRes.json()).data : null;
+      const cms = cmsRes.ok ? (await cmsRes.json()).data : null;
 
-    const blogs = cms?.blogs?.slice(0, 4) || [];
+      const blogs = cms?.blogs?.slice(0, 4) || [];
 
-    const providers = providersRes.ok
-      ? (await providersRes.json()).providers?.slice(0, 4)
-      : [];
+      const providers = providersRes.ok
+        ? (await providersRes.json()).providers?.slice(0, 4)
+        : [];
 
-    const projectsData = projectsRes.ok ? await projectsRes.json() : {};
-    const projects = (projectsData.requirements || projectsData.data || [])
-      .filter((eachItem: any) => eachItem.status.toLowerCase() === "open")
-      .slice(0, 4);
+      const projectsData = projectsRes.ok ? await projectsRes.json() : {};
+      const projects = (projectsData.requirements || projectsData.data || [])
+        .filter((eachItem: any) => eachItem.status.toLowerCase() === "open")
+        .slice(0, 4);
 
-    const categories = categoriesRes.ok
-      ? (await categoriesRes.json()).data
-      : [];
-    
-    console.log("Fetchjed Categories from api::::::", categories)
+      const categories = categoriesRes.ok
+        ? (await categoriesRes.json()).data
+        : [];
 
-    return { cms, providers, projects, categories, blogs };
-  } catch (error) {
-    console.error("[HomePage] Data Fetch Error:", error);
-    return { cms: null, providers: [], projects: [], categories: [] };
-  } finally {
-    setResLoading(false);
+      console.log("Fetchjed Categories from api::::::", categories)
+
+      return { cms, providers, projects, categories, blogs };
+    } catch (error) {
+      console.error("[HomePage] Data Fetch Error:", error);
+      return { cms: null, providers: [], projects: [], categories: [] };
+    } finally {
+      setResLoading(false);
+    }
   }
-}
 
-useEffect(() => {
-  async function fetchData() {
-    const res = await getData();
-    setData(res);
+  useEffect(() => {
+    async function fetchData() {
+      const res = await getData();
+      setData(res);
+    }
+
+    fetchData();
+  }, []);
+
+  console.log("Categoriees in the homepage::::", categories);
+
+  if (resLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
   }
-
-  fetchData();
-}, []);
-
-if (resLoading) {
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-    </div>
-  );
-}
 
   return (
     <div className="bg-background">
       {/* Hero Section */}
       <HomeHero cms={cms} />
 
+      {/* Marquee Section */}
+      {categories && categories.length > 0 && (
+        <div className="w-full bg-[#e14426] overflow-hidden py-1 relative flex items-center">
+          <style>{`
+            @keyframes scrollMarquee {
+              0% { transform: translateX(0); }
+              100% { transform: translateX(-50%); }
+            }
+            .animate-marquee-custom {
+              display: flex;
+              width: max-content;
+              animation: scrollMarquee 84s linear infinite;
+            }
+            .animate-marquee-custom:hover {
+              animation-play-state: paused;
+            }
+          `}</style>
+          <div className="animate-marquee-custom">
+            {Array(10).fill(categories).flat().map((category: any, idx: number) => (
+              <div key={`marquee-${category._id}-${idx}`} className="flex items-center">
+                <span className="text-[#fff] text-sm font-bold mx-6 uppercase whitespace-nowrap">
+                  {category.title}
+                </span>
+                <span className="text-[#fff] text-xs opacity-60">✦</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Features */}
       <section className="py-6 px-6 md:px-10 bg-gradient-to-r">
         <div className="max-w-7xl mx-auto">
+
+
 
           <h2 className="text-4xl font-bold text-center mb-6">
             How Scout Works
@@ -201,11 +235,11 @@ if (resLoading) {
 
           {/* MOBILE SLIDER */}
           <div className="relative md:hidden">
-            
+
             {/* Card */}
             {items.length > 0 && (
               <div className="bg-[#e7f0f8] text-white rounded-3xl px-6 py-4 min-h-[420px]">
-                
+
                 <p className="text-[#2C34A1] text-sm font-semibold mb-2">
                   {items[currentIndex]?.tag || "Step"}
                 </p>
@@ -248,37 +282,37 @@ if (resLoading) {
           {/* DESKTOP GRID */}
           <div className="hidden md:block relative overflow-visible">
 
-        {/* Grid Container */}
-        <div className="grid grid-cols-4 gap-6">
-          {items.map((section: any, index: number) => (
-            <div
-              key={index}
-            >
-              <div className="bg-[#e7f0f8]  text-white rounded-3xl px-3 py-3 h-[420px] flex flex-col">
-                <div>
-                <p className="text-[#2C34A1] text-sm font-semibold mb-2">
-                  {section?.tag || "Step"}
-                </p>
+            {/* Grid Container */}
+            <div className="grid grid-cols-4 gap-6">
+              {items.map((section: any, index: number) => (
+                <div
+                  key={index}
+                >
+                  <div className="bg-[#e7f0f8]  text-white rounded-3xl px-3 py-3 h-[420px] flex flex-col">
+                    <div>
+                      <p className="text-[#2C34A1] text-sm font-semibold mb-2">
+                        {section?.tag || "Step"}
+                      </p>
 
-                <h3 className="text-xl font-bold mb-2 text-[#F4561C]">
-                  {section.title}
-                </h3>
+                      <h3 className="text-xl font-bold mb-2 text-[#F4561C]">
+                        {section.title}
+                      </h3>
 
-                <p className="text-gray-500 text-sm mb-4 line-clamp-3">
-                  {section.description}
-                </p>
+                      <p className="text-gray-500 text-sm mb-4 line-clamp-3">
+                        {section.description}
+                      </p>
+                    </div>
+
+                    <img
+                      src={section.image}
+                      className=" rounded-xl w-full mb-2 h-[250px]  mt-auto "
+                    />
+                  </div>
                 </div>
-
-                <img
-                  src={section.image}
-                  className=" rounded-xl w-full mb-2 h-[250px]  mt-auto "
-                />
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-      </div>
+          </div>
 
         </div>
       </section>
@@ -298,18 +332,18 @@ if (resLoading) {
               </span>
             </div>
             <h2 className="text-md uppercase font-bold text-blueButton ">
-             {cms?.homeServiceTitle}
+              {cms?.homeServiceTitle}
               {/* <span className="text-blueButton font-bold ">
                 any project
               </span> */}
             </h2>
             <p className="text-sm text-gray-500 max-w-lg mx-auto">
-             {cms?.homeServiceSubTitle}
+              {cms?.homeServiceSubTitle}
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-            {(categories && categories.length > 0 ? categories.slice(0,6) : []).map(
+            {(categories && categories.length > 0 ? categories.slice(0, 6) : []).map(
               (category: any) => {
                 const colors = colorMap[category.color] || colorMap.blue;
                 const serviceLink = `/services/${category._id}`;
@@ -317,7 +351,7 @@ if (resLoading) {
                 return (
                   <div
                     key={category._id}
-                    
+
                     className={`group bg-white/70 h-[260px] backdrop-blur-sm rounded-4xl px-6 py-4 border lg:pl-8 ${colors.hover} hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col`}
                   >
                     {/* Top Content */}
@@ -356,8 +390,8 @@ if (resLoading) {
                         size="sm"
                         className=" bg-blueButton cursor-pointer text-sm  text-white rounded-full"
                         onClick={() =>
-                      router.push(`/services?category=${category._id}`)
-                    }
+                          router.push(`/services?category=${category._id}`)
+                        }
                       >
                         {`Explore  →`}
                       </Button>
@@ -446,17 +480,17 @@ if (resLoading) {
                   />
 
                   {/* Category + Timeline */}
-                 
-                    <Badge
-                      variant="outline"
-                      className="rounded-full mt-3 mb-2 bg-gray-100 text-xs font-semibold py-1"
-                    >
-                      {project.category}
-                    </Badge>
-                    <p className="text-sm font-semibold text-blueButton">
-                      Timeline - <span className="text-red-500">{project.timeline}</span>
-                    </p>
-                
+
+                  <Badge
+                    variant="outline"
+                    className="rounded-full mt-3 mb-2 bg-gray-100 text-xs font-semibold py-1"
+                  >
+                    {project.category}
+                  </Badge>
+                  <p className="text-sm font-semibold text-blueButton">
+                    Timeline - <span className="text-red-500">{project.timeline}</span>
+                  </p>
+
 
                   {/* Title */}
                   <h3 className="px-6 mt-1 text-md font-semibold capitalize">
@@ -539,22 +573,22 @@ if (resLoading) {
               {[...providers]
                 .sort((a, b) => (b.rating || 0) - (a.rating || 0))
                 .map((provider: any) => (
-                <div
-                  key={provider._id}
-                  className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300 bg-white
+                  <div
+                    key={provider._id}
+                    className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300 bg-white
                  flex flex-col h-full"
-                >
-                  <div className="">
-                    <div className="w-full h-[160px] sm:h-[150px] overflow-hidden rounded-t-3xl">
-                      <img
-                        // src={provider.coverImage || "/requirements.jpg"}
-                        src={`${provider.coverImage || "/requirements.jpg"}?v=${provider.updatedAt || Date.now()}`}
-                        alt=""
-                        className="rounded-t-3xl w-full h-full object-cover object-center"
-                      />
-                    </div>
-                    <div className="py-3">
-                    {/* Verified + Rating */}
+                  >
+                    <div className="">
+                      <div className="w-full h-[160px] sm:h-[150px] overflow-hidden rounded-t-3xl">
+                        <img
+                          // src={provider.coverImage || "/requirements.jpg"}
+                          src={`${provider.coverImage || "/requirements.jpg"}?v=${provider.updatedAt || Date.now()}`}
+                          alt=""
+                          className="rounded-t-3xl w-full h-full object-cover object-center"
+                        />
+                      </div>
+                      <div className="py-3">
+                        {/* Verified + Rating */}
                         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between -mt-1 px-2">
 
                           {/* LEFT — Verified */}
@@ -586,56 +620,56 @@ if (resLoading) {
                           </div>
 
                         </div>
-                    </div>
+                      </div>
 
-                    <h3 className="text-base text-base sm:text-lg px-4 sm:px-6 lg:px-4 font-bold capitalize">
-                      {provider.name}
-                    </h3>
-                  </div>
-                  <div className=" px-4 sm:px-6 lg:px-4 flex flex-col flex-1">
-                    <p className="text-sm text-gray-500 leading-8 -mt-1 mb-0 line-clamp-1">
+                      <h3 className="text-base text-base sm:text-lg px-4 sm:px-6 lg:px-4 font-bold capitalize">
+                        {provider.name}
+                      </h3>
+                    </div>
+                    <div className=" px-4 sm:px-6 lg:px-4 flex flex-col flex-1">
+                      <p className="text-sm text-gray-500 leading-8 -mt-1 mb-0 line-clamp-1">
                         {provider.description}
                       </p>
-                    <div className="flex flex-col h-full gap-4">
-                      {/* SERVICES BADGES */}
-                      <div className="flex gap-2 pt-2">
-                        {provider.services?.length > 0 ? (
-                          provider.services
-                            .slice(0, 2)
-                            .map((service: string, idx: number) => (
-                              <span
-                                key={idx}
-                                className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold"
-                              >
-                                {service}
-                              </span>
-                            ))
-                        ) : (
-                          <span className="text-sm text-gray-400 italic">
-                            No services listed
-                          </span>
-                        )}
-                      </div>
+                      <div className="flex flex-col h-full gap-4">
+                        {/* SERVICES BADGES */}
+                        <div className="flex gap-2 pt-2">
+                          {provider.services?.length > 0 ? (
+                            provider.services
+                              .slice(0, 2)
+                              .map((service: string, idx: number) => (
+                                <span
+                                  key={idx}
+                                  className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold"
+                                >
+                                  {service}
+                                </span>
+                              ))
+                          ) : (
+                            <span className="text-sm text-gray-400 italic">
+                              No services listed
+                            </span>
+                          )}
+                        </div>
 
-                      {/* VIEW DETAILS BUTTON */}
-                      <div className="mt-auto pb-3">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          asChild
-                          className="primary-button !text-xs w-[100px] h-[30px]"
-                        >
-                          <Link
-                            href={`/provider/${provider.id || provider._id}`}
+                        {/* VIEW DETAILS BUTTON */}
+                        <div className="mt-auto pb-3">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            asChild
+                            className="primary-button !text-xs w-[100px] h-[30px]"
                           >
-                            View Profile →
-                          </Link>
-                        </Button>
+                            <Link
+                              href={`/provider/${provider.id || provider._id}`}
+                            >
+                              View Profile →
+                            </Link>
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
             <div className="text-center mt-0">
               <Button
@@ -681,44 +715,44 @@ if (resLoading) {
             {/* Grid */}
             <div className="grid md:grid-cols-4 gap-3">
               {blogs.map((blog: any) => (
-                  <div className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300 bg-white flex flex-col h-full">
-                    
-                    {/* Image */}
-                    <img
-                      src={blog.image}
-                      alt={blog.title}
-                      className="w-full h-[150px] object-cover rounded-t-3xl"
+                <div className="hover:shadow-lg transition-shadow rounded-3xl border border-slate-300 bg-white flex flex-col h-full">
+
+                  {/* Image */}
+                  <img
+                    src={blog.image}
+                    alt={blog.title}
+                    className="w-full h-[150px] object-cover rounded-t-3xl"
+                  />
+
+                  {/* Content */}
+                  <div className="py-3 px-4 sm:px-6 lg:px-4 flex flex-col flex-1">
+                    {/* Title */}
+                    <h3 className="text-base sm:text-[15px] font-semibold line-clamp-2 min-h-12">
+                      {blog.title}
+                    </h3>
+
+                    <p className="text-xs text-black font-bold mt-1">
+                      Posted Date: <span className="text-gray-500"> {new Date(blog.postedDate).toLocaleDateString("en-GB")} </span>
+                    </p>
+
+                    <div
+                      className="text-sm text-gray-600 line-clamp-2 mt-1"
+                      dangerouslySetInnerHTML={{ __html: blog.description }}
                     />
 
-                    {/* Content */}
-                    <div className="py-3 px-4 sm:px-6 lg:px-4 flex flex-col flex-1">
-                      {/* Title */}
-                      <h3 className="text-base sm:text-[15px] font-semibold line-clamp-2 min-h-12">
-                        {blog.title}
-                      </h3>
-
-                      <p className="text-xs text-black font-bold mt-1">
-                       Posted Date: <span className="text-gray-500"> {new Date(blog.postedDate).toLocaleDateString("en-GB")} </span>
-                      </p>
-
-                      <div
-                        className="text-sm text-gray-600 line-clamp-2 mt-1"
-                        dangerouslySetInnerHTML={{ __html: blog.description }}
-                      />
-
-                      {/* Button */}
-                      <div className="mt-auto pt-2">
-                        <Button
-                          size="sm"
-                          className="primary-button !text-xs w-[110px] h-[30px]"
-                        >
+                    {/* Button */}
+                    <div className="mt-auto pt-2">
+                      <Button
+                        size="sm"
+                        className="primary-button !text-xs w-[110px] h-[30px]"
+                      >
                         <Link href={`/blogs/${blog._id}`} key={blog._id}>
                           Read More →
                         </Link>
-                        </Button>
-                      </div>
+                      </Button>
                     </div>
                   </div>
+                </div>
               ))}
             </div>
 
