@@ -11,12 +11,16 @@ import { MobileFilterBar } from "@/components/layout";
 
 interface BrowseRequirementsProps {
   requirements: Requirement[]
-  
+  subscriptionTier?: string
+  onViewDetails?: (id: string) => void
+  onSubmitProposal?: (req: Requirement) => void
 }
 
 export function BrowseRequirements({
   requirements,
-  
+  subscriptionTier,
+  onViewDetails,
+  onSubmitProposal,
 }: BrowseRequirementsProps) {
   const router = useRouter()
 
@@ -272,11 +276,15 @@ export function BrowseRequirements({
                     <Button
                       size="sm"
                       className="primary-button"
-                      onClick={() =>
-                        router.push(
-                          `/agency/dashboard/project-inquiries/${req._id}`
-                        )
-                      }
+                      onClick={() => {
+                        if (onSubmitProposal) {
+                          onSubmitProposal(req as any)
+                        } else {
+                          router.push(
+                            `/agency/dashboard/project-inquiries/${req._id}`
+                          )
+                        }
+                      }}
                     >
                       Submit Proposal
                     </Button>
