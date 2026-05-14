@@ -1,3 +1,4 @@
+
 "use client";
 
 import type React from "react";
@@ -10,13 +11,13 @@ import { Input } from "@/components/ui/input";
 import { MdMoreHoriz } from "react-icons/md";
 import { FaBars } from "react-icons/fa";
 
-
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import {
   User,
   LogOut,
@@ -26,7 +27,9 @@ import {
   Bookmark,
   MessageSquare,
   SearchIcon,
+  ChevronRight,
 } from "lucide-react";
+
 import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { CircleUserIcon } from "lucide-react";
@@ -35,33 +38,70 @@ import { set } from "mongoose";
 
 export function Navigation() {
   const { user, logout } = useAuth();
-  const [selectedOverflowCategory, setSelectedOverflowCategory] = useState<any | null>(null);
+
+  const [selectedOverflowCategory, setSelectedOverflowCategory] =
+    useState<any | null>(null);
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
   const pathname = usePathname();
   const router = useRouter();
+
   const [isSticky, setIsSticky] = useState(false);
-  const isAgencyDashboard = pathname?.startsWith("/agency/dashboard");
+
+  const isAgencyDashboard =
+    pathname?.startsWith("/agency/dashboard");
 
   const [serviceCategories, setServiceCategories] = useState<any[]>([]);
+
   const [openMenu, setOpenMenu] = useState<string | null>(null);
-  const [mobileOpenMenu, setMobileOpenMenu] = useState<string | null>(null);
+
+  const [mobileOpenMenu, setMobileOpenMenu] =
+    useState<string | null>(null);
+
   const [cms, setCMS] = useState<any>(null);
 
+  // =========================
+  // FIXED HOVER SYSTEM
+  // =========================
 
   const timeoutRef = useRef<any>(null);
+  const enterTimeoutRef = useRef<any>(null);
 
-  const handleEnter = () => {
-    clearTimeout(timeoutRef.current);
-    setOpenMenu("login");
+  const handleEnter = (menuId: string) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+
+    if (enterTimeoutRef.current) {
+      clearTimeout(enterTimeoutRef.current);
+      enterTimeoutRef.current = null;
+    }
+
+    if (openMenu === menuId) return;
+
+    enterTimeoutRef.current = setTimeout(() => {
+      setOpenMenu(menuId);
+    }, 40);
   };
 
   const handleLeave = () => {
+    if (enterTimeoutRef.current) {
+      clearTimeout(enterTimeoutRef.current);
+      enterTimeoutRef.current = null;
+    }
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+
     timeoutRef.current = setTimeout(() => {
       setOpenMenu(null);
-    }, 400);
+    }, 180);
   };
-
 
   const isActive = (slug: string) => {
     return (
@@ -70,22 +110,22 @@ export function Navigation() {
     );
   };
 
-  // console.log("Active Menu:", activeMenu)
-
   useEffect(() => {
     let isMounted = true;
 
     const fetchCategories = async () => {
-      console.time("fetchCategories")
+      console.time("fetchCategories");
+
       try {
-        //  PUBLIC API → normal fetch
         const res = await fetch("/api/service-categories", {
           credentials: "include",
         });
 
         const cmsRes = await fetch("/api/cms");
         const cmsData = await cmsRes.json();
+
         console.log("CMS Data in Navigation:", cmsData);
+
         setCMS(cmsData.data);
 
         if (!res.ok) return;
@@ -101,7 +141,8 @@ export function Navigation() {
     };
 
     fetchCategories();
-    console.timeEnd("fetchCategories")
+
+    console.timeEnd("fetchCategories");
 
     return () => {
       isMounted = false;
@@ -114,7 +155,9 @@ export function Navigation() {
     };
 
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    return () =>
+      window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const getDashboardLink = () => {
@@ -123,10 +166,13 @@ export function Navigation() {
     switch (user.role) {
       case "client":
         return "/client/dashboard";
+
       case "agency":
         return "/agency/dashboard";
+
       case "admin":
         return "/admin/dashboard";
+
       default:
         return "/";
     }
@@ -134,8 +180,14 @@ export function Navigation() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (searchQuery.trim()) {
-      router.push(`/services?q=${encodeURIComponent(searchQuery.trim())}&type=providers`);
+      router.push(
+        `/services?q=${encodeURIComponent(
+          searchQuery.trim()
+        )}&type=providers`
+      );
+
       setSearchQuery("");
     }
   };
@@ -145,6 +197,7 @@ export function Navigation() {
       router.push("/login");
       return;
     }
+
     router.push("/bookmarks");
   };
 
@@ -169,6 +222,12 @@ export function Navigation() {
   };
 
   useEffect(() => {
+    if (openMenu !== "more") {
+      setSelectedOverflowCategory(null);
+    }
+  }, [openMenu]);
+
+  useEffect(() => {
     setOpenMenu(null);
   }, [pathname]);
 
@@ -177,315 +236,303 @@ export function Navigation() {
   );
 
   const visibleCategories = mainCategories.slice(0, 4);
+
   const overflowCategories = mainCategories.slice(4);
-
-
-
 
   return (
     <div className="bg-background">
-      {/* <div className="bg-[#eff3f7] text-gray-500">
-        <div
-          className={`max-w-7xl mx-auto px-4 py-2 sm:px-6 lg:px-8 ${isAgencyDashboard ? "ml-80" : ""}`}
-        >
-          <div className="flex justify-between items-center h-8">
-            <div>
-              <Link href="/" className="flex items-center space-x-2">
-                <img src="/images/spark-nav-logo.png" alt="" className="h-12" />
-              </Link>
-            </div>
-            
-            <div className="lg:flex items-center rounded-full flex-1 max-w-[350px] xl:max-w-md border-[#c8d9ec] hidden">
-              <form onSubmit={handleSearch} className="relative w-full">
-                <div className="absolute right-4 top-[30%] flex items-center justify-center pr-2 gap-1">
-                  <Search className=" rotate-90 h-4 w-4 text-black" />
-                  <Button className="text-orangeButton font-bold text-[13px] right-12 top-[45%] p-0 h-0">
-                    Search
-                  </Button>
-                </div>
-                <Input
-                  placeholder="Search for agency name/service name"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-6 bg-transparent border-slate-300 rounded-full placeholder:text-gray-500 py-0 placeholder:text-xs focus:bg-slate-100"
-                />
-              </form>
-            </div>
-
-            
-            <div className="flex items-center space-x-6 py-4">
-              <Link
-                href="/providers"
-                className="text-sm hover:text-gray-300 font-semibold"
-              >
-                For Agencies
-              </Link>
-              <div className="">
-                <Button
-                  variant="ghost"
-                  className="hover:bg-slate-600 h-7 px-4 py-0 bg-transparent border border-orangeButton rounded-full text-orangeButton"
-                  asChild
-                >
-                  <Link href="/login" className="text-sm">
-                    Sign in
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> */}
-
-      {/* {isSticky && <div className="h-14" />} */}
       <nav
         className={`border-b border-border bg-white transition-all duration-300
-        ${isSticky ? "fixed top-0 left-0 right-0 z-50 shadow-md" : "relative"}`}
+        ${isSticky
+            ? "fixed top-0 left-0 right-0 z-50 shadow-md"
+            : "relative"
+          }`}
       >
-
         <div
-          className={`max-w-7xl mx-auto px-4 py-2 sm:px-6 xl:px-0 ${isAgencyDashboard ? "ml-80" : ""}`}
+          className={`max-w-7xl mx-auto px-4 py-2 sm:px-6 xl:px-0 ${isAgencyDashboard ? "ml-80" : ""
+            }`}
         >
           <div className="flex justify-between items-center h-14 gap-4">
 
             <div className="flex justify-between items-center h-8 xl:mr-30 lg:mr-1">
               <div>
-                <Link href="/" className="flex items-center space-x-2">
-                  <img src={cms?.contact?.headerLogo || "/scoutHeaderLogo.png"} alt="" className="h-14" />
-                </Link>
-              </div>
-            </div>
-
-            {/* {isSticky && (
-              <div className="shrink-0">
-                <Link href="/" className="hidden lg:flex items-center">
+                <Link
+                  href="/"
+                  className="flex items-center space-x-2"
+                >
                   <img
-                    src="/images/spark-nav-logo.png"
-                    alt="Logo"
-                    className="h-8"
+                    src={
+                      cms?.contact?.headerLogo ||
+                      "/scoutHeaderLogo.png"
+                    }
+                    alt=""
+                    className="h-14"
                   />
                 </Link>
               </div>
-            )} */}
-            {/* <div className="flex items-center rounded-full flex-1 max-w-md lg:hidden">
-              <form onSubmit={handleSearch} className="relative w-full">
-                <div className="absolute right-4 top-[25%] flex items-center justify-center pr-3 gap-2">
-                  <Search className=" rotate-90 h-5 w-5 text-gray-400" />
-                  <Button className="text-orangeButton text-[13px] right-12 top-[45%] p-0 h-0">
-                    Search
-                  </Button>
-                </div>
-                <Input
-                  placeholder="Search for agency name/service name"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-transparent border-slate-300 rounded-full placeholder:text-gray-200 py-0 placeholder:text-xs focus:bg-slate-500"
-                />
-              </form>
-            </div> */}
-            {/* Service Categories Navigation */}
-            {/* <div className="hidden lg:flex justify-between items-center space-x-8 text-gray-500 hover:text-slate-900 text-xs xl:text-sm font-medium">
-              <Link href="/services/development" className="">
-                Development
-              </Link>
-              <Link href="/services/it" className="">
-                IT Services
-              </Link>
-              <Link href="/services/marketing" className="">
-                Marketing
-              </Link>
-              <Link href="/services/design" className="">
-                Design
-              </Link>
-              <Link href="/services/business" className="">
-                Business Services
-              </Link>
-              <Link href="/pricing" className="">
-                Pricing & Packages
-              </Link>
-              <Link href="/about" className="">
-                Resources
-              </Link>
-              <Link href="/pricing" className="">
-                Videos,Images
-              </Link>
-              <Link href="/about" className="">
-                Social Media
-              </Link>
-            </div> */}
-            {/* <div
-              className={`hidden justify-center flex-1 lg:flex items-center text-md xl:text-sm font-medium transition-all duration-300
-                ${isSticky ? "lg:gap-14" : "lg:gap-16"}
-              gap-4 lg:gap-16 2xl:gap-16`}
-            > */}
+            </div>
+
+            {/* DESKTOP NAV */}
             <div
-              className={`hidden flex-1 min-w-0 lg:flex  items-center
+              className={`hidden flex-1 min-w-0 lg:flex items-center
                 gap-2
-                
                 lg:gap-3 xl:gap-4 2xl:gap-6
                 transition-all duration-300`}
             >
+              {/* MAIN CATEGORIES */}
               {visibleCategories.map((category) => (
-                <DropdownMenu
+                <div
                   key={category.slug}
-                  open={openMenu === category.slug}
-                  onOpenChange={(open) =>
-                    setOpenMenu(open ? category.slug : null)
-                  }
+                  className="flex items-center h-full relative"
                 >
-                  <DropdownMenuTrigger asChild>
-                    <button
-                      className={`relative pb-4 mt-4 text-[14px] font-medium cursor-pointer transition whitespace-nowrap ${openMenu === category.slug
-                        ? "text-[#F4561C] after:absolute after:left-0 after:-bottom-2 after:h-[2px] after:w-full after:bg-[#F4561C]"
-                        : "text-gray-500 hover:text-slate-900 "
-                        }`}
+                  <DropdownMenu
+                    modal={false}
+                    open={openMenu === category.slug}
+                  >
+                    <div
+                      onPointerEnter={() =>
+                        handleEnter(category.slug)
+                      }
+                      onPointerLeave={handleLeave}
                     >
-                      {category.title}
-                    </button>
-                  </DropdownMenuTrigger>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          className={`relative pb-4 mt-4 text-[14px] font-medium cursor-pointer transition whitespace-nowrap focus:outline-none focus-visible:ring-0 ${openMenu === category.slug
+                            ? "text-[#F4561C] after:absolute after:left-0 after:-bottom-2 after:h-[2px] after:w-full after:bg-[#F4561C]"
+                            : "text-gray-500 hover:text-slate-900 "
+                            }`}
+                        >
+                          {category.title}
+                        </button>
+                      </DropdownMenuTrigger>
 
-                  {category.children?.length > 0 && (
-                    <DropdownMenuContent className="w-[90vw]  max-h-[80vh] overflow-y-scroll p-6 ml-20 mt-3 rounded-2xl">
-                      <div className="grid grid-cols-5 gap-6">
-                        {category.children.map((parent: any) => (
-                          <div key={parent.title}>
-                            <p className="font-semibold text-sm mb-2 text-slate-900">
-                              {parent.title}
-                            </p>
-                            <ul className="space-y-1">
-                              {parent.items?.map((child: any) => (
-                                <li key={child.slug}>
-                                  <Link
-                                    href={`/services?subcategory=${child._id}`}
-                                    className="text-sm text-gray-500 hover:text-slate-900"
-                                  >
-                                    {child.title}
-                                  </Link>
-                                </li>
-                              ))}
-                            </ul>
+                      {category.children?.length > 0 && (
+                        <DropdownMenuContent
+                          forceMount
+                          onOpenAutoFocus={(e) =>
+                            e.preventDefault()
+                          }
+                          sideOffset={4}
+                          align="start"
+                          className="w-[90vw] mt-2 mx-20 max-h-[80vh] overflow-y-scroll p-6 ml-20 rounded-2xl"
+                        >
+                          <div className="grid grid-cols-5 gap-6">
+                            {category.children.map(
+                              (parent: any) => (
+                                <div key={parent.title}>
+                                  <p className="font-semibold text-sm mb-2 text-slate-900">
+                                    {parent.title}
+                                  </p>
+
+                                  <ul className="space-y-1">
+                                    {parent.items?.map(
+                                      (child: any) => (
+                                        <li key={child.slug}>
+                                          <Link
+                                            href={`/services?subcategory=${child._id}`}
+                                            className="text-sm text-gray-500 hover:text-slate-900"
+                                          >
+                                            {child.title}
+                                          </Link>
+                                        </li>
+                                      )
+                                    )}
+                                  </ul>
+                                </div>
+                              )
+                            )}
                           </div>
-                        ))}
-                      </div>
-                    </DropdownMenuContent>
-                  )}
-                </DropdownMenu>
+                        </DropdownMenuContent>
+                      )}
+                    </div>
+                  </DropdownMenu>
+                </div>
               ))}
 
-
-              <div className="hidden lg:flex gap-4 lg:gap-6 xl:gap-6 2xl:gap-6">
-
-
-
-                {/* <Link
-                    href="/about"
-                    className="text-md text-gray-500 hover:text-slate-900 mt-1"
-                  >
-                    About
-                  </Link> */}
-
-                {/* MORE DROPDOWN */}
-                {overflowCategories.length > 0 && (
-                  <DropdownMenu
-                    open={openMenu === "more"}
-                    onOpenChange={(open) => {
-                      setOpenMenu(open ? "more" : null);
-                      if (!open) setSelectedOverflowCategory(null);
-                    }}
-
-                  >
-                    <DropdownMenuTrigger asChild>
-                      <button className="p-1 text-[14px] font-medium text-gray-500 hover:text-slate-900  cursor-pointer">
-                        {/* <FaBars className="text-red cursor-pointer hover:text-slate-900 h-6 w-6" /> */}
-                        More
-                      </button>
-                    </DropdownMenuTrigger>
-                    <Link
-                      href="/pricing"
-                      className="text-black mt-1 hover:text-slate-900 text-sm  font-medium"
+              {/* MORE DROPDOWN */}
+              {overflowCategories.length > 0 && (
+                <>
+                  <div className="relative">
+                    <DropdownMenu
+                      modal={false}
+                      open={openMenu === "more"}
                     >
-                      Pricing
-                    </Link>
-
-                    <Link
-                      href="/blogs"
-                      className="text-black mt-1 font-medium hover:text-slate-900 text-sm"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Blogs
-                    </Link>
-
-
-                    <DropdownMenuContent className="w-[60vw] mt-5 p-2 rounded-xl">
-                      {!selectedOverflowCategory && (
-                        <div className="grid grid-cols-3 gap-4">
-                          {overflowCategories.map((category) => (
-                            <button
-                              key={category.slug}
-                              className="text-left px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 rounded-md"
-                              onClick={() => setSelectedOverflowCategory(category)}
-                            >
-                              {category.title}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-
-                      {selectedOverflowCategory && (
-                        <div>
-                          {/* Back button */}
+                      <div
+                        onPointerEnter={() =>
+                          handleEnter("more")
+                        }
+                        onPointerLeave={handleLeave}
+                      >
+                        <DropdownMenuTrigger asChild>
                           <button
-                            className="text-xs text-gray-500 mb-2 cursor-pointer"
-                            onClick={() => setSelectedOverflowCategory(null)}
+                            className="p-1 text-[14px] font-medium text-gray-500 hover:text-slate-900 cursor-pointer focus:outline-none focus-visible:ring-0"
                           >
-                            ← Back
+                            More
                           </button>
+                        </DropdownMenuTrigger>
 
-                          <div
-                            className={`grid gap-4 ${selectedOverflowCategory.children.length === 1
-                              ? "grid-cols-1"
-                              : "grid-cols-3"
-                              }`}
-                          >
-                            {selectedOverflowCategory.children?.map((sub: any) => (
-                              <div key={sub.title}>
-                                <p className="text-sm font-semibold mb-1">{sub.title}</p>
+                        <DropdownMenuContent
+                          forceMount
+                          onOpenAutoFocus={(e) =>
+                            e.preventDefault()
+                          }
+                          sideOffset={4}
+                          align="center"
+                          className="w-[800px]  mt-5 p-0 overflow-hidden rounded-2xl shadow-2xl border-none"
+                        >
+                          <div className="flex h-[450px]">
+                            {/* Sidebar Categories */}
+                            <div className="w-[240px] bg-slate-50 p-4 border-r overflow-y-auto">
+                              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-4 px-2">
+                                More Categories
+                              </p>
 
-                                <ul className="space-y-1">
-                                  {sub.items?.map((child: any) => (
-                                    <li key={child.slug}>
-                                      <Link
-                                        href={`/services?subcategory=${child._id}`}
-                                        className="text-xs text-gray-500 hover:text-slate-900 cursor-pointer"
-                                      >
-                                        {child.title}
-                                      </Link>
-                                    </li>
-                                  ))}
-                                </ul>
+                              <div className="space-y-1">
+                                {overflowCategories.map(
+                                  (category) => (
+                                    <button
+                                      key={category.slug}
+                                      className={`w-full text-left px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 flex items-center justify-between group ${selectedOverflowCategory?.slug ===
+                                        category.slug
+                                        ? "bg-white text-[#F4561C] shadow-sm cursor-pointer"
+                                        : "text-slate-600 hover:bg-white  hover:text-[#F4561C]"
+                                        }`}
+                                      onPointerEnter={() => {
+                                        if (
+                                          selectedOverflowCategory?.slug !==
+                                          category.slug
+                                        ) {
+                                          setSelectedOverflowCategory(
+                                            category
+                                          );
+                                        }
+                                      }}
+                                    >
+                                      {category.title}
+
+                                      <ChevronRight
+                                        size={14}
+                                        className={`transition-transform duration-200 ${selectedOverflowCategory?.slug ===
+                                          category.slug
+                                          ? "translate-x-1"
+                                          : "opacity-0 group-hover:opacity-100"
+                                          }`}
+                                      />
+                                    </button>
+                                  )
+                                )}
                               </div>
-                            ))}
+                            </div>
+
+                            {/* CONTENT */}
+                            <div className="flex-1 bg-white p-8 overflow-y-auto">
+                              {selectedOverflowCategory ? (
+                                <div className="animate-in fade-in slide-in-from-left-2 duration-300">
+                                  <div className="flex items-center justify-between mb-6 border-b pb-4">
+                                    <div>
+                                      <h3 className="text-xl font-bold text-slate-900">
+                                        {
+                                          selectedOverflowCategory.title
+                                        }
+                                      </h3>
+
+                                      <p className="text-sm text-slate-500 mt-1">
+                                        Explore all{" "}
+                                        {
+                                          selectedOverflowCategory.title
+                                        }{" "}
+                                        services
+                                      </p>
+                                    </div>
+                                  </div>
+
+                                  <div className="grid grid-cols-2 gap-x-12 gap-y-8">
+                                    {selectedOverflowCategory.children?.map(
+                                      (sub: any) => (
+                                        <div
+                                          key={sub.title}
+                                          className="space-y-3"
+                                        >
+                                          <h4 className="text-[12px] font-bold text-slate-400 uppercase tracking-widest">
+                                            {sub.title}
+                                          </h4>
+
+                                          <ul className="space-y-2">
+                                            {sub.items?.map(
+                                              (
+                                                child: any
+                                              ) => (
+                                                <li
+                                                  key={
+                                                    child.slug
+                                                  }
+                                                >
+                                                  <Link
+                                                    href={`/services?subcategory=${child._id}`}
+                                                    className="text-[14px] text-slate-600 hover:text-[#F4561C] transition-colors flex items-center group"
+                                                    onClick={() =>
+                                                      setOpenMenu(
+                                                        null
+                                                      )
+                                                    }
+                                                  >
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-slate-200 mr-2 group-hover:bg-[#F4561C] transition-colors" />
+
+                                                    {
+                                                      child.title
+                                                    }
+                                                  </Link>
+                                                </li>
+                                              )
+                                            )}
+                                          </ul>
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="h-full flex flex-col items-center justify-center text-slate-400">
+                                  <Search
+                                    size={48}
+                                    strokeWidth={1}
+                                    className="mb-4 opacity-20"
+                                  />
+
+                                  <p className="text-sm">
+                                    Hover over a category
+                                    to see services
+                                  </p>
+                                </div>
+                              )}
+                            </div>
                           </div>
+                        </DropdownMenuContent>
+                      </div>
+                    </DropdownMenu>
+                  </div>
 
-                        </div>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
-              </div>
+                  <Link
+                    href="/pricing"
+                    className="text-black  hover:text-slate-900 text-sm font-medium"
+                  >
+                    Pricing
+                  </Link>
 
-
-              {/* ... other static links ... */}
-
-              {/* <Link href="/pricing"className="text-xs text-gray-500 hover:text-slate-900" >
-              Videos,Images
-            </Link>
-
-            <Link href="/about"  className="text-xs text-gray-500 hover:text-slate-900">
-              Social Media
-            </Link> */}
+                  <Link
+                    href="/blogs"
+                    className="text-black font-medium hover:text-slate-900 text-sm"
+                    onClick={() =>
+                      setMobileMenuOpen(false)
+                    }
+                  >
+                    Blogs
+                  </Link>
+                </>
+              )}
             </div>
 
-            {/* Post a Project Button */}
+            {/* RIGHT BUTTONS */}
             <div className="hidden lg:flex flex-row gap-2">
               <Button
                 className="primary-button h-[32px]"
@@ -494,42 +541,53 @@ export function Navigation() {
                 <Link
                   className="!text-sm"
                   href={
-                    user ? "/client/dashboard?section=projects" : "/register"
+                    user
+                      ? "/client/dashboard?section=projects"
+                      : "/register"
                   }
                 >
                   Post Requirement
                 </Link>
               </Button>
 
-              <Button className="primary-button h-[32px] !text-sm" onClick={() => router.push("/browse")}>
+              <Button
+                className="primary-button h-[32px] !text-sm"
+                onClick={() => router.push("/browse")}
+              >
                 Find Projects
               </Button>
 
-              {/* <div  onClick={()=>router.push("/login")} className="cursor-pointer">
-                   <CircleUserRound className="h-6 w-6 mt-1" color="#e0332c" />
-               </div> */}
-
               <div
-                className="relative cursor-pointer"
-                // onMouseEnter={() => setOpenMenu("login")}
-                // onMouseLeave={() => setOpenMenu(null)}
-
-                onMouseEnter={handleEnter}
+                className="relative cursor-pointer focus:outline-none focus-visible:ring-0"
+                onMouseEnter={() =>
+                  handleEnter("login")
+                }
                 onMouseLeave={handleLeave}
               >
-                <CircleUserRound className="h-6 w-6 mt-1" color="#e0332c" />
+                <CircleUserRound
+                  className="h-6 w-6 mt-1"
+                  color="#e0332c"
+                />
 
                 {openMenu === "login" && (
                   <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
                     <button
-                      onClick={() => router.push("/login?role=client")}
+                      onClick={() =>
+                        router.push(
+                          "/login?role=client"
+                        )
+                      }
                       className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
                     >
                       Login as Client
                     </button>
 
                     <button
-                      onClick={() => router.push("/login?role=agency")}
+                      onClick={() =>
+                        router.push(
+                          "/login?role=agency"
+                        )
+                      }
                       className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
                     >
                       Login as Agency
@@ -537,37 +595,44 @@ export function Navigation() {
                   </div>
                 )}
               </div>
-
-
-
-
-
-
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* MOBILE */}
             <div className="flex flex-row gap-2 lg:hidden">
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                onClick={() =>
+                  setMobileMenuOpen(!mobileMenuOpen)
+                }
               >
                 <Menu size={40} />
               </Button>
-              {/* <div  onClick={()=>router.push("/login")} className="cursor-pointer">
-                   <CircleUserRound className="h-6 w-6 mt-1" color="#f54607" />
-               </div> */}
 
               <div className="relative cursor-pointer">
-                <div onClick={() => setOpenMenu(openMenu === "login" ? null : "login")}>
-                  <CircleUserRound className="h-6 w-6 mt-1" color="#f54607" />
+                <div
+                  onClick={() =>
+                    setOpenMenu(
+                      openMenu === "login"
+                        ? null
+                        : "login"
+                    )
+                  }
+                >
+                  <CircleUserRound
+                    className="h-6 w-6 mt-1"
+                    color="#f54607"
+                  />
                 </div>
 
                 {openMenu === "login" && (
                   <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
                     <button
                       onClick={() => {
-                        router.push("/login?role=client");
+                        router.push(
+                          "/login?role=client"
+                        );
+
                         setOpenMenu(null);
                       }}
                       className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
@@ -577,7 +642,10 @@ export function Navigation() {
 
                     <button
                       onClick={() => {
-                        router.push("/login?role=agency");
+                        router.push(
+                          "/login?role=agency"
+                        );
+
                         setOpenMenu(null);
                       }}
                       className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
@@ -589,125 +657,6 @@ export function Navigation() {
               </div>
             </div>
           </div>
-
-          {mobileMenuOpen && (
-            <div className="lg:hidden border-t border-border  py-4">
-              <div className="flex flex-col space-y-3">
-
-                {/* Dynamic Service Categories */}
-                {mainCategories.map((category) => (
-                  <div key={category.slug} className="flex flex-col">
-                    <button
-                      className="text-left text-slate-600 hover:text-slate-900 text-sm font-medium"
-                      onClick={() =>
-                        setMobileOpenMenu(
-                          mobileOpenMenu === category.slug ? null : category.slug
-                        )
-                      }
-                    >
-                      {category.title}
-                    </button>
-
-                    {/* Mobile Dropdown Content */}
-                    {mobileOpenMenu === category.slug &&
-                      category.children?.length > 0 && (
-                        <div className="pl-4 mt-2 space-y-3 grid grid-cols-2 overflow-y-auto max-h-[200px]">
-                          {category.children.map((parent: any) => (
-                            <div key={parent.title}>
-                              <p className="text-xs font-semibold text-slate-900 mb-1">
-                                {parent.title}
-                              </p>
-
-                              <ul className="space-y-1">
-                                {parent.items?.map((child: any) => (
-                                  <li key={child.slug}>
-                                    <Link
-                                      href={`/services?subcategory=${child._id}`}
-                                      className="text-xs text-gray-500 hover:text-slate-900"
-                                      onClick={() => {
-                                        setMobileMenuOpen(false);
-                                        setMobileOpenMenu(null);
-                                      }}
-                                    >
-                                      {child.title}
-                                    </Link>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                  </div>
-                ))}
-
-                {/* Static Links */}
-
-
-
-                <Link
-                  href="/pricing"
-                  className="text-[#000] text-sm font-semibold"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Pricing
-                </Link>
-
-                <Link
-                  href="/blogs"
-                  className="text-[#000] text-sm font-semibold"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Blogs
-                </Link>
-
-                {/* <Link
-          href="/about"
-          className="text-slate-600 hover:text-slate-900 text-sm"
-          onClick={() => setMobileMenuOpen(false)}
-          >
-          About
-          </Link> */}
-
-                {/* Post a Project Button */}
-                {/* <div className="pt-4 border-t border-border">
-          <Button
-          className="w-full bg-orangeButton hover:bg-[#f54607] rounded-full text-white"
-          asChild
-          >
-          <Link
-            href={
-              user
-                ? "/client/dashboard?section=projects"
-                : "/register"
-            }
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Post a Project
-          </Link>
-          </Button>
-          </div> */}
-                <div className="flex flex-row gap-2">
-                  <Button
-                    className="bg-orangeButton hover:bg-[#f54607] text-white h-8 rounded-full"
-                    asChild
-                  >
-                    <Link
-                      href={
-                        user ? "/client/dashboard?section=projects" : "/register"
-                      }
-                    >
-                      Post Requirement
-                    </Link>
-                  </Button>
-
-                  <Button className="bg-orangeButton mr-3 hover:bg-[#f54607] text-white h-8 rounded-full" onClick={() => router.push("/browse")}>
-                    <SearchIcon /> Projects
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </nav>
     </div>
