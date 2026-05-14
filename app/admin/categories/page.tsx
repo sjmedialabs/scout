@@ -509,7 +509,7 @@ export default function CategoriesPage() {
                           {/* SERVICE ITEM TITLE / INPUT */}
                           {isEditing ? (
                             <div className="flex items-start gap-2">
-                              <div className="w-[150px]">
+                              {/* <div className="w-[150px]">
                                 <ImageUpload
                                   className="!space-y-0"
                                   value={editItemImage || ""}
@@ -518,7 +518,7 @@ export default function CategoriesPage() {
                                   showUrl={false}
                                   allowUrl={false}
                                 />
-                              </div>
+                              </div> */}
                               <Input
                                 value={editItemTitle}
                                 onChange={(e) => setEditItemTitle(e.target.value)}
@@ -719,7 +719,7 @@ function AddServiceInput({
 
   return (
     <div className="flex gap-3 mt-3 text-black items-start">
-      <div className="w-[200px]">
+      {/* <div className="w-[200px]">
         <ImageUpload
           className="!space-y-2"
           value={image || ""}
@@ -728,7 +728,7 @@ function AddServiceInput({
           showUrl={false}
           allowUrl={false}
         />
-      </div>
+      </div> */}
       <Input
         className="border-gray-200 rounded-2xl placeholder:text-gray-500 max-w-[250px] h-[35px]"
         placeholder={placeholder}

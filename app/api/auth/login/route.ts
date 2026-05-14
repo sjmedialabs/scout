@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       lastLogin: user.lastLogin,
       createdAt: user.createdAt,
       isEmailVerified: user?.isEmailVerified || false,
-      isEmailVerifiedInDashboard: user?.isEmailVerifiedInDashboard || user?.isEmailVerified || false,
+      isEmailVerifiedInDashboard: user?.isEmailVerifiedInDashboard || false,
       isMobileNumberVerified: user?.isMobileNumberVerified || false
     }
 

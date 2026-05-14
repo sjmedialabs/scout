@@ -48,7 +48,7 @@ export default function VerificationModal({
   const { user, updateUser } = useAuth();
   const [email, setEmail] = useState(initialEmail);
   const [phone, setPhone] = useState(initialPhone);
-  const [emailVerified, setEmailVerified] = useState(isEmailVerified || isEmailVerifiedInDashboard);
+  const [emailVerified, setEmailVerified] = useState(isEmailVerifiedInDashboard);
   const [phoneVerified, setPhoneVerified] = useState(isMobileNumberVerified);
 
   const [verifying, setVerifying] = useState<"none" | "email" | "mobile">("none");
@@ -59,7 +59,7 @@ export default function VerificationModal({
   // Sync state with props when modal opens
   useEffect(() => {
     if (isOpen) {
-      setEmailVerified(isEmailVerified || isEmailVerifiedInDashboard);
+      setEmailVerified(isEmailVerifiedInDashboard);
       setPhoneVerified(isMobileNumberVerified);
     }
   }, [isOpen, isEmailVerified, isEmailVerifiedInDashboard, isMobileNumberVerified]);
@@ -188,7 +188,7 @@ export default function VerificationModal({
           {verifying === "none" ? (
             <div className="space-y-3">
               {/* EMAIL STEP - Only show if not verified */}
-              {!(isEmailVerified || isEmailVerifiedInDashboard) && (
+              {!(isEmailVerifiedInDashboard) && (
                 <div className={cn(
                   "group relative p-6 rounded-2xl border transition-all duration-300",
                   emailVerified ? "bg-green-50 border-green-200" : "bg-gray-50 border-gray-400"
