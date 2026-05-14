@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await User.findById(userId)
- 
+
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
       // Send Email OTP
 
       await transporter.sendMail({
-        from: `"Scout Team" <${process.env.SMTP_USER}>`,
+        from: `"Scout Team" <${process.env.SMTP_FROM}>`,
         to: email,
         subject: "🔐 Your Verification Code - Scout",
         html: `
