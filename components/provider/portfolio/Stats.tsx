@@ -140,15 +140,17 @@ const calculateYoYGrowth = (proposals: any[]) => {
 
 
   return (
-    <section className="border-y bg-white px-6 sm:px-6 lg:px-0 py-6 max-w-7xl mx-auto">
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 justify-between divide-x divide-y md:divide-y-0">
+    <section className="bg-white px-6 sm:px-6 lg:px-0 py-6 max-w-7xl mx-auto">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 border-t border-l border-gray-100">
         {stats.map((s, i) => (
-          <div key={i} className="p-5">
+          <div key={i} className="p-5 border-r border-b border-gray-100">
             <h3 className="text-xl font-semibold">{s.value}</h3>
             <p className="text-sm text-gray-500">{s.label}</p>
             <p className="text-xs text-green-600">{s.sub}</p>
           </div>
         ))}
+        {/* Fill the empty cell on mobile (2 columns, 5 items -> needs 1 more to close the grid) */}
+        <div className="md:hidden border-r border-b border-gray-100 bg-gray-50/30"></div>
       </div>
     </section>
   );

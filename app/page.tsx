@@ -19,6 +19,12 @@ import {
 import { authFetch } from "@/lib/auth-fetch";
 import { useRouter } from "next/navigation";
 import RatingStars from "@/components/rating -star-servicesPage";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface ServiceChild {
   _id: string;
@@ -195,7 +201,7 @@ export default function HomePage() {
 
       {/* Marquee Section */}
       {categories && categories.length > 0 && (
-        <div className="w-full bg-[#e14426] overflow-hidden py-1 relative flex items-center">
+        <div className="w-full bg-[#e14426] overflow-hidden py-2 relative flex items-center">
           <style>{`
             @keyframes scrollMarquee {
               0% { transform: translateX(0); }
@@ -213,10 +219,10 @@ export default function HomePage() {
           <div className="animate-marquee-custom">
             {Array(10).fill(categories).flat().map((category: any, idx: number) => (
               <div key={`marquee-${category._id}-${idx}`} className="flex items-center">
-                <span className="text-[#fff] text-sm font-bold mx-6 uppercase whitespace-nowrap">
+                <span className="text-[#fff] text-md font-extrabold mx-6 uppercase whitespace-nowrap">
                   {category.title}
                 </span>
-                <span className="text-[#fff] text-xs opacity-60">✦</span>
+                <span className="text-[#fff] text-sm opacity-60">✦</span>
               </div>
             ))}
           </div>
@@ -229,8 +235,13 @@ export default function HomePage() {
 
 
 
-          <h2 className="text-4xl font-bold text-center mb-6">
+          <h2 className="text-4xl font-bold text-center mb-6"
+            style={{
+              fontFamily: "'Cinzel', serif",
+            }}
+          >
             How Scout Works
+
           </h2>
 
           {/* MOBILE SLIDER */}
@@ -254,7 +265,7 @@ export default function HomePage() {
 
                 <img
                   src={items[currentIndex]?.image}
-                  className="mt-6 rounded-xl w-full"
+                  className="mt-6 rounded-xl w-full h-[250px]"
                 />
               </div>
             )}
@@ -627,23 +638,47 @@ export default function HomePage() {
                       </h3>
                     </div>
                     <div className=" px-4 sm:px-6 lg:px-4 flex flex-col flex-1">
-                      <p className="text-sm text-gray-500 leading-8 -mt-1 mb-0 line-clamp-1">
+                      {/* <p className="text-sm text-gray-500 leading-8 -mt-1 mb-0 line-clamp-1">
                         {provider.description}
-                      </p>
+                      </p> */}
                       <div className="flex flex-col h-full gap-4">
                         {/* SERVICES BADGES */}
                         <div className="flex gap-2 pt-2">
                           {provider.services?.length > 0 ? (
-                            provider.services
-                              .slice(0, 2)
-                              .map((service: string, idx: number) => (
-                                <span
-                                  key={idx}
-                                  className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold"
-                                >
-                                  {service}
+                            <TooltipProvider>
+                              <div className="flex flex-wrap items-center gap-2">
+                                {/* PRIMARY SERVICE */}
+                                <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">
+                                  {provider.services[0]}
                                 </span>
-                              ))
+
+                                {/* +N SERVICES TOOLTIP */}
+                                {provider.services.length > 1 && (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <span className="text-blue-600 underline text-[10px] font-semibold whitespace-nowrap cursor-pointer hover:text-blue-700 transition-colors duration-150">
+                                        +{provider.services.length - 1} services
+                                      </span>
+                                    </TooltipTrigger>
+                                    <TooltipContent
+                                      side="top"
+                                      align="center"
+                                      sideOffset={5}
+                                      className="bg-white border border-gray-200 shadow-lg rounded-lg p-4 flex flex-wrap gap-2 max-w-[260px]"
+                                    >
+                                      {provider.services.slice(1).map((s: string, index: number) => (
+                                        <span
+                                          key={index}
+                                          className="inline-flex items-center text-[10px] font-semibold text-[#000] whitespace-nowrap"
+                                        >
+                                          {s}{index !== provider.services.length - 2 ? ", " : ""}
+                                        </span>
+                                      ))}
+                                    </TooltipContent>
+                                  </Tooltip>
+                                )}
+                              </div>
+                            </TooltipProvider>
                           ) : (
                             <span className="text-sm text-gray-400 italic">
                               No services listed
