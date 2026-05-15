@@ -49,6 +49,9 @@ export default function ServicesPage() {
 
   const [openParent, setOpenParent] = useState<string | null>(categoryId);
   const [openChild, setOpenChild] = useState<string | null>(null);
+  
+  const [activeCategory, setActiveCategory] = useState<string | null>(categoryId);
+  const [activeSubCategory, setActiveSubCategory] = useState<string | null>(subCategoryId);
   const [activeService, setActiveService] = useState<string | null>(null);
 
   const[activeServiceId,setActiveServiceId]=useState<string | null>(null);
@@ -135,10 +138,12 @@ export default function ServicesPage() {
 useEffect(() => {
   if (!categories.length || !providers.length) return;
 
-      // CATEGORY SELECTED (old behaviour)
+      // CATEGORY SELECTED
       if (categoryId && !subCategoryId) {
         setOpenParent(categoryId);
+        setActiveCategory(categoryId);
         setOpenChild(null);
+        setActiveSubCategory(null);
         setActiveService(null);
         setActiveServiceId(null);
         return;
@@ -161,21 +166,14 @@ useEffect(() => {
             });
           });
         });
-        
 
-        
         if (foundService) {
           setOpenParent(parentCategory._id);
           setOpenChild(childCategory._id);
+          setActiveCategory(null);
+          setActiveSubCategory(null);
           setActiveService(foundService.title);
           setActiveServiceId(foundService._id);
-
-          // filter providers
-        const filtered = providers.filter((provider: any) =>
-      provider.services?.includes(foundService.title)
-    );
-
-    setFilteredProviders([...filtered]);
         }
       }
 
@@ -237,10 +235,36 @@ useEffect(() => {
     );
   }
 
-  /* SERVICE FILTER */
+  /* SERVICE / SUBCATEGORY / CATEGORY FILTER */
   if (activeService) {
     updatedProviders = updatedProviders.filter((provider: any) =>
       provider.services?.includes(activeService)
+    );
+  } else if (activeSubCategory) {
+    let servicesInSub: string[] = [];
+    categories.forEach((parent: any) => {
+      parent.children?.forEach((child: any) => {
+        if (child._id === activeSubCategory) {
+          servicesInSub = child.items?.map((item: any) => item.title) || [];
+        }
+      });
+    });
+    updatedProviders = updatedProviders.filter((provider: any) =>
+      provider.services?.some((s: string) => servicesInSub.includes(s))
+    );
+  } else if (activeCategory) {
+    let servicesInCat: string[] = [];
+    categories.forEach((parent: any) => {
+      if (parent._id === activeCategory) {
+        parent.children?.forEach((child: any) => {
+          child.items?.forEach((item: any) => {
+            servicesInCat.push(item.title);
+          });
+        });
+      }
+    });
+    updatedProviders = updatedProviders.filter((provider: any) =>
+      provider.services?.some((s: string) => servicesInCat.includes(s))
     );
   }
 
@@ -289,6 +313,9 @@ useEffect(() => {
 }, [
   providers,
   activeService,
+  activeSubCategory,
+  activeCategory,
+  categories,
   searchTerm,
   ratingFilter,
   priceFilter,
@@ -318,12 +345,8 @@ useEffect(() => {
 
   setActiveService(service.title);
   setActiveServiceId(service._id);
-
-  // const filtered = providers.filter((provider: any) =>
-  //   provider.services?.includes(service.title)
-  // );
-
-  // setFilteredProviders(filtered);
+  setActiveCategory(null);
+  setActiveSubCategory(null);
 };
 
 console.log("Filtered Providers:::", filteredProviders);
@@ -366,12 +389,16 @@ console.log("Filtered Providers:::", filteredProviders);
             return (
               <div key={parent._id} className="mb-3 text-sm">
                 <div
-                  onClick={() =>
-                    setOpenParent(isParentOpen ? null : parent._id)
-                  }
+                  onClick={() => {
+                    setOpenParent(isParentOpen ? null : parent._id);
+                    setActiveCategory(isParentOpen ? null : parent._id);
+                    setActiveSubCategory(null);
+                    setActiveService(null);
+                    setActiveServiceId(null);
+                  }}
                   className={`flex justify-between items-center cursor-pointer p-3 rounded-lg
                   ${
-                    openParent === parent._id
+                    activeCategory === parent._id
                       ? "text-orangeButton font-bold"
                       : "hover:bg-gray-100"
                   }`}
@@ -387,12 +414,15 @@ console.log("Filtered Providers:::", filteredProviders);
                     return (
                       <div key={child._id} className="ml-4 mt-4">
                         <div
-                          onClick={() =>
-                            setOpenChild(isChildOpen ? null : child._id)
-                          }
+                          onClick={() => {
+                            setOpenChild(isChildOpen ? null : child._id);
+                            setActiveSubCategory(isChildOpen ? null : child._id);
+                            setActiveService(null);
+                            setActiveServiceId(null);
+                          }}
                           className={`flex justify-between items-center cursor-pointer p-0 rounded-md
                           ${
-                            openChild === child._id
+                            activeSubCategory === child._id
                               ? "text-orangeButton font-semibold"
                               : "hover:bg-gray-100"
                           }`}
@@ -439,12 +469,16 @@ console.log("Filtered Providers:::", filteredProviders);
         return (
           <div key={parent._id} className="mb-3 text-sm">
             <div
-              onClick={() =>
-                setOpenParent(isParentOpen ? null : parent._id)
-              }
+              onClick={() => {
+                setOpenParent(isParentOpen ? null : parent._id);
+                setActiveCategory(isParentOpen ? null : parent._id);
+                setActiveSubCategory(null);
+                setActiveService(null);
+                setActiveServiceId(null);
+              }}
               className={`flex justify-between items-center cursor-pointer p-3 rounded-lg
               ${
-                openParent === parent._id
+                activeCategory === parent._id
                   ? "text-white font-bold bg-orange-600 py-1"
                   : "hover:bg-gray-100"
               }`}
@@ -460,12 +494,15 @@ console.log("Filtered Providers:::", filteredProviders);
                 return (
                   <div key={child._id} className="ml-4 mt-2">
                     <div
-                      onClick={() =>
-                        setOpenChild(isChildOpen ? null : child._id)
-                      }
+                      onClick={() => {
+                        setOpenChild(isChildOpen ? null : child._id);
+                        setActiveSubCategory(isChildOpen ? null : child._id);
+                        setActiveService(null);
+                        setActiveServiceId(null);
+                      }}
                       className={`flex justify-between items-center cursor-pointer p-2 rounded-md
                       ${
-                        openChild === child._id
+                        activeSubCategory === child._id
                           ? "text-white font-semibold bg-orange-500 py-1"
                           : "hover:bg-gray-100"
                       }`}
