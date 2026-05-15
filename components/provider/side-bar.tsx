@@ -97,7 +97,7 @@ export default function Sidebar({
               {/* <h2 className="text-xl font-bold tracking-tight">
                 Agency Dashboard
               </h2> */}
-              <img src={cmsData?.contact?.footerLogo || "/scoutFooterLogo.png"} className="h-[45px] w-[150px]"/>
+              <img src={cmsData?.contact?.footerLogo || "/scoutFooterLogo.png"} className="h-14" />
               {/* <p className="text-sm text-gray-600 mt-0.5">
                 Welcome back, {user?.name || "User"}
               </p> */}
@@ -121,9 +121,8 @@ export default function Sidebar({
               aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               <ChevronRight
-                className={`h-5 w-5 transition-transform ${
-                  isCollapsed ? "rotate-180" : ""
-                }`}
+                className={`h-5 w-5 transition-transform ${isCollapsed ? "rotate-180" : ""
+                  }`}
               />
             </button>
           )}
@@ -134,39 +133,38 @@ export default function Sidebar({
           [-ms-overflow-style:none]        
           [&::-webkit-scrollbar]:hidden">
           <nav className="space-y-2">
-          {menuItems.map((item) => {
-  const isActive =
-    item.path === "/agency/dashboard"
-      ? pathname === item.path
-      : pathname.startsWith(item.path!);
+            {menuItems.map((item) => {
+              const isActive =
+                item.path === "/agency/dashboard"
+                  ? pathname === item.path
+                  : pathname.startsWith(item.path!);
 
-  return (
-    <button
-      key={item.id}
-      type="button"
-      onClick={() => handleMenuClick(item)}
-      className={`
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => handleMenuClick(item)}
+                  className={`
         w-full flex items-center gap-3 min-h-[48px] px-3 py-2 text-sm
         transition-colors cursor-pointer rounded-[8px] touch-manipulation
         ${isActive ? "text-[#F54A0C]" : "text-[#fff]"}
       `}
-    >
-      <item.icon className="h-5 w-5 shrink-0" />
-      {!isCollapsed && <span className="text-left">{item.label}</span>}
-    </button>
-  );
-})}
+                >
+                  <item.icon className="h-5 w-5 shrink-0" />
+                  {!isCollapsed && <span className="text-left">{item.label}</span>}
+                </button>
+              );
+            })}
           </nav>
         </div>
 
         {/* FOOTER */}
         <div className="py-2 px-2 border-t border-[#e4dff6]">
           <div
-            className={`flex gap-2 ${
-              isCollapsed
+            className={`flex gap-2 ${isCollapsed
                 ? "flex-col"
                 : "flex-row justify-between items-center "
-            }`}
+              }`}
           >
             <Button
               size="sm"
@@ -175,7 +173,7 @@ export default function Sidebar({
                   "/agency/dashboard/account/subscriptions"
                 )
               }
-              className={`justify-start bg-[#2C34A1]  text-white text-xs hover:bg-[#2C34A1] rounded-full ${isCollapsed&&"w-fit"}`}
+              className={`justify-start bg-[#2C34A1]  text-white text-xs hover:bg-[#2C34A1] rounded-full ${isCollapsed && "w-fit"}`}
             >
               <Settings className="h-4 w-4 shrink-0" />
               {!isCollapsed && "Upgrade Plan"}
@@ -185,7 +183,7 @@ export default function Sidebar({
               size="sm"
               variant="destructive"
               onClick={handleLogout}
-              className={`justify-start  rounded-full text-xs bg-[#F54A0C] ${isCollapsed&&"w-fit"}`}
+              className={`justify-start  rounded-full text-xs bg-[#F54A0C] ${isCollapsed && "w-fit"}`}
             >
               <LogOut className="h-4 w-4 shrink-0" />
               {!isCollapsed && "Logout"}
