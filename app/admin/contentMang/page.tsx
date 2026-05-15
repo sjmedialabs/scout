@@ -238,6 +238,19 @@ const handleEditBlog = (index: number) => {
   }
 };
 
+const updateBlogFormField = (field: string, value: any) => {
+  setBlogForm((prev) => {
+    const updatedForm = { ...prev, [field]: value };
+    if (editIndex !== null) {
+      const updatedBlogs = [...blogs];
+      updatedBlogs[editIndex] = updatedForm;
+      setBlogs(updatedBlogs);
+      updateField("blogs", updatedBlogs);
+    }
+    return updatedForm;
+  });
+};
+
   const isValidEmail = (email) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
@@ -1606,9 +1619,7 @@ const isValidPhone = (phone) => {
               {/* IMAGE */}
               <ImageUpload
                 value={blogForm.image}
-                onChange={(url) =>
-                  setBlogForm((prev) => ({ ...prev, image: url }))
-                }
+                onChange={(url) => updateBlogFormField("image", url)}
                 description="Upload blog image"
                 previewClassName="w-100 h-24"
               />
@@ -1617,29 +1628,38 @@ const isValidPhone = (phone) => {
               <Input
                 placeholder="Title"
                 value={blogForm.title}
-                onChange={(e) =>
-                  setBlogForm((prev) => ({ ...prev, title: e.target.value }))
-                }
+                onChange={(e) => updateBlogFormField("title", e.target.value)}
                 className="border-gray-200 rounded-xl placeholder:text-gray-400"
               />
 
               {/* DESCRIPTION */}
               <ReactQuill
                 value={blogForm.description}
-                onChange={(value) =>
-                  setBlogForm((prev) => ({ ...prev, description: value }))
-                }
+                onChange={(value) => updateBlogFormField("description", value)}
                 modules={modules}
                 formats={formats}
                 placeholder="Enter description"
               />
 
-              <Button
-                className="btn-blackButton h-[35px]"
-                onClick={handleAddOrUpdateBlog}
-              >
-                {editIndex !== null ? "Save Changes" : "+ Add Blog"}
-              </Button>
+              {editIndex === null ? (
+                <Button
+                  className="btn-blackButton h-[35px]"
+                  onClick={handleAddOrUpdateBlog}
+                >
+                  + Add Blog
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  className="h-[35px] border-gray-300"
+                  onClick={() => {
+                    setEditIndex(null);
+                    setBlogForm({ title: "", description: "", image: "", postedDate: "" });
+                  }}
+                >
+                  Cancel / New Blog
+                </Button>
+              )}
             </section>
 
             <section className="space-y-4 mb-2">
