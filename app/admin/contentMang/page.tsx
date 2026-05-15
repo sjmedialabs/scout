@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState,useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,6 +42,7 @@ export default function ContentManagementPage() {
     postedDate: "",
   });
   const [editIndex, setEditIndex] = useState<number | null>(null);
+  const blogFormRef = useRef<HTMLDivElement>(null);
 
   const modules = useMemo(() => ({
   toolbar: [
@@ -230,6 +231,11 @@ const handleDeleteBlog = (index: number) => {
 const handleEditBlog = (index: number) => {
   setBlogForm(blogs[index]);
   setEditIndex(index);
+  
+  // Smooth scroll to the blog form
+  if (blogFormRef.current) {
+    blogFormRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 };
 
   const isValidEmail = (email) => {
@@ -1592,7 +1598,7 @@ const isValidPhone = (phone) => {
           <div>
 
             {/* adding blogs */}
-            <section className="border p-4 mb-3 rounded space-y-4">
+            <section ref={blogFormRef} className="border p-4 mb-3 rounded space-y-4">
               <h2 className="text-xl font-semibold text-[#F4561C]">
                 {editIndex !== null ? "Edit Blog" : "Add Blog"}
               </h2>
