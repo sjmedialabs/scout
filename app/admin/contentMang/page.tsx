@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState,useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,6 +42,7 @@ export default function ContentManagementPage() {
     postedDate: "",
   });
   const [editIndex, setEditIndex] = useState<number | null>(null);
+  const blogFormRef = useRef<HTMLDivElement>(null);
 
   const modules = useMemo(() => ({
   toolbar: [
@@ -230,6 +231,24 @@ const handleDeleteBlog = (index: number) => {
 const handleEditBlog = (index: number) => {
   setBlogForm(blogs[index]);
   setEditIndex(index);
+  
+  // Smooth scroll to the blog form
+  if (blogFormRef.current) {
+    blogFormRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+};
+
+const updateBlogFormField = (field: string, value: any) => {
+  setBlogForm((prev) => {
+    const updatedForm = { ...prev, [field]: value };
+    if (editIndex !== null) {
+      const updatedBlogs = [...blogs];
+      updatedBlogs[editIndex] = updatedForm;
+      setBlogs(updatedBlogs);
+      updateField("blogs", updatedBlogs);
+    }
+    return updatedForm;
+  });
 };
 
   const isValidEmail = (email) => {
@@ -1592,7 +1611,7 @@ const isValidPhone = (phone) => {
           <div>
 
             {/* adding blogs */}
-            <section className="border p-4 mb-3 rounded space-y-4">
+            <section ref={blogFormRef} className="border p-4 mb-3 rounded space-y-4">
               <h2 className="text-xl font-semibold text-[#F4561C]">
                 {editIndex !== null ? "Edit Blog" : "Add Blog"}
               </h2>
@@ -1600,9 +1619,7 @@ const isValidPhone = (phone) => {
               {/* IMAGE */}
               <ImageUpload
                 value={blogForm.image}
-                onChange={(url) =>
-                  setBlogForm((prev) => ({ ...prev, image: url }))
-                }
+                onChange={(url) => updateBlogFormField("image", url)}
                 description="Upload blog image"
                 previewClassName="w-100 h-24"
               />
@@ -1611,29 +1628,38 @@ const isValidPhone = (phone) => {
               <Input
                 placeholder="Title"
                 value={blogForm.title}
-                onChange={(e) =>
-                  setBlogForm((prev) => ({ ...prev, title: e.target.value }))
-                }
+                onChange={(e) => updateBlogFormField("title", e.target.value)}
                 className="border-gray-200 rounded-xl placeholder:text-gray-400"
               />
 
               {/* DESCRIPTION */}
               <ReactQuill
                 value={blogForm.description}
-                onChange={(value) =>
-                  setBlogForm((prev) => ({ ...prev, description: value }))
-                }
+                onChange={(value) => updateBlogFormField("description", value)}
                 modules={modules}
                 formats={formats}
                 placeholder="Enter description"
               />
 
-              <Button
-                className="btn-blackButton h-[35px]"
-                onClick={handleAddOrUpdateBlog}
-              >
-                {editIndex !== null ? "Save Changes" : "+ Add Blog"}
-              </Button>
+              {editIndex === null ? (
+                <Button
+                  className="btn-blackButton h-[35px]"
+                  onClick={handleAddOrUpdateBlog}
+                >
+                  + Add Blog
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  className="h-[35px] border-gray-300"
+                  onClick={() => {
+                    setEditIndex(null);
+                    setBlogForm({ title: "", description: "", image: "", postedDate: "" });
+                  }}
+                >
+                  Cancel / New Blog
+                </Button>
+              )}
             </section>
 
             <section className="space-y-4 mb-2">
