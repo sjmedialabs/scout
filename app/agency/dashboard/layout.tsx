@@ -80,9 +80,6 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
   const[freeTrailProposalCount,setFreeTrailProposalCount]=useState(0);
   const[cmsData,setCMSData]=useState<any>(null);
 
-  const isSubscriptionPage =
-    pathname.startsWith("/agency/dashboard/account/subscriptions") ||
-    pathname === "/agency/dashboard/account/billing"
 
   useEffect(() => {
     if (!loading && (!user || user.role !== "agency")) {
@@ -122,35 +119,19 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
        
 
         // 🔑 MENU DECISION HERE
-        if (isExpired) {
-         const accountItems = menuItems.filter(
-            (item) =>
-              item.id === "billing-subscription" ||
-              item.id === "subscription"
-          );
-
-           setFilteredMenuItems(accountItems); // Account only
-        } else {
-          setFilteredMenuItems(menuItems)
-        }
+        // User should be able to navigate to all pages without disturbing existing functionality
+        setFilteredMenuItems(menuItems)
       } catch (error) {
         console.error("Error loading data:", error)
         setExpired(true)
-        setFilteredMenuItems([menuItems[menuItems.length - 1]])
+        setFilteredMenuItems(menuItems)
       }
     }
 
     loadData()
   }, [user, loading])
 
-  useEffect(() => {
-    if (expired && !isSubscriptionPage) {
-      router.replace("/agency/dashboard/account/subscriptions")
-    }
-  }, [expired, isSubscriptionPage, router])
-
   if (loading || expired === null) return null
-  if (expired && !isSubscriptionPage) return null
 
  return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-background">

@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Users, MessageCircle } from "lucide-react";
-import { Star, DollarSign, IndianRupeeIcon, Layers, MapPin , Grid2x2 } from "lucide-react";
+import { Star, DollarSign, IndianRupeeIcon, Layers, MapPin, Grid2x2, CheckCircle2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { BriefcaseBusiness } from "lucide-react";
 import {
   Select,
@@ -18,6 +19,12 @@ import ServiceDropdown from "@/components/select-category-filter";
 import { authFetch } from "@/lib/auth-fetch";
 import { useAuth } from "@/contexts/auth-context";
 import { MobileFilterBar } from "@/components/layout";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 export default function ServicesPage() {
   const { user, loading } = useAuth();
@@ -44,17 +51,17 @@ export default function ServicesPage() {
   const [teamSizeFilter, setTeamSizeFilter] = useState<string>("");
 
   /* ---------------- PAGINATION ---------------- */
-const ITEMS_PER_PAGE = 12;
-const [page, setPage] = useState(1);
+  const ITEMS_PER_PAGE = 12;
+  const [page, setPage] = useState(1);
 
-const totalPages = Math.ceil(
-  filteredProviders.length / ITEMS_PER_PAGE
-);
+  const totalPages = Math.ceil(
+    filteredProviders.length / ITEMS_PER_PAGE
+  );
 
-const paginatedProviders = filteredProviders.slice(
-  (page - 1) * ITEMS_PER_PAGE,
-  page * ITEMS_PER_PAGE
-);
+  const paginatedProviders = filteredProviders.slice(
+    (page - 1) * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE
+  );
 
   const employeeSizes = [
     "1-9",
@@ -69,62 +76,62 @@ const paginatedProviders = filteredProviders.slice(
   /* ---------------- FETCH DATA ---------------- */
   const loadData = async () => {
     try {
-        setResLoading(true);
+      setResLoading(true);
 
-        const res = await fetch("/api/service-categories");
-        const data = await res.json();
+      const res = await fetch("/api/service-categories");
+      const data = await res.json();
 
-        const providerRes = await fetch("/api/providers");
-        const providerData = await providerRes.json();
+      const providerRes = await fetch("/api/providers");
+      const providerData = await providerRes.json();
 
-        console.log('Provider Data is::::',providerData);
+      console.log('Provider Data is::::', providerData);
 
-        // setProviders(providerData.providers || []);
-        // setFilteredProviders(
-        //   providerData.providers.sort((a: any, b: any) => b.rating - a.rating) ||
-        //     []
-        // );
-        
-        const providersList = providerData.providers || [];
+      // setProviders(providerData.providers || []);
+      // setFilteredProviders(
+      //   providerData.providers.sort((a: any, b: any) => b.rating - a.rating) ||
+      //     []
+      // );
+
+      const providersList = providerData.providers || [];
 
       const sortedProviders = [...(providerData.providers || [])].sort(
-  (a, b) => {
-    // First priority → rating (higher first)
-    if (b.rating !== a.rating) {
-      return b.rating - a.rating;
-    }
+        (a, b) => {
+          // First priority → rating (higher first)
+          if (b.rating !== a.rating) {
+            return b.rating - a.rating;
+          }
 
-    // Second priority → planPrice (higher first)
-    return b.planPrice - a.planPrice;
-  }
-);
-
-        setProviders(sortedProviders);
-
-        setFilteredProviders(sortedProviders);
-
-          
-
-        if (data.success) {
-          setCategories(data.data || []);
+          // Second priority → planPrice (higher first)
+          return b.planPrice - a.planPrice;
         }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setResLoading(false);
+      );
+
+      setProviders(sortedProviders);
+
+      setFilteredProviders(sortedProviders);
+
+
+
+      if (data.success) {
+        setCategories(data.data || []);
       }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setResLoading(false);
+    }
   }
   useEffect(() => {
-     loadData()
+    loadData()
   }, []);
-   useEffect(() => {
-        if (!loading && (!user || user.role !== "client")) {
-          router.push("/login");
-        }
-        if (user && !loading) {
-          loadData();
-        }
-      }, [user, loading, router]);
+  useEffect(() => {
+    if (!loading && (!user || user.role !== "client")) {
+      router.push("/login");
+    }
+    if (user && !loading) {
+      loadData();
+    }
+  }, [user, loading, router]);
 
   /* ---------------- FILTER + SORT ---------------- */
   useEffect(() => {
@@ -132,13 +139,13 @@ const paginatedProviders = filteredProviders.slice(
 
     /*  Filter by Category (NEW) */
     if (selectedCategory) {
-  // updatedProviders = updatedProviders.filter(
-  //   (provider: any) =>
-  //     String(provider.categoryId) === String(selectedCategory)
-  // );
-    updatedProviders = updatedProviders.filter((provider: any) =>
-      provider.services?.includes(selectedCategory))
-}
+      // updatedProviders = updatedProviders.filter(
+      //   (provider: any) =>
+      //     String(provider.categoryId) === String(selectedCategory)
+      // );
+      updatedProviders = updatedProviders.filter((provider: any) =>
+        provider.services?.includes(selectedCategory))
+    }
 
     /*  Filter by Active Service */
     // if (activeService) {
@@ -202,31 +209,31 @@ const paginatedProviders = filteredProviders.slice(
     if (!provider.email) return;
     window.location.href = `mailto:${provider.email}?subject=Service Inquiry&body=Hi ${provider.name},%0D%0A%0D%0AI am interested in your services.`;
   };
-   const handleViewProfile = async (providerId: string) => {
+  const handleViewProfile = async (providerId: string) => {
     // open profile page
     window.open(`/provider/${providerId}`, "_blank");
   };
-   const handleMessage = async(agencyId:string) => {
-          console.log("The recieved Agency Id is::",agencyId)
-          console.log("The recieved Client Id is::",user.id)
-          try{
-            const conRes=await authFetch(`/api/chat/conversation`,{
-                    method:"POST",
-                    headers:{
-                      "Content-Type":"application/json"
-                    },
-                    body:JSON.stringify({agencyId,clientId:user?.id})
-        
-                  })
-            const data=await conRes.json();
-            console.log("Chat response is:::",data);
-            if(conRes.ok){
-              router.push(`/client/dashboard/message?conversationId=${data.conversationId}&agencyId=${agencyId}`)
-            }
-          }catch(error){
-            console.log("Failed to create the conversation:::",error)
-          }
-    };
+  const handleMessage = async (agencyId: string) => {
+    console.log("The recieved Agency Id is::", agencyId)
+    console.log("The recieved Client Id is::", user.id)
+    try {
+      const conRes = await authFetch(`/api/chat/conversation`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ agencyId, clientId: user?.id })
+
+      })
+      const data = await conRes.json();
+      console.log("Chat response is:::", data);
+      if (conRes.ok) {
+        router.push(`/client/dashboard/message?conversationId=${data.conversationId}&agencyId=${agencyId}`)
+      }
+    } catch (error) {
+      console.log("Failed to create the conversation:::", error)
+    }
+  };
 
   if (resLoading)
     return (
@@ -236,177 +243,200 @@ const paginatedProviders = filteredProviders.slice(
     );
 
   const openProfileNewTab = (id: string) => {
-  const url = `/provider/${id}`;
-  window.open(url, "_blank", "noopener,noreferrer");
-};
+    const url = `/provider/${id}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
 
   return (
     <div className="w-full min-h-screen bg-transparent">
       <div className="w-full ">
-     <div className="border-b mb-2 pb-1">
-      <h1 className="font-bold text-[#fa3200] text-xl">Find Agencies</h1>
-      </div>
-      {/* ---------------- FILTER BAR ---------------- */}
-      <div className="mb-2 w-full">
-        <MobileFilterBar
-          activeFilterCount={
-            (selectedCategory ? 1 : 0) +
-            (ratingFilter ? 1 : 0) +
-            (priceFilter ? 1 : 0) +
-            (projectFilter ? 1 : 0) +
-            (teamSizeFilter ? 1 : 0)
-          }
-          sheetTitle="Filter agencies"
-        >
-          <div className="w-full md:w-auto lg:min-w-[170px]">
-            <ServiceDropdown
-              value={selectedCategory}
-              onChange={(v) => setSelectedCategory(v)}
-              placeholder="Category"
-              triggerClassName="mt-0 rounded-xl max-h-[30px] bg-[#F3F1FA] cursor-pointer border border-[#E3E1F3] text-[#3A3A55] w-full"
-              triggerSpanClassName="text-gray-500 text-xs"
-              hoverClassName="bg-blue-50 text-[#3c41c6] hover:bg-blue-100"
-            />
-          </div>
-          {[
-            { value: ratingFilter, set: setRatingFilter, placeholder: "Rating", icon: <Star size={16} className="text-[#9B96C8]" /> },
-            { value: priceFilter, set: setPriceFilter, placeholder: "Price", icon: <IndianRupeeIcon size={16} className="text-[#9B96C8]" /> },
-            { value: projectFilter, set: setProjectFilter, placeholder: "Projects", icon: <Layers size={16} className="text-[#9B96C8]" /> },
-          ].map((f, i) => (
-            <Select key={i} value={f.value} onValueChange={f.set}>
+        <div className="border-b mb-2 pb-1">
+          <h1 className="font-bold text-[#fa3200] text-xl">Find Agencies</h1>
+        </div>
+        {/* ---------------- FILTER BAR ---------------- */}
+        <div className="mb-2 w-full">
+          <MobileFilterBar
+            activeFilterCount={
+              (selectedCategory ? 1 : 0) +
+              (ratingFilter ? 1 : 0) +
+              (priceFilter ? 1 : 0) +
+              (projectFilter ? 1 : 0) +
+              (teamSizeFilter ? 1 : 0)
+            }
+            sheetTitle="Filter agencies"
+          >
+            <div className="w-full md:w-auto lg:min-w-[170px]">
+              <ServiceDropdown
+                value={selectedCategory}
+                onChange={(v) => setSelectedCategory(v)}
+                placeholder="Category"
+                triggerClassName="mt-0 rounded-xl max-h-[30px] bg-[#F3F1FA] cursor-pointer border border-[#E3E1F3] text-[#3A3A55] w-full"
+                triggerSpanClassName="text-gray-500 text-xs"
+                hoverClassName="bg-blue-50 text-[#3c41c6] hover:bg-blue-100"
+              />
+            </div>
+            {[
+              { value: ratingFilter, set: setRatingFilter, placeholder: "Rating", icon: <Star size={16} className="text-[#9B96C8]" /> },
+              { value: priceFilter, set: setPriceFilter, placeholder: "Price", icon: <IndianRupeeIcon size={16} className="text-[#9B96C8]" /> },
+              { value: projectFilter, set: setProjectFilter, placeholder: "Projects", icon: <Layers size={16} className="text-[#9B96C8]" /> },
+            ].map((f, i) => (
+              <Select key={i} value={f.value} onValueChange={f.set}>
+                <SelectTrigger className="rounded-xl max-h-[30px] bg-[#F3F1FA] cursor-pointer border border-[#E3E1F3] text-[#3A3A55] px-3 text-xs data-[placeholder]:text-gray-500 shadow-sm w-full md:w-auto [&>span]:flex [&>span]:items-center [&>span]:gap-1.5">
+                  <span>{f.icon}<SelectValue placeholder={f.placeholder} /></span>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="high-to-low">High → Low</SelectItem>
+                  <SelectItem value="low-to-high">Low → High</SelectItem>
+                </SelectContent>
+              </Select>
+            ))}
+            <Select value={teamSizeFilter} onValueChange={(value) => setTeamSizeFilter(value)}>
               <SelectTrigger className="rounded-xl max-h-[30px] bg-[#F3F1FA] cursor-pointer border border-[#E3E1F3] text-[#3A3A55] px-3 text-xs data-[placeholder]:text-gray-500 shadow-sm w-full md:w-auto [&>span]:flex [&>span]:items-center [&>span]:gap-1.5">
-                <span>{f.icon}<SelectValue placeholder={f.placeholder} /></span>
+                <span><Users size={16} className="text-[#9B96C8]" /><SelectValue placeholder="Team" /></span>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="high-to-low">High → Low</SelectItem>
-                <SelectItem value="low-to-high">Low → High</SelectItem>
+                {employeeSizes.map((size) => (
+                  <SelectItem key={size} value={size}>{size}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
-          ))}
-          <Select value={teamSizeFilter} onValueChange={(value) => setTeamSizeFilter(value)}>
-            <SelectTrigger className="rounded-xl max-h-[30px] bg-[#F3F1FA] cursor-pointer border border-[#E3E1F3] text-[#3A3A55] px-3 text-xs data-[placeholder]:text-gray-500 shadow-sm w-full md:w-auto [&>span]:flex [&>span]:items-center [&>span]:gap-1.5">
-              <span><Users size={16} className="text-[#9B96C8]" /><SelectValue placeholder="Team" /></span>
-            </SelectTrigger>
-            <SelectContent>
-              {employeeSizes.map((size) => (
-                <SelectItem key={size} value={size}>{size}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button
-            onClick={() => {
-              setSelectedCategory(null);
-              setRatingFilter("");
-              setPriceFilter("");
-              setProjectFilter("");
-              setTeamSizeFilter("");
-            }}
-            className="btn-blackButton h-[30px] w-full md:w-auto"
-          >
-            Clear
-          </Button>
-        </MobileFilterBar>
-      </div>
+            <Button
+              onClick={() => {
+                setSelectedCategory(null);
+                setRatingFilter("");
+                setPriceFilter("");
+                setProjectFilter("");
+                setTeamSizeFilter("");
+              }}
+              className="btn-blackButton h-[30px] w-full md:w-auto"
+            >
+              Clear
+            </Button>
+          </MobileFilterBar>
+        </div>
 
-      {/* ---------------- PROVIDER LIST ---------------- */}
-      <div className="grid grid-cols-1 mr-3 md:mr-0 md:grid-cols-2 lg:grid-cols-4 gap-3 ">
+        {/* ---------------- PROVIDER LIST ---------------- */}
+        {filteredProviders.length === 0 ? (
+          <div className="py-16 text-center bg-white rounded-3xl border border-gray-100 shadow-sm my-4 mx-3 md:mx-0">
+            <div className="inline-flex p-4 bg-orange-50 rounded-full text-[#fa3200] mb-3">
+              <Users size={32} />
+            </div>
+            <h3 className="text-lg font-bold text-gray-800">No agencies found</h3>
+            <p className="text-sm text-gray-500 mt-1 max-w-md mx-auto">
+              We couldn't find any agencies matching your selected filters. Try adjusting your search criteria or clearing filters.
+            </p>
+            <Button
+              onClick={() => {
+                setSelectedCategory(null);
+                setRatingFilter("");
+                setPriceFilter("");
+                setProjectFilter("");
+                setTeamSizeFilter("");
+              }}
+              className="mt-4 btn-blackButton h-[32px] px-4 text-xs"
+            >
+              Clear all filters
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 mr-3 md:mr-0 md:grid-cols-2 lg:grid-cols-3 gap-3 ">
 
-        {paginatedProviders.map((p:any)=>(
-          // <div
-          //   key={p._id}
-            
-          //   className="
-          //     flex items-center gap-6 rounded-2xl bg-[#fbf5fc]
-          //     border p-2 pl-3 pt-2 shadow-sm
-              
-          //     max-md:flex-col
-          //     max-md:items-start
-          //     max-md:gap-1
-          //     "
-          //     >
+            {paginatedProviders.map((p: any) => (
+              // <div
+              //   key={p._id}
 
-            
-          //   <img
-          //     src={p.coverImage || "/uploads/15ac2d8f-31f9-48ac-aadd-b67ba9f4d860-Artificial-intelligence-platforms-copy.jpg"}
-            
-          //     className="
-          //       w-[130px] h-[100px] rounded-xl object-cover
-          //       max-md:w-full
-          //       max-md:h-[180px]
-          //       "
-          //   />
+              //   className="
+              //     flex items-center gap-6 rounded-2xl bg-[#fbf5fc]
+              //     border p-2 pl-3 pt-2 shadow-sm
 
-        
-          //   <div className="flex-1">
-          //     <div className="flex items-center gap-3 max-md:flex-wrap">
-          //       <h3 className="text-lg">{p.name}</h3>
+              //     max-md:flex-col
+              //     max-md:items-start
+              //     max-md:gap-1
+              //     "
+              //     >
 
-          //       {p.isVerified && (
-          //         <span className="px-1 rounded-full text-[10px] text-white bg-gradient-to-r from-[#5fa8ff] to-[#3b82f6]">
-          //           Verified
-          //         </span>
-          //       )}
-          //     </div>
 
-          //     <p className="text-gray-400 text-sm mt-0 line-clamp-2">
-              
-          //     </p>
+              //   <img
+              //     src={p.coverImage || "/uploads/15ac2d8f-31f9-48ac-aadd-b67ba9f4d860-Artificial-intelligence-platforms-copy.jpg"}
 
-          //     <div className="flex sm:gap-3 gap-10 text-sm max-md:flex-wrap max-md:gap-x-6 max-md:gap-y-2 text-gray-500 mt-2">
-          //       <span className="flex items-center text-xs text-gray-400 gap-1">
-          //         <MapPin className="text-orangeButton" size={13}/>
-          //       {p.location || "Not specified"}
-          //       </span>
-          //       <span className="flex items-center text-xs text-gray-400 gap-1">
-          //         <BriefcaseBusiness  className="text-orangeButton" size={13}/>
-          //       {p.projectsCompleted} Projects
-          //       </span>
-          //       <span className="flex items-center text-xs text-gray-400 gap-1">
-          //         <Users className="text-orangeButton" size={13}/>
-          //         {p.teamSize}
-          //       </span>
-          //     </div>
+              //     className="
+              //       w-[130px] h-[100px] rounded-xl object-cover
+              //       max-md:w-full
+              //       max-md:h-[180px]
+              //       "
+              //   />
 
-          //     <p className="mt-1 text-gray-400 text-xs">
-          //       Starting Price: <span className="font-semibold">₹{p.hourlyRate}/hr</span>
-          //     </p>
-          //   </div>
 
-            
-          //   <div className="flex gap-2 max-md:flex-col-2 max-md:w-full">
+              //   <div className="flex-1">
+              //     <div className="flex items-center gap-3 max-md:flex-wrap">
+              //       <h3 className="text-lg">{p.name}</h3>
 
-            
-          //     <button
-          //       onClick={()=>handleContact(p)}
-          //       className="
-          //         px-5 py-0 rounded-full text-white text-xs
-          //         bg-[#e0332c] h-[30px]
-          //         shadow-md transition cursor-pointer
-          //         hover:shadow-[0_0_10px_rgba(99,102,241,0.6)] 
-          //       "
-          //     >
-          //       Contact
-          //     </button>
+              //       {p.isVerified && (
+              //         <span className="px-1 rounded-full text-[10px] text-white bg-gradient-to-r from-[#5fa8ff] to-[#3b82f6]">
+              //           Verified
+              //         </span>
+              //       )}
+              //     </div>
 
-              
+              //     <p className="text-gray-400 text-sm mt-0 line-clamp-2">
 
-             
-          //     <button
-              
-          //       className="
-          //          px-5 py-0 rounded-full text-white text-xs
-          //         bg-[#232a85] 
-          //         shadow-md transition cursor-pointer
-          //         hover:shadow-[0_0_10px_rgba(99,102,241,0.6)] 
-          //       "
-          //     >
-          //       View Profile
-          //     </button>
-              
+              //     </p>
 
-          //   </div>
-          // </div>
-          <div className="overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:shadow-md flex flex-col h-full" key={p.id}>
+              //     <div className="flex sm:gap-3 gap-10 text-sm max-md:flex-wrap max-md:gap-x-6 max-md:gap-y-2 text-gray-500 mt-2">
+              //       <span className="flex items-center text-xs text-gray-400 gap-1">
+              //         <MapPin className="text-orangeButton" size={13}/>
+              //       {p.location || "Not specified"}
+              //       </span>
+              //       <span className="flex items-center text-xs text-gray-400 gap-1">
+              //         <BriefcaseBusiness  className="text-orangeButton" size={13}/>
+              //       {p.projectsCompleted} Projects
+              //       </span>
+              //       <span className="flex items-center text-xs text-gray-400 gap-1">
+              //         <Users className="text-orangeButton" size={13}/>
+              //         {p.teamSize}
+              //       </span>
+              //     </div>
+
+              //     <p className="mt-1 text-gray-400 text-xs">
+              //       Starting Price: <span className="font-semibold">₹{p.hourlyRate}/hr</span>
+              //     </p>
+              //   </div>
+
+
+              //   <div className="flex gap-2 max-md:flex-col-2 max-md:w-full">
+
+
+              //     <button
+              //       onClick={()=>handleContact(p)}
+              //       className="
+              //         px-5 py-0 rounded-full text-white text-xs
+              //         bg-[#e0332c] h-[30px]
+              //         shadow-md transition cursor-pointer
+              //         hover:shadow-[0_0_10px_rgba(99,102,241,0.6)] 
+              //       "
+              //     >
+              //       Contact
+              //     </button>
+
+
+
+
+              //     <button
+
+              //       className="
+              //          px-5 py-0 rounded-full text-white text-xs
+              //         bg-[#232a85] 
+              //         shadow-md transition cursor-pointer
+              //         hover:shadow-[0_0_10px_rgba(99,102,241,0.6)] 
+              //       "
+              //     >
+              //       View Profile
+              //     </button>
+
+
+              //   </div>
+              // </div>
+              <div className="overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:shadow-md flex flex-col h-full">
 
                 {/* Image */}
                 <div className="aspect-[16/9] w-full overflow-hidden">
@@ -423,26 +453,29 @@ const paginatedProviders = filteredProviders.slice(
                 <div className="flex flex-col flex-1 p-4 justify-between">
 
                   {/* Verified + Rating */}
-                  <div className="relative flex items-center -mt-1 h-2">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between -mt-1">
 
                     {/* LEFT — Verified */}
-                    <div className="absolute left-0">
-                      {p.isVerified && (
-                        <span className="inline-flex items-center rounded-lg border font-bold px-2 py-0 text-[10px] text-white bg-[#232a8f]">
+                    <div className="flex flex-wrap gap-1">
+                      {p?.isVerified && (
+                        <Badge className="bg-green-100 text-green-700 rounded-full text-xs">
+                          <CheckCircle2 className="h-3 w-3 mr-1" />
                           Verified
-                        </span>
+                        </Badge>
                       )}
-                       {p.isFeatured && (
-                        <span className="inline-flex items-center rounded-lg border font-bold px-2 py-0 text-[10px] text-white bg-[#F54A0C]">
+
+                      {p?.isFeatured && (
+                        <Badge className="bg-blue-100 text-blue-700 rounded-full text-xs">
+                          <Star className="h-3 w-3 mr-1 fill-blue-100" />
                           Featured
-                        </span>
+                        </Badge>
                       )}
                     </div>
 
                     {/* RIGHT — Rating */}
-                    <div className="absolute right-0 flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 mt-1 lg:mt-0">
                       <div className="flex items-center gap-0.5">
-                        <RatingStars rating={p.rating} size={12}/>
+                        <RatingStars rating={p.rating} />
                       </div>
 
                       <span className="text-xs font-semibold text-[#0E0E0E]">
@@ -455,10 +488,10 @@ const paginatedProviders = filteredProviders.slice(
                   {/* Title + Description */}
                   <div className="py-3">
                     <h3
-                      className="text-md font-bold text-[#0E0E0E] leading-tight"
-                      
+                      className="text-md font-bold text-[#232a8f] leading-tight"
+
                     >
-                      {p.name.charAt(0).toUpperCase()+p.name.slice(1)}
+                      {p.name}
                     </h3>
 
                     {/* <p
@@ -469,30 +502,85 @@ const paginatedProviders = filteredProviders.slice(
                     </p> */}
                   </div>
 
-                  {/* Tags */}
-                  <div className="flex flex-wrap py-0 -mt-2">
-                    {activeService && (
-                      <span
-                        className="inline-flex items-center rounded-lg bg-[#f2f2f2] border px-3 py-0.5 text-[10px] font-semibold text-slate-700"
-                      >
-                        {activeService}
-                      </span>
-                    )}
-                  </div>
+
+                  {(() => {
+                    const allServices = Array.isArray(p?.services) ? p.services : [];
+                    const primaryService = allServices[0];
+                    const otherServices = allServices.slice(1);
+
+                    return (
+                      <TooltipProvider>
+                        <div className="flex flex-wrap py-0 -mt-2 items-center gap-2">
+
+                          {/* ===== PRIMARY SERVICE ===== */}
+                          {primaryService && (
+                            <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">
+                              {primaryService}
+                            </span>
+                          )}
+
+                          {/* ===== +N SERVICES ===== */}
+                          {otherServices.length > 0 && (
+                            <Tooltip>
+
+                              {/* Trigger */}
+                              <TooltipTrigger asChild>
+                                <span className="text-blue-600 underline text-[10px] font-semibold whitespace-nowrap cursor-pointer hover:text-blue-700 transition-colors duration-150">
+                                  +{otherServices.length} services
+                                </span>
+                              </TooltipTrigger>
+
+                              {/* Tooltip Content */}
+                              <TooltipContent
+                                side="top"
+                                align="center"
+                                sideOffset={0}
+                                className="
+                bg-white
+                border border-gray-200
+                shadow-lg
+                rounded-lg
+                p-4
+                flex flex-wrap gap-2
+                max-w-[260px]
+               [&>svg]:bg-white [&>svg]:fill-white [&>svg]:stroke-gray-200
+              "
+                              >
+
+                                {/* SERVICES */}
+                                {otherServices.map((s: string, index: number) => (
+                                  <span
+                                    key={index}
+                                    className="inline-flex items-center text-[10px] font-semibold text-[#000] whitespace-nowrap"
+                                  >
+                                    {s} {index !== otherServices.length - 1 ? <span className="font-semibold">{`${" "},`}</span> : ""}
+                                  </span>
+                                ))}
+
+                              </TooltipContent>
+
+                            </Tooltip>
+                          )}
+
+                        </div>
+                      </TooltipProvider>
+                    );
+                  })()}
+
+
 
                   {/* Info Row */}
-                  <div className=" flex flex-row items-center text-[9px] font-semibold text-[#616161] justify-between mt-1">
-                    <div className="inline-flex items-center  gap-1">
+                  <div className=" grid-cols-3 text-[11px] font-semibold text-[#616161] mt-1">
+                    <div className="inline-flex items-center mr-6 gap-1">
                       <img
                         src="/Location_Icon.jpg"
                         alt="Location"
                         className="h-3 w-3 object-contain"
                       />
-                      {/* {p?.location || "N/A"} */}
-                      {`${p?.location==="Not specified"?"N/A":(p?.location || "N/A")}`}
+                      {p.location || "N/A"}
                     </div>
 
-                    <div className="inline-flex items-center  gap-1">
+                    <div className="inline-flex items-center mr-6 gap-1">
                       <img
                         src="/Projects_Icon.jpg"
                         alt="Projects"
@@ -501,28 +589,24 @@ const paginatedProviders = filteredProviders.slice(
                       {p.projectsCompleted} projects
                     </div>
 
-                    {/* <div className="inline-flex items-center gap-1">
+                    <div className="inline-flex items-center gap-1">
                       <Users className="h-3 w-3 text-orangeButton" />
-                      {`${p?.teamSize==="Not specified"?"N/A":(p?.teamSize || "N/A")}`}
-                    </div> */}
-                  </div>
-                  <div className="inline-flex mt-1 text-[9px] items-center font-semibold text-[#616161] gap-1">
-                      <Users className="h-3 w-3 text-orangeButton" />
-                      {`${p?.teamSize==="Not specified"?"N/A":(p?.teamSize || "N/A")}`}
+                      {p.teamSize || "0"}
                     </div>
+                  </div>
 
                   {/* Rate */}
                   <div className="text-xs text-[#616161] font-bold py-1">
                     Starting Price:
-                    <span className="ml-1 text-gray-400">₹{p.hourlyRate}/hr</span>
+                    <span className="ml-1 text-gray-400">{p.hourlyRate}₹/hr</span>
                   </div>
 
                   {/* Buttons */}
-                  <div className="flex flex-wrap  justify-between pt-1">
+                  <div className="flex  justify-between gap-3 pt-1">
                     <button
                       // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#e0332c] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
-                      className="primary-button w-[100px] h-[30px]"
-                     onClick={() =>
+                      className="primary-button h-[25px] w-full"
+                      onClick={() =>
                         handleViewProfile(p.id)
                       }
                     >
@@ -531,53 +615,59 @@ const paginatedProviders = filteredProviders.slice(
 
                     <button
                       // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#000000] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
-                      className="btn-blackButton w-[100px] h-[30px]"
+                      className="btn-blackButton h-[25px] w-full"
                       onClick={() => handleMessage(p.userId)}
                     >
                       Contact
                     </button>
+
                   </div>
                 </div>
-            </div>
-        ))}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ---------------- PAGINATION ---------------- */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 max-md:flex-wrap mt-8 mb-4 text-sm">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage(p => p - 1)}
+              className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition ${page === 1
+                ? "border-gray-200 text-gray-300 cursor-not-allowed bg-gray-50"
+                : "border-gray-300 text-gray-700 hover:bg-gray-50 cursor-pointer bg-white"
+                }`}
+            >
+              Prev
+            </button>
+
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setPage(i + 1)}
+                className={`w-8 h-8 rounded-lg text-xs font-semibold transition cursor-pointer flex items-center justify-center ${page === i + 1
+                  ? "bg-[#2c34a1] text-white shadow-sm"
+                  : "text-gray-600 hover:bg-gray-100"
+                  }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage(p => p + 1)}
+              className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition ${page === totalPages
+                ? "border-gray-200 text-gray-300 cursor-not-allowed bg-gray-50"
+                : "border-gray-300 text-gray-700 hover:bg-gray-50 cursor-pointer bg-white"
+                }`}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
-
-      {/* ---------------- PAGINATION ---------------- */}
-      <div className="flex justify-center items-center gap-3 max-md:flex-wrap mt-8 text-sm">
-
-        <button
-          disabled={page===1}
-          onClick={()=>setPage(p=>p-1)}
-          className=" cursor-pointer text-black"
-        >
-          Prev
-        </button>
-
-        {Array.from({length:totalPages}).map((_,i)=>(
-          <button
-            key={i}
-            onClick={()=>setPage(i+1)}
-            className={`
-              w-8 h-8 rounded-lg cursor-pointer
-              ${page===i+1
-                ? " bg-[#2c34a1] text-white font-semibold"
-                : "text-gray-500"}
-            `}
-          >
-            {i+1}
-          </button>
-        ))}
-
-        <button
-          disabled={page===totalPages}
-          onClick={()=>setPage(p=>p+1)}
-          className="text-black cursor-pointer "
-        >
-          Next
-        </button>
-
-      </div>
-    </div>
     </div>
   );
 }

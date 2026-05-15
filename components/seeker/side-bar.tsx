@@ -1,6 +1,6 @@
 "use client"
 
-import { useState,useEffect } from "react"
+import { useState, useEffect } from "react"
 import { LogOut, PanelLeft } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { useRouter, usePathname } from "next/navigation"
@@ -41,14 +41,14 @@ import {
 /* ✅ Flattened Menu Items */
 const menuItems: MenuItem[] = [
   { id: "dashboard", label: "Dashboard", icon: Home, path: "/client/dashboard" },
-   { id: "projects", label: "My Projects", icon: Briefcase, path: "/client/dashboard/projects" },
+  { id: "projects", label: "My Projects", icon: Briefcase, path: "/client/dashboard/projects" },
   { id: "proposals", label: "Proposals", icon: MessageSquare, path: "/client/dashboard/proposals" },
- 
+
   { id: "providers", label: "Find Agencies", icon: Users, path: "/client/dashboard/providers" },
   { id: "messages", label: "Chat", icon: MessageSquare, path: "/client/dashboard/message" },
   { id: "provider-comparison", label: "Provider Comparison", icon: GitCompare, path: "/client/dashboard/provider-comparison" },
   { id: "wishlist", label: "My Favourites", icon: Eye, path: "/client/dashboard/wishlist" },
-  {id:"notifications",label:"Notifications",icon:Bell,path:"/client/dashboard/notifications"}
+  { id: "notifications", label: "Notifications", icon: Bell, path: "/client/dashboard/notifications" }
 ]
 
 export default function ClientSidebar({
@@ -60,7 +60,7 @@ export default function ClientSidebar({
   user: any
   isOpen: boolean
   onClose: () => void
-  cms:any
+  cms: any
 }) {
   const router = useRouter()
   const pathname = usePathname()
@@ -121,7 +121,7 @@ export default function ClientSidebar({
               {/* <h2 className="text-xl font-bold text-[#000]">
                 Client Dashboard
               </h2> */}
-              <img src={cms?.contact?.footerLogo || "/scoutFooterLogo.png"} className="h-[45px] w-[150px] cursor-pointer" onClick={()=>(router.push("/client/dashboard"))}/>
+              <img src={cms?.contact?.footerLogo || "/scoutFooterLogo.png"} className="h-14 cursor-pointer" onClick={() => (router.push("/client/dashboard"))} />
               {/* <p className="text-sm text-[#8B8585]">
                 Welcome back, {user.name}
               </p> */}
@@ -187,7 +187,7 @@ export default function ClientSidebar({
                 className={cn(
                   "cursor-pointer flex items-center gap-3 min-h-[48px] px-3 py-3 text-sm rounded-lg text-[#fff] w-full touch-manipulation",
                   pathname === item.path ||
-                  (item.path !== "/client/dashboard" && pathname.startsWith(item.path!))
+                    (item.path !== "/client/dashboard" && pathname.startsWith(item.path!))
                     ? " text-[#F54A0C] rounded-[8px]"
                     : "",
                   collapsed ? "justify-center px-0" : ""
