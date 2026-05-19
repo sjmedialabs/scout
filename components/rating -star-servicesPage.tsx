@@ -6,9 +6,10 @@ import { IoIosStar, IoIosStarHalf } from "react-icons/io";
 interface RatingStarsProps {
   rating: number | string;
   reviews?: number | string;
+  gapClass?: string;
 }
 
-const RatingStars: React.FC<RatingStarsProps> = ({ rating, reviews }) => {
+const RatingStars: React.FC<RatingStarsProps> = ({ rating, reviews, gapClass }) => {
   const value = Math.max(0, Math.min(5, Number(rating) || 0));
 
   const full = Math.floor(value);
@@ -16,7 +17,7 @@ const RatingStars: React.FC<RatingStarsProps> = ({ rating, reviews }) => {
   const empty = 5 - full - (hasHalf ? 1 : 0);
 
   return (
-    <div className="flex items-center gap-1">
+    <div className={`flex items-center ${gapClass || "gap-1"}`}>
       {/* FULL STARS */}
       {Array.from({ length: full }).map((_, i) => (
         <IoIosStar key={`full-${i}`} size={12} className="text-yellow-500" />

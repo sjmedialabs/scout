@@ -26,6 +26,7 @@ interface SubCategory {
 interface MainCategory {
   _id?: string;
   title: string;
+  subTitle?: string;
   slug: string;
   icon?: string | null;
   image?: string | null;
@@ -36,9 +37,11 @@ interface MainCategory {
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<MainCategory[]>([]);
   const [newCategory, setNewCategory] = useState("");
+  const [newCategorySubTitle, setNewCategorySubTitle] = useState("");
   const [newCategoryImage, setNewCategoryImage] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
+  const [editCategorySubTitle, setEditCategorySubTitle] = useState("");
   const [editIcon, setEditIcon] = useState<string | null>(null);
   const [editImage, setEditImage] = useState<string | null>(null);
   // For editing subcategory
@@ -97,6 +100,7 @@ export default function CategoriesPage() {
 
     const newCat: MainCategory = {
       title: newCategory.trim(),
+      subTitle: newCategorySubTitle.trim(),
       slug: slugify(newCategory),
       image: newCategoryImage || null,
       isMainCategory: true,
@@ -112,6 +116,7 @@ export default function CategoriesPage() {
     if (result.success) {
       setCategories((prev) => [...prev, result.data]);
       setNewCategory("");
+      setNewCategorySubTitle("");
       setNewCategoryImage(null);
       toast.success("Category created successfully");
     }
@@ -228,6 +233,12 @@ export default function CategoriesPage() {
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value)}
           />
+          <Input
+            className="rounded-2xl -mt-4 border-gray-200 placeholder:text-gray-500 h-[40px] flex-1"
+            placeholder="Enter category tagline/subtitle..."
+            value={newCategorySubTitle}
+            onChange={(e) => setNewCategorySubTitle(e.target.value)}
+          />
           <Button className="primary-button -mt-4 h-[40px]" onClick={addMainCategory}>
             <PlusCircle className="w-4 h-4 mr-1" /> Add Category
           </Button>
@@ -312,14 +323,27 @@ export default function CategoriesPage() {
               {/* TITLE OR INPUT */}
               <div className="flex-1 px-3">
                 {editingId === cat._id ? (
-                  <Input
-                    placeholder="Add category..."
-                    value={editTitle}
-                    onChange={(e) => setEditTitle(e.target.value)}
-                    className="text-lg font-semibold placeholder:text-gray-400 rounded-2xl border border-gray-200"
-                  />
+                  <div className="flex flex-col gap-2">
+                    <Input
+                      placeholder="Category Name..."
+                      value={editTitle}
+                      onChange={(e) => setEditTitle(e.target.value)}
+                      className="text-lg font-semibold placeholder:text-gray-400 rounded-2xl border border-gray-200"
+                    />
+                    <Input
+                      placeholder="Category Tagline/Subtitle..."
+                      value={editCategorySubTitle}
+                      onChange={(e) => setEditCategorySubTitle(e.target.value)}
+                      className="text-sm placeholder:text-gray-400 rounded-2xl border border-gray-200"
+                    />
+                  </div>
                 ) : (
-                  <h2 className="text-xl font-semibold text-orangeButton ">{cat.title}</h2>
+                  <div>
+                    <h2 className="text-xl font-semibold text-orangeButton ">{cat.title}</h2>
+                    {cat.subTitle && (
+                      <p className="text-xs text-gray-500 font-medium mt-0.5">{cat.subTitle}</p>
+                    )}
+                  </div>
                 )}
               </div>
 
@@ -336,6 +360,7 @@ export default function CategoriesPage() {
                         const updated = {
                           ...cat,
                           title: editTitle,
+                          subTitle: editCategorySubTitle,
                           slug: slugify(editTitle),
                           icon: editIcon === null ? null : editIcon || cat.icon,
                           image: editImage === null ? null : editImage || cat.image
@@ -349,6 +374,7 @@ export default function CategoriesPage() {
                         setEditingId(null);
                         setEditIcon(null);
                         setEditImage(null);
+                        setEditCategorySubTitle("");
                         fetchCategories();
                       }}
                     >
@@ -364,6 +390,7 @@ export default function CategoriesPage() {
                         setEditingId(null);
                         setEditIcon(null);
                         setEditImage(null);
+                        setEditCategorySubTitle("");
                       }}
                     >
                       Cancel
@@ -377,6 +404,7 @@ export default function CategoriesPage() {
                       setEditTitle(cat.title);
                       setEditIcon(cat.icon || null);
                       setEditImage(cat.image || null);
+                      setEditCategorySubTitle(cat.subTitle || "");
                     }}
 
                   />

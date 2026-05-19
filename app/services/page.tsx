@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import ServiceCard from "@/components/ServiceCard";
 import { useRouter } from "next/navigation";
-import {Star,  Users } from "lucide-react";
+import { Star, Users } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -29,19 +29,19 @@ import ContactProviderModal from "@/components/leadPopupForm";
 
 
 export default function ServicesPage() {
-  const router=useRouter();
+  const router = useRouter();
   const [visibleCount, setVisibleCount] = useState(9);
   const searchParams = useSearchParams();
   const categoryId = searchParams.get("category") || null;
-  const subCategoryId=searchParams.get("subcategory") || null;
-  const searchTerm=decodeURIComponent(searchParams.get("q") || "");
+  const subCategoryId = searchParams.get("subcategory") || null;
+  const searchTerm = decodeURIComponent(searchParams.get("q") || "");
   // console.log("Search Term is::::",searchTerm)
 
-  
 
-  const[resLoading,setResLoading]=useState(false);
-    const [open, setOpen] = useState(false)
-  
+
+  const [resLoading, setResLoading] = useState(false);
+  const [open, setOpen] = useState(false)
+
 
   const [categories, setCategories] = useState<any[]>([]);
   const [providers, setProviders] = useState<any[]>([]);
@@ -49,287 +49,289 @@ export default function ServicesPage() {
 
   const [openParent, setOpenParent] = useState<string | null>(categoryId);
   const [openChild, setOpenChild] = useState<string | null>(null);
-  
+
   const [activeCategory, setActiveCategory] = useState<string | null>(categoryId);
   const [activeSubCategory, setActiveSubCategory] = useState<string | null>(subCategoryId);
   const [activeService, setActiveService] = useState<string | null>(null);
 
-  const[activeServiceId,setActiveServiceId]=useState<string | null>(null);
+  const [activeServiceId, setActiveServiceId] = useState<string | null>(null);
 
-  const[ratingFilter,setRatingFilter]=useState<string>("");
-  const[priceFilter,setPriceFilter]=useState<string>("");
+  const [ratingFilter, setRatingFilter] = useState<string>("");
+  const [priceFilter, setPriceFilter] = useState<string>("");
   const [projectFilter, setProjectFilter] = useState<string>("");
-  const[teamSizeFilter,setTeamSizeFilter]=useState<string>("");
+  const [teamSizeFilter, setTeamSizeFilter] = useState<string>("");
 
   const employeeSizes = [
-  "1-9",
-  "10-49",
-  "50-99",
-  "100-249",
-  "250-499",
-  "500-999",
-  "1000+",
-];
+    "1-9",
+    "10-49",
+    "50-99",
+    "100-249",
+    "250-499",
+    "500-999",
+    "1000+",
+  ];
 
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const normalize = (str: string) => {
-  return str
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ") // remove special chars like / - etc
-    .replace(/\s+/g, " ") // remove extra spaces
-    .trim();
-};
+    return str
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ") // remove special chars like / - etc
+      .replace(/\s+/g, " ") // remove extra spaces
+      .trim();
+  };
 
   /* ---------------- FETCH CATEGORIES ---------------- */
   useEffect(() => {
-  async function fetchCategories() {
-    try {
-      setResLoading(true);
+    async function fetchCategories() {
+      try {
+        setResLoading(true);
 
-      const res = await fetch("/api/service-categories");
-      const data = await res.json();
+        const res = await fetch("/api/service-categories");
+        const data = await res.json();
 
-      const providerRes = await fetch("/api/providers");
-      const providerData = await providerRes.json();
+        const providerRes = await fetch("/api/providers");
+        const providerData = await providerRes.json();
 
-      console.log("Fetched Providers:::", providerData.providers);
+        console.log("Fetched Providers:::", providerData.providers);
 
- const sortedProviders = [...(providerData.providers || [])].sort(
-  (a, b) => {
-    // First priority → rating (higher first)
-    if (b.rating !== a.rating) {
-      return b.rating - a.rating;
-    }
+        const sortedProviders = [...(providerData.providers || [])].sort(
+          (a, b) => {
+            // First priority → rating (higher first)
+            if (b.rating !== a.rating) {
+              return b.rating - a.rating;
+            }
 
-    // Second priority → planPrice (higher first)
-    return b.planPrice - a.planPrice;
-  }
-);
-      setProviders(sortedProviders);
-      setFilteredProviders(sortedProviders);
-      if (data.success) {
-        let mainCats = data.data.filter((c: any) => c.parent === null);
+            // Second priority → planPrice (higher first)
+            return b.planPrice - a.planPrice;
+          }
+        );
+        setProviders(sortedProviders);
+        setFilteredProviders(sortedProviders);
+        if (data.success) {
+          let mainCats = data.data.filter((c: any) => c.parent === null);
 
-        // Move query category to top
-        if (categoryId) {
-          mainCats = [
-            ...mainCats.filter((c: any) => c._id === categoryId),
-            ...mainCats.filter((c: any) => c._id !== categoryId),
-          ];
+          // Move query category to top
+          if (categoryId) {
+            mainCats = [
+              ...mainCats.filter((c: any) => c._id === categoryId),
+              ...mainCats.filter((c: any) => c._id !== categoryId),
+            ];
+          }
+
+          setCategories(mainCats);
         }
 
-        setCategories(mainCats);
+      } catch (error) {
+        console.error("Error fetching categories/providers:", error);
+      } finally {
+        setResLoading(false);
       }
-     
-    } catch (error) {
-      console.error("Error fetching categories/providers:", error);
-    } finally {
-      setResLoading(false);
     }
-  }
 
-  fetchCategories();
-}, []);
-
+    fetchCategories();
+  }, []);
 
 
-/* ---------------- HANDLE CATEGORY / SUBCATEGORY FROM QUERY ---------------- */
-useEffect(() => {
-  if (!categories.length || !providers.length) return;
 
-      // CATEGORY SELECTED
-      if (categoryId && !subCategoryId) {
-        setOpenParent(categoryId);
-        setActiveCategory(categoryId);
-        setOpenChild(null);
-        setActiveSubCategory(null);
-        setActiveService(null);
-        setActiveServiceId(null);
-        return;
-      }
+  /* ---------------- HANDLE CATEGORY / SUBCATEGORY FROM QUERY ---------------- */
+  useEffect(() => {
+    if (!categories.length || !providers.length) return;
 
-      // SERVICE SELECTED (subcategory query)
-      if (subCategoryId) {
-        let foundService: any = null;
-        let parentCategory: any = null;
-        let childCategory: any = null;
+    // CATEGORY SELECTED
+    if (categoryId && !subCategoryId) {
+      setOpenParent(categoryId);
+      setActiveCategory(categoryId);
+      setOpenChild(null);
+      setActiveSubCategory(null);
+      setActiveService(null);
+      setActiveServiceId(null);
+      return;
+    }
 
-        categories.forEach((parent: any) => {
-          parent.children?.forEach((child: any) => {
-            child.items?.forEach((service: any) => {
-              if (service._id === subCategoryId) {
-                foundService = service;
-                parentCategory = parent;
-                childCategory = child;
-              }
-            });
+    // SERVICE SELECTED (subcategory query)
+    if (subCategoryId) {
+      let foundService: any = null;
+      let parentCategory: any = null;
+      let childCategory: any = null;
+
+      categories.forEach((parent: any) => {
+        parent.children?.forEach((child: any) => {
+          child.items?.forEach((service: any) => {
+            if (service._id === subCategoryId) {
+              foundService = service;
+              parentCategory = parent;
+              childCategory = child;
+            }
           });
         });
+      });
 
-        if (foundService) {
-          setOpenParent(parentCategory._id);
-          setOpenChild(childCategory._id);
-          setActiveCategory(null);
-          setActiveSubCategory(null);
-          setActiveService(foundService.title);
-          setActiveServiceId(foundService._id);
-        }
+      if (foundService) {
+        setOpenParent(parentCategory._id);
+        setOpenChild(childCategory._id);
+        setActiveCategory(parentCategory._id);
+        setActiveSubCategory(childCategory._id);
+        setActiveService(foundService.title);
+        setActiveServiceId(foundService._id);
       }
+    }
 
-      // 🔹 SEARCH TERM LOGIC
-  if (searchTerm) {
-    let foundService = null;
-    let parentCategory = null;
-    let childCategory = null;
+    // 🔹 SEARCH TERM LOGIC
+    if (searchTerm) {
+      let foundService = null;
+      let parentCategory = null;
+      let childCategory = null;
 
-    categories.forEach((parent) => {
-      parent.children?.forEach((child) => {
-        child.items?.forEach((service) => {
-          if (
-            service.title.toLowerCase().includes(searchTerm.toLowerCase())
-          ) {
-            foundService = service;
-            parentCategory = parent;
-            childCategory = child;
+      categories.forEach((parent) => {
+        parent.children?.forEach((child) => {
+          child.items?.forEach((service) => {
+            if (
+              service.title.toLowerCase().includes(searchTerm.toLowerCase())
+            ) {
+              foundService = service;
+              parentCategory = parent;
+              childCategory = child;
+            }
+          });
+        });
+      });
+
+      if (foundService) {
+        setOpenParent(parentCategory._id);
+        setOpenChild(childCategory._id);
+        setActiveCategory(parentCategory._id);
+        setActiveSubCategory(childCategory._id);
+        setActiveService(foundService.title);
+        setActiveServiceId(foundService._id);
+
+        const filtered = providers.filter((provider) =>
+          provider.services?.includes(foundService.title)
+        );
+
+        setFilteredProviders([...filtered]);
+      }
+    }
+
+
+  }, [categories, providers, categoryId, subCategoryId, searchTerm]);
+
+  useEffect(() => {
+
+  }, [filteredProviders]);
+
+
+
+  /* ---------------- FILTER + SORT PROVIDERS ---------------- */
+  useEffect(() => {
+    let updatedProviders = [...providers];
+
+    /* SEARCH FILTER */
+    if (searchTerm) {
+      const normalizedSearch = normalize(searchTerm);
+
+      updatedProviders = updatedProviders.filter((provider: any) =>
+        provider.services?.some((service: string) =>
+          normalize(service).includes(normalizedSearch)
+        )
+      );
+    }
+
+    /* SERVICE / SUBCATEGORY / CATEGORY FILTER */
+    if (activeService) {
+      updatedProviders = updatedProviders.filter((provider: any) =>
+        provider.services?.includes(activeService)
+      );
+    } else if (activeSubCategory) {
+      let servicesInSub: string[] = [];
+      categories.forEach((parent: any) => {
+        parent.children?.forEach((child: any) => {
+          if (child._id === activeSubCategory) {
+            servicesInSub = child.items?.map((item: any) => item.title) || [];
           }
         });
       });
-    });
-
-    if (foundService) {
-      setOpenParent(parentCategory._id);
-      setOpenChild(childCategory._id);
-      setActiveService(foundService.title);
-      setActiveServiceId(foundService._id);
-
-      const filtered = providers.filter((provider) =>
-        provider.services?.includes(foundService.title)
+      updatedProviders = updatedProviders.filter((provider: any) =>
+        provider.services?.some((s: string) => servicesInSub.includes(s))
       );
-
-      setFilteredProviders([...filtered]);
-    }
-  }
-
-  
-}, [categories, providers, categoryId, subCategoryId,searchTerm]);
- 
-useEffect(() => {
- 
-}, [filteredProviders]);
-
- 
-
-  /* ---------------- FILTER + SORT PROVIDERS ---------------- */
-useEffect(() => {
-  let updatedProviders = [...providers];
-
-  /* SEARCH FILTER */
-  if (searchTerm) {
-    const normalizedSearch = normalize(searchTerm);
-
-    updatedProviders = updatedProviders.filter((provider: any) =>
-      provider.services?.some((service: string) =>
-        normalize(service).includes(normalizedSearch)
-      )
-    );
-  }
-
-  /* SERVICE / SUBCATEGORY / CATEGORY FILTER */
-  if (activeService) {
-    updatedProviders = updatedProviders.filter((provider: any) =>
-      provider.services?.includes(activeService)
-    );
-  } else if (activeSubCategory) {
-    let servicesInSub: string[] = [];
-    categories.forEach((parent: any) => {
-      parent.children?.forEach((child: any) => {
-        if (child._id === activeSubCategory) {
-          servicesInSub = child.items?.map((item: any) => item.title) || [];
+    } else if (activeCategory) {
+      let servicesInCat: string[] = [];
+      categories.forEach((parent: any) => {
+        if (parent._id === activeCategory) {
+          parent.children?.forEach((child: any) => {
+            child.items?.forEach((item: any) => {
+              servicesInCat.push(item.title);
+            });
+          });
         }
       });
-    });
-    updatedProviders = updatedProviders.filter((provider: any) =>
-      provider.services?.some((s: string) => servicesInSub.includes(s))
-    );
-  } else if (activeCategory) {
-    let servicesInCat: string[] = [];
-    categories.forEach((parent: any) => {
-      if (parent._id === activeCategory) {
-        parent.children?.forEach((child: any) => {
-          child.items?.forEach((item: any) => {
-            servicesInCat.push(item.title);
-          });
-        });
+      updatedProviders = updatedProviders.filter((provider: any) =>
+        provider.services?.some((s: string) => servicesInCat.includes(s))
+      );
+    }
+
+    /* TEAM SIZE FILTER */
+    if (teamSizeFilter) {
+      updatedProviders = updatedProviders.filter(
+        (provider: any) => provider.teamSize === teamSizeFilter
+      );
+    }
+
+    /* SORTING */
+    updatedProviders.sort((a, b) => {
+      if (ratingFilter === "high-to-low" && b.rating !== a.rating) {
+        return b.rating - a.rating;
       }
+      if (ratingFilter === "low-to-high" && a.rating !== b.rating) {
+        return a.rating - b.rating;
+      }
+
+      if (priceFilter === "high-to-low" && b.hourlyRate !== a.hourlyRate) {
+        return b.hourlyRate - a.hourlyRate;
+      }
+      if (priceFilter === "low-to-high" && a.hourlyRate !== b.hourlyRate) {
+        return a.hourlyRate - b.hourlyRate;
+      }
+
+      if (
+        projectFilter === "high-to-low" &&
+        b.projectsCompleted !== a.projectsCompleted
+      ) {
+        return b.projectsCompleted - a.projectsCompleted;
+      }
+
+      if (
+        projectFilter === "low-to-high" &&
+        a.projectsCompleted !== b.projectsCompleted
+      ) {
+        return a.projectsCompleted - b.projectsCompleted;
+      }
+
+      return 0;
     });
-    updatedProviders = updatedProviders.filter((provider: any) =>
-      provider.services?.some((s: string) => servicesInCat.includes(s))
-    );
-  }
 
-  /* TEAM SIZE FILTER */
-  if (teamSizeFilter) {
-    updatedProviders = updatedProviders.filter(
-      (provider: any) => provider.teamSize === teamSizeFilter
-    );
-  }
+    setFilteredProviders(updatedProviders);
+    setVisibleCount(9);
+  }, [
+    providers,
+    activeService,
+    activeSubCategory,
+    activeCategory,
+    categories,
+    searchTerm,
+    ratingFilter,
+    priceFilter,
+    projectFilter,
+    teamSizeFilter,
+  ]);
 
-  /* SORTING */
-  updatedProviders.sort((a, b) => {
-    if (ratingFilter === "high-to-low" && b.rating !== a.rating) {
-      return b.rating - a.rating;
-    }
-    if (ratingFilter === "low-to-high" && a.rating !== b.rating) {
-      return a.rating - b.rating;
-    }
-
-    if (priceFilter === "high-to-low" && b.hourlyRate !== a.hourlyRate) {
-      return b.hourlyRate - a.hourlyRate;
-    }
-    if (priceFilter === "low-to-high" && a.hourlyRate !== b.hourlyRate) {
-      return a.hourlyRate - b.hourlyRate;
-    }
-
-    if (
-      projectFilter === "high-to-low" &&
-      b.projectsCompleted !== a.projectsCompleted
-    ) {
-      return b.projectsCompleted - a.projectsCompleted;
-    }
-
-    if (
-      projectFilter === "low-to-high" &&
-      a.projectsCompleted !== b.projectsCompleted
-    ) {
-      return a.projectsCompleted - b.projectsCompleted;
-    }
-
-    return 0;
-  });
-
-  setFilteredProviders(updatedProviders);
-  setVisibleCount(9);
-}, [
-  providers,
-  activeService,
-  activeSubCategory,
-  activeCategory,
-  categories,
-  searchTerm,
-  ratingFilter,
-  priceFilter,
-  projectFilter,
-  teamSizeFilter,
-]);
- 
   const handleContact = (provider: any) => {
     if (!provider.email) return;
     window.location.href = `mailto:${provider.email}?subject=Service Inquiry&body=Hi ${provider.name},%0D%0A%0D%0AI am interested in your services.`;
   };
 
-  if(resLoading){
-     return (
+  if (resLoading) {
+    return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
@@ -337,218 +339,214 @@ useEffect(() => {
 
   }
   const handleServiceClick = (service: any, parentId: string, childId: string) => {
-    console.log("Handle menu click prop service:::",service)
-    console.log("Handle menu click prop parentId::",parentId)
-    console.log("Handle menu click prop childId::",childId)
-  setOpenParent(parentId);
-  setOpenChild(childId);
+    console.log("Handle menu click prop service:::", service)
+    console.log("Handle menu click prop parentId::", parentId)
+    console.log("Handle menu click prop childId::", childId)
+    setOpenParent(parentId);
+    setOpenChild(childId);
 
-  setActiveService(service.title);
-  setActiveServiceId(service._id);
-  setActiveCategory(null);
-  setActiveSubCategory(null);
-};
+    setActiveService(service.title);
+    setActiveServiceId(service._id);
+    setActiveCategory(parentId);
+    setActiveSubCategory(childId);
+  };
 
-console.log("Filtered Providers:::", filteredProviders);
+  console.log("Filtered Providers:::", filteredProviders);
 
- return (
-  <div className="flex flex-col lg:flex-row w-full min-h-screen bg-white max-w-7xl mx-auto">
+  return (
+    <div className="flex flex-col lg:flex-row w-full min-h-screen bg-white max-w-7xl mx-auto">
 
-    {/* ---------------- MOBILE HEADER ---------------- */}
-    <div className="lg:hidden flex items-center px-6 justify-between p-1 border-b border-gray-200">
-      <button
-        onClick={() => setMobileSidebarOpen(true)}
-        className="p-2 "
-      >
-        <Menu size={25} color="gray"/>
-      </button>
+      {/* ---------------- MOBILE HEADER ---------------- */}
+      <div className="lg:hidden flex items-center px-2 justify-between p-1 border-b border-gray-200">
+        <button
+          onClick={() => setMobileSidebarOpen(true)}
+          className="p-2 "
+        >
+          <Menu size={25} color="gray" />
+        </button>
 
-      {/* <h2 className="text-sm font-semibold text-gray-700">
+        {/* <h2 className="text-sm font-semibold text-gray-700">
         Categories
       </h2> */}
 
-      <div /> {/* Spacer */}
-    </div>
+        <div /> {/* Spacer */}
+      </div>
 
 
-    {/* ---------------- MOBILE SIDEBAR DRAWER ---------------- */}
-    {mobileSidebarOpen && (
-      <>
-        {/* Overlay */}
-        <div
-          className="fixed inset-0 bg-black/30 z-40 lg:hidden"
-          onClick={() => setMobileSidebarOpen(false)}
-        />
+      {/* ---------------- MOBILE SIDEBAR DRAWER ---------------- */}
+      {mobileSidebarOpen && (
+        <>
+          {/* Overlay */}
+          <div
+            className="fixed inset-0 bg-black/30 z-40 lg:hidden"
+            onClick={() => setMobileSidebarOpen(false)}
+          />
 
-        {/* Drawer */}
-        <div className="fixed top-0 left-0 h-full w-[75%] bg-white z-50 shadow-lg p-4 overflow-y-auto lg:hidden transition-transform duration-300">
-          
-          {categories.map((parent) => {
-            const isParentOpen = openParent === parent._id;
+          {/* Drawer */}
+          <div className="fixed top-0 left-0 h-full w-[75%] bg-white z-50 shadow-lg p-4 overflow-y-auto lg:hidden transition-transform duration-300">
 
-            return (
-              <div key={parent._id} className="mb-3 text-sm">
-                <div
-                  onClick={() => {
-                    setOpenParent(isParentOpen ? null : parent._id);
-                    setActiveCategory(isParentOpen ? null : parent._id);
-                    setActiveSubCategory(null);
-                    setActiveService(null);
-                    setActiveServiceId(null);
-                  }}
-                  className={`flex justify-between items-center cursor-pointer p-3 rounded-lg
-                  ${
-                    activeCategory === parent._id
-                      ? "text-orangeButton font-bold"
-                      : "hover:bg-gray-100"
-                  }`}
-                >
-                  <span>{parent.title}</span>
-                  {isParentOpen ? <ChevronDown /> : <ChevronRight />}
-                </div>
+            {categories.map((parent) => {
+              const isParentOpen = openParent === parent._id;
 
-                {isParentOpen &&
-                  parent.children?.map((child: any) => {
-                    const isChildOpen = openChild === child._id;
-
-                    return (
-                      <div key={child._id} className="ml-4 mt-4">
-                        <div
-                          onClick={() => {
-                            setOpenChild(isChildOpen ? null : child._id);
-                            setActiveSubCategory(isChildOpen ? null : child._id);
-                            setActiveService(null);
-                            setActiveServiceId(null);
-                          }}
-                          className={`flex justify-between items-center cursor-pointer p-0 rounded-md
-                          ${
-                            activeSubCategory === child._id
-                              ? "text-orangeButton font-semibold"
-                              : "hover:bg-gray-100"
-                          }`}
-                        >
-                          <span>{child.title}</span>
-                          {isChildOpen ? <ChevronDown /> : <ChevronRight />}
-                        </div>
-
-                        {isChildOpen &&
-                          child.items?.map((item: any) => (
-                            <div
-                              key={item._id}
-                               
-                              onClick={() => {
-                                handleServiceClick(item, parent._id, child._id)
-                                setMobileSidebarOpen(false); // ✅ Auto close
-                              }}
-                              className={`ml-4 mt-4 cursor-pointer p-0 rounded-md
-                              ${
-                                activeServiceId === item._id
-                                  ? "text-orangeButton font-bold"
-                                  : "text-gray-600 hover:text-orangeButton"
-                              }`}
-                            >
-                              {item.title}
-                            </div>
-                          ))}
-                      </div>
-                    );
-                  })}
-              </div>
-            );
-          })}
-        </div>
-      </>
-    )}
-
-
-    {/* ---------------- DESKTOP SIDEBAR ---------------- */}
-    <div className="hidden lg:block w-[20%] border-r border-gray-200 p-6 overflow-y-auto">
-      {categories.map((parent) => {
-        const isParentOpen = openParent === parent._id;
-
-        return (
-          <div key={parent._id} className="mb-3 text-sm">
-            <div
-              onClick={() => {
-                setOpenParent(isParentOpen ? null : parent._id);
-                setActiveCategory(isParentOpen ? null : parent._id);
-                setActiveSubCategory(null);
-                setActiveService(null);
-                setActiveServiceId(null);
-              }}
-              className={`flex justify-between items-center cursor-pointer p-3 rounded-lg
-              ${
-                activeCategory === parent._id
-                  ? "text-white font-bold bg-orange-600 py-1"
-                  : "hover:bg-gray-100"
-              }`}
-            >
-              <span>{parent.title}</span>
-              {isParentOpen ? <ChevronDown /> : <ChevronRight />}
-            </div>
-
-            {isParentOpen &&
-              parent.children?.map((child: any) => {
-                const isChildOpen = openChild === child._id;
-
-                return (
-                  <div key={child._id} className="ml-4 mt-2">
-                    <div
-                      onClick={() => {
-                        setOpenChild(isChildOpen ? null : child._id);
-                        setActiveSubCategory(isChildOpen ? null : child._id);
-                        setActiveService(null);
-                        setActiveServiceId(null);
-                      }}
-                      className={`flex justify-between items-center cursor-pointer p-2 rounded-md
-                      ${
-                        activeSubCategory === child._id
-                          ? "text-white font-semibold bg-orange-500 py-1"
-                          : "hover:bg-gray-100"
+              return (
+                <div key={parent._id} className="mb-3 text-sm">
+                  <div
+                    onClick={() => {
+                      setOpenParent(isParentOpen ? null : parent._id);
+                      setActiveCategory(isParentOpen ? null : parent._id);
+                      setActiveSubCategory(null);
+                      setActiveService(null);
+                      setActiveServiceId(null);
+                    }}
+                    className={`flex justify-between items-center cursor-pointer px-3 py-2 rounded-lg border border-gray-100/80 transition-all duration-200 shadow-[-3px_3px_6px_rgba(0,0,0,0.07)]
+                  ${activeCategory === parent._id
+                        ? "text-orangeButton font-bold border-orange-500/20 bg-orange-50"
+                        : "bg-white hover:bg-gray-50 text-gray-700"
                       }`}
-                    >
-                      <span>{child.title}</span>
-                      {isChildOpen ? <ChevronDown /> : <ChevronRight />}
-                    </div>
-
-                    {isChildOpen &&
-                      child.items?.map((item: any) => (
-                        <div
-                          key={item._id}
-                          onClick={() => handleServiceClick(item, parent._id, child._id)}
-                          className={`ml-4 mt-2 cursor-pointer p-2 rounded-md
-                          ${
-                            activeServiceId === item._id
-                              ? "text-orangeButton font-bold py-1 bg-orange-100"
-                              : "text-gray-600 hover:text-orangeButton"
-                          }`}
-                        >
-                          {item.title}
-                        </div>
-                      ))}
+                  >
+                    <span>{parent.title}</span>
+                    {isParentOpen ? <ChevronDown /> : <ChevronRight />}
                   </div>
-                );
-              })}
+
+                  {isParentOpen &&
+                    parent.children?.map((child: any) => {
+                      const isChildOpen = openChild === child._id;
+
+                      return (
+                        <div key={child._id} className="ml-4 mt-4">
+                          <div
+                            onClick={() => {
+                              setOpenChild(isChildOpen ? null : child._id);
+                              setActiveCategory(parent._id);
+                              setActiveSubCategory(isChildOpen ? null : child._id);
+                              setActiveService(null);
+                              setActiveServiceId(null);
+                            }}
+                            className={`flex justify-between items-center cursor-pointer p-0 rounded-md
+                          ${activeSubCategory === child._id
+                                ? "text-orangeButton font-semibold"
+                                : "hover:bg-gray-100"
+                              }`}
+                          >
+                            <span>{child.title}</span>
+                            {isChildOpen ? <ChevronDown /> : <ChevronRight />}
+                          </div>
+
+                          {isChildOpen &&
+                            child.items?.map((item: any) => (
+                              <div
+                                key={item._id}
+
+                                onClick={() => {
+                                  handleServiceClick(item, parent._id, child._id)
+                                  setMobileSidebarOpen(false); // ✅ Auto close
+                                }}
+                                className={`ml-4 mt-4 cursor-pointer p-0 rounded-md
+                              ${activeServiceId === item._id
+                                    ? "text-orangeButton font-bold"
+                                    : "text-gray-600 hover:text-orangeButton"
+                                  }`}
+                              >
+                                {item.title}
+                              </div>
+                            ))}
+                        </div>
+                      );
+                    })}
+                </div>
+              );
+            })}
           </div>
-        );
-      })}
-    </div>
+        </>
+      )}
 
 
-    {/* ---------------- RIGHT SIDE (PROVIDERS) ---------------- */}
-    <div className="w-full lg:w-[80%] p-4 lg:p-6 ">
-       {/* Filters Section */}
-      <div className="flex flex-row gap-4 mb-3 pb-2 justify-between overflow-x-auto">
-        {/*Ratings filter */}
-        
-        <div className="w-full mb-3 sm:mb-0 ">
-          {/* <p className="text-sm text-gray-500 ml-1">Rating</p> */}
-              <Select
-          onValueChange={(value) => setRatingFilter(value)}
-          value={ratingFilter}
-        >
-          <SelectTrigger
-            className={`
+      {/* ---------------- DESKTOP SIDEBAR ---------------- */}
+      <div className="hidden lg:block w-[20%] border-r border-gray-200 pl-1 pr-2 py-6 overflow-y-auto">
+        {categories.map((parent) => {
+          const isParentOpen = openParent === parent._id;
+
+          return (
+            <div key={parent._id} className="mb-3 text-sm">
+              <div
+                onClick={() => {
+                  setOpenParent(isParentOpen ? null : parent._id);
+                  setActiveCategory(isParentOpen ? null : parent._id);
+                  setActiveSubCategory(null);
+                  setActiveService(null);
+                  setActiveServiceId(null);
+                }}
+                className={`flex justify-between items-center cursor-pointer px-3 py-2 rounded-lg border border-gray-100/80 transition-all duration-200 shadow-[-3px_3px_6px_rgba(0,0,0,0.07)]
+              ${activeCategory === parent._id
+                    ? "text-white font-bold bg-orange-600 border-orange-600"
+                    : "bg-white hover:bg-gray-50 text-gray-700"
+                  }`}
+              >
+                <span>{parent.title}</span>
+                {isParentOpen ? <ChevronDown /> : <ChevronRight />}
+              </div>
+
+              {isParentOpen &&
+                parent.children?.map((child: any) => {
+                  const isChildOpen = openChild === child._id;
+
+                  return (
+                    <div key={child._id} className="ml-4 mt-2">
+                      <div
+                        onClick={() => {
+                          setOpenChild(isChildOpen ? null : child._id);
+                          setActiveCategory(parent._id);
+                          setActiveSubCategory(isChildOpen ? null : child._id);
+                          setActiveService(null);
+                          setActiveServiceId(null);
+                        }}
+                        className={`flex justify-between items-center cursor-pointer p-2 rounded-md
+                      ${activeSubCategory === child._id
+                            ? "text-white font-semibold bg-orange-500 py-1"
+                            : "hover:bg-gray-100"
+                          }`}
+                      >
+                        <span>{child.title}</span>
+                        {isChildOpen ? <ChevronDown /> : <ChevronRight />}
+                      </div>
+
+                      {isChildOpen &&
+                        child.items?.map((item: any) => (
+                          <div
+                            key={item._id}
+                            onClick={() => handleServiceClick(item, parent._id, child._id)}
+                            className={`ml-4 mt-2 cursor-pointer p-2 rounded-md
+                          ${activeServiceId === item._id
+                                ? "text-orangeButton font-bold py-1 bg-orange-100"
+                                : "text-gray-600 hover:text-orangeButton"
+                              }`}
+                          >
+                            {item.title}
+                          </div>
+                        ))}
+                    </div>
+                  );
+                })}
+            </div>
+          );
+        })}
+      </div>
+
+
+      {/* ---------------- RIGHT SIDE (PROVIDERS) ---------------- */}
+      <div className="w-full lg:w-[80%] px-1.5 py-4 lg:pl-3 lg:pr-1 lg:py-6 ">
+        {/* Filters Section */}
+        <div className="flex flex-row gap-4 mb-3 pb-2 justify-between overflow-x-auto">
+          {/*Ratings filter */}
+
+          <div className="w-full mb-3 sm:mb-0 ">
+            {/* <p className="text-sm text-gray-500 ml-1">Rating</p> */}
+            <Select
+              onValueChange={(value) => setRatingFilter(value)}
+              value={ratingFilter}
+            >
+              <SelectTrigger
+                className={`
               border-2
               border-[#b2b2b2]
               cursor-pointer
@@ -561,26 +559,26 @@ console.log("Filtered Providers:::", filteredProviders);
               text-sm
               data-[placeholder]:text-[#98A0B4]
             `}
-          >
-            <SelectValue placeholder="Filter by Rating" />
-          </SelectTrigger>
-
-          <SelectContent>
-            <SelectItem value="high-to-low">High to Low</SelectItem>
-            <SelectItem value="low-to-high">Low to High</SelectItem>
-          </SelectContent>
-        </Select>
-        </div>
-
-        {/* Price filter*/}
-         <div className="w-full mb-3 sm:mb-0 ">
-          {/* <p className="text-sm text-gray-500 ml-1">Rating</p> */}
-              <Select
-                onValueChange={(value) => setPriceFilter(value)}
-                value={priceFilter}
               >
-                <SelectTrigger
-                  className={`
+                <SelectValue placeholder="Filter by Rating" />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectItem value="high-to-low">High to Low</SelectItem>
+                <SelectItem value="low-to-high">Low to High</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Price filter*/}
+          <div className="w-full mb-3 sm:mb-0 ">
+            {/* <p className="text-sm text-gray-500 ml-1">Rating</p> */}
+            <Select
+              onValueChange={(value) => setPriceFilter(value)}
+              value={priceFilter}
+            >
+              <SelectTrigger
+                className={`
                     border-2
                     border-[#b2b2b2]
                     cursor-pointer
@@ -592,26 +590,26 @@ console.log("Filtered Providers:::", filteredProviders);
                     text-sm
                     data-[placeholder]:text-[#98A0B4]
                   `}
-                >
-                  <SelectValue placeholder="Filter by  Price" />
-                </SelectTrigger>
-
-                <SelectContent>
-                  <SelectItem value="high-to-low">High to Low</SelectItem>
-                  <SelectItem value="low-to-high">Low to High</SelectItem>
-                </SelectContent>
-              </Select>
-        </div>
-
-        {/* Projects filter */}
-        <div className="w-full mb-3 sm:mb-0">
-          {/* <p className="text-sm text-gray-500 ml-1">Rating</p> */}
-              <Select
-                onValueChange={(value) => setProjectFilter(value)}
-                value={projectFilter}
               >
-                <SelectTrigger
-                  className={`
+                <SelectValue placeholder="Filter by  Price" />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectItem value="high-to-low">High to Low</SelectItem>
+                <SelectItem value="low-to-high">Low to High</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Projects filter */}
+          <div className="w-full mb-3 sm:mb-0">
+            {/* <p className="text-sm text-gray-500 ml-1">Rating</p> */}
+            <Select
+              onValueChange={(value) => setProjectFilter(value)}
+              value={projectFilter}
+            >
+              <SelectTrigger
+                className={`
                     border-2
                     border-[#b2b2b2]
                     cursor-pointer
@@ -623,26 +621,26 @@ console.log("Filtered Providers:::", filteredProviders);
                     text-sm
                     data-[placeholder]:text-[#98A0B4]
                   `}
-                >
-                  <SelectValue placeholder="Filter by Projects" />
-                </SelectTrigger>
-
-                <SelectContent>
-                  <SelectItem value="high-to-low">High to Low</SelectItem>
-                  <SelectItem value="low-to-high">Low to High</SelectItem>
-                </SelectContent>
-              </Select>
-        </div>
-
-        {/* Team Size filter */}
-        <div className="w-full mb-3 sm:mb-0">
-          {/* <p className="text-sm text-gray-500 ml-1">Rating</p> */}
-              <Select
-                onValueChange={(value) => setTeamSizeFilter(value)}
-                value={teamSizeFilter}
               >
-                <SelectTrigger
-                  className={`
+                <SelectValue placeholder="Filter by Projects" />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectItem value="high-to-low">High to Low</SelectItem>
+                <SelectItem value="low-to-high">Low to High</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Team Size filter */}
+          <div className="w-full mb-3 sm:mb-0">
+            {/* <p className="text-sm text-gray-500 ml-1">Rating</p> */}
+            <Select
+              onValueChange={(value) => setTeamSizeFilter(value)}
+              value={teamSizeFilter}
+            >
+              <SelectTrigger
+                className={`
                     border-2
                     border-[#b2b2b2]
                     cursor-pointer
@@ -654,66 +652,66 @@ console.log("Filtered Providers:::", filteredProviders);
                     text-sm
                     data-[placeholder]:text-[#98A0B4]
                   `}
-                >
-                  <SelectValue placeholder="Filter by Team" />
-                </SelectTrigger>
+              >
+                <SelectValue placeholder="Filter by Team" />
+              </SelectTrigger>
 
-                <SelectContent>
-                 {
-                    employeeSizes.map((size) => (
-                      <SelectItem key={size} value={size}>
-                        {size}
-                      </SelectItem>
-                    ))
-                    
-                 }
-                </SelectContent>
-              </Select>
+              <SelectContent>
+                {
+                  employeeSizes.map((size) => (
+                    <SelectItem key={size} value={size}>
+                      {size}
+                    </SelectItem>
+                  ))
+
+                }
+              </SelectContent>
+            </Select>
+          </div>
+
+
+          {/* Reset Filters Button */}
+          <div className="mb-3 sm:mb-0 mt-0.5">
+            <Button
+              onClick={() => {
+                setRatingFilter("");
+                setPriceFilter("");
+                setProjectFilter("");
+                setTeamSizeFilter("");
+              }}
+              className="btn-blackButton h-[32px]"
+            >
+              Clear
+            </Button>
+          </div>
+
+
         </div>
-        
 
-        {/* Reset Filters Button */}
-        <div className="mb-3 sm:mb-0 mt-0.5">
-          <Button
-            onClick={() => {
-              setRatingFilter("");
-              setPriceFilter("");
-              setProjectFilter("");
-              setTeamSizeFilter("");
-            }}
-            className="btn-blackButton h-[32px]"
-          >
-            Clear
-          </Button>
-        </div>
-
-
-      </div>
-
-      {/* Providers Grid */}
-      <div>
-        {filteredProviders.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-7 max-h-[100vh] overflow-y-auto [scrollbar-width:none] 
+        {/* Providers Grid */}
+        <div>
+          {filteredProviders.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-[100vh] overflow-y-auto [scrollbar-width:none] 
           [-ms-overflow-style:none]        
           [&::-webkit-scrollbar]:hidden">
-            {filteredProviders.slice(0, visibleCount).map((p: any,index:number) => (
-            <div className="overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:shadow-md flex flex-col h-full">
+              {filteredProviders.slice(0, visibleCount).map((p: any, index: number) => (
+                <div className="overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:shadow-md flex flex-col h-full">
 
-                {/* Image */}
-                <div className="aspect-[16/9] w-full overflow-hidden">
-                  <img
-                    src={
-                      p?.coverImage ||
-                      "/uploads/15ac2d8f-31f9-48ac-aadd-b67ba9f4d860-Artificial-intelligence-platforms-copy.jpg"
-                    }
-                    alt={p.name}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
+                  {/* Image */}
+                  <div className="aspect-[16/9] w-full overflow-hidden">
+                    <img
+                      src={
+                        p?.coverImage ||
+                        "/uploads/15ac2d8f-31f9-48ac-aadd-b67ba9f4d860-Artificial-intelligence-platforms-copy.jpg"
+                      }
+                      alt={p.name}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
 
-                <div className="flex flex-col flex-1 p-4 justify-between">
+                  <div className="flex flex-col flex-1 p-4 justify-between">
 
-                  {/* Verified + Rating */}
+                    {/* Verified + Rating */}
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between -mt-1">
 
                       {/* LEFT — Verified */}
@@ -734,77 +732,114 @@ console.log("Filtered Providers:::", filteredProviders);
                       </div>
 
                       {/* RIGHT — Rating */}
-                      <div className="flex items-center gap-1.5 mt-1 lg:mt-0">
+                      <div className="flex items-center gap-1 mt-1 lg:mt-0">
                         <div className="flex items-center gap-0.5">
-                          <RatingStars rating={p.rating} />
+                          <RatingStars rating={p.rating} gapClass="gap-0.5" />
                         </div>
 
                         <span className="text-xs font-semibold text-[#0E0E0E]">
-                          {p.rating.toFixed(1)}
+                          {p.rating.toFixed(1)} ({p.reviewCount || 0})
                         </span>
                       </div>
 
                     </div>
 
-                  {/* Title + Description */}
-                  <div className="py-3">
-                    <h3
-                      className="text-md font-bold text-[#232a8f] leading-tight"
-                      
-                    >
-                      {p.name}
-                    </h3>
+                    {/* Title + Description */}
+                    <div className="py-3">
+                      <h3
+                        className="text-md font-bold text-[#232a8f] leading-tight"
 
-                    {/* <p
+                      >
+                        {p.name}
+                      </h3>
+                      {p.tagline && (
+                        <p className="text-xs text-gray-500 mt-1 font-medium">
+                          {p.tagline}
+                        </p>
+                      )}
+
+                      {/* <p
                       className="text-[10px] font-semibold text-[#adb0b3] mt-0"
                       style={{ fontFamily: "CabinetGrotesk2" }}
                     >
                       {p.description}
                     </p> */}
-                  </div>
+                    </div>
 
-   
-{(() => {
-  const allServices = p?.services || [];
 
-  const primaryService =
-    activeService && allServices.includes(activeService)
-      ? activeService
-      : allServices[0];
+                    {(() => {
+                      const allServices = p?.services || [];
 
-  const otherServices = allServices.filter(
-    (s: string) => s !== primaryService
-  );
+                      let subcategoryServices: string[] = [];
+                      if (activeSubCategory) {
+                        categories.forEach((parent) => {
+                          parent.children?.forEach((child: any) => {
+                            if (child._id === activeSubCategory) {
+                              subcategoryServices = child.items?.map((item: any) => item.title) || [];
+                            }
+                          });
+                        });
+                      }
 
-  return (
-    <TooltipProvider>
-      <div className="flex flex-wrap py-0 -mt-2 items-center gap-2">
+                      let categoryServices: string[] = [];
+                      if (activeCategory) {
+                        categories.forEach((parent) => {
+                          if (parent._id === activeCategory) {
+                            parent.children?.forEach((child: any) => {
+                              child.items?.forEach((item: any) => {
+                                categoryServices.push(item.title);
+                              });
+                            });
+                          }
+                        });
+                      }
 
-        {/* ===== PRIMARY SERVICE ===== */}
-        {primaryService && (
-          
-            <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">
+                      let primaryService = "";
+                      if (activeService && allServices.includes(activeService)) {
+                        primaryService = activeService;
+                      } else if (activeSubCategory) {
+                        primaryService = allServices.find((s: string) => subcategoryServices.includes(s)) || "";
+                      } else if (activeCategory) {
+                        primaryService = allServices.find((s: string) => categoryServices.includes(s)) || "";
+                      }
+
+                      if (!primaryService && allServices.length > 0) {
+                        primaryService = allServices[0];
+                      }
+
+                      const otherServices = allServices.filter(
+                        (s: string) => s !== primaryService
+                      );
+
+                      return (
+                        <TooltipProvider>
+                          <div className="flex flex-wrap py-0 -mt-2 items-center gap-2">
+
+                            {/* ===== PRIMARY SERVICE ===== */}
+                            {primaryService && (
+
+                              <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">
                                 {primaryService}
-            </span>
-        )}
+                              </span>
+                            )}
 
-        {/* ===== +N SERVICES ===== */}
-        {otherServices.length > 0 && (
-          <Tooltip>
+                            {/* ===== +N SERVICES ===== */}
+                            {otherServices.length > 0 && (
+                              <Tooltip>
 
-            {/* Trigger */}
-            <TooltipTrigger asChild>
-              <span className="text-blue-600 underline text-[10px] font-semibold whitespace-nowrap cursor-pointer hover:text-blue-700 transition-colors duration-150">
-                +{otherServices.length} services
-              </span>
-            </TooltipTrigger>
+                                {/* Trigger */}
+                                <TooltipTrigger asChild>
+                                  <span className="text-blue-600 underline text-[10px] font-semibold whitespace-nowrap cursor-pointer hover:text-blue-700 transition-colors duration-150">
+                                    +{otherServices.length} services
+                                  </span>
+                                </TooltipTrigger>
 
-            {/* Tooltip Content */}
-            <TooltipContent
-              side="top"
-              align="center"
-              sideOffset={0}
-              className="
+                                {/* Tooltip Content */}
+                                <TooltipContent
+                                  side="top"
+                                  align="center"
+                                  sideOffset={0}
+                                  className="
                 bg-white
                 border border-gray-200
                 shadow-lg
@@ -814,120 +849,120 @@ console.log("Filtered Providers:::", filteredProviders);
                 max-w-[260px]
                [&>svg]:bg-white [&>svg]:fill-white [&>svg]:stroke-gray-200
               "
-            >
+                                >
 
-              {/* SERVICES */}
-              {otherServices.map((s: string, index: number) => (
-                <span
-                  key={index}
-                  className="inline-flex items-center text-[10px] font-semibold text-[#000] whitespace-nowrap"
-                >
-                  {s} {index!== otherServices.length - 1 ?<span className="font-semibold">{`${" "},`}</span> :""}
-                </span>
-              ))}
+                                  {/* SERVICES */}
+                                  {otherServices.map((s: string, index: number) => (
+                                    <span
+                                      key={index}
+                                      className="inline-flex items-center text-[10px] font-semibold text-[#000] whitespace-nowrap"
+                                    >
+                                      {s} {index !== otherServices.length - 1 ? <span className="font-semibold">{`${" "},`}</span> : ""}
+                                    </span>
+                                  ))}
 
-              {/* ✅ WHITE ARROW FIX */}
-              {/* <TooltipArrow
+                                  {/* ✅ WHITE ARROW FIX */}
+                                  {/* <TooltipArrow
                 className="
                   fill-white
                   stroke-gray-200
                 "
               /> */}
 
-            </TooltipContent>
+                                </TooltipContent>
 
-          </Tooltip>
-        )}
+                              </Tooltip>
+                            )}
 
-      </div>
-    </TooltipProvider>
-  );
-})()}
- 
+                          </div>
+                        </TooltipProvider>
+                      );
+                    })()}
 
 
-                  {/* Info Row */}
-                  <div className=" grid-cols-3 text-[11px] font-semibold text-[#616161] mt-1">
-                    <div className="inline-flex items-center mr-6 gap-1">
-                      <img
-                        src="/Location_Icon.jpg"
-                        alt="Location"
-                        className="h-3 w-3 object-contain"
+
+                    {/* Info Row */}
+                    <div className=" grid-cols-3 text-[11px] font-semibold text-[#616161] mt-1">
+                      <div className="inline-flex items-center mr-6 gap-1">
+                        <img
+                          src="/Location_Icon.jpg"
+                          alt="Location"
+                          className="h-3 w-3 object-contain"
+                        />
+                        {p.location || "N/A"}
+                      </div>
+
+                      <div className="inline-flex items-center mr-6 gap-1">
+                        <img
+                          src="/Projects_Icon.jpg"
+                          alt="Projects"
+                          className="h-3 w-3 object-contain"
+                        />
+                        {p.projectsCompleted} projects
+                      </div>
+
+                      <div className="inline-flex items-center gap-1">
+                        <Users className="h-3 w-3 text-orangeButton" />
+                        {p.teamSize || "0"}
+                      </div>
+                    </div>
+
+                    {/* Rate */}
+                    <div className="text-xs text-[#616161] font-bold py-1">
+                      Starting Price:
+                      <span className="ml-1 text-gray-400">{p.hourlyRate}₹/hr</span>
+                    </div>
+
+                    {/* Buttons */}
+                    <div className="flex  justify-between gap-3 pt-1">
+                      <button
+                        // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#e0332c] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
+                        className="primary-button h-[25px] w-full"
+                        onClick={() =>
+                          router.push(`/provider/${p.id || p._id}`)
+                        }
+                      >
+                        View Profile
+                      </button>
+
+                      <button
+                        // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#000000] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
+                        className="btn-blackButton h-[25px] w-full"
+                        onClick={() => setOpen(true)}
+                      >
+                        Contact
+                      </button>
+                      <ContactProviderModal
+                        open={open}
+                        onClose={() => setOpen(false)}
+                        userId={p.userId}
                       />
-                      {p.location || "N/A"}
                     </div>
-
-                    <div className="inline-flex items-center mr-6 gap-1">
-                      <img
-                        src="/Projects_Icon.jpg"
-                        alt="Projects"
-                        className="h-3 w-3 object-contain"
-                      />
-                      {p.projectsCompleted} projects
-                    </div>
-
-                    <div className="inline-flex items-center gap-1">
-                      <Users className="h-3 w-3 text-orangeButton" />
-                      {p.teamSize || "0"}
-                    </div>
-                  </div>
-
-                  {/* Rate */}
-                  <div className="text-xs text-[#616161] font-bold py-1">
-                    Starting Price:
-                    <span className="ml-1 text-gray-400">{p.hourlyRate}₹/hr</span>
-                  </div>
-
-                  {/* Buttons */}
-                  <div className="flex  justify-between gap-3 pt-1">
-                    <button
-                      // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#e0332c] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
-                      className="primary-button h-[25px] w-full"
-                      onClick={() =>
-                        router.push(`/provider/${p.id || p._id}`)
-                      }
-                    >
-                      View Profile
-                    </button>
-
-                    <button
-                      // className="flex-1 border hover:border-[#000000] cursor-pointer rounded-xl bg-[#000000] py-1 text-[10px] font-bold text-white hover:bg-white hover:text-black"
-                      className="btn-blackButton h-[25px] w-full"
-                      onClick={() => setOpen(true)}
-                    >
-                      Contact
-                    </button>
-                    <ContactProviderModal
-                                      open={open}
-                                      onClose={() => setOpen(false)}
-                                      userId={p.userId}    
-                                      />
                   </div>
                 </div>
+              ))}
             </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-gray-500 text-center mt-20">
-            No agencies found for this service.
-          </div>
-        )}
+          ) : (
+            <div className="text-gray-500 text-center mt-20">
+              No agencies found for this service.
+            </div>
+          )}
 
-        {/* Load More Button */}
-            {visibleCount < filteredProviders.length && (
-              <div className="flex justify-center mt-3">
-                <Button
-                  onClick={() => setVisibleCount((prev) => prev + 9)}
-                  className="bg-[#e0332c] border text-white px-6 py-2 rounded-xl
+          {/* Load More Button */}
+          {visibleCount < filteredProviders.length && (
+            <div className="flex justify-center mt-3">
+              <Button
+                onClick={() => setVisibleCount((prev) => prev + 9)}
+                className="bg-[#e0332c] border text-white px-6 py-2 rounded-xl
                   hover:bg-white hover:text-black hover:border-black transition-colors"
-                >
-                  Load More
-                </Button>
-              </div>
-            )}
+              >
+                Load More
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
 
-  </div>
-);
+    </div>
+  );
 }

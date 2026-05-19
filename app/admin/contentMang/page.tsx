@@ -643,17 +643,17 @@ const isValidPhone = (phone) => {
             </div>
             <label className="text-md text-gray-600 ">Title</label>
             <Input
-              placeholder="Top providers section title"
+              placeholder="Latest Blogs section title"
               className="border-gray-200 rounded-xl placeholder:text-gray-300"
-              value={cms.blogSection?.title || ""}
-              onChange={(e) => updateNested("blogSection", "title", e.target.value)}
+              value={cms.blogTitle || ""}
+              onChange={(e) => updateField("blogTitle", e.target.value)}
             />
             <label className="text-md text-gray-600 ">Sub-Title</label>
             <Input
-              placeholder="Top providers section sub-title"
+              placeholder="Latest Blogs section sub-title"
               className="border-gray-200 rounded-xl placeholder:text-gray-300"
-              value={cms.blogSection?.subTitle || ""}
-              onChange={(e) => updateNested("blogSection", "subTitle", e.target.value)}
+              value={cms.blogSubTitle || ""}
+              onChange={(e) => updateField("blogSubTitle", e.target.value)}
             />
           </section>
 

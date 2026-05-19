@@ -1,6 +1,6 @@
 "use client"
 
-import { useState,useEffect } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,7 +16,9 @@ interface FiltersState {
   serviceType: string
   minRating: number
   budgetRange: [number, number]
-  title: ""
+  title: string
+  startDate: string
+  endDate: string
 }
 
 interface FiltersPanelProps {
@@ -29,11 +31,13 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
     serviceType: "",
     minRating: 0,
     budgetRange: [0, 100000],
-    title:"",
+    title: "",
+    startDate: "",
+    endDate: "",
   })
   const [skillInput, setSkillInput] = useState("")
 
-   //dropdown search for the services offered
+  //dropdown search for the services offered
   const [serviceCategories, setServiceCategories] = useState([]);
   const [activeSubCategory, setActiveSubCategory] = useState(null);
   const [selectedService, setSelectedService] = useState("");
@@ -47,27 +51,27 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
   const subCategories = (serviceCategories || []).flatMap(
     (category) => category?.children,
   );
-   useEffect(() => {
-      loadData();
-    }, []);
-   
-    const loadData = async () => {
-    
-      try {
-        
-        const res = await fetch("/api/service-categories");
-        const servicData = await res.json();
-        setServiceCategories(servicData.data || []);
-  
-       
-  
-        
-      } catch (error) {
-        console.log("Failded To retrive the data:::", error);
-       
-      } 
-    };
-  
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+
+    try {
+
+      const res = await fetch("/api/service-categories");
+      const servicData = await res.json();
+      setServiceCategories(servicData.data || []);
+
+
+
+
+    } catch (error) {
+      console.log("Failded To retrive the data:::", error);
+
+    }
+  };
+
 
   const serviceTypes = [
     "Web Development",
@@ -78,9 +82,9 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
     "Data Analysis",
     "Consulting",
   ]
-  
 
-  const statues = ["UnderReview","Open", "Closed", "shortlisted", "negotation", "Allocated","NotApproved"]
+
+  const statues = ["UnderReview", "Open", "Closed", "shortlisted", "negotation", "Allocated", "NotApproved"]
 
   const handleFilterChange = (key: keyof FiltersState, value: any) => {
     const newFilters = { ...filters, [key]: value }
@@ -107,6 +111,8 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
       minRating: 0,
       budgetRange: [0, 100000],
       title: "",
+      startDate: "",
+      endDate: "",
     }
     setFilters(clearedFilters)
     onFiltersChange(clearedFilters)
@@ -117,7 +123,7 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
       <CardHeader>
         <div className="flex justify-between items-center -mt-3">
           <CardTitle className="flex items-center gap-2">
-            <Filter className="h-5 w-5"/>
+            <Filter className="h-5 w-5" />
             <span className=" text-[14px] font-normal -ml-1 text-[#4B4B4B]"> Filter</span>
           </CardTitle>
           <Button variant="ghost" size="sm" onClick={clearFilters} className=" hover:bg-transparent focus:bg-transparent active:bg-transparent  hover:text-[#2B67F6]  text-[#2B67F6] text-[12px]" >
@@ -144,14 +150,14 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
         </div> */}
 
         <div className="w-full min-w-0">
-           <Label className="text-[14px] mb-0 text-[#98A0B4] font-semibold">Service Type</Label>
-                  <ServiceDropdown 
-                value={filters.serviceType}
-                onChange={(value) => handleFilterChange("serviceType", value)}
-                  triggerClassName="border-2 border-[#D0D5DD] rounded-full"
-                  triggerSpanClassName="text-gray-500 text-sm"/>
-                </div>
-        
+          <Label className="text-[14px] mb-0 text-[#98A0B4] font-semibold">Service Type</Label>
+          <ServiceDropdown
+            value={filters.serviceType}
+            onChange={(value) => handleFilterChange("serviceType", value)}
+            triggerClassName="border-2 border-[#D0D5DD] rounded-full"
+            triggerSpanClassName="text-gray-500 text-sm" />
+        </div>
+
 
         {/* Rating */}
         {/* <div className="space-y-2">
@@ -175,9 +181,9 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
         {/* Budget Range */}
         <div className="space-y-2">
           <Label className="text-[14px]  mb-2 text-[#98A0B4] font-semibold">
-            Budget Range: 
-            ${filters.budgetRange[0].toLocaleString("en-IN")} - 
-            ${filters.budgetRange[1].toLocaleString("en-IN")}
+            Budget Range:
+            ₹{filters.budgetRange[0].toLocaleString("en-IN")} -
+            ₹{filters.budgetRange[1].toLocaleString("en-IN")}
           </Label>
           <Slider
             value={filters.budgetRange}
@@ -189,6 +195,31 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
           />
         </div>
 
+        {/* Date Range Posted */}
+        <div className="space-y-2">
+          <Label className="text-[14px] mb-0 text-[#98A0B4] font-semibold">Date Range</Label>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="flex flex-col gap-1">
+              <span className="text-[10px] text-slate-400">Start Date</span>
+              <Input
+                type="date"
+                value={filters.startDate}
+                onChange={(e) => handleFilterChange("startDate", e.target.value)}
+                className="border border-[#D0D5DD] rounded-full text-xs h-9 p-2 placeholder:text-[#98A0B4] text-slate-500 bg-white [&::-webkit-calendar-picker-indicator]:ml-[-15px] [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="text-[10px] text-slate-400">End Date</span>
+              <Input
+                type="date"
+                value={filters.endDate}
+                onChange={(e) => handleFilterChange("endDate", e.target.value)}
+                className="border border-[#D0D5DD] rounded-full text-xs h-9 p-2 placeholder:text-[#98A0B4] text-slate-500 bg-white [&::-webkit-calendar-picker-indicator]:ml-[-15px] [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Skills */}
         <div className="space-y-2">
           <Label className="text-[14px]  mb-0 text-[#98A0B4] font-semibold">Title</Label>
@@ -196,7 +227,7 @@ export function FiltersPanel({ onFiltersChange, className }: FiltersPanelProps) 
             <Input
               placeholder="Requirement title..."
               value={filters.title}
-              onChange={(e) => handleFilterChange("title",e.target.value)}
+              onChange={(e) => handleFilterChange("title", e.target.value)}
               // onKeyPress={(e) => e.key === "Enter" && addSkill()}
               className="border-2 border-[#D0D5DD] rounded-full placeholder:text-[#98A0B4]"
             />
