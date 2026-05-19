@@ -15,6 +15,10 @@ import {
   ChevronLeft, ChevronRight,
   Star,
   CheckCircle2,
+  Clock,
+  MapPin,
+  BriefcaseBusiness,
+  Users,
 } from "lucide-react";
 import { authFetch } from "@/lib/auth-fetch";
 import { useRouter } from "next/navigation";
@@ -86,7 +90,35 @@ const colorMap: Record<string, { bg: string; hover: string; text: string }> = {
   },
 };
 
+const renderTitleWithGradient = (titleText: string) => {
+  if (!titleText) return "";
+  const words = titleText.split(/\s+/);
+  if (words.length >= 3) {
+    const firstWord = words[0];
+    const targetWords = words.slice(1, 3).join(" ");
+    const remainingWords = words.slice(3).join(" ");
+    return (
+      <>
+        {firstWord}{" "}
+        <span className="bg-gradient-to-r from-[#F54A0C] to-[#2C34A1] bg-clip-text text-transparent inline-block font-extrabold">
+          {targetWords}
+        </span>{" "}
+        {remainingWords}
+      </>
+    );
+  }
+  return titleText;
+};
 
+const getCategoryTagline = (title: string) => {
+  const t = title.toLowerCase();
+  if (t.includes("development") || t.includes("tech") || t.includes("engineering")) return "BUILD & ENGINEERING";
+  if (t.includes("design") || t.includes("creative") || t.includes("ui") || t.includes("ux")) return "CREATIVE & ART";
+  if (t.includes("marketing") || t.includes("growth") || t.includes("ads")) return "GROWTH & PROMOTION";
+  if (t.includes("content") || t.includes("writing")) return "CONTENT & COPY";
+  if (t.includes("business") || t.includes("finance") || t.includes("consult")) return "STRATEGY & OPERATIONS";
+  return "EXPERT SERVICES";
+};
 
 export default function HomePage() {
   const router = useRouter();
@@ -230,7 +262,7 @@ export default function HomePage() {
       )}
 
       {/* Features */}
-      <section className="py-6 px-6 md:px-10 bg-gradient-to-r">
+      <section className="py-10 px-6 md:px-10 bg-gradient-to-r">
         <div className="max-w-7xl mx-auto">
 
 
@@ -330,26 +362,26 @@ export default function HomePage() {
 
       {/* Service Categories - CMS Driven */}
       <section
-        className="py-4 px-6 md:px-10"
+        className="py-10 px-6 md:px-10"
         style={{
           backgroundImage: "url('/images/category-background.png')",
         }}
       >
         <div className="max-w-7xl mx-auto flex justify-center flex-col">
           <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-2 border border-gray-500 font-extrabold px-4 py-1 rounded-full mb-2">
-              <span className="text-sm font-bold text-[#F4561C] capitalize">
+            <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm mb-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#F4561C]" />
+              <span className="text-sm font-bold text-[#F4561C] uppercase tracking-wider">
                 Service Categories
               </span>
             </div>
-            <h2 className="text-md uppercase font-bold text-blueButton ">
-              {cms?.homeServiceTitle}
-              {/* <span className="text-blueButton font-bold ">
-                any project
-              </span> */}
+            <h2 className="text-3xl md:text-5xl font-extrabold text-black tracking-tight mb-1 max-w-4xl mx-auto leading-tight">
+              {renderTitleWithGradient(
+                cms?.homeServiceTitle || "Explore service categories to find the right experts"
+              )}
             </h2>
-            <p className="text-sm text-gray-500 max-w-lg mx-auto">
-              {cms?.homeServiceSubTitle}
+            <p className="text-sm md:text-base text-slate-500 max-w-2xl mx-auto font-normal leading-relaxed">
+              {cms?.homeServiceSubTitle || "Find highly vetted agencies across development, design, marketing, and more."}
             </p>
           </div>
 
@@ -363,32 +395,42 @@ export default function HomePage() {
                   <div
                     key={category._id}
 
-                    className={`group bg-white/70 h-[260px] backdrop-blur-sm rounded-4xl px-6 py-4 border lg:pl-8 ${colors.hover} hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col`}
+                    className="relative group bg-white border border-[#aab9eb]/40 h-[285px] rounded-[32px] px-6 py-5 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between overflow-hidden"
                   >
+                    {/* Left edge gradient strip */}
+                    <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-gradient-to-b from-[#F54A0C] to-[#2C34A1]" />
+
                     {/* Top Content */}
                     <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <img
-                          src={category?.icon || "/images/icon-1.png"}
-                          alt=""
-                          className="h-10 rounded-full"
-                        />
-                        <h3
-                          className={`text-xl font-bold text-blueButton group-hover:${colors.text} transition-colors`}
-                        >
-                          {category.title}
-                        </h3>
+                      {/* Header (Icon + Title & Tagline) */}
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 rounded-2xl bg-[#eef0ff] flex items-center justify-center shrink-0">
+                          <img
+                            src={category?.icon || "/images/icon-1.png"}
+                            alt={category.title}
+                            className="h-8 w-8 object-contain"
+                          />
+                        </div>
+                        <div className="flex flex-col justify-center">
+                          <h3 className={`text-xl font-bold text-blueButton group-hover:${colors.text} transition-colors leading-tight`}>
+                            {category.title}
+                          </h3>
+                          <span className="text-[10px] font-extrabold text-[#F4561C] tracking-wider uppercase mt-0.5">
+                            {category.subTitle || getCategoryTagline(category.title)}
+                          </span>
+                        </div>
                       </div>
 
                       {/* Subcategories */}
-                      <div className="space-y-3">
+                      <div className="space-y-2.5 pl-1">
                         {(category.children.slice(0, 4) || []).map(
                           (sub: any, index: number) => (
                             <p
                               key={index}
                               className={`block text-slate-500 text-md hover:${colors.text} hover:translate-x-2 transition-all duration-200 font-medium`}
                             >
-                              → {sub.title}
+                              <span className="text-[#F4561C] mr-2 font-bold">→</span>
+                              {sub.title}
                             </p>
                           )
                         )}
@@ -397,15 +439,15 @@ export default function HomePage() {
 
                     {/* Button pushed to bottom */}
                     <div className="mt-4">
-                      <Button
-                        size="sm"
-                        className=" bg-blueButton cursor-pointer text-sm  text-white rounded-full"
+                      <button
                         onClick={() =>
                           router.push(`/services?category=${category._id}`)
                         }
+                        className="w-full flex items-center justify-between px-6 py-2.5 rounded-full bg-[#9bb0e8]/30 group-hover:bg-[#232a8f] group-hover:!text-white hover:bg-[#232a8f] hover:!text-white text-blueButton font-bold text-sm transition-all duration-200 cursor-pointer"
                       >
-                        {`Explore  →`}
-                      </Button>
+                        <span>Explore {category.title}</span>
+                        <span>→</span>
+                      </button>
                     </div>
                   </div>
                 );
@@ -434,19 +476,22 @@ export default function HomePage() {
 
       {/* Public Requirements - From API */}
       {projects.length > 0 && (
-        <section className="py-6 px-6 md:px-10">
+        <section className="py-10 px-6 md:px-10">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 border-gray-500 border font-extrabold px-4 py-1 rounded-full  mb-2">
-                <span className="text-sm font-bold text-[#F4561C] capitalize">
+              <div className="inline-flex items-center gap-2 border-gray-500 border font-extrabold px-4 py-1.5 rounded-full  mb-0">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#F4561C]" />
+                <span className="text-sm font-bold text-[#F4561C] uppercase tracking-wider">
                   Newly added
                 </span>
               </div>
-              <h2 className="text-md uppercase font-bold text-blueButton ">
-                {cms?.recentRequirementTitle || "Requirements"}
+              <h2 className="text-3xl md:text-5xl font-extrabold text-black tracking-tight mb-1 max-w-4xl mx-auto leading-tight">
+                {renderTitleWithGradient(
+                  cms?.recentRequirementTitle || "Explore newly added projects and requirements"
+                )}
               </h2>
-              <p className="text-sm text-gray-500 max-w-md mx-auto">
-                {cms?.recentRequirementSubTitle || "Discover opportunities from businesses lookking for your services"}
+              <p className="text-sm md:text-base text-slate-500 max-w-2xl mx-auto font-normal leading-relaxed">
+                {cms?.recentRequirementSubTitle || "Discover opportunities from businesses looking for your services"}
               </p>
             </div>
             {/* <div className="grid md:grid-cols-3 gap-6">
@@ -494,11 +539,12 @@ export default function HomePage() {
 
                   <Badge
                     variant="outline"
-                    className="rounded-full mt-3 mb-2 bg-gray-100 text-xs font-semibold py-1"
+                    className="rounded-full mt-3 mb-2 bg-[#dbeafe] text-sm font-semibold text-blueButton py-1"
                   >
                     {project.category}
                   </Badge>
-                  <p className="text-sm font-semibold text-blueButton">
+                  <p className=" flex gap-1 text-sm font-semibold text-blueButton">
+                    <Clock className="w-4 h-4 mt-0.5" />
                     Timeline - <span className="text-red-500">{project.timeline}</span>
                   </p>
 
@@ -565,19 +611,22 @@ export default function HomePage() {
 
       {/* Top Providers - From API */}
       {providers.length > 0 && (
-        <section className="py-6 px-6 md:px-10 bg-blueBackground">
+        <section className="py-10 px-6 md:px-10 bg-blueBackground">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 border border-gray-500 font-extrabold px-4 py-1 rounded-full  mb-2">
-                <span className="text-sm font-bold text-[#F4561C] capitalize">
+              <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm mb-0">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#F4561C]" />
+                <span className="text-sm font-extrabold text-[#F4561C] uppercase tracking-wider">
                   Top Agencies
                 </span>
               </div>
-              <h2 className="text-md uppercase font-bold text-blueButton ">
-                {cms?.topProvidersTitle}
+              <h2 className="text-3xl md:text-5xl font-extrabold text-black tracking-tight mb-1 max-w-4xl mx-auto leading-tight">
+                {renderTitleWithGradient(
+                  cms?.topProvidersTitle || "Hire verified agencies with proven delivery track records"
+                )}
               </h2>
-              <p className="text-sm text-slate-600 max-w-md mx-auto">
-                {cms?.topProvidersSubTitle || "Discover opportunities from businesses lookking for your services"}
+              <p className="text-sm md:text-base text-slate-500 max-w-2xl mx-auto font-normal leading-relaxed">
+                {cms?.topProvidersSubTitle || "Browse vetted partners across development, design, and marketing — every profile reviewed for delivery, expertise, and client outcomes."}
               </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-3">
@@ -620,13 +669,13 @@ export default function HomePage() {
                           </div>
 
                           {/* RIGHT — Rating */}
-                          <div className="flex items-center gap-1.5 mt-1 lg:mt-0">
+                          <div className="flex items-center gap-1 mt-1 lg:mt-0">
                             <div className="flex items-center gap-0.5">
-                              <RatingStars rating={provider.rating} />
+                              <RatingStars rating={provider.rating} gapClass="gap-0.5" />
                             </div>
 
                             <span className="text-xs font-semibold text-[#0E0E0E]">
-                              {provider.rating.toFixed(1)}
+                              {provider.rating.toFixed(1)} ({provider.reviewCount || 0})
                             </span>
                           </div>
 
@@ -664,7 +713,7 @@ export default function HomePage() {
                                       side="top"
                                       align="center"
                                       sideOffset={5}
-                                      className="bg-white border border-gray-200 shadow-lg rounded-lg p-4 flex flex-wrap gap-2 max-w-[260px]"
+                                      className="bg-white border border-gray-200 shadow-lg rounded-lg p-2 flex flex-wrap gap-2 max-w-[260px]"
                                     >
                                       {provider.services.slice(1).map((s: string, index: number) => (
                                         <span
@@ -684,6 +733,22 @@ export default function HomePage() {
                               No services listed
                             </span>
                           )}
+                        </div>
+
+                        {/* Location / Projects / Team */}
+                        <div className="flex gap-2 justify-between text-xs font-bold text-[#616161] py-0 mt-1">
+                          <span className="inline-flex items-center gap-2">
+                            <MapPin className="h-4 w-4 text-[#F4561C] shrink-0" />
+                            {provider.location || "Location not specified"}
+                          </span>
+                          <span className="inline-flex items-center gap-2">
+                            <BriefcaseBusiness className="h-4 w-4 text-[#F4561C] shrink-0" />
+                            {provider.projectsCompleted || 0} projects
+                          </span>
+                          <span className="inline-flex items-center gap-2">
+                            <Users className="h-4 w-4 text-[#F4561C] shrink-0" />
+                            {provider.teamSize || "Not specified"}
+                          </span>
                         </div>
 
                         {/* VIEW DETAILS BUTTON */}
@@ -730,20 +795,23 @@ export default function HomePage() {
 
       {/* Blogs Section */}
       {(cms?.blogTitle || cms?.blogSubTitle || blogs.length > 0) && (
-        <section className="py-6 px-6 md:px-10 border-b">
+        <section className="py-10 px-6 md:px-10 border-b">
           <div className="max-w-7xl mx-auto">
             {/* Heading */}
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 border border-gray-500 font-extrabold px-4 py-1 rounded-full mb-2">
-                <span className="text-sm font-bold text-[#F4561C] capitalize">
+              <div className="inline-flex items-center gap-2 border border-gray-500 font-extrabold px-4 py-1.5 rounded-full mb-0">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#F4561C]" />
+                <span className="text-sm font-extrabold text-[#F4561C] uppercase tracking-wider">
                   Latest Insights
                 </span>
               </div>
-              <h2 className="text-md uppercase font-bold text-blueButton">
-                {cms?.blogSection?.title ?? "Latest Blogs"}
+              <h2 className="text-3xl md:text-5xl font-extrabold text-black tracking-tight mb-1 max-w-4xl mx-auto leading-tight">
+                {renderTitleWithGradient(
+                  cms?.blogTitle ?? "Latest Blogs and industry insights"
+                )}
               </h2>
-              <p className="text-sm text-gray-500 max-w-md mx-auto">
-                {cms?.blogSection?.subTitle ?? "Stay updated with insights"}
+              <p className="text-sm md:text-base text-slate-500 max-w-2xl mx-auto font-normal leading-relaxed">
+                {cms?.blogSubTitle ?? "Stay updated with standard strategies, trends, and tutorials from industry leaders."}
               </p>
             </div>
 
@@ -807,7 +875,7 @@ export default function HomePage() {
       )}
 
       {/* CTA Section */}
-      <section className="py-4 px-6 md:px-10">
+      <section className="py-10 px-6 md:px-10">
         <div className="max-w-4xl mx-auto text-center">
           <h3 className="text-2xl md:text-4xl font-extralight">
             {cms?.getStartedTitle || "Ready to Get Started?"}

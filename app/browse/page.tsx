@@ -56,6 +56,7 @@ import {
   MoreHorizontal,
   Trash2,
   DollarSign,
+  IndianRupee,
   Target,
   Heart,
   SeparatorVertical as Separator,
@@ -84,7 +85,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { LuTag } from "react-icons/lu";
-import { PiCurrencyDollarBold } from "react-icons/pi";
 import { CiCalendar } from "react-icons/ci";
 import { CiLocationOn } from "react-icons/ci";
 import { FaRegFileLines } from "react-icons/fa6";
@@ -259,7 +259,7 @@ const RequirementsPage = () => {
   const router = useRouter();
   const [requirements, setRequirements] = useState<Requirement[]>([]);
 
-const [filteredRequirements, setFilteredRequirements] = useState<Requirement[]>([]);
+  const [filteredRequirements, setFilteredRequirements] = useState<Requirement[]>([]);
   const [selectedRequirementId, setSelectedRequirementId] = useState<
     string | null
   >(null);
@@ -269,42 +269,42 @@ const [filteredRequirements, setFilteredRequirements] = useState<Requirement[]>(
   const [responseLoading, setResponseLoading] = useState(false);
   const [failed, setFailed] = useState(false);
 
- const loadData = async () => {
-  setResponseLoading(true);
-  try {
-    const response = await fetch(`/api/requirements`);
-    const data = await response.json();
+  const loadData = async () => {
+    setResponseLoading(true);
+    try {
+      const response = await fetch(`/api/requirements`);
+      const data = await response.json();
 
-    const reqs = data?.requirements ?? [];
+      const reqs = data?.requirements ?? [];
 
-    // only OPEN requirements for public page
-    const openRequirements = reqs.filter(
-      (r) => r.status?.toLowerCase() === "open"
-    );
+      // only OPEN requirements for public page
+      const openRequirements = reqs.filter(
+        (r) => r.status?.toLowerCase() === "open"
+      );
 
-    console.log("Open Requriments",openRequirements)
+      console.log("Open Requriments", openRequirements)
 
-setRequirements(openRequirements);
-setFilteredRequirements(openRequirements);
-    setFailed(false);
-  } catch (error) {
-    setFailed(true);
-    console.log("Failed to fetch data");
-  } finally {
-    setResponseLoading(false);
-  }
-};
+      setRequirements(openRequirements);
+      setFilteredRequirements(openRequirements);
+      setFailed(false);
+    } catch (error) {
+      setFailed(true);
+      console.log("Failed to fetch data");
+    } finally {
+      setResponseLoading(false);
+    }
+  };
 
   useEffect(() => {
-  loadData();
-}, []);
+    loadData();
+  }, []);
 
   console.log("Fetched Requirements::::", requirements);
 
   const normalize = (str: string) =>
-  str
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, ""); // removes space, -, _, etc.
+    str
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, ""); // removes space, -, _, etc.
 
   const handleFiltersChange = (filters: any) => {
     let filtered = [...requirements];
@@ -321,13 +321,33 @@ setFilteredRequirements(openRequirements);
           r.budgetMax <= filters.budgetRange[1],
       );
     }
-    if (filters.title) {
-  const search = normalize(filters.title);
 
-  filtered = filtered.filter((eachItem) =>
-    normalize(eachItem.title).includes(search)
-  );
-}
+    if (filters.startDate) {
+      const start = new Date(filters.startDate);
+      start.setHours(0, 0, 0, 0);
+      filtered = filtered.filter((r) => {
+        if (!r.createdAt) return false;
+        const created = new Date(r.createdAt);
+        return created >= start;
+      });
+    }
+
+    if (filters.endDate) {
+      const end = new Date(filters.endDate);
+      end.setHours(23, 59, 59, 999);
+      filtered = filtered.filter((r) => {
+        if (!r.createdAt) return false;
+        const created = new Date(r.createdAt);
+        return created <= end;
+      });
+    }
+    if (filters.title) {
+      const search = normalize(filters.title);
+
+      filtered = filtered.filter((eachItem) =>
+        normalize(eachItem.title).includes(search)
+      );
+    }
 
     setFilteredRequirements(filtered);
   };
@@ -369,10 +389,10 @@ setFilteredRequirements(openRequirements);
     );
   }
   return (
-    <div className="space-y-2 p-6 md:p-12 pt-1">
+    <div className="space-y-2 p-6 md:p-12 pt-1 xl:px-30">
       <div>
         <h1 className="text-2xl font-bold text-[#F4561C] tracking-tight">
-        Requirements
+          Requirements
         </h1>
       </div>
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
@@ -433,10 +453,10 @@ setFilteredRequirements(openRequirements);
                 </div>
 
                 <div className="flex items-center gap-2 border rounded-lg px-3 py-2">
-                  <PiCurrencyDollarBold className="w-5 h-5" color="#000" />
+                  <IndianRupee className="w-4 h-4" color="#000" />
                   <span className=" font-semibold text-xs text-[#000]">
-                    Budget: ${selectedRequirement.budgetMin} - $
-                    {selectedRequirement.budgetMax}
+                    Budget: {selectedRequirement.budgetMin.toLocaleString("en-IN")} -
+                    {selectedRequirement.budgetMax.toLocaleString("en-IN")}
                   </span>
                 </div>
 

@@ -3,10 +3,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Eye, MessageSquare, Calendar, DollarSign } from "lucide-react"
+import { Eye, MessageSquare, Calendar, DollarSign, IndianRupee } from "lucide-react"
 import type { Requirement } from "@/lib/types"
 import { Separator } from "@radix-ui/react-dropdown-menu"
-import { HiCurrencyDollar } from "react-icons/hi2"
 import { GoClockFill } from "react-icons/go";
 import { FiTag } from "react-icons/fi";
 import { CiCalendar } from "react-icons/ci";
@@ -24,60 +23,60 @@ interface RequirementListProps {
 }
 
 export function RequirementList({ requirements, onViewProposals, onViewDetails }: RequirementListProps) {
-//   const getStatusColor = (status: string) => {
-//     switch (status.toLowerCase()) {
-//       case "notapproved":
-//         return "bg-red-500 text-[#fff]"
-//       case "underreview":
-//         return "bg-blue-500 teext-[#fff]"
-//       case "open":
-//         return "bg-[#CFEED2] text-[#39761E]"
-//       case "shortlisted":
-//         return "bg-[#D2E4FF] text-[#1E82C1]"
-//       case "allocated":
-//         return "bg-[#D2E4FF] text-[#1E82C1]"
-//       case "negotiation":
-//         return "bg-[#FCF6E3] text-[#AF905D]"
-//       case "closed":
-//         return "bg-gray-100 text-gray-800"
-//       default:
-//         return "bg-gray-100 text-gray-800"
-//     }
-//   }
+  //   const getStatusColor = (status: string) => {
+  //     switch (status.toLowerCase()) {
+  //       case "notapproved":
+  //         return "bg-red-500 text-[#fff]"
+  //       case "underreview":
+  //         return "bg-blue-500 teext-[#fff]"
+  //       case "open":
+  //         return "bg-[#CFEED2] text-[#39761E]"
+  //       case "shortlisted":
+  //         return "bg-[#D2E4FF] text-[#1E82C1]"
+  //       case "allocated":
+  //         return "bg-[#D2E4FF] text-[#1E82C1]"
+  //       case "negotiation":
+  //         return "bg-[#FCF6E3] text-[#AF905D]"
+  //       case "closed":
+  //         return "bg-gray-100 text-gray-800"
+  //       default:
+  //         return "bg-gray-100 text-gray-800"
+  //     }
+  //   }
 
   const formatBudget = (min: number, max: number) => {
-    return `$${min.toLocaleString()} - $${max.toLocaleString()}`
+    return `${min.toLocaleString("en-IN")} - ${max.toLocaleString("en-IN")}`
   }
   const router = useRouter();
 
-//   const handleSubmitProposal = async (requirementId: string) => {
-//   try {
-//     const res = await fetch("/api/auth/me"); 
-//     const data = await res.json();
+  //   const handleSubmitProposal = async (requirementId: string) => {
+  //   try {
+  //     const res = await fetch("/api/auth/me"); 
+  //     const data = await res.json();
 
-//     const user = data?.user;
+  //     const user = data?.user;
 
-//     if (!user) {
-//       alert("Please login as an agency to submit proposal.");
-//       return;
-//     }
+  //     if (!user) {
+  //       alert("Please login as an agency to submit proposal.");
+  //       return;
+  //     }
 
-//     if (user.role !== "agency") {
-//       alert("Only agencies can submit proposals.");
-//       return;
-//     }
+  //     if (user.role !== "agency") {
+  //       alert("Only agencies can submit proposals.");
+  //       return;
+  //     }
 
-  
-//     onViewProposals(requirementId);
 
-//   } catch (err) {
-//     console.log(err);
-//     alert("Something went wrong");
-//   }
-// };
+  //     onViewProposals(requirementId);
+
+  //   } catch (err) {
+  //     console.log(err);
+  //     alert("Something went wrong");
+  //   }
+  // };
 
   return (
-    <div className="space-y-4"> 
+    <div className="space-y-4">
       {requirements.map((requirement) => (
         <Card key={requirement._id} className="hover:shadow-md transition-shadow py-3 bg-[#EFF7FA] rounded-[16px] px-0">
           <CardHeader className="px-0 -mt-1">
@@ -91,25 +90,25 @@ export function RequirementList({ requirements, onViewProposals, onViewDetails }
               </Badge>
               </div> */}
             </div>
-             <CardDescription className="-mt-1 text-sm px-6 text-[#898383] font-normal border-[#CECECE] pb-[15px]">{requirement.description}</CardDescription>
-            
+            <CardDescription className="-mt-1 text-sm px-6 text-[#898383] font-normal border-[#CECECE] pb-[15px]">{requirement.description}</CardDescription>
+
           </CardHeader>
           <CardContent>
             <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4 -mt-6">
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-               <HiCurrencyDollar color="#F54A0C" className="h-6 w-6"/>
+                <IndianRupee className="h-5 w-5" color="#F54A0C" />
                 <span className="text-[14px] font-bold text-[#000]">{formatBudget(requirement.budgetMin, requirement.budgetMax)}</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                <GoClockFill color="#F54A0C" className="h-6 w-6"/>
+                <GoClockFill color="#F54A0C" className="h-6 w-6" />
                 <span className="text-[14px] font-bold text-[#000]">{requirement.timeline}</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                <FaTag className="h-6 w-6" color="#F54A0C"/>
+                <FaTag className="h-6 w-6" color="#F54A0C" />
                 <span className="text-[14px] font-normal text-[#000]">{requirement.category}</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                <BsCalendarCheckFill    className="h-6 w-6" color="#F54A0C"/>
+                <BsCalendarCheckFill className="h-6 w-6" color="#F54A0C" />
                 <span className="text-[14px] font-normal text-[#000]">Posted:{requirement.createdAt ? new Date(requirement.createdAt).toLocaleDateString() : "Today"}</span>
               </div>
             </div>
@@ -121,28 +120,28 @@ export function RequirementList({ requirements, onViewProposals, onViewDetails }
                  <FaArrowRightLong className="h-3 w-3" color="#fff"/>
               </Button> */}
               {
-                (requirement.status!=="UnderReview" && requirement.status!=="NotApproved") && (
-                  <Button variant="outline" 
-                  size="sm" 
-                  onClick={() =>
-                    router.push(
-                    (`/login?to=submit-proposal&id=${requirement._id}`)
-                    )
-                    } 
-                  className="btn-blackButton h-[30px]">
-                
-                Submit Proposal
-                <FaArrowRightLong className="h-3 w-3" color="#fff"/>
-              </Button>
+                (requirement.status !== "UnderReview" && requirement.status !== "NotApproved") && (
+                  <Button variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      router.push(
+                        (`/login?to=submit-proposal&id=${requirement._id}`)
+                      )
+                    }
+                    className="btn-blackButton h-[30px]">
+
+                    Submit Proposal
+                    <FaArrowRightLong className="h-3 w-3" color="#fff" />
+                  </Button>
                 )
               }
-              
+
             </div>
-             {
-              (requirement.status==="NotApproved") && (
+            {
+              (requirement.status === "NotApproved") && (
                 <p className="teext-md text-red-500">{requirement?.notApprovedMsg}</p>
               )
-              }
+            }
           </CardContent>
         </Card>
       ))}

@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const ServiceCategorySchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
+    subTitle: { type: String, default: "" },
     slug: { type: String, required: true, unique: true },
     icon: { type: String, default: "" },
     image: { type: String, default: "" },
@@ -32,5 +33,8 @@ const ServiceCategorySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.models.ServiceCategory ||
-  mongoose.model("ServiceCategory", ServiceCategorySchema);
+if (mongoose.models.ServiceCategory) {
+  delete (mongoose as any).models.ServiceCategory;
+}
+
+export default mongoose.model("ServiceCategory", ServiceCategorySchema);
