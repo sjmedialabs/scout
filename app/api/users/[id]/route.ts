@@ -96,6 +96,7 @@ export async function GET(
         proposalCount: userData?.proposalCount || 0,
         monthlyProposalCount: userData?.monthlyProposalCount || 0,
         monthlyProposalLimit: userData?.monthlyProposalLimit || 0,
+        lastProposalResetAt: userData?.lastProposalResetAt,
         caseStudiesLimit: userData?.caseStudiesLimit || 0,
         lastLogin: userData.lastLogin,
         createdAt: userData.createdAt,
@@ -139,7 +140,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const allowedUpdates = ["name", "company", "phone", "avatar"];
+    const allowedUpdates = ["name", "company", "phone", "avatar", "monthlyProposalCount", "lastProposalResetAt"];
     const updates: any = {};
 
     for (const key of allowedUpdates) {

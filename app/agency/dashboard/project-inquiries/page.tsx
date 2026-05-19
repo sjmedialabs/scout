@@ -157,7 +157,7 @@ const ProjectInquiriesPage = () => {
       setShowProposalForm(true);
     }
   };
-  const handleProposalSubmit = (requirement: Requirement) => {
+  const handleProposalSubmit = async (requirement: Requirement) => {
     const reqId = (requirement as any)._id || requirement.id;
     const targetUrl = `/agency/dashboard/project-inquiries/${reqId}`;
 
@@ -167,6 +167,7 @@ const ProjectInquiriesPage = () => {
     }
 
     const { user: u, subscription: sub } = userProfileData;
+    console.log("User Details in the profile data:::", u)
     const isFreeUser = sub?.type === "trial" || !u?.subscriptionPlanId;
 
     let isBlocked = false;
@@ -174,21 +175,74 @@ const ProjectInquiriesPage = () => {
     let type: "upgrade" | "buy" = "upgrade";
 
     if (isFreeUser) {
-      const proposalLimit = sub?.proposalsPerMonth || freeTrialConfigData?.proposalLimit || 0;
-      if ((u?.proposalCount || 0) >= proposalLimit) {
+      console.log("He is Free user:::")
+      let nextResetDate: Date | null = null;
+      try {
+        // For old users fallback to createdAt
+        const referenceDateValue =
+          u?.lastProposalResetAt || u?.createdAt;
+
+        if (referenceDateValue) {
+          const referenceDate = new Date(referenceDateValue);
+
+          // Calculate next reset date (1 month after last reset/creation)
+          nextResetDate = new Date(referenceDate);
+          nextResetDate.setMonth(nextResetDate.getMonth() + 1);
+
+          const shouldReset = new Date() >= nextResetDate;
+
+          if (shouldReset) {
+            const response = await authFetch(`/api/users/${u.id}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                monthlyProposalCount: 0,
+                lastProposalResetAt: new Date(),
+              }),
+            });
+            console.log("api  response after reset:::", response)
+
+            if (response.ok) {
+              await loadData();
+              u.monthlyProposalCount = 0;
+              u.lastProposalResetAt = new Date();
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Failed to reset monthly proposal count:", error);
+      }
+
+      const proposalLimit =
+        sub?.proposalsPerMonth ||
+        freeTrialConfigData?.proposalLimit ||
+        0;
+
+      if ((u?.monthlyProposalCount || 0) >= proposalLimit) {
         isBlocked = true;
         type = "buy";
-        msg = "To send a proposal, your free trial limit has been reached. Need to buy the subscription to continue.";
+        const formattedResetDate = nextResetDate
+          ? nextResetDate.toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+          })
+          : "next cycle";
+
+        msg = `To send a proposal, your free trial limit has been reached. Your proposal count will reset on ${formattedResetDate}. Purchase a subscription to continue immediately.`;
       }
     } else {
-      const isExpired = sub?.status === "expired" || (u?.subscriptionEndDate && new Date(u.subscriptionEndDate) < new Date());
+      // const isExpired = sub?.status === "expired" || (u?.subscriptionEndDate && new Date(u.subscriptionEndDate) < new Date());
       const isMonthlyLimitReached = (u?.monthlyProposalCount || 0) >= (u?.monthlyProposalLimit || 0);
 
-      if (isExpired) {
-        isBlocked = true;
-        type = "upgrade";
-        msg = "To send a proposal, your subscription plan has expired. Kindly Upgrade or renew the plan.";
-      } else if (isMonthlyLimitReached) {
+      // if (isExpired) {
+      //   isBlocked = true;
+      //   type = "upgrade";
+      //   msg = "To send a proposal, your subscription plan has expired. Kindly Upgrade or renew the plan.";
+      // } 
+      if (isMonthlyLimitReached) {
         isBlocked = true;
         type = "upgrade";
         msg = "To send a proposal, your limit has reached for the month, Kindly do it next month or Upgrade the plan.";
@@ -199,12 +253,14 @@ const ProjectInquiriesPage = () => {
       setModalType(type);
       setModalMessage(msg);
       setIsModalOpen(true);
-    } else {
+    }
+    else {
       router.push(targetUrl);
     }
   };
 
-  console.log("Fetched Requirements::::", requirements);
+  // console.log("Fetched Requirements::::", requirements);
+  console.log("User Details in the auth context:::", user)
   if (resLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">

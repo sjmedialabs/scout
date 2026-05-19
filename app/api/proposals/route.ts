@@ -261,49 +261,16 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      if (
-        userDoc.proposalCount >=
-        freeConfig.proposalLimit
-      ) {
-        return NextResponse.json(
-          {
-            error:
-              "Free proposal limit reached. Please upgrade your plan to continue submitting proposals.",
-          },
-          { status: 403 }
-        );
-      }
-    }
-
-    // ============================================
-    // PAID USER LOGIC (MONTHLY LIMIT)
-    // ============================================
-
-    if (plan) {
-      // Check subscription expiry
-
-      if (
-        userDoc.subscriptionEndDate &&
-        new Date() >
-          userDoc.subscriptionEndDate
-      ) {
-        return NextResponse.json(
-          { error: "Subscription expired" },
-          { status: 403 }
-        );
-      }
-
-      // Monthly reset logic
-
+      // Monthly reset logic for free users
       const now = new Date();
       const start = new Date(
-        userDoc.subscriptionStartDate
+        userDoc.createdAt
       );
 
       const monthsPassed =
         (now.getFullYear() -
           start.getFullYear()) *
-          12 +
+        12 +
         (now.getMonth() -
           start.getMonth());
 
@@ -323,6 +290,72 @@ export async function POST(request: NextRequest) {
 
       if (now >= nextCycle) {
         userDoc.monthlyProposalCount = 0;
+        await userDoc.save();
+      }
+
+      if (
+        userDoc.monthlyProposalCount >=
+        freeConfig.proposalLimit
+      ) {
+        return NextResponse.json(
+          {
+            error:
+              "Free proposal limit reached. Please upgrade your plan to continue submitting proposals.",
+          },
+          { status: 403 }
+        );
+      }
+    }
+
+    // ============================================
+    // PAID USER LOGIC (MONTHLY LIMIT)
+    // ============================================
+
+    if (plan) {
+      // Check subscription expiry
+
+      // if (
+      //   userDoc.subscriptionEndDate &&
+      //   new Date() >
+      //   userDoc.subscriptionEndDate
+      // ) {
+      //   return NextResponse.json(
+      //     { error: "Subscription expired" },
+      //     { status: 403 }
+      //   );
+      // }
+
+      // Monthly reset logic
+
+      const now = new Date();
+      const start = new Date(
+        userDoc.subscriptionStartDate
+      );
+
+      const monthsPassed =
+        (now.getFullYear() -
+          start.getFullYear()) *
+        12 +
+        (now.getMonth() -
+          start.getMonth());
+
+      const currentCycleStart = new Date(start);
+
+      currentCycleStart.setMonth(
+        start.getMonth() + monthsPassed
+      );
+
+      const nextCycle = new Date(
+        currentCycleStart
+      );
+
+      nextCycle.setMonth(
+        nextCycle.getMonth() + 1
+      );
+
+      if (now >= nextCycle) {
+        userDoc.monthlyProposalCount = 0;
+        userDoc.lastProposalResetAt = now;
         await userDoc.save();
       }
 
@@ -366,7 +399,7 @@ export async function POST(request: NextRequest) {
     await Requirement.findByIdAndUpdate(
       requirementId,
       {
-        $inc: { proposals: 1 }, 
+        $inc: { proposals: 1 },
       }
     );
 
@@ -376,11 +409,8 @@ export async function POST(request: NextRequest) {
 
     const updateFields: any = {
       proposalCount: 1, // always increase total
+      monthlyProposalCount: 1, // always increase monthly
     };
-
-    if (plan) {
-      updateFields.monthlyProposalCount = 1;
-    }
 
     await User.findByIdAndUpdate(
       user.userId,

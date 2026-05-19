@@ -45,15 +45,15 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await hashPassword(password)
 
     // Generate 4-digit OTP
-      const otp = Math.floor(1000 + Math.random() * 9000).toString()
+    const otp = Math.floor(1000 + Math.random() * 9000).toString()
 
-      const expiresAt = new Date(Date.now() + 5 * 60 * 1000) // 5 mins
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000) // 5 mins
 
-      await transporter.sendMail({
-        from: process.env.SMTP_FROM || `"Scout Team" <no-reply@scout.com>`,
-        to: email,
-        subject: "🔐 Verify Your Email - OTP Code",
-        html: `
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM || `"Scout Team" <no-reply@scout.com>`,
+      to: email,
+      subject: "🔐 Verify Your Email - OTP Code",
+      html: `
         <div style="margin:0;padding:0;background-color:#f4f6f8;font-family:Arial,Helvetica,sans-serif;">
           <table align="center" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:40px auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 5px 15px rgba(0,0,0,0.05);">
             
@@ -115,11 +115,12 @@ export async function POST(request: NextRequest) {
           </table>
         </div>
         `,
-      })
+    })
 
 
 
     // Create user in MongoDB
+    const now = new Date();
     const user = await User.create({
       email: email.toLowerCase(),
       password: hashedPassword,
@@ -129,7 +130,8 @@ export async function POST(request: NextRequest) {
       phone,
       isVerified: false,
       isActive: true,
-       otp: {
+      lastProposalResetAt: now,
+      otp: {
         code: otp,
         expiresAt,
       },
@@ -176,7 +178,7 @@ export async function POST(request: NextRequest) {
     //     websiteClicks: 0,
     //   })
     // }
-    
+
     //Create Seeker Profile details for the client dashboatrd
     // if(role==="client"){
     //   console.log("---client condition ok:::",user._id)
@@ -195,7 +197,7 @@ export async function POST(request: NextRequest) {
     // preferredCommunication: "email", // FIXED TYPO
     // typicalProjectBudget: "$1,000 - $5,000", // FIXED TYPO
     // companySize: "1-10",
-    
+
     // image: "",
     //   })
     // }
@@ -220,7 +222,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message:"OTP Sent  successfully to your email"
+      message: "OTP Sent  successfully to your email"
       // user: userResponse,
       // token,
     })
