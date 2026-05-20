@@ -90,7 +90,7 @@ export function RequirementList({ requirements, onViewProposals, onViewDetails }
               </Badge>
               </div> */}
             </div>
-            <CardDescription className="-mt-1 text-sm px-6 text-[#898383] font-normal border-[#CECECE] pb-[15px]">{requirement.description}</CardDescription>
+            <CardDescription className="-mt-1 text-sm px-6 text-[#898383] font-normal border-[#CECECE] pb-[15px]">{requirement.description.slice(0, 140)}</CardDescription>
 
           </CardHeader>
           <CardContent>

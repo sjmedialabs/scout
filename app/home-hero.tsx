@@ -17,7 +17,7 @@ export function HomeHero({ cms }: HomeHeroProps) {
   const [activeButton, setActiveButton] = useState<"match" | "browse">("match");
 
 
-  console.log("Recieved Props CMS:::",cms);
+  console.log("Recieved Props CMS:::", cms);
 
   const handleGetMatched = async () => {
     if (searchQuery.trim()) {
@@ -52,33 +52,33 @@ export function HomeHero({ cms }: HomeHeroProps) {
   };
 
   const handlePopularSearch = (query: string) => {
-  if (!query.trim()) return;
+    if (!query.trim()) return;
 
-  if (activeButton === "match") {
-    router.push(
-      `/services?q=${query}&type=providers`
-    );
-  } else {
-    router.push(`/browse?q=${encodeURIComponent(query)}`);
-  }
-};
+    if (activeButton === "match") {
+      router.push(
+        `/services?q=${query}&type=providers`
+      );
+    } else {
+      router.push(`/browse?q=${encodeURIComponent(query)}`);
+    }
+  };
 
 
   const handleSearch = () => {
-  if (!searchQuery.trim()) return;
+    if (!searchQuery.trim()) return;
 
-  router.push(
+    router.push(
       `/services?q=${searchQuery.trim()}&type=providers`
     );
 
-  // if (activeButton === "match") {
-  //   router.push(
-  //     `/search?q=${encodeURIComponent(searchQuery.trim())}&type=providers`
-  //   );
-  // } else {
-  //   router.push(`/browse?q=${encodeURIComponent(searchQuery.trim())}`);
-  // }
-};
+    // if (activeButton === "match") {
+    //   router.push(
+    //     `/search?q=${encodeURIComponent(searchQuery.trim())}&type=providers`
+    //   );
+    // } else {
+    //   router.push(`/browse?q=${encodeURIComponent(searchQuery.trim())}`);
+    // }
+  };
 
   return (
     <section
@@ -92,20 +92,20 @@ export function HomeHero({ cms }: HomeHeroProps) {
     >
       <div className="w-full  ">
         <div className="w-full  flex flex-col items-center justify-center px-2 sm:px-4 md:px-8">
-         <div className="text-center">
-           <h1
-            className="text-5xl font-normal  text-white mb-4 max-w-[700px]  text-center  leading-tight"
-           style={{
-              fontFamily: "'Cinzel', serif",
-            }}
-          >
-            {cms?.homeBannerTitle ||
-              "Connect with trusted companies for your next project."}
-          </h1>
+          <div className="text-center">
+            <h1
+              className="text-5xl font-bold  text-white mb-4 max-w-[700px]  text-center  leading-tight"
+            //  style={{
+            //     fontFamily: "'Cinzel', serif",
+            //   }}
+            >
+              {cms?.homeBannerTitle ||
+                "Connect with trusted companies for your next project."}
+            </h1>
 
-         </div>
+          </div>
           {/* Action Buttons */}
-          
+
 
           {/* Search Section */}
           <div className="space-y-2 w-full max-w-md sm:max-w-xl md:max-w-2xl mb-2 mx-auto bg-white-50">
@@ -127,7 +127,7 @@ export function HomeHero({ cms }: HomeHeroProps) {
               >
                 <Search className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </Button>
-              
+
             </div>
 
             {/* Popular Searches */}

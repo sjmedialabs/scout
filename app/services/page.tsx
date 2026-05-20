@@ -359,7 +359,7 @@ export default function ServicesPage() {
   console.log("Filtered Providers:::", filteredProviders);
 
   return (
-    <div className="flex flex-col lg:flex-row w-full min-h-screen bg-white max-w-7xl mx-auto">
+    <div className="flex flex-col lg:flex-row w-full min-h-screen bg-white sm:px-6 mx-auto">
 
       {/* ---------------- MOBILE HEADER ---------------- */}
       <div className="lg:hidden flex items-center px-2 justify-between p-1 border-b border-gray-200">
