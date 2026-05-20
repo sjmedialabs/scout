@@ -267,10 +267,8 @@ export default function HomePage() {
 
 
 
-          <h2 className="text-4xl font-bold text-center mb-6"
-            style={{
-              fontFamily: "'Cinzel', serif",
-            }}
+          <h2 className="text-center text-3xl md:text-5xl font-extrabold text-black tracking-tight mb-1 max-w-4xl mx-auto leading-tight"
+
           >
             How Scout Works
 
@@ -525,63 +523,83 @@ export default function HomePage() {
               {projects.map((project: any) => (
                 <div
                   key={project._id}
-                  className="rounded-3xl border border-slate-200 items-center bg-white hover:shadow-lg transition-shadow
-                   flex flex-col h-full"
+                  className="
+                      rounded-3xl border border-slate-200 bg-white
+                      hover:shadow-lg transition-shadow
+                      flex flex-col h-full overflow-hidden
+                    "
                 >
                   {/* Image */}
                   <img
                     src={project.image || "/requirements.jpg"}
                     alt={project.title}
-                    className="w-full h-[150px] object-cover border-b rounded-t-3xl"
+                    className="w-full h-[180px] object-cover border-b"
                   />
 
-                  {/* Category + Timeline */}
+                  <div className="px-6 py-2 flex flex-col flex-1">
+                    {/* Category */}
+                    <Badge
+                      variant="outline"
+                      className="
+                          w-fit rounded-full
+                          bg-[#dbeafe]
+                          text-blueButton
+                          border-none
+                          font-semibold
+                          px-4 py-1
+                        "
+                    >
+                      {project.category}
+                    </Badge>
 
-                  <Badge
-                    variant="outline"
-                    className="rounded-full mt-3 mb-2 bg-[#dbeafe] text-sm font-semibold text-blueButton py-1"
-                  >
-                    {project.category}
-                  </Badge>
-                  <p className=" flex gap-1 text-sm font-semibold text-blueButton">
-                    <Clock className="w-4 h-4 mt-0.5" />
-                    Timeline - <span className="text-red-500">{project.timeline}</span>
-                  </p>
+                    {/* Title */}
+                    <h3 className="mt-2 text-lg font-bold capitalize text-gray-900">
+                      {project.title}
+                    </h3>
 
+                    {/* Budget Section */}
+                    <div
+                      className="
+                            mt-2 rounded-xl
+                            border border-green-200
+                            bg-green-50
+                            px-4 py-2
+                            flex items-center justify-between
+                          "
+                    >
+                      <span className="text-sm font-bold tracking-widest text-green-900 uppercase">
+                        Budget
+                      </span>
 
-                  {/* Title */}
-                  <h3 className="px-6 mt-1 text-md font-semibold capitalize">
-                    {project.title}
-                  </h3>
-
-                  {/* Description */}
-                  {/* <div className="px-6 mt-1">
-                    <p className="text-sm text-gray-500 line-clamp-2">
-                      {project.description}
-                    </p>
-                  </div> */}
-
-                  {/* Budget */}
-                  <div className="mt-auto">
-                    <div className="mt-0 text-center">
                       <span className="text-sm font-bold text-green-700">
                         ₹{project.budgetMin.toLocaleString()} - ₹
                         {project.budgetMax.toLocaleString()}
                       </span>
                     </div>
 
+                    {/* Timeline (replaces closes in section) */}
+                    <div className="mt-3 flex items-center gap-2 text-sm font-medium text-slate-600">
+                      <Clock className="w-4 h-4 text-blueButton" />
+                      <span>
+                        Timeline:
+                        <span className="ml-1 font-semibold text-blueButton">
+                          {project.timeline}
+                        </span>
+                      </span>
+                    </div>
+
                     {/* Button */}
-                    <div className="px-6 pb-3 mt-1">
+                    <div className="mt-auto pt-3">
                       <Link href={`/login?to=requirement-details&id=${project._id}`}>
                         <Button
                           variant="outline"
-                          size="sm"
-                          className="primary-button !text-xs w-[100px] h-[30px]"
+                          className="
+                             primary-button !text-sm w-full text-center h-[35px]
+                            "
                         >
-                          View Details →
+                          Submit Proposal →
                         </Button>
                       </Link>
-
                     </div>
                   </div>
                 </div>
@@ -757,7 +775,7 @@ export default function HomePage() {
                             variant="outline"
                             size="sm"
                             asChild
-                            className="primary-button !text-xs w-[100px] h-[30px]"
+                            className="primary-button !text-sm w-full text-center h-[35px]"
                           >
                             <Link
                               href={`/provider/${provider.id || provider._id}`}
@@ -847,7 +865,7 @@ export default function HomePage() {
                     <div className="mt-auto pt-2">
                       <Button
                         size="sm"
-                        className="primary-button !text-xs w-[110px] h-[30px]"
+                        className="primary-button !text-sm w-full text-center h-[35px]"
                       >
                         <Link href={`/blogs/${blog._id}`} key={blog._id}>
                           Read More →
@@ -877,7 +895,7 @@ export default function HomePage() {
       {/* CTA Section */}
       <section className="py-10 px-6 md:px-10">
         <div className="max-w-4xl mx-auto text-center">
-          <h3 className="text-2xl md:text-4xl font-extralight">
+          <h3 className="text-2xl md:text-4xl font-semibold">
             {cms?.getStartedTitle || "Ready to Get Started?"}
           </h3>
           <p className="text-base max-w-sm mx-auto text-slate-500">

@@ -389,7 +389,7 @@ const RequirementsPage = () => {
     );
   }
   return (
-    <div className="space-y-2 p-6 md:p-12 pt-1 xl:px-30">
+    <div className="space-y-2 p-6  pt-5 px-10 2xl:px-30">
       <div>
         <h1 className="text-2xl font-bold text-[#F4561C] tracking-tight">
           Requirements
