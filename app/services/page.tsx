@@ -34,10 +34,14 @@ export default function ServicesPage() {
   const searchParams = useSearchParams();
   const categoryId = searchParams.get("category") || null;
   const subCategoryId = searchParams.get("subcategory") || null;
-  const searchTerm = decodeURIComponent(searchParams.get("q") || "");
-  // console.log("Search Term is::::",searchTerm)
+  const querySearchTerm = decodeURIComponent(searchParams.get("q") || "");
+  // console.log("Search Term is::::",querySearchTerm)
 
+  const [activeSearchTerm, setActiveSearchTerm] = useState(querySearchTerm);
 
+  useEffect(() => {
+    setActiveSearchTerm(querySearchTerm);
+  }, [querySearchTerm]);
 
   const [resLoading, setResLoading] = useState(false);
   const [open, setOpen] = useState(false)
@@ -178,7 +182,7 @@ export default function ServicesPage() {
     }
 
     // 🔹 SEARCH TERM LOGIC
-    if (searchTerm) {
+    if (querySearchTerm) {
       let foundService = null;
       let parentCategory = null;
       let childCategory = null;
@@ -187,7 +191,7 @@ export default function ServicesPage() {
         parent.children?.forEach((child) => {
           child.items?.forEach((service) => {
             if (
-              service.title.toLowerCase().includes(searchTerm.toLowerCase())
+              service.title.toLowerCase().includes(querySearchTerm.toLowerCase())
             ) {
               foundService = service;
               parentCategory = parent;
@@ -214,7 +218,7 @@ export default function ServicesPage() {
     }
 
 
-  }, [categories, providers, categoryId, subCategoryId, searchTerm]);
+  }, [categories, providers, categoryId, subCategoryId, querySearchTerm]);
 
   useEffect(() => {
 
@@ -227,8 +231,8 @@ export default function ServicesPage() {
     let updatedProviders = [...providers];
 
     /* SEARCH FILTER */
-    if (searchTerm) {
-      const normalizedSearch = normalize(searchTerm);
+    if (activeSearchTerm) {
+      const normalizedSearch = normalize(activeSearchTerm);
 
       updatedProviders = updatedProviders.filter((provider: any) =>
         provider.services?.some((service: string) =>
@@ -318,7 +322,7 @@ export default function ServicesPage() {
     activeSubCategory,
     activeCategory,
     categories,
-    searchTerm,
+    activeSearchTerm,
     ratingFilter,
     priceFilter,
     projectFilter,
@@ -349,6 +353,7 @@ export default function ServicesPage() {
     setActiveServiceId(service._id);
     setActiveCategory(parentId);
     setActiveSubCategory(childId);
+    setActiveSearchTerm("");
   };
 
   console.log("Filtered Providers:::", filteredProviders);
@@ -397,6 +402,7 @@ export default function ServicesPage() {
                       setActiveSubCategory(null);
                       setActiveService(null);
                       setActiveServiceId(null);
+                      setActiveSearchTerm("");
                     }}
                     className={`flex justify-between items-center cursor-pointer px-3 py-2 rounded-lg border border-gray-100/80 transition-all duration-200 shadow-[-3px_3px_6px_rgba(0,0,0,0.07)]
                   ${activeCategory === parent._id
@@ -421,6 +427,7 @@ export default function ServicesPage() {
                               setActiveSubCategory(isChildOpen ? null : child._id);
                               setActiveService(null);
                               setActiveServiceId(null);
+                              setActiveSearchTerm("");
                             }}
                             className={`flex justify-between items-center cursor-pointer p-0 rounded-md
                           ${activeSubCategory === child._id
@@ -475,6 +482,7 @@ export default function ServicesPage() {
                   setActiveSubCategory(null);
                   setActiveService(null);
                   setActiveServiceId(null);
+                  setActiveSearchTerm("");
                 }}
                 className={`flex justify-between items-center cursor-pointer px-3 py-2 rounded-lg border border-gray-100/80 transition-all duration-200 shadow-[-3px_3px_6px_rgba(0,0,0,0.07)]
               ${activeCategory === parent._id
@@ -499,6 +507,7 @@ export default function ServicesPage() {
                           setActiveSubCategory(isChildOpen ? null : child._id);
                           setActiveService(null);
                           setActiveServiceId(null);
+                          setActiveSearchTerm("");
                         }}
                         className={`flex justify-between items-center cursor-pointer p-2 rounded-md
                       ${activeSubCategory === child._id
