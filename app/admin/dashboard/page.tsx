@@ -35,14 +35,14 @@ export default function DashboardPage() {
     mockSubscriptionStats,
   );
   const [users, setUsers] = useState<User[]>([]);
-  const[providers,setProviders]=useState<Provider[]>([]);
+  const [providers, setProviders] = useState<Provider[]>([]);
   const [reportedContent, setReportedContent] = useState([]);
   const [requirements, setRequirements] = useState([]);
 
-  const[revenue,setRevenue]=useState([]);
-  const[revenueStats,setRevenueStats]=useState({
-    monthlyRevenue:0,
-    increasedPercentageThanLastMonth:0
+  const [revenue, setRevenue] = useState([]);
+  const [revenueStats, setRevenueStats] = useState({
+    monthlyRevenue: 0,
+    increasedPercentageThanLastMonth: 0
   });
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function DashboardPage() {
       try {
         setIsLoading(true);
         const [
-          
+
           usersRes,
           requirementsRes,
           reportsRes,
@@ -66,19 +66,19 @@ export default function DashboardPage() {
           authFetch("/api/payment")
         ]);
         const usersData = await usersRes.json();
-        setUsers(usersData.users.filter((item)=>item.role!=="admin"));
+        setUsers(usersData.users.filter((item) => item.role !== "admin"));
 
-        const reportedData=await reportsRes.json();
+        const reportedData = await reportsRes.json();
         setReportedContent(reportedData.reports)
 
         const requirementsData = await requirementsRes.json();
         console.log("Fetched requirements data:", requirementsData);
         setRequirements(requirementsData.requirements);
 
-        const providersData=await providersRes.json();
+        const providersData = await providersRes.json();
         setProviders(providersData.providers)
 
-        const paymentsData=await paymentRes.json();
+        const paymentsData = await paymentRes.json();
         setRevenue(paymentsData.data);
 
       } catch (error) {
@@ -91,52 +91,52 @@ export default function DashboardPage() {
     fetchDashboardData();
   }, []);
 
-  {/*Revenue stats caluclation */}
+  {/*Revenue stats caluclation */ }
   useEffect(() => {
-  if (revenue.length === 0) return;
+    if (revenue.length === 0) return;
 
-  const now = new Date();
+    const now = new Date();
 
-  const currentMonth = now.getMonth();
-  const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
 
-  const lastMonthDate = new Date(currentYear, currentMonth - 1);
-  const lastMonth = lastMonthDate.getMonth();
-  const lastMonthYear = lastMonthDate.getFullYear();
+    const lastMonthDate = new Date(currentYear, currentMonth - 1);
+    const lastMonth = lastMonthDate.getMonth();
+    const lastMonthYear = lastMonthDate.getFullYear();
 
-  let currentMonthRevenue = 0;
-  let lastMonthRevenue = 0;
+    let currentMonthRevenue = 0;
+    let lastMonthRevenue = 0;
 
-  revenue.forEach(item => {
-    if (item.status !== "success") return;
+    revenue.forEach(item => {
+      if (item.status !== "success") return;
 
-    const date = new Date(item.createdAt);
-    const month = date.getMonth();
-    const year = date.getFullYear();
+      const date = new Date(item.createdAt);
+      const month = date.getMonth();
+      const year = date.getFullYear();
 
-    if (month === currentMonth && year === currentYear) {
-      currentMonthRevenue += item.amount;
-    }
+      if (month === currentMonth && year === currentYear) {
+        currentMonthRevenue += item.amount;
+      }
 
-    if (month === lastMonth && year === lastMonthYear) {
-      lastMonthRevenue += item.amount;
-    }
-  });
+      if (month === lastMonth && year === lastMonthYear) {
+        lastMonthRevenue += item.amount;
+      }
+    });
 
-  const increasedPercentageThanLastMonth =
-    lastMonthRevenue === 0
-      ? currentMonthRevenue > 0
-        ? 100
-        : 0
-      : ((currentMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100;
+    const increasedPercentageThanLastMonth =
+      lastMonthRevenue === 0
+        ? currentMonthRevenue > 0
+          ? 100
+          : 0
+        : ((currentMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100;
 
-  setRevenueStats({
-    monthlyRevenue: currentMonthRevenue,
-    increasedPercentageThanLastMonth: Number(
-      increasedPercentageThanLastMonth.toFixed(2)
-    ),
-  });
-}, [revenue]);
+    setRevenueStats({
+      monthlyRevenue: currentMonthRevenue,
+      increasedPercentageThanLastMonth: Number(
+        increasedPercentageThanLastMonth.toFixed(2)
+      ),
+    });
+  }, [revenue]);
 
   const pendingReports = reportedContent.filter(
     (r) => r.status === "pending",
@@ -145,26 +145,26 @@ export default function DashboardPage() {
   const activeRequirements = requirements.filter(
     (r) => r.status === "Allocated",
   );
-  console.log("ACtive Requirements are ::::::::",activeRequirements)
+  console.log("ACtive Requirements are ::::::::", activeRequirements)
 
   const now = new Date();
 
-const sortedUsers = [...users].sort((a, b) => {
-  return new Date(b.createdAt) - new Date(a.createdAt);
-});
+  const sortedUsers = [...users].sort((a, b) => {
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
 
-const sortedReports = [...(reportedContent || [])].sort((a, b) => {
-  return new Date(b.createdAt) - new Date(a.createdAt);
-});
+  const sortedReports = [...(reportedContent || [])].sort((a, b) => {
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
 
-if(isLoading){
-  return (
+  if (isLoading) {
+    return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
-      
+
     );
-}
+  }
 
 
   return (
@@ -197,7 +197,7 @@ if(isLoading){
           icon={<Users className="h-4 w-4 text-orangeButton" color="#fff" />}
           gradient="from-blue-100 to-blue-200"
           value={users.length}
-          helper={`${pendingUsers} pending approval`}
+          helper={`${pendingUsers} Unverified agencies`}
         />
 
         {/* Active Projects */}
@@ -213,7 +213,7 @@ if(isLoading){
         {/* Pending Reports */}
         <DashboardCard
           title="Pending Reports"
-          icon={<AlertTriangle className="h-4 w-4 text-orangeButton"color="#fff" />}
+          icon={<AlertTriangle className="h-4 w-4 text-orangeButton" color="#fff" />}
           gradient="from-orange-100 to-orange-200"
           accentColor="#a085cc"
           value={pendingReports}
@@ -224,20 +224,20 @@ if(isLoading){
         <DashboardCard
           title="Monthly Revenue"
           icon={
-            <ChartNoAxesCombined className="h-4 w-4 text-orangeButton"color="#fff"  />
+            <ChartNoAxesCombined className="h-4 w-4 text-orangeButton" color="#fff" />
           }
           gradient="from-purple-100 to-purple-200"
           accentColor="#88c6ac"
           value={`₹${revenueStats.monthlyRevenue.toLocaleString()}`}
-          helper={`${revenueStats.increasedPercentageThanLastMonth}% ${revenueStats.increasedPercentageThanLastMonth>=0?"growth":"drop"}`}
+          helper={`${revenueStats.increasedPercentageThanLastMonth}% ${revenueStats.increasedPercentageThanLastMonth >= 0 ? "growth" : "drop"}`}
         />
       </div>
 
       {/* Recent activity  */}
       <div className="flex flex-col lg:flex-row gap-6 w-full items-stretch">
-  <RecentUserActivityCard recentUsers={sortedUsers} />
-  <ContentReportsCard reportContent={sortedReports} />
-</div>
+        <RecentUserActivityCard recentUsers={sortedUsers} />
+        <ContentReportsCard reportContent={sortedReports} />
+      </div>
     </div>
   );
 }
@@ -285,7 +285,7 @@ export function DashboardCard({
 
       {/* Helper */}
       {helper && (
-        <p className={`text-xs ${parseInt(value)>0?"text-green-600":"text-red-500"} mt-1 font-medium`}>
+        <p className={`text-xs ${parseInt(value) > 0 ? "text-green-600" : "text-red-500"} mt-1 font-medium`}>
           {helper}
         </p>
       )}
@@ -297,7 +297,7 @@ function RecentUserActivityCard({ recentUsers }) {
   return (
     <div className="w-full flex">
       <div className="flex flex-col w-full bg-white rounded-2xl shadow-md p-6 pt-2 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-        
+
         {/* Header */}
         <div className="mb-2">
           <h3 className="text-lg font-bold text-orangeButton">
@@ -324,7 +324,7 @@ function RecentUserActivityCard({ recentUsers }) {
                 </div>
 
                 <span className="text-xs font-semibold px-3 py-1 rounded-lg bg-green-100 text-green-700">
-                  {eachItem.role.charAt(0).toUpperCase()+eachItem.role.slice(1,)}
+                  {eachItem.role.charAt(0).toUpperCase() + eachItem.role.slice(1,)}
                 </span>
               </div>
             ))
@@ -355,7 +355,7 @@ function ContentReportsCard({ reportContent }) {
   return (
     <div className="w-full flex">
       <div className="flex flex-col w-full bg-white rounded-2xl p-6 pt-2 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-        
+
         {/* Header */}
         <div className="mb-2">
           <h3 className="text-lg font-bold text-orangeButton">
