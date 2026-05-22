@@ -602,11 +602,13 @@ export function Navigation() {
               <Button
                 variant="ghost"
                 size="sm"
+                className="hover:bg-transparent hover:text-slate-900 active:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                style={{ WebkitTapHighlightColor: 'transparent' }}
                 onClick={() =>
                   setMobileMenuOpen(!mobileMenuOpen)
                 }
               >
-                <Menu size={40} />
+                <Menu size={40} className="text-slate-900" />
               </Button>
 
               <div className="relative cursor-pointer">
