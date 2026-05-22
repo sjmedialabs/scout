@@ -754,18 +754,24 @@ export default function ServicesPage() {
                     </div>
 
                     {/* Title + Description */}
-                    <div className="py-3">
-                      <h3
-                        className="text-md font-bold text-[#232a8f] leading-tight"
+                    <div className="py-3 flex flex-row justify-between">
+                     <div>
+                          <h3
+                            className="text-md font-bold text-[#232a8f] leading-tight"
 
-                      >
-                        {p.name}
-                      </h3>
-                      {p.tagline && (
-                        <p className="text-xs text-gray-500 mt-1 font-medium">
-                          {p.tagline}
-                        </p>
-                      )}
+                          >
+                            {p.name}
+                          </h3>
+                          {p.tagline && (
+                            <p className="text-xs text-gray-500 mt-1 font-medium">
+                              {p.tagline}
+                            </p>
+                          )}
+                     </div>
+                     <div>
+                          <p className="text-[12px] font-semibold text-[#616161] mt-0 mb-0">From:</p>
+                          <p className="text-[18px] font-bold text-[#000] -mt-0.5">{p?.hourlyRate ||0} <span className="text-[#616161] text-[12px]">₹/hr</span></p>
+                      </div>
 
                       {/* <p
                       className="text-[10px] font-semibold text-[#adb0b3] mt-0"
@@ -917,10 +923,10 @@ export default function ServicesPage() {
                     </div>
 
                     {/* Rate */}
-                    <div className="text-xs text-[#616161] font-bold py-1">
+                    {/* <div className="text-xs text-[#616161] font-bold py-1">
                       Starting Price:
                       <span className="ml-1 text-gray-400">{p.hourlyRate}₹/hr</span>
-                    </div>
+                    </div> */}
 
                     {/* Buttons */}
                     <div className="flex  justify-between gap-3 pt-1">
