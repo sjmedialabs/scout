@@ -658,6 +658,86 @@ export function Navigation() {
             </div>
           </div>
         </div>
+
+        {mobileMenuOpen && (
+          <div className="lg:hidden absolute top-full left-0 right-0 bg-white border-b shadow-lg max-h-[60vh] overflow-y-auto flex flex-col px-4 py-4 z-50">
+            {mainCategories.map((category) => (
+              <div key={category.slug} className="py-3 border-b border-gray-100">
+                <button
+                  onClick={() => setMobileOpenMenu(mobileOpenMenu === category.slug ? null : category.slug)}
+                  className="flex justify-between items-center w-full text-left font-medium text-slate-800 focus:outline-none"
+                >
+                  {category.title}
+                  <ChevronRight
+                    size={16}
+                    className={`transition-transform duration-200 ${
+                      mobileOpenMenu === category.slug ? "rotate-90" : ""
+                    }`}
+                  />
+                </button>
+                {mobileOpenMenu === category.slug && category.children?.length > 0 && (
+                  <div className="mt-3 pl-4 space-y-4 border-l-2 border-slate-100  max-h-[30vh] overflow-y-auto">
+                    {category.children.map((parent: any) => (
+                      <div key={parent.title} className="space-y-2">
+                        <p className="text-sm font-semibold text-slate-900">{parent.title}</p>
+                        <ul className="space-y-2">
+                          {parent.items?.map((child: any) => (
+                            <li key={child.slug}>
+                              <Link
+                                href={`/services?subcategory=${child._id}`}
+                                className="text-sm text-slate-500 hover:text-[#F4561C] block"
+                                onClick={() => setMobileMenuOpen(false)}
+                              >
+                                {child.title}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+            
+            <div className="py-3 border-b border-gray-100 flex flex-col gap-3">
+              <Link
+                href="/pricing"
+                className="font-medium text-[#000] hover:text-[#F4561C] "
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Pricing
+              </Link>
+              <Link
+                href="/blogs"
+                className="font-medium text-[#000] hover:text-[#F4561C]"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Blogs
+              </Link>
+            </div>
+
+            <div className="flex flex-row gap-3 pt-4">
+              <Button className="primary-button w-auto" asChild>
+                <Link
+                  href={user ? "/client/dashboard?section=projects" : "/register"}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Post Requirement
+                </Link>
+              </Button>
+              <Button
+                className="primary-button w-auto"
+                onClick={() => {
+                  router.push("/browse");
+                  setMobileMenuOpen(false);
+                }}
+              >
+                Find Projects
+              </Button>
+            </div>
+          </div>
+        )}
       </nav>
     </div>
   );
