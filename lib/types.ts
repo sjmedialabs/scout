@@ -52,6 +52,10 @@ export interface Requirement {
   attachments?: string[]
   notApprovedMsg:String
   hasSubmittedProposal?: boolean
+  client?: {
+    companyName?: string
+    location?: string
+  }
 }
 
 export interface Proposal {

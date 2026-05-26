@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
     const clients = await Seeker.find({
       userId: { $in: clientUserIds },
     })
-      .select("userId location")
+      .select("userId location companyName")
       .lean();
 
     const clientMap = new Map(

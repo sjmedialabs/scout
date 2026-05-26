@@ -399,25 +399,23 @@ const RequirementsPage = () => {
         <div className="lg:col-span-1">
           <FiltersPanel onFiltersChange={handleFiltersChange} />
         </div>
-        <div className="lg:col-span-3">
-          <Card className="bg-[#fff] rounded-[16px] py-0 px-0 p-0 min-h-100">
-            <CardContent className="max-h-[600px] overflow-y-auto p-6 ">
-              {filteredRequirements && (
-                <RequirementList
-                  requirements={filteredRequirements}
-                  onViewProposals={handleViewProposals}
-                  onViewDetails={handleViewDetails}
-                />
-              )}
-              {filteredRequirements?.length === 0 && (
-                <div className="flex justify-center items-center">
-                  <p className="text-xl font-light text-[#000]">
-                    No Requirements with these applied filters
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+        <div className="lg:col-span-3 max-h-[80vh] overflow-y-auto">
+
+          {filteredRequirements && (
+            <RequirementList
+              requirements={filteredRequirements}
+              onViewProposals={handleViewProposals}
+              onViewDetails={handleViewDetails}
+            />
+          )}
+          {filteredRequirements?.length === 0 && (
+            <div className="flex justify-center items-center">
+              <p className="text-xl font-light text-[#000]">
+                No Requirements with these applied filters
+              </p>
+            </div>
+          )}
+
         </div>
       </div>
       {showDetailsModal && selectedRequirement && (
