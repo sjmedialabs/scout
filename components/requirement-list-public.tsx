@@ -141,7 +141,7 @@ export function RequirementList({ requirements, onViewProposals, onViewDetails }
                       (`/login?to=submit-proposal&id=${requirement._id}`)
                     )
                   }
-                  className="bg-[#2563EB] hover:bg-[#1d4ed8] text-white rounded-full font-bold px-6 py-2 h-[35px] text-[13px] transition-colors flex items-center gap-2 border-none shrink-0"
+                  className="bg-[#2C34A1] hover:bg-[#2C34A1] text-white rounded-full font-bold px-6 py-2 h-[35px] text-[13px] transition-colors flex items-center gap-2 border-none shrink-0"
                 >
                   Submit Proposal
                   <FaArrowRightLong className="h-3.5 w-3.5" color="#fff" />
