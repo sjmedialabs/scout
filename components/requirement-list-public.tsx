@@ -131,7 +131,7 @@ export function RequirementList({ requirements, onViewProposals, onViewDetails }
           {/* Bottom Section */}
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
             <p className="text-xs text-[#898383] font-normal text-center sm:text-left">
-              Match your skills? Send your proposal in under 2 minutes.
+              Ready to Win This Project? Submit Your Proposal Today.
             </p>
             {
               (requirement.status !== "UnderReview" && requirement.status !== "NotApproved") && (
