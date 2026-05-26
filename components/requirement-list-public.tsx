@@ -1,17 +1,13 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { useState } from "react"
+import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Eye, MessageSquare, Calendar, DollarSign, IndianRupee } from "lucide-react"
+import { IndianRupee } from "lucide-react"
 import type { Requirement } from "@/lib/types"
-import { Separator } from "@radix-ui/react-dropdown-menu"
 import { GoClockFill } from "react-icons/go";
-import { FiTag } from "react-icons/fi";
-import { CiCalendar } from "react-icons/ci";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { FaTag } from "react-icons/fa6";
-import { FaCalendarAlt } from "react-icons/fa";
 import { BsCalendarCheckFill } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 
@@ -44,105 +40,120 @@ export function RequirementList({ requirements, onViewProposals, onViewDetails }
   //     }
   //   }
 
+  const [expandedRequirements, setExpandedRequirements] = useState<Record<string, boolean>>({})
+
+  const toggleExpand = (id: string) => {
+    setExpandedRequirements((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }))
+  }
+
   const formatBudget = (min: number, max: number) => {
+    if (min === undefined || max === undefined) return ""
     return `${min.toLocaleString("en-IN")} - ${max.toLocaleString("en-IN")}`
   }
   const router = useRouter();
 
-  //   const handleSubmitProposal = async (requirementId: string) => {
-  //   try {
-  //     const res = await fetch("/api/auth/me"); 
-  //     const data = await res.json();
-
-  //     const user = data?.user;
-
-  //     if (!user) {
-  //       alert("Please login as an agency to submit proposal.");
-  //       return;
-  //     }
-
-  //     if (user.role !== "agency") {
-  //       alert("Only agencies can submit proposals.");
-  //       return;
-  //     }
-
-
-  //     onViewProposals(requirementId);
-
-  //   } catch (err) {
-  //     console.log(err);
-  //     alert("Something went wrong");
-  //   }
-  // };
+  console.log("Recieved required  requirements:::::", requirements)
 
   return (
     <div className="space-y-4">
       {requirements.map((requirement) => (
-        <Card key={requirement._id} className="hover:shadow-md transition-shadow py-3 bg-[#EFF7FA] rounded-[16px] px-0">
-          <CardHeader className="px-0 -mt-1">
-            <div className="flex justify-between items-start  px-0">
-              <div className="flex-1 px-6">
-                <CardTitle className="text-base text-[#2C34A1] font-bold">{requirement.title}</CardTitle>
-              </div>
-              {/* <div className="px-6">
-                <Badge className={getStatusColor(requirement.status)}>
-                {requirement.status.charAt(0).toUpperCase() + requirement.status.slice(1)}
-              </Badge>
-              </div> */}
+        <Card key={requirement._id} className="hover:shadow-md transition-shadow p-6 bg-[#EFF7FA] rounded-[20px] border border-[#E2E8F0]/30 flex flex-col gap-5">
+          {/* Header */}
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="text-lg text-[#2C34A1] font-bold tracking-tight">
+                {requirement.title}
+              </h3>
+              <span className="bg-[#FF5500] text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full tracking-wider uppercase">
+                {requirement.status ? requirement.status.toUpperCase() : "OPEN"}
+              </span>
             </div>
-            <CardDescription className="-mt-1 text-sm px-6 text-[#898383] font-normal border-[#CECECE] pb-[15px]">{requirement.description.slice(0, 140)}</CardDescription>
+            <div className="text-[11px] text-[#898383] font-normal tracking-wider uppercase mb-1">
+              POSTED BY <span className="text-[#2C34A1] font-bold normal-case ml-1">{requirement.client?.companyName || "Tiles Export Co."}</span>
+            </div>
+            <p className={`text-[13px] text-[#686868] font-normal leading-relaxed mt-1 ${expandedRequirements[requirement._id] ? "" : "line-clamp-2"}`}>
+              {requirement.description}
+            </p>
+            {requirement.description.length > 140 && (
+              <button
+                onClick={() => toggleExpand(requirement._id)}
+                className="text-xs cursor-pointer text-[#2C34A1] font-bold hover:underline  focus:outline-none self-start"
+              >
+                {expandedRequirements[requirement._id] ? "Read Less" : "Read More"}
+              </button>
+            )}
+          </div>
 
-          </CardHeader>
-          <CardContent>
-            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4 -mt-6">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                <IndianRupee className="h-5 w-5" color="#F54A0C" />
-                <span className="text-[14px] font-bold text-[#000]">{formatBudget(requirement.budgetMin, requirement.budgetMax)}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                <GoClockFill color="#F54A0C" className="h-6 w-6" />
-                <span className="text-[14px] font-bold text-[#000]">{requirement.timeline}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                <FaTag className="h-6 w-6" color="#F54A0C" />
-                <span className="text-[14px] font-normal text-[#000]">{requirement.category}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                <BsCalendarCheckFill className="h-6 w-6" color="#F54A0C" />
-                <span className="text-[14px] font-normal text-[#000]">Posted:{requirement.createdAt ? new Date(requirement.createdAt).toLocaleDateString() : "Today"}</span>
+          {/* Grid of Details */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-0">
+            {/* Budget */}
+            <div className="flex items-center gap-3">
+              <IndianRupee className="h-5 w-5 shrink-0" color="#F54A0C" />
+              <div className="flex flex-col">
+                <span className="text-[9px] text-[#898383] font-bold tracking-wider uppercase">BUDGET</span>
+                <span className="text-[13px] font-bold text-[#000]">₹{formatBudget(requirement.budgetMin, requirement.budgetMax)}</span>
               </div>
             </div>
-
-            <div className="flex flex-col -mt-3 sm:flex-row gap-2">
-              {/* <Button variant="outline" size="sm" onClick={() => onViewDetails(requirement._id)} className="bg-[#2C34A1] max-w-[180px] rounded-full text-[#fff] text-[14px] hover:bg-[#2C34A1] h-[40px]">
-               
-                View Details
-                 <FaArrowRightLong className="h-3 w-3" color="#fff"/>
-              </Button> */}
-              {
-                (requirement.status !== "UnderReview" && requirement.status !== "NotApproved") && (
-                  <Button variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      router.push(
-                        (`/login?to=submit-proposal&id=${requirement._id}`)
-                      )
-                    }
-                    className="btn-blackButton h-[30px]">
-
-                    Submit Proposal
-                    <FaArrowRightLong className="h-3 w-3" color="#fff" />
-                  </Button>
-                )
-              }
-
+            {/* Timeline */}
+            <div className="flex items-center gap-3">
+              <GoClockFill color="#F54A0C" className="h-5 w-5 shrink-0" />
+              <div className="flex flex-col">
+                <span className="text-[9px] text-[#898383] font-bold tracking-wider uppercase">TIMELINE</span>
+                <span className="text-[13px] font-bold text-[#000]">{requirement.timeline}</span>
+              </div>
             </div>
+            {/* Category */}
+            <div className="flex items-center gap-3">
+              <FaTag className="h-5 w-5 shrink-0" color="#F54A0C" />
+              <div className="flex flex-col">
+                <span className="text-[9px] text-[#898383] font-bold tracking-wider uppercase">CATEGORY</span>
+                <span className="text-[13px] font-bold text-[#000]">{requirement.category}</span>
+              </div>
+            </div>
+            {/* Posted */}
+            <div className="flex items-center gap-3">
+              <BsCalendarCheckFill className="h-5 w-5 shrink-0" color="#F54A0C" />
+              <div className="flex flex-col">
+                <span className="text-[9px] text-[#898383] font-bold tracking-wider uppercase">POSTED</span>
+                <span className="text-[13px] font-bold text-[#000]">
+                  {requirement.createdAt ? new Date(requirement.createdAt).toLocaleDateString() : "Today"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Dotted/Dashed Divider */}
+          <div className="border-t border-dashed border-[#CECECE]" />
+
+          {/* Bottom Section */}
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
+            <p className="text-xs text-[#898383] font-normal text-center sm:text-left">
+              Match your skills? Send your proposal in under 2 minutes.
+            </p>
             {
-              (requirement.status === "NotApproved") && (
-                <p className="teext-md text-red-500">{requirement?.notApprovedMsg}</p>
+              (requirement.status !== "UnderReview" && requirement.status !== "NotApproved") && (
+                <Button
+                  onClick={() =>
+                    router.push(
+                      (`/login?to=submit-proposal&id=${requirement._id}`)
+                    )
+                  }
+                  className="bg-[#2563EB] hover:bg-[#1d4ed8] text-white rounded-full font-bold px-6 py-2 h-[35px] text-[13px] transition-colors flex items-center gap-2 border-none shrink-0"
+                >
+                  Submit Proposal
+                  <FaArrowRightLong className="h-3.5 w-3.5" color="#fff" />
+                </Button>
               )
             }
-          </CardContent>
+          </div>
+          {
+            (requirement.status === "NotApproved") && (
+              <p className="text-md text-red-500 mt-1">{requirement?.notApprovedMsg}</p>
+            )
+          }
         </Card>
       ))}
     </div>
