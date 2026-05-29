@@ -3,7 +3,7 @@
 import { MoveLeft, File } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useRouter,useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import countries from "i18n-iso-countries";
 import en from "i18n-iso-countries/langs/en.json";
@@ -22,10 +22,10 @@ export default function ProposalHeader({
   buttonText,
   buttonUrl,
 }: Props) {
-    console.log("Recieved Props::::",proposal)
+  console.log("Recieved Props::::", proposal)
   const router = useRouter();
   const searchParams = useSearchParams();
-  const from=searchParams.get("from") || "";
+  const from = searchParams.get("from") || "";
 
 
   const getCountryIso = (countryName?: string) => {
@@ -47,10 +47,10 @@ export default function ProposalHeader({
 
         <Button
           className="BackButton h-[30px]"
-          onClick={() => (from?router.back():router.push(buttonUrl))}
+          onClick={() => (from ? router.back() : router.push(buttonUrl))}
         >
           {/* <MoveLeft className="h-4 w-4" /> */}
-          {from?"Back to projects":buttonText}
+          {from ? "Back to projects" : buttonText}
         </Button>
       </div>
 
@@ -141,14 +141,36 @@ export default function ProposalHeader({
           </div>
         </div>
 
-        
+
       </div>
+
+
+
       {/* Requirement Description */}
-        <div>
-          <p className="text-xs mt-1 text-[#8b8b97]">
-            {proposal.requirement.description}
-          </p>
+      <div>
+        <p className="text-sm mt-1 text-[#8b8b97]">
+          {proposal.requirement.description}
+        </p>
+      </div>
+      {/* Skills Required Section */}
+      {proposal?.requirement?.skills && proposal?.requirement?.skills?.length > 0 && (
+        <div className="flex flex-col gap-2 mt-1">
+          {/* <span className="text-[10px] text-[#898383] font-bold tracking-wider uppercase">
+            SKILLS REQUIRED
+          </span> */}
+          <div className="flex flex-wrap gap-2">
+            {proposal?.requirement?.skills?.map((skill, index) => (
+              <span
+                key={index}
+                className="bg-[#FFF0EB] text-[#F54A0C] text-[11px] font-semibold px-3 py-1 rounded-full"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
         </div>
+      )}
+
     </>
   );
 }

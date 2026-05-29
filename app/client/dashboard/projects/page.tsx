@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useEffect,useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -109,7 +109,7 @@ import {
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger, 
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import { authFetch } from "@/lib/auth-fetch";
 import ServiceDropdown from "@/components/select-category-filter";
@@ -139,9 +139,8 @@ const StarRating = ({
         <Star
           key={star}
           onClick={() => onChange(star)}
-          className={`h-3.5 w-3.5 cursor-pointer transition ${
-            star <= rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
-          }`}
+          className={`h-3.5 w-3.5 cursor-pointer transition ${star <= rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+            }`}
         />
       ))}
 
@@ -154,8 +153,8 @@ const ProjectsPage = () => {
   const { user, loading } = useAuth();
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
-  const searchParams=useSearchParams();
-  const status=searchParams.get("status");
+  const searchParams = useSearchParams();
+  const status = searchParams.get("status");
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   // const [projects, setProjects] = useState([
   //   {
@@ -193,17 +192,18 @@ const ProjectsPage = () => {
   const [filterStatus, setFilterStatus] = useState<string>("all");
 
   const [searchTerm, setSearchTerm] = useState("");
-const [selectedStatus, setSelectedStatus] = useState(
-  status ? status[0].toUpperCase() + status.slice(1) : ""
-);
-const [selectedCategory, setSelectedCategory] = useState("");
-const [startDate, setStartDate] = useState("");
-const [startInputType, setStartInputType] = useState<"text" | "date">("text");
-const [endDate, setEndDate] = useState("");
-const [endInputType, setEndInputType] = useState<"text" | "date">("text");
+  const [selectedStatus, setSelectedStatus] = useState(
+    status ? status[0].toUpperCase() + status.slice(1) : ""
+  );
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [startInputType, setStartInputType] = useState<"text" | "date">("text");
+  const [endDate, setEndDate] = useState("");
+  const [endInputType, setEndInputType] = useState<"text" | "date">("text");
 
   const [showCreateProject, setShowCreateProject] = useState(false);
   const [editingProject, setEditingProject] = useState<any>(null);
+  const [skillInput, setSkillInput] = useState("");
   const [formData, setFormData] = useState({
     title: "",
     image: "",
@@ -213,29 +213,68 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
     budgetMax: "",
     documentUrl: "",
     timeline: "",
+    skills: [] as string[],
   });
+
+  const handleAddSkill = (e?: React.MouseEvent | React.KeyboardEvent) => {
+    if (e) e.preventDefault();
+    const skillsToAdd = skillInput
+      .split(",")
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+
+    if (skillsToAdd.length > 0) {
+      setFormData((prev) => {
+        const newSkills = prev.skills ? [...prev.skills] : [];
+        skillsToAdd.forEach((skill) => {
+          if (!newSkills.includes(skill)) {
+            newSkills.push(skill);
+          }
+        });
+        return {
+          ...prev,
+          skills: newSkills,
+        };
+      });
+    }
+    setSkillInput("");
+  };
+
+  const handleRemoveSkill = (skillToRemove: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      skills: prev.skills ? prev.skills.filter((s) => s !== skillToRemove) : [],
+    }));
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      handleAddSkill();
+    }
+  };
 
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewForm, setReviewForm] = useState({
-  title: "",
-  content: "",
-  rating: "",
+    title: "",
+    content: "",
+    rating: "",
 
-  communicationRating: "",
-  ontimeDeliveryRating: "",
-  qualityRating: "",
-  strategicThinkingRating: "",
-  ROIClarityRating:"",
-  willingToReferRating: "",
-  transparencyRating: "",
-  flexibilityRating: "",
-  valueForMoneyRating: "",
-  postLaunchSupportRating: "",
- 
- 
-  projectStartDate: "",
-  projectEndDate: "",
-});
+    communicationRating: "",
+    ontimeDeliveryRating: "",
+    qualityRating: "",
+    strategicThinkingRating: "",
+    ROIClarityRating: "",
+    willingToReferRating: "",
+    transparencyRating: "",
+    flexibilityRating: "",
+    valueForMoneyRating: "",
+    postLaunchSupportRating: "",
+
+
+    projectStartDate: "",
+    projectEndDate: "",
+  });
 
   const [reviewSubmissionProjectId, setReviewSubmissionProjectId] = useState<
     string | null
@@ -254,17 +293,17 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
   const [pendingRequirement, setPendingRequirement] = useState<any>(null);
 
 
-  
+
 
   const loadData = async (userId: string) => {
     setResponseLoading(true);
     try {
-      const response = await authFetch(`/api/requirements/${userId}`, {credentials: "include" });
+      const response = await authFetch(`/api/requirements/${userId}`, { credentials: "include" });
       const data = await response.json();
       setRequirements(data.requirements);
       // setFilteredRequirements(data.requirements);
 
-       
+
 
       setFailed(false);
     } catch (error) {
@@ -284,22 +323,22 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
   }, [user, loading, router]);
 
   useEffect(() => {
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      dropdownRef.current &&
-      !dropdownRef.current.contains(event.target as Node)
-    ) {
-      setOpenDropdownId(null);
-    }
-  };
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setOpenDropdownId(null);
+      }
+    };
 
-  document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
 
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, []);
- 
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleCreateProject = () => {
     if (
       newProject.title &&
@@ -347,19 +386,20 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
       budgetMax: Number(formData.budgetMax),
       documentUrl: formData.documentUrl,
       timeline: formData.timeline.trim(),
+      skills: formData.skills,
     };
     try {
       setSending(true);
       // API CALL
       if (editingProject) {
-        if(editingProject.status==="NotApproved"){
+        if (editingProject.status === "NotApproved") {
           payload.status = "UnderReview";
         }
         const res = await authFetch(`/api/requirements/${editingProject._id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
-          credentials: "include" 
+          credentials: "include"
         });
         const data = await res.json();
         if (!res.ok) {
@@ -376,6 +416,7 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
           budgetMax: "",
           documentUrl: "",
           timeline: "",
+          skills: [],
         });
         setShowCreateProject(false);
         setRequirements((prev) => [
@@ -387,7 +428,7 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
-          credentials: "include" 
+          credentials: "include"
         });
 
         const data = await res.json();
@@ -414,6 +455,7 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
           budgetMax: "",
           documentUrl: "",
           timeline: "",
+          skills: [],
         });
         setShowCreateProject(false);
       }
@@ -430,7 +472,7 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
   const handleVerificationComplete = () => {
     if (pendingRequirement) {
       // Create a fake event for handleSubmit
-      const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
+      const fakeEvent = { preventDefault: () => { } } as React.FormEvent;
       // We need to re-invoke the creation logic.
       // Since handleSubmit uses formData, we should ideally pass the pending requirement.
       // But handleSubmit is tied to the form state.
@@ -441,13 +483,13 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
   };
 
   const postRequirement = async (payload: any) => {
-     try {
+    try {
       setSending(true);
       const res = await authFetch("/api/requirements", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-        credentials: "include" 
+        credentials: "include"
       });
 
       const data = await res.json();
@@ -470,50 +512,50 @@ const [endInputType, setEndInputType] = useState<"text" | "date">("text");
     const projectTemp = requirements.find(
       (req) => req._id === reviewSubmissionProjectId,
     );
-   if (
-  !reviewForm.content.trim() ||
-  Number(reviewForm.rating) <= 0 ||
+    if (
+      !reviewForm.content.trim() ||
+      Number(reviewForm.rating) <= 0 ||
 
-  Number(reviewForm.communicationRating) <= 0 ||
-  Number(reviewForm.ontimeDeliveryRating) <= 0 ||
-  Number(reviewForm.qualityRating) <= 0 ||
-  Number(reviewForm.strategicThinkingRating) <= 0 ||
-  Number(reviewForm.ROIClarityRating) <= 0 ||
-  Number(reviewForm.willingToReferRating) <= 0 ||
-  Number(reviewForm.transparencyRating) <= 0 ||
-  Number(reviewForm.flexibilityRating) <= 0 ||
-  Number(reviewForm.valueForMoneyRating) <= 0 ||
-  Number(reviewForm.postLaunchSupportRating) <= 0
+      Number(reviewForm.communicationRating) <= 0 ||
+      Number(reviewForm.ontimeDeliveryRating) <= 0 ||
+      Number(reviewForm.qualityRating) <= 0 ||
+      Number(reviewForm.strategicThinkingRating) <= 0 ||
+      Number(reviewForm.ROIClarityRating) <= 0 ||
+      Number(reviewForm.willingToReferRating) <= 0 ||
+      Number(reviewForm.transparencyRating) <= 0 ||
+      Number(reviewForm.flexibilityRating) <= 0 ||
+      Number(reviewForm.valueForMoneyRating) <= 0 ||
+      Number(reviewForm.postLaunchSupportRating) <= 0
 
-) {
-  toast.error("All fields are required for review submission");
-  return;
-}
-console.log("Submitting review form is::::", reviewForm);
+    ) {
+      toast.error("All fields are required for review submission");
+      return;
+    }
+    console.log("Submitting review form is::::", reviewForm);
 
     //Build correct payload for API
     const payload = {
-  title: reviewForm.title?.trim(),
+      title: reviewForm.title?.trim(),
 
-  content: reviewForm.content.trim(),
-  rating: Number(reviewForm.rating),
+      content: reviewForm.content.trim(),
+      rating: Number(reviewForm.rating),
 
-  communicationRating: Number(reviewForm.communicationRating),
-  ontimeDeliveryRating: Number(reviewForm.ontimeDeliveryRating),
-  qualityRating: Number(reviewForm.qualityRating),
-  strategicThinkingRating: Number(reviewForm.strategicThinkingRating),
-  ROIClarityRating: Number(reviewForm.ROIClarityRating),
-  willingToReferRating: Number(reviewForm.willingToReferRating),
-  transparencyRating: Number(reviewForm.transparencyRating),
-  flexibilityRating: Number(reviewForm.flexibilityRating),
-  valueForMoneyRating: Number(reviewForm.valueForMoneyRating),
-  postLaunchSupportRating: Number(reviewForm.postLaunchSupportRating),
+      communicationRating: Number(reviewForm.communicationRating),
+      ontimeDeliveryRating: Number(reviewForm.ontimeDeliveryRating),
+      qualityRating: Number(reviewForm.qualityRating),
+      strategicThinkingRating: Number(reviewForm.strategicThinkingRating),
+      ROIClarityRating: Number(reviewForm.ROIClarityRating),
+      willingToReferRating: Number(reviewForm.willingToReferRating),
+      transparencyRating: Number(reviewForm.transparencyRating),
+      flexibilityRating: Number(reviewForm.flexibilityRating),
+      valueForMoneyRating: Number(reviewForm.valueForMoneyRating),
+      postLaunchSupportRating: Number(reviewForm.postLaunchSupportRating),
 
-  
 
-  providerId: projectTemp?.allocatedToId,
-  projectId: projectTemp?._id,
-};
+
+      providerId: projectTemp?.allocatedToId,
+      projectId: projectTemp?._id,
+    };
     try {
       // API CALL
       setSending(true);
@@ -521,7 +563,7 @@ console.log("Submitting review form is::::", reviewForm);
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-        credentials: "include" 
+        credentials: "include"
       });
       if (res.ok) {
         toast.success("Review submitted successfully");
@@ -574,6 +616,7 @@ console.log("Submitting review form is::::", reviewForm);
         budgetMax: Number(project.budgetMax),
         documentUrl: project.documentUrl,
         timeline: project.timeline.trim(),
+        skills: project.skills || [],
       });
       setShowCreateProject(true);
     }
@@ -608,11 +651,11 @@ console.log("Submitting review form is::::", reviewForm);
       case "underreview":
         return "bg-blue-500 text-[#fff]"
       case "open":
-        return "bg-[#1C96F4] text-[#fff]"; 
+        return "bg-[#1C96F4] text-[#fff]";
       case "shortlisted":
         return "bg-[#D2E4FF] text-[#1E82C1]";
       case "allocated":
-        return  "bg-[#CFEED2] text-[#39761E]";
+        return "bg-[#CFEED2] text-[#39761E]";
       case "negotiation":
         return "bg-[#FCF6E3] text-[#AF905D]";
       case "closed":
@@ -642,54 +685,54 @@ console.log("Submitting review form is::::", reviewForm);
         return "Under Review";
     }
   };
- 
+
   const filteredRequirements = requirements.filter((project) => {
 
-  //  Search Filter
-  const matchesSearch =
-    project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    //  Search Filter
+    const matchesSearch =
+      project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      project.description?.toLowerCase().includes(searchTerm.toLowerCase());
 
-  //  Status Filter
-  const matchesStatus =
-  !selectedStatus || 
-  selectedStatus === "All" ||
-  project.status.toLowerCase() === selectedStatus.toLowerCase();
+    //  Status Filter
+    const matchesStatus =
+      !selectedStatus ||
+      selectedStatus === "All" ||
+      project.status.toLowerCase() === selectedStatus.toLowerCase();
 
-  //  Category Filter
-  const matchesCategory =
-    !selectedCategory || project.category === selectedCategory;
+    //  Category Filter
+    const matchesCategory =
+      !selectedCategory || project.category === selectedCategory;
 
-  //  Date Filter
-  const projectDate = new Date(project.createdAt);
+    //  Date Filter
+    const projectDate = new Date(project.createdAt);
 
-  const matchesStartDate =
-    !startDate || projectDate >= new Date(startDate);
+    const matchesStartDate =
+      !startDate || projectDate >= new Date(startDate);
 
-  const matchesEndDate =
-    !endDate || projectDate <= new Date(endDate);
+    const matchesEndDate =
+      !endDate || projectDate <= new Date(endDate);
 
-  return (
-    matchesSearch &&
-    matchesStatus &&
-    matchesCategory &&
-    matchesStartDate &&
-    matchesEndDate
-  );
-});
+    return (
+      matchesSearch &&
+      matchesStatus &&
+      matchesCategory &&
+      matchesStartDate &&
+      matchesEndDate
+    );
+  });
 
   const [currentPage, setCurrentPage] = useState(1);
-const requirementsPerPage = 10; // 🔹 control this value
+  const requirementsPerPage = 10; // 🔹 control this value
 
-const totalPages = Math.ceil(
-  (filteredRequirements?.length || 0) / requirementsPerPage
-);
+  const totalPages = Math.ceil(
+    (filteredRequirements?.length || 0) / requirementsPerPage
+  );
 
-const startIndex = (currentPage - 1) * requirementsPerPage;
-const paginatedRequirements = filteredRequirements?.slice(
-  startIndex,
-  startIndex + requirementsPerPage
-);
+  const startIndex = (currentPage - 1) * requirementsPerPage;
+  const paginatedRequirements = filteredRequirements?.slice(
+    startIndex,
+    startIndex + requirementsPerPage
+  );
 
 
 
@@ -735,121 +778,120 @@ const paginatedRequirements = filteredRequirements?.slice(
           Add New Project
         </Button> */}
       </div>
- 
-       <MobileFilterBar
-  searchSlot={
-    <div className="relative w-full">
-      <input
-        type="text"
-        placeholder="Search projects..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="w-full h-[35px] placeholder:text-gray-500 placeholder:text-sm border border-[#D0D5DD] rounded-full pl-10 pr-4 text-sm focus:outline-none"
-      />
-      <svg
-        className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        viewBox="0 0 24 24"
+
+      <MobileFilterBar
+        searchSlot={
+          <div className="relative w-full">
+            <input
+              type="text"
+              placeholder="Search projects..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full h-[35px] placeholder:text-gray-500 placeholder:text-sm border border-[#D0D5DD] rounded-full pl-10 pr-4 text-sm focus:outline-none"
+            />
+            <svg
+              className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </div>
+        }
+        activeFilterCount={
+          (selectedStatus && selectedStatus !== "All" ? 1 : 0) +
+          (selectedCategory ? 1 : 0) +
+          (startDate ? 1 : 0) +
+          (endDate ? 1 : 0)
+        }
+        sheetTitle="Filter projects"
       >
-        <circle cx="11" cy="11" r="8" />
-        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-      </svg>
-    </div>
-  }
-  activeFilterCount={
-    (selectedStatus && selectedStatus !== "All" ? 1 : 0) +
-    (selectedCategory ? 1 : 0) +
-    (startDate ? 1 : 0) +
-    (endDate ? 1 : 0)
-  }
-  sheetTitle="Filter projects"
->
-  {/* Status */}
-  <div className="w-full">
-    <Select
-      value={selectedStatus}
-      onValueChange={(value) => setSelectedStatus(value)}
-    >
-      <SelectTrigger
-        className={`h-[35px] data-[placeholder]:text-gray-500 w-full border border-[#D0D5DD] rounded-full px-3 text-sm ${
-          !selectedStatus ? "text-gray-500" : "text-black"
-        }`}
-      >
-        <SelectValue placeholder="Select Status" />
-      </SelectTrigger>
+        {/* Status */}
+        <div className="w-full">
+          <Select
+            value={selectedStatus}
+            onValueChange={(value) => setSelectedStatus(value)}
+          >
+            <SelectTrigger
+              className={`h-[35px] data-[placeholder]:text-gray-500 w-full border border-[#D0D5DD] rounded-full px-3 text-sm ${!selectedStatus ? "text-gray-500" : "text-black"
+                }`}
+            >
+              <SelectValue placeholder="Select Status" />
+            </SelectTrigger>
 
-      <SelectContent>
-        <SelectItem value="All">All</SelectItem>
-        <SelectItem value="UnderReview">Under Review</SelectItem>
-        <SelectItem value="NotApproved">Rejected</SelectItem>
-        <SelectItem value="Open">Open</SelectItem>
-        <SelectItem value="Closed">Closed</SelectItem>
-        <SelectItem value="Allocated">Accepted</SelectItem>
-      </SelectContent>
-    </Select>
-  </div>
+            <SelectContent>
+              <SelectItem value="All">All</SelectItem>
+              <SelectItem value="UnderReview">Under Review</SelectItem>
+              <SelectItem value="NotApproved">Rejected</SelectItem>
+              <SelectItem value="Open">Open</SelectItem>
+              <SelectItem value="Closed">Closed</SelectItem>
+              <SelectItem value="Allocated">Accepted</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-  {/* Category */}
-  <div className="w-full mb-1">
-    <ServiceDropdown
-      value={selectedCategory}
-      onChange={(value) => setSelectedCategory(value)}
-      triggerClassName="border border-[#D0D5DD] rounded-full w-full h-[35px]"
-      triggerSpanClassName="text-[#98A0B4] text-sm"
-    />
-  </div>
+        {/* Category */}
+        <div className="w-full mb-1">
+          <ServiceDropdown
+            value={selectedCategory}
+            onChange={(value) => setSelectedCategory(value)}
+            triggerClassName="border border-[#D0D5DD] rounded-full w-full h-[35px]"
+            triggerSpanClassName="text-[#98A0B4] text-sm"
+          />
+        </div>
 
-  {/* Start Date */}
-  <div className="w-full">
-    <input
-      type={startInputType}
-      value={startDate}
-      max={endDate}
-      placeholder="Start date"
-      onFocus={() => setStartInputType("date")}
-      onBlur={() => {
-        if (!startDate) setStartInputType("text");
-      }}
-      onChange={(e) => setStartDate(e.target.value)}
-      className="w-full min-w-[100px] h-[35px] border border-[#D0D5DD] rounded-full px-3 text-sm placeholder:text-gray-500 focus:outline-none"
-    />
-  </div>
+        {/* Start Date */}
+        <div className="w-full">
+          <input
+            type={startInputType}
+            value={startDate}
+            max={endDate}
+            placeholder="Start date"
+            onFocus={() => setStartInputType("date")}
+            onBlur={() => {
+              if (!startDate) setStartInputType("text");
+            }}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="w-full min-w-[100px] h-[35px] border border-[#D0D5DD] rounded-full px-3 text-sm placeholder:text-gray-500 focus:outline-none"
+          />
+        </div>
 
-  {/* End Date */}
-  <div className="w-full">
-    <input
-      type={endInputType}
-      value={endDate}
-      min={startDate}
-      placeholder="End date"
-      onFocus={() => setEndInputType("date")}
-      onBlur={() => {
-        if (!endDate) setEndInputType("text");
-      }}
-      onChange={(e) => setEndDate(e.target.value)}
-      className="w-full min-w-[100px] h-[35px] border border-[#D0D5DD] rounded-full px-3 text-sm placeholder:text-gray-500 focus:outline-none"
-    />
-  </div>
+        {/* End Date */}
+        <div className="w-full">
+          <input
+            type={endInputType}
+            value={endDate}
+            min={startDate}
+            placeholder="End date"
+            onFocus={() => setEndInputType("date")}
+            onBlur={() => {
+              if (!endDate) setEndInputType("text");
+            }}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="w-full min-w-[100px] h-[35px] border border-[#D0D5DD] rounded-full px-3 text-sm placeholder:text-gray-500 focus:outline-none"
+          />
+        </div>
 
-  {/* Clear */}
-  <Button
-    className="btn-blackButton h-[33px] lg:max-w-[90px] w-full"
-    onClick={() => {
-      setSearchTerm("");
-      setSelectedStatus("");
-      setSelectedCategory("");
-      setStartDate("");
-      setStartInputType("text");
-      setEndDate("");
-      setEndInputType("text");
-    }}
-  >
-    Clear
-  </Button>
-</MobileFilterBar>
-        {/* <Button className="bg-black rounded-[8px] h-[30px] w-[60px] mt-1" onClick={()=>{
+        {/* Clear */}
+        <Button
+          className="btn-blackButton h-[33px] lg:max-w-[90px] w-full"
+          onClick={() => {
+            setSearchTerm("");
+            setSelectedStatus("");
+            setSelectedCategory("");
+            setStartDate("");
+            setStartInputType("text");
+            setEndDate("");
+            setEndInputType("text");
+          }}
+        >
+          Clear
+        </Button>
+      </MobileFilterBar>
+      {/* <Button className="bg-black rounded-[8px] h-[30px] w-[60px] mt-1" onClick={()=>{
           setSearchTerm("");
          setSelectedStatus(""); // fixed
           setSelectedCategory("");
@@ -863,8 +905,8 @@ const paginatedRequirements = filteredRequirements?.slice(
 
 
 
-        {/*projects table */}
-        <div className="mt-1">
+      {/*projects table */}
+      <div className="mt-1">
         {/* projects table */}
         {(filteredRequirements || []).length !== 0 ? (
           <>
@@ -1020,44 +1062,44 @@ const paginatedRequirements = filteredRequirements?.slice(
             </div> */}
             <div className="px-0 ">
               {paginatedRequirements?.map((project) => (
-            <div
-              key={project._id}
-              className="border-1 mr-1 md:mr-0 px-0 bg-[#fafafa] border-[#CFCACA] rounded-2xl mb-2"
-            >
-              <div className="px-2  md:px-4 py-3">
-                <div className="flex justify-between items-start -mb-2">
-                  {/* <Badge className="bg-[#F54A0C] text-xs rounded-full">
+                <div
+                  key={project._id}
+                  className="border-1 mr-1 md:mr-0 px-0 bg-[#fafafa] border-[#CFCACA] rounded-2xl mb-2"
+                >
+                  <div className="px-2  md:px-4 py-3">
+                    <div className="flex justify-between items-start -mb-2">
+                      {/* <Badge className="bg-[#F54A0C] text-xs rounded-full">
                     {project.proposals} proposals recieved
                   </Badge> */}
-                  
-                   <h3 className="text-xl font-bold mb-2 text-[#2C34A1] cursor-pointer" onClick={()=>router.push(`/client/dashboard/projects/${project._id}`)}>
-                      {project.title}
-                    </h3>
-                  <Badge
-                    className={`text-xs rounded-full ${getBgColor(project.status)}`}
-                  >
-                    {getStatusText(project.status)}
-                  </Badge>
-                  
-                </div>
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <p className="text-sm line-clamp-2 text-[#898383] font-normal mb-0">
-                      {project.description}
-                    </p>
-                   <Badge
-                    variant="outline"
-                    className="text-xs border-[#DEDEDE] bg-[#EDEDED] rounded-full h-[20px] px-3 mb-2"
-                  >
-                    {project?.category || "Unknown Project"}
-                  </Badge>
-                   
-                    <div className="flex items-center gap-4 text-sm flex-wrap text-muted-foreground">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                        <HiCurrencyDollar color="#F54A0C" className="h-8 w-8" />
-                        <span className="text-[14px] font-bold text-[#000]">{`₹ ${project.budgetMin} - ₹ ${project.budgetMax}`}</span>
-                      </div>
-                      {/* <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2 ">
+
+                      <h3 className="text-xl font-bold mb-2 text-[#2C34A1] cursor-pointer" onClick={() => router.push(`/client/dashboard/projects/${project._id}`)}>
+                        {project.title}
+                      </h3>
+                      <Badge
+                        className={`text-xs rounded-full ${getBgColor(project.status)}`}
+                      >
+                        {getStatusText(project.status)}
+                      </Badge>
+
+                    </div>
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <p className="text-sm line-clamp-2 text-[#898383] font-normal mb-0">
+                          {project.description}
+                        </p>
+                        <Badge
+                          variant="outline"
+                          className="text-xs border-[#DEDEDE] bg-[#EDEDED] rounded-full h-[20px] px-3 mb-2"
+                        >
+                          {project?.category || "Unknown Project"}
+                        </Badge>
+
+                        <div className="flex items-center gap-4 text-sm flex-wrap text-muted-foreground">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                            <HiCurrencyDollar color="#F54A0C" className="h-8 w-8" />
+                            <span className="text-[14px] font-bold text-[#000]">{`₹ ${project.budgetMin} - ₹ ${project.budgetMax}`}</span>
+                          </div>
+                          {/* <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2 ">
                         <div className="bg-[#F54A0C] rounded-[50%] flex justify-center items-center h-6 w-6">
                           <GoTag color="#fff" className="h-4 w-4" />
                         </div>
@@ -1065,26 +1107,26 @@ const paginatedRequirements = filteredRequirements?.slice(
                           {project.category}
                         </span>
                       </div> */}
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2 ">
-                        <div className="bg-[#F54A0C] rounded-[50%] flex justify-center items-center h-6 w-6">
-                          <CiCalendar
-                            color="#ffffff"
-                            className="h-4 w-4 font-bold"
-                          />
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2 ">
+                            <div className="bg-[#F54A0C] rounded-[50%] flex justify-center items-center h-6 w-6">
+                              <CiCalendar
+                                color="#ffffff"
+                                className="h-4 w-4 font-bold"
+                              />
+                            </div>
+                            <span className="text-[14px] font-bold text-[#000]">
+                              Created :{" "}
+                              {
+                                new Date(project.createdAt)
+                                  .toISOString()
+                                  .split("T")[0]
+                              }
+                            </span>
+                          </div>
                         </div>
-                        <span className="text-[14px] font-bold text-[#000]">
-                          Created :{" "}
-                          {
-                            new Date(project.createdAt)
-                              .toISOString()
-                              .split("T")[0]
-                          }
-                        </span>
                       </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {/* <DropdownMenu>
+                      <div className="flex items-center gap-2">
+                        {/* <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="sm">
                               <MoreHorizontal className="h-4 w-4" />
@@ -1101,78 +1143,78 @@ const paginatedRequirements = filteredRequirements?.slice(
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu> */}
-                  </div>
-                </div>
-                {/*Action buttons */}
-                <div className="flex justify-between items-center flex-wrap">
-                  
-                  
-                 <div className="flex justify-start flex-wrap gap-3">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          router.push(`/client/dashboard/projects/${project._id}`)
-                        }
-                        className="btn-blackButton h-[30px]"
-                      >
-                        {/* {project.proposals} proposals recieved */}
-                        {`${(project.status.toLowerCase()==="allocated" || project.status.toLowerCase()==="closed")?"View Status":`View ${project.proposals>1?"Proposals":"Proposal"} (${project.proposals})`}`}
-                        {/* <FaArrowRightLong className="h-1 w-1" color="#fff" /> */}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          router.push( `/client/dashboard/projects/${project._id}/details`)
-                        }
-                        className="primary-button h-[30px]"
-                      >
-                        View Requirement
-                        {/* <FaArrowRightLong className="h-1 w-1" color="#fff" /> */}
-                      </Button>
-                      {/* <Badge className="bg-[#F54A0C] text-xs rounded-full">
+                      </div>
+                    </div>
+                    {/*Action buttons */}
+                    <div className="flex justify-between items-center flex-wrap">
+
+
+                      <div className="flex justify-start flex-wrap gap-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            router.push(`/client/dashboard/projects/${project._id}`)
+                          }
+                          className="btn-blackButton h-[30px]"
+                        >
+                          {/* {project.proposals} proposals recieved */}
+                          {`${(project.status.toLowerCase() === "allocated" || project.status.toLowerCase() === "closed") ? "View Status" : `View ${project.proposals > 1 ? "Proposals" : "Proposal"} (${project.proposals})`}`}
+                          {/* <FaArrowRightLong className="h-1 w-1" color="#fff" /> */}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            router.push(`/client/dashboard/projects/${project._id}/details`)
+                          }
+                          className="primary-button h-[30px]"
+                        >
+                          View Requirement
+                          {/* <FaArrowRightLong className="h-1 w-1" color="#fff" /> */}
+                        </Button>
+                        {/* <Badge className="bg-[#F54A0C] text-xs rounded-full">
                         {project.proposals} proposals recieved
                       </Badge> */}
+                      </div>
+
+                      {(project.status.toLowerCase() === "underreview" ||
+                        project.status.toLowerCase() === "notapproved") &&
+                        (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditProject(project)}
+                            className="btn-blackButton h-[30px]"
+                          >
+                            Edit
+                          </Button>
+                        )}
+                      {(project.status.toLowerCase() === "closed" ||
+                        project.status.toLowerCase() === "completed") &&
+                        !project?.isReviewed && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setReviewSubmissionProjectId(project._id);
+                              setShowReviewModal(true);
+                            }}
+                            className="bg-[#00C951] text-xs rounded-full text-[#fff]  hover:bg-[#00C951] w-[140px]  h-[30px]"
+                          >
+                            Submit Review
+                          </Button>
+                        )}
+                    </div>
+
+                    {
+                      (project.status === "NotApproved") && (
+                        <p className="text-sm text-red-500 mt-1">{project?.notApprovedMsg}</p>
+                      )
+                    }
                   </div>
-                  
-                  {(project.status.toLowerCase() === "underreview" ||
-                    project.status.toLowerCase() === "notapproved") &&
-                    (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEditProject(project)}
-                        className="btn-blackButton h-[30px]"
-                      >
-                        Edit
-                      </Button>
-                    )}
-                  {(project.status.toLowerCase() === "closed" ||
-                    project.status.toLowerCase() === "completed") &&
-                    !project?.isReviewed && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setReviewSubmissionProjectId(project._id);
-                          setShowReviewModal(true);
-                        }}
-                        className="bg-[#00C951] text-xs rounded-full text-[#fff]  hover:bg-[#00C951] w-[140px]  h-[30px]"
-                      >
-                        Submit Review
-                      </Button>
-                    )}
                 </div>
-                
-                {
-              (project.status==="NotApproved") && (
-                <p className="text-sm text-red-500 mt-1">{project?.notApprovedMsg}</p>
-              )
-              }
-              </div>
-            </div>
-          ))}
+              ))}
             </div>
 
             {/* Pagination */}
@@ -1199,10 +1241,9 @@ const paginatedRequirements = filteredRequirements?.slice(
                       key={page}
                       onClick={() => setCurrentPage(page)}
                       className={`min-w-[36px] h-[36px] px-3 rounded-md text-sm font-medium transition-all
-                        ${
-                          currentPage === page
-                            ? "bg-[#4F46E5] text-white"
-                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        ${currentPage === page
+                          ? "bg-[#4F46E5] text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                         }`}
                     >
                       {page}
@@ -1234,7 +1275,7 @@ const paginatedRequirements = filteredRequirements?.slice(
           <DialogContent className=" md:max-w-xl rounded-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-xl font-bold text-[#F4561C]">
-                Create New Project
+                {editingProject ? "Edit Project" : "Create New Project"}
               </DialogTitle>
             </DialogHeader>
 
@@ -1293,21 +1334,21 @@ const paginatedRequirements = filteredRequirements?.slice(
                 </Select>
               </div> */}
 
-               <div className="space-y-2">
-                    <Label
-                      htmlFor="category"
-                      className="text-[#000]  text-[14px] font-bold"
-                    ></Label>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="category"
+                  className="text-[#000]  text-[14px] font-bold"
+                ></Label>
 
-                    <ServiceDropdown
-                    value={formData.category}
-                      onChange={(value)=> setFormData((prev) => ({ ...prev, category: value }))}
-                      triggerClassName="border-2 border-[#D0D5DD] rounded-[8px] data-[placeholder]:text-[#98A0B4] text-[#000]"
-                       triggerSpanClassName = "p-5"
-                    />
-               </div>
+                <ServiceDropdown
+                  value={formData.category}
+                  onChange={(value) => setFormData((prev) => ({ ...prev, category: value }))}
+                  triggerClassName="border-2 border-[#D0D5DD] rounded-[8px] data-[placeholder]:text-[#98A0B4] text-[#000]"
+                  triggerSpanClassName="p-5"
+                />
+              </div>
 
-              
+
 
               <div className="space-y-2">
                 <Label
@@ -1414,6 +1455,47 @@ const paginatedRequirements = filteredRequirements?.slice(
                   }
                 />
               </div>
+
+              {editingProject?.skills && editingProject.skills.length > 0 && (
+                <div className="space-y-2">
+                  <Label className="text-[#000] text-[14px] font-bold">
+                    Skills Required
+                  </Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={skillInput}
+                      className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-[#98A0B4]"
+                      placeholder="Enter skills"
+                      onChange={(e) => setSkillInput(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                    />
+                    <Button
+                      type="button"
+                      onClick={() => handleAddSkill()}
+                      className="rounded-[8px] bg-[#F54A0C] text-white hover:bg-[#F54A0C]"
+                    >
+                      Add
+                    </Button>
+                  </div>
+                  {formData.skills && formData.skills.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {formData.skills.map((skill, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-800 border border-slate-200"
+                        >
+                          {skill}
+                          <X
+                            className="h-3 w-3 cursor-pointer text-slate-400 hover:text-slate-600"
+                            onClick={() => handleRemoveSkill(skill)}
+                          />
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="flex gap-4 pt-4">
                 <DialogClose>
                   <Button className=" bg-[#000] hover:bg-[#000] active:bg-[#000] rounded-full">
@@ -1491,8 +1573,8 @@ const paginatedRequirements = filteredRequirements?.slice(
 
               {[
                 { label: "Overall Rating", key: "rating" },
-                
-                {label: "Communication Rating", key: "communicationRating" },
+
+                { label: "Communication Rating", key: "communicationRating" },
                 { label: "On-time Delivery Rating", key: "ontimeDeliveryRating" },
                 { label: "Quality Rating", key: "qualityRating" },
                 { label: "Strategic Thinking Rating", key: "strategicThinkingRating" },

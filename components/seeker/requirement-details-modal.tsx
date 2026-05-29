@@ -85,11 +85,11 @@ export function RequirementDetailsModal({
           </div>
 
           {/* Skills Required */}
-          {requirement.skillsRequired && requirement.skillsRequired.length > 0 && (
+          {((requirement as any).skills || requirement.skillsRequired) && ((requirement as any).skills || requirement.skillsRequired).length > 0 && (
             <div>
               <h4 className="font-medium mb-2">Skills Required</h4>
               <div className="flex flex-wrap gap-2">
-                {requirement.skillsRequired.map((skill, index) => (
+                {((requirement as any).skills || requirement.skillsRequired).map((skill: string, index: number) => (
                   <Badge key={index} variant="outline">
                     {skill}
                   </Badge>

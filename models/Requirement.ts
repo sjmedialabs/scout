@@ -9,43 +9,45 @@ export interface IRequirement extends Document {
   timeline: string
   description: string
   postedDate: Date
-  documentUrl:string
+  documentUrl: string
   proposals: number
-  status:"UnderReview" | "NotApproved" | "Open" | "Closed" | "shortlisted" | "negotation" | "Allocated"
+  status: "UnderReview" | "NotApproved" | "Open" | "Closed" | "shortlisted" | "negotation" | "Allocated"
   clientId: mongoose.Types.ObjectId // always client ID
-  allocatedToId:mongoose.Types.ObjectId
+  allocatedToId: mongoose.Types.ObjectId
   createdAt: Date
   updatedAt: Date
   attachmentUrls?: string[] // New field for multiple attachments
+  skills?: string[]
   isReviewed?: boolean,
-  notApprovedMsg:String
+  notApprovedMsg: String
 
 }
 
 const RequirementSchema = new Schema<IRequirement>(
   {
-    title: { type: String},
+    title: { type: String },
     image: { type: String },
-    category: { type: String},
-    budgetMin: { type: Number},
-    budgetMax: { type: Number},
-    timeline: { type: String},
+    category: { type: String },
+    budgetMin: { type: Number },
+    budgetMax: { type: Number },
+    timeline: { type: String },
     description: { type: String },
 
     postedDate: { type: Date, default: Date.now },
     proposals: { type: Number, default: 0 },
 
-    documentUrl:{type:String},
+    documentUrl: { type: String },
 
-    status: { type: String, enum: ["UnderReview" , "NotApproved" ,"Open", "Closed","shortlisted","negotation","Allocated"], default: "UnderReview" },
+    status: { type: String, enum: ["UnderReview", "NotApproved", "Open", "Closed", "shortlisted", "negotation", "Allocated"], default: "UnderReview" },
 
     clientId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     attachmentUrls: [{ type: String }], // New field for multiple attachments
-    allocatedToId:{ type: Schema.Types.ObjectId, ref: "User" },
+    allocatedToId: { type: Schema.Types.ObjectId, ref: "User" },
     isReviewed: { type: Boolean, default: false },
-    notApprovedMsg:{type:String}
-    
-  }, 
+    notApprovedMsg: { type: String },
+    skills: [{ type: String }]
+
+  },
   { timestamps: true },
 )
 delete mongoose.models.Requirement;

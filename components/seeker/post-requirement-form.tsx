@@ -11,7 +11,7 @@ import PdfUpload from "../pdfUpload"
 import { toast } from "@/lib/toast"
 import { ImageUpload } from "../ui/image-upload";
 import ServiceDropdown from "../select-category-filter"
-import { ChevronRight } from "lucide-react"
+import { ChevronRight, X } from "lucide-react"
 import { Send } from "lucide-react"
 import {
   Select, 
@@ -33,16 +33,18 @@ export function PostRequirementForm({
 }: PostRequirementFormProps) {
 
   const [step, setStep] = useState(1)
+  const [skillInput, setSkillInput] = useState("")
 
   const [formData, setFormData] = useState({
     title: "",
     image: "",
     description: "",
-    category: "",
+    category: "", 
     budgetMin: "",
     budgetMax: "",
-    documentUrl: [],
+    documentUrl: [] as string[],
     timeline: "",
+    skills: [] as string[],
   })
 
   const [categories, setCategories] = useState<any[]>([])
@@ -73,10 +75,50 @@ export function PostRequirementForm({
         budgetMax: "",
         documentUrl: [],
         timeline: "",
+        skills: [],
       })
       setStep(1)
+      setSkillInput("")
     }
   }, [sendingStatus])
+
+  const handleAddSkill = (e?: React.MouseEvent | React.KeyboardEvent) => {
+    if (e) e.preventDefault()
+    const skillsToAdd = skillInput
+      .split(",")
+      .map(s => s.trim())
+      .filter(s => s.length > 0)
+
+    if (skillsToAdd.length > 0) {
+      setFormData((prev) => {
+        const newSkills = [...prev.skills]
+        skillsToAdd.forEach((skill) => {
+          if (!newSkills.includes(skill)) {
+            newSkills.push(skill)
+          }
+        })
+        return {
+          ...prev,
+          skills: newSkills,
+        }
+      })
+    }
+    setSkillInput("")
+  }
+
+  const handleRemoveSkill = (skillToRemove: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      skills: prev.skills.filter((s) => s !== skillToRemove),
+    }))
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault()
+      handleAddSkill()
+    }
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -106,6 +148,7 @@ export function PostRequirementForm({
       budgetMax: Number(formData.budgetMax),
       attachmentUrls: formData.documentUrl,
       timeline: formData.timeline.trim(),
+      skills: formData.skills,
     }
 
     onSubmit(payload)
@@ -246,7 +289,7 @@ console.log("Form Data Url is:::",formData.documentUrl)
                 </Label>
                 <ServiceDropdown
                   value={formData.category}
-                  onChange={(value) => {
+                  onChange={(value: string) => {
                     const autoImage = findImageForCategory(value)
                     console.log("auto image is:::::",autoImage)
                     setFormData((p) => ({ ...p, category: value,  image: autoImage }))
@@ -276,6 +319,45 @@ console.log("Form Data Url is:::",formData.documentUrl)
                   }
                 />
               </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-400 font-semibold text-[14px]">
+                  Skills Required (optional)
+                </Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={skillInput}
+                    className="border-2 border-[#D0D5DD] rounded-[8px] placeholder:text-gray-400"
+                    placeholder="Enter skills"
+                    onChange={(e) => setSkillInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                  />
+                  <Button
+                    type="button"
+                    onClick={() => handleAddSkill()}
+                    className="rounded-[8px]  bg-[#F54A0C] text-white hover:bg-[#F54A0C]"
+                  >
+                    Add
+                  </Button>
+                </div>
+                {formData.skills && formData.skills.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {formData.skills.map((skill, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-800 border border-slate-200"
+                      >
+                        {skill}
+                        <X
+                          className="h-3 w-3 cursor-pointer text-slate-400 hover:text-slate-600"
+                          onClick={() => handleRemoveSkill(skill)}
+                        />
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <div className="space-y-2">
 
                 <Label className="text-gray-400 font-semibold text-[14px]">Project Image</Label>
@@ -288,6 +370,9 @@ console.log("Form Data Url is:::",formData.documentUrl)
                   />
                   
               </div>
+               
+
+             
             </div>
           )}
 

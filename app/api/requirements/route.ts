@@ -141,6 +141,7 @@ export async function POST(req: NextRequest) {
       description: body.description,
       attachmentUrls: body.attachmentUrls,
       clientId: user.userId, //  IMPORTANT: logged-in client
+      skills: body.skills || []
     });
 
     console.log("newReq", newReq);
@@ -171,27 +172,27 @@ export async function POST(req: NextRequest) {
     // }
 
     // 1. Fetch all admins
-      const admins = await User.find(
-        { role: "admin" },
-        { _id: 1 }
-      ).lean();
+    const admins = await User.find(
+      { role: "admin" },
+      { _id: 1 }
+    ).lean();
 
-      // 2. Create notifications for admins
-      if (admins.length > 0) {
-        const adminNotifications = admins.map((admin) => ({
-          userId: admin._id, // receiver (admin)
-          triggeredBy: user.userId, // client who posted
-          title: "New Requirement Posted",
-          message: `A client has posted a new requirement in ${newReq.category}.`,
-          type: "NEW_REQUIREMENT_ADMIN",
-          userRole: "admin", 
-          linkUrl: `/admin/moderation`, // adjust route if needed
-          sourceId: newReq._id,
-          isRead: false,
-        }));
+    // 2. Create notifications for admins
+    if (admins.length > 0) {
+      const adminNotifications = admins.map((admin) => ({
+        userId: admin._id, // receiver (admin)
+        triggeredBy: user.userId, // client who posted
+        title: "New Requirement Posted",
+        message: `A client has posted a new requirement in ${newReq.category}.`,
+        type: "NEW_REQUIREMENT_ADMIN",
+        userRole: "admin",
+        linkUrl: `/admin/moderation`, // adjust route if needed
+        sourceId: newReq._id,
+        isRead: false,
+      }));
 
-        await Notification.insertMany(adminNotifications);
-      }
+      await Notification.insertMany(adminNotifications);
+    }
 
     return NextResponse.json({
       success: true,
