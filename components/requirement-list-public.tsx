@@ -128,10 +128,29 @@ export function RequirementList({ requirements, onViewProposals, onViewDetails }
           {/* Dotted/Dashed Divider */}
           <div className="border-t border-dashed border-[#CECECE]" />
 
+          {/* Skills Required Section */}
+          {requirement.skills && requirement.skills.length > 0 && (
+            <div className="flex flex-col gap-2 mt-0">
+              <span className="text-[10px] text-[#898383] font-bold tracking-wider uppercase">
+                SKILLS REQUIRED
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {requirement.skills.map((skill, index) => (
+                  <span
+                    key={index}
+                    className="bg-[#FFF0EB] text-[#F54A0C] text-[11px] font-semibold px-3 py-1 rounded-full"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Bottom Section */}
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
             <p className="text-xs text-[#898383] font-normal text-center sm:text-left">
-              Match your skills? Send your proposal in under 2 minutes.
+              Ready to Win This Project? Submit Your Proposal Today.
             </p>
             {
               (requirement.status !== "UnderReview" && requirement.status !== "NotApproved") && (

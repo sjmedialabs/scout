@@ -124,7 +124,8 @@ export async function PUT(
       documentUrl: body.documentUrl,
       status: body.status,
       image: body.image,
-      notApprovedMsg:body.notApprovedMsg
+      notApprovedMsg:body.notApprovedMsg,
+      skills: body.skills
     }
 
     // Remove undefined fields
